@@ -105,7 +105,7 @@ Parser.prototype._parse = function() {
                 case "[":
                     this._processBracket();
                     break;
-                //otherwise, the parser needs to throw or it would enter a loop
+                //otherwise, the parser needs to throw or it would enter an infinite loop
                 default:
                     throw Error("Unmatched selector:" + firstChar + this._selector);
             }
@@ -140,7 +140,14 @@ Parser.prototype._processId = function() {
 };
 
 Parser.prototype._matchExact = function(name, value, ignoreCase) {
-    this._buildRe(name, "^" + value + "$", ignoreCase);
+    if (ignoreCase) {
+        this._buildRe(name, "^" + value + "$", true);
+        return;
+    }
+    var next = this.func;
+    this.func = function(elem) {
+        if (name in elem.attribs && elem.attribs[name] === value) return next();
+    };
 };
 
 Parser.prototype._buildRe = function(name, value, ignoreCase) {
