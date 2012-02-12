@@ -1,11 +1,13 @@
+;(function(global){
+
 var re_commas = /,\s*/g,
     re_whitespace = /\s+/,
     re_name = /^(?:[\w\-]|\\.)+/, //https://github.com/jquery/sizzle/blob/master/sizzle.js#L378 /^(?:[\w\u00c0-\uFFFF\-]|\\.)+/
     re_par = /\(.*?\)/,
-    re_cleanSelector = / *([>~+]) */g,
+    re_cleanSelector = / ?([>~+]) ?/g,
     filters = {
         not: function(next, select){
-        	var func = (new Parser(select, next)).getFunc();
+        	var func = parse(select);
         	return function(elem){
         		if(!func(elem)) return next(elem);
         	};
@@ -32,25 +34,14 @@ var re_commas = /,\s*/g,
     };
 
 var parse = function(selector, cb){
-	if(re_commas.test(selector)){
-		//TODO move this to the parser
-		selector = selector.split(re_commas).map(parse);
-		var num = selector.length;
-		return function(elem){
-			for(var i = 0; i < num; i++){
-				if(selector[i](elem)) return cb ? cb(elem) : true;
-			}
-		};
-	}
-	
 	var p = new Parser(selector, cb);
 	return p.getFunc();
-}
+};
 
 var Parser = function(selector, cb){
 	this._selector = selector;
 	if(typeof cb === "function") this.func = cb;
-	
+
 	this._clean();
 	this._parse();
 };
@@ -111,7 +102,7 @@ Parser.prototype._processClass = function(){
 };
 
 Parser.prototype._matchElement = function(name, value, ignoreCase){
-	this._buildRe(name, "(?:^|\\s)" + value + "(?:$|\\s)", ignoreCase)
+	this._buildRe(name, "(?:^|\\s)" + value + "(?:$|\\s)", ignoreCase);
 };
 
 Parser.prototype._processId = function(){
@@ -131,7 +122,7 @@ Parser.prototype._matchExact = function(name, value, ignoreCase){
 
 Parser.prototype._buildRe = function(name, value, ignoreCase){
 	var next = this.func, regex;
-	
+
 	if(ignoreCase) regex = new RegExp(value, "i");
 	else regex = new RegExp(value);
 	this.func = function(elem){
@@ -144,9 +135,9 @@ Parser.prototype._processColon = function(){
     	//pseudo-element
     	// TODO
     }*/
-    
+
 	var name = this._getName(), subselect;
-    
+
     if(this._selector.charAt(0) === "("){
     	subselect = this._selector.substring(1, this._selector.indexOf(")", 2));
     	this._selector = this._selector.substr(subselect.length + 2);
@@ -156,7 +147,7 @@ Parser.prototype._processColon = function(){
 
 Parser.prototype._processPlus = function(){
 	var next = this.func;
-	
+
 	this.func = function(elem){
 	    if(elem.parent && elem.parent.children){
 	    	for(var i = 0, j = elem.parent.children.length; i < j; i++){
@@ -169,7 +160,7 @@ Parser.prototype._processPlus = function(){
 
 Parser.prototype._processSpace = function(){
 	var next = this.func;
-	
+
 	this.func = function(elem){
 	    for(var parent; parent = elem.parent;){
 	    	if(next(parent)) return true;
@@ -179,13 +170,14 @@ Parser.prototype._processSpace = function(){
 
 Parser.prototype._processArrow = function(){
 	var next = this.func;
-	
+
 	this.func = function(elem){
 		if(elem.parent) return next(elem.parent);
-	}
+	};
 };
 
 Parser.prototype._processTilde = function(){
+	var next = this.func;
 	this.func = function(elem){
 		if(!elem.parent || !elem.parent.children) return;
 	    var index = elem.parent.children.indexOf(elem);
@@ -193,47 +185,47 @@ Parser.prototype._processTilde = function(){
 	    	if(next(elem.parent.children[index])) return true;
 	    }
 	};
-}
+};
 
 Parser.prototype._processBracket = function(){
 	var next = this.func;
 
 	if(this._selector.charAt(0) === " ") this._selector = this._selector.substr(1);
-	
+
 	var name = this._getName(),
 	    action = this._selector.charAt(0);
-	
+
 	if(action === " "){
 		action = this._selector.charAt(1);
 		this._selector = this._selector.substr(2);
 	}
 	else this._selector = this._selector.substr(1);
-	
+
 	if(action === "]"){
 		return function(elem){
 			if(name in elem.attribs) return next(elem);
 		};
 	}
-	
+
 	var value = this._selector.substr(0, this._selector.indexOf("]"));
 	this._selector = this._selector.substr(value.length + 1);
-	
+
 	value = value.trim();
-	
+
 	if(action !== "="){
 	    if(value.charAt(0) !== "=") return;
 	    if(value.charAt(1) === " ") value = value.substr(2);
-	    else value = value.substr(1)
+	    else value = value.substr(1);
 	} else {
 		if(value.charAt(1) === " ") value = value.substr(1);
 	}
-	
+
 	var i = value.substr(-2) === " i";
 	if(i) value = value.slice(0, -2);
-	
+
 	if(value.charAt(0) === "\"") value = value.substr(1, value.indexOf("\"", 1));
 	if(value.charAt(0) === "\'") value = value.substr(1, value.indexOf("\'", 1));
-	
+
 	switch(action){
 		case "=": return this._matchExact(name, value, i);
 		case "~": return this._matchElement(name, value, i);
@@ -245,4 +237,30 @@ Parser.prototype._processBracket = function(){
 	}
 };
 
-if(typeof module === "object") module.exports = parse;
+var CSSselect = function(selector, cb){
+	if(re_commas.test(selector)){
+		//TODO move this to the parser
+		selector = selector.split(re_commas).map(parse);
+		var num = selector.length;
+		return function(elem){
+			for(var i = 0; i < num; i++){
+				if(selector[i](elem)) return cb ? cb(elem) : true;
+			}
+		};
+	}
+
+	return parse(selector);
+};
+
+if(typeof module !== "undefined" && "exports" in module){
+	module.exports = CSSselect;
+} else {
+	if(typeof define === "function" && define.amd){
+		define("CSSselect", function(){
+			return CSSselect;
+		});
+	}
+	global.CSSselect = CSSselect;
+}
+
+})(typeof window === "object" ? window : this);
