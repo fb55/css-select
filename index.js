@@ -7,7 +7,7 @@ var re_commas = /,\s*/g,
         not: function(next, select) {
             var func = new Parser(select, next).getFunc();
             return function(elem) {
-                if (!func(elem)) return next;
+                if (!func(elem)) return next(elem);
             };
         },
         root: function(next) {
@@ -80,28 +80,28 @@ Parser.prototype._parse = function() {
             this._selector = this._selector.substr(1);
             switch (firstChar) {
                 case "*":
-                    continue; //+
+                    continue;
                 case "#":
                     this._processId();
-                    break; //+
+                    break;
                 case "+":
                     this._processPlus();
-                    break; //+
+                    break;
                 case ".":
                     this._processClass();
-                    break; //+
+                    break;
                 case " ":
                     this._processSpace();
-                    break; //+
+                    break;
                 case "~":
                     this._processTilde();
-                    break; //+
+                    break;
                 case ":":
                     this._processColon();
-                    break; //+
+                    break;
                 case ">":
                     this._processArrow();
-                    break; //+
+                    break;
                 case "[":
                     this._processBracket();
                     break;
@@ -152,27 +152,29 @@ Parser.prototype._matchExact = function(name, value, ignoreCase) {
 
 Parser.prototype._buildRe = function(name, value, ignoreCase) {
     var next = this.func,
-        regex = ignoreCase ? new RegExp(value, "i") : new RegExp(value);
+        regex;
+
+    if (ignoreCase) regex = new RegExp(value, "i");
+    else regex = new RegExp(value);
     this.func = function(elem) {
         if (name in elem.attribs && regex.test(elem.attribs[name])) return next(elem);
     };
 };
 
 Parser.prototype._processColon = function() {
-    var next = this.func,
-        name = this._getName(),
-        subselect;
-
     /*if(selector.charAt(0) === ":"){
     	//pseudo-element
     	// TODO
     }*/
 
+    var name = this._getName(),
+        subselect;
+
     if (this._selector.charAt(0) === "(") {
         subselect = this._selector.substring(1, this._selector.indexOf(")", 2));
         this._selector = this._selector.substr(subselect.length + 2);
     }
-    if (name in filters) this.func = filters[name](next, subselect);
+    if (name in filters) this.func = filters[name](this.func, subselect);
 };
 
 Parser.prototype._processPlus = function() {
