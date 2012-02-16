@@ -180,10 +180,10 @@ Parser.prototype._processTilde = function(){
 	var next = this.func;
 	this.func = function(elem){
 		if(!elem.parent || !elem.parent.children) return;
-	    var index = elem.parent.children.indexOf(elem);
-	    while(--index !== -1){
-	    	if(next(elem.parent.children[index])) return true;
-	    }
+		var index = elem.parent.children.indexOf(elem);
+		while(--index !== -1){
+		    if(next(elem.parent.children[index])) return true;
+		}
 	};
 };
 

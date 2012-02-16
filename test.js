@@ -9,7 +9,7 @@ var parse = require("./"),
 		}
 	};
 
-console.log("result:", !!parse(testString)(testDoc))
+console.log("result:", !!parse(testString)(testDoc));
 
 try {
 	console.log("Parsing took:", require("ben")(1e5, function(){parse(testString);})*1e3);
