@@ -12,7 +12,7 @@ This library checks every element once. The more complex the query, the greater 
 
 ___TODO___
 
-##Current State
+##TODO
 
 1. The API needs to be improved
 2. Currently, only a specific type of DOM is supported
