@@ -1,0 +1,10 @@
+{
+	"name":"elem",
+	"attribs": {
+		"class":"bar baz"
+	},
+	"parent": {
+		"name":"elem",
+		"attribs": { "id":"foo" }
+	}
+}
