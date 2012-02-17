@@ -1,6 +1,5 @@
 (function(global) {
-    var re_commas = /,\s*/g,
-        re_whitespace = /\s+/,
+    var re_whitespace = /\s+/,
         re_name = /^(?:[\w\-]|\\.)+/, //https://github.com/jquery/sizzle/blob/master/sizzle.js#L378 /^(?:[\w\u00c0-\uFFFF\-]|\\.)+/
         re_par = /\(.*?\)/,
         re_cleanSelector = / ?([>~+]) ?/g,
@@ -266,9 +265,9 @@
     };
 
     var CSSselect = function(selector, cb) {
-        if (re_commas.test(selector)) {
+        if (selector.indexOf(",") !== -1) {
             //TODO move this to the parser
-            selector = selector.split(re_commas).map(parse);
+            selector = selector.split(",").map(parse);
             var num = selector.length;
             return function(elem) {
                 for (var i = 0; i < num; i++) {
