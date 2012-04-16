@@ -135,7 +135,7 @@
         }
         var next = this.func;
         this.func = function(elem) {
-            if (name in elem.attribs && elem.attribs[name] === value) return next();
+            if (name in elem.attribs && elem.attribs[name] === value) return next(elem);
         };
     };
 
@@ -183,8 +183,8 @@
         var next = this.func;
 
         this.func = function(elem) {
-            for (var parent; (parent = elem.parent); ) {
-                if (next(parent)) return true;
+            while ((elem = elem.parent)) {
+                if (next(elem)) return true;
             }
         };
     };
