@@ -81,7 +81,7 @@
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
-                for (var i = siblings.length; i >= 0; i--) {
+                for (var i = siblings.length - 1; i >= 0; i--) {
                     if (siblings[i] === elem) return next(elem);
                     if (isElement(siblings[i])) return;
                 }
@@ -112,7 +112,7 @@
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
-                for (var i = siblings.length; i >= 0; i--) {
+                for (var i = siblings.length - 1; i >= 0; i--) {
                     if (siblings[i] === elem) return next(elem);
                     if (getName(siblings[i]) === getName(elem)) return;
                 }
@@ -135,7 +135,7 @@
             if (!pos) return next; //wrong syntax -> ignored
 
             var a = pos[0],
-                b = pos[1];
+                b = pos[1] + 1; //the first child starts at 1
 
             if (b === 0 && a <= 0)
                 return function() {
@@ -144,20 +144,19 @@
 
             if (a >= -1 && a <= 1)
                 return function(elem) {
-                    var pos = getIndex(elem) + 1;
-                    if (pos === 0) return;
-                    if (pos - b === 0) return next(elem);
+                    var pos = getIndex(elem) - b;
+                    if (pos > 0) return next(elem);
                 };
             if (a >= 0)
                 return function(elem) {
-                    var pos = getIndex(elem) + 1;
-                    if (pos === 0) return;
+                    var pos = getIndex(elem) - b;
+                    if (pos <= 0) return;
+                    if (pos % a === 0) return next(elem);
                 };
             return function(elem) {
-                var pos = getIndex(elem) + 1;
-                if (pos === 0) return;
-                pos -= b;
-                for (var n = 0; a * n <= b; n++) {
+                var pos = getIndex(elem) - b;
+                if (pos <= 0) return;
+                for (var n = 0; a * n <= b; n--) {
                     if (pos === a * n) return next(elem);
                 }
             };
@@ -414,6 +413,19 @@
                 if (parts[i](elem)) return true;
             }
         };
+    };
+
+    CSSselect.parse = CSSselect;
+    CSSselect.iterate = function iterate(query, elems) {
+        if (typeof query === "string") query = CSSselect(query);
+        var result = [];
+        for (var i = 0, j = elems.length; i < j; i++) {
+            if (!isElement(elems[i])) continue;
+            if (query(elems[i])) result.push(elems[i]);
+            if (getChildren(elems[i]))
+                Array.prototype.push.apply(result, iterate(query, getChildren(elems[i])));
+        }
+        return result;
     };
 
     if (typeof module !== "undefined" && "exports" in module) {
