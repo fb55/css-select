@@ -1,7 +1,8 @@
 var parse = require("../"),
     ben = require("ben"),
     testString = 'doo, *#foo > elem.bar[class$=bAz i]:not([ id *= "2" ])',
-    testDoc = require("./doc.json");
+    helper = require("./helper.js"),
+    dom = helper.getDefaultDom();
 
 console.log(
     "Parsing took:",
@@ -13,6 +14,6 @@ parse = parse(testString);
 console.log(
     "Executing took:",
     ben(1e6, function() {
-        parse(testDoc);
+        helper.iterate(dom, parse);
     }) * 1e3
 );
