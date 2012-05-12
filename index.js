@@ -22,6 +22,17 @@
     function getName(elem) {
         return elem.name;
     }
+    function getText(elem) {
+        var text = "",
+            childs = getChildren(elem);
+
+        for (var i = 0, j = childs.length; i < j; i++) {
+            if (isElement(childs[i])) ret += getText(childs[i]);
+            else ret += childs[i].data;
+        }
+
+        return text;
+    }
 
     //regexps
     var re_whitespace = /\s+/,
@@ -37,19 +48,9 @@
                 if (!func(elem)) return next(elem);
             };
         },
-        contains: function(next, select) {
-            var func = parse(select),
-                proc = function(elem) {
-                    var children = getChildren(elem);
-                    for (var i = 0, j = children.length; i < j; i++) {
-                        if (!isElement(children[i])) continue;
-                        if (func(children[i])) return true;
-                        if (getChildren(children[i]) && proc(children[i])) return true;
-                    }
-                };
-
-            return function proc(elem) {
-                if (getChildren(elem) && proc(elem)) return next(elem);
+        contains: function(next, text) {
+            return function(elem) {
+                if (getText(elem).indexOf(text) !== -1) return next(elem);
             };
         },
         root: function(next) {
@@ -61,16 +62,21 @@
             return function(elem) {
                 var children = getChildren(elem);
                 if (!children || children.length === 0) return next(elem);
+
                 for (var i = 0, j = children.length; i < j; i++) {
                     if (isElement(children[i])) return;
                 }
+
                 return next(elem);
             };
         },
+        //first- and last-child methods return as soon as they find another element
+        //nth-child could be used, but this way it's faster
         "first-child": function(next) {
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
+
                 for (var i = 0, j = siblings.length; i < j; i++) {
                     if (siblings[i] === elem) return next(elem);
                     if (isElement(siblings[i])) return;
@@ -81,27 +87,18 @@
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
+
                 for (var i = siblings.length - 1; i >= 0; i--) {
                     if (siblings[i] === elem) return next(elem);
                     if (isElement(siblings[i])) return;
                 }
             };
         },
-        "only-of-type": function(next) {
-            return function(elem) {
-                var siblings = getSiblings(elem);
-                if (!siblings) return;
-                for (var i = 0, j = siblings.length; i < j; i++) {
-                    if (siblings[i] === elem) continue;
-                    if (getName(siblings[i]) === getName(elem)) return;
-                }
-                return next(elem);
-            };
-        },
         "first-of-type": function(next) {
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
+
                 for (var i = 0, j = siblings.length; i < j; i++) {
                     if (siblings[i] === elem) return next(elem);
                     if (getName(siblings[i]) === getName(elem)) return;
@@ -112,10 +109,24 @@
             return function(elem) {
                 var siblings = getSiblings(elem);
                 if (!siblings) return;
+
                 for (var i = siblings.length - 1; i >= 0; i--) {
                     if (siblings[i] === elem) return next(elem);
                     if (getName(siblings[i]) === getName(elem)) return;
                 }
+            };
+        },
+        "only-of-type": function(next) {
+            return function(elem) {
+                var siblings = getSiblings(elem);
+                if (!siblings) return;
+
+                for (var i = 0, j = siblings.length; i < j; i++) {
+                    if (siblings[i] === elem) continue;
+                    if (getName(siblings[i]) === getName(elem)) return;
+                }
+
+                return next(elem);
             };
         },
         "only-child": function(next) {
@@ -127,37 +138,81 @@
                 for (var i = 0, j = siblings.length; i < j; i++) {
                     if (isElement(siblings[i]) && siblings[i] !== elem) return;
                 }
+
                 return next(elem);
             };
         },
-        "nth-child": function(next, num) {
-            var pos = parseNth(num);
-            if (!pos) return next; //wrong syntax -> ignored
-
-            var a = pos[0],
-                b = pos[1] + 1; //the first child starts at 1
-
-            if (b === 0 && a <= 0)
+        "nth-child": function(next, rule) {
+            var func = getNCheck(rule);
+            if (func === null) return next;
+            if (func === false)
                 return function() {
                     return false;
-                }; //shortcut
+                };
 
-            if (a >= -1 && a <= 1)
-                return function(elem) {
-                    var pos = getIndex(elem) - b;
-                    if (pos > 0) return next(elem);
-                };
-            if (a >= 0)
-                return function(elem) {
-                    var pos = getIndex(elem) - b;
-                    if (pos <= 0) return;
-                    if (pos % a === 0) return next(elem);
-                };
             return function(elem) {
-                var pos = getIndex(elem) - b;
-                if (pos <= 0) return;
-                for (var n = 0; a * n <= b; n--) {
-                    if (pos === a * n) return next(elem);
+                if (func(getIndex(elem))) return next(elem);
+            };
+        },
+        "nth-last-child": function(next, rule) {
+            var func = getNCheck(rule);
+            if (func === null) return next;
+            if (func === false)
+                return function() {
+                    return false;
+                };
+
+            return function(elem) {
+                var siblings = getSiblings(elem);
+                if (!siblings) return;
+
+                for (var pos = 0, i = siblings.length - 1; i >= 0; i--) {
+                    if (siblings[i] === elem) {
+                        if (func(pos)) return next(elem);
+                        return;
+                    }
+                    if (isElement(siblings[i])) pos++;
+                }
+            };
+        },
+        "nth-of-type": function(next, rule) {
+            var func = getNCheck(rule);
+            if (func === null) return next;
+            if (func === false)
+                return function() {
+                    return false;
+                };
+
+            return function(elem) {
+                var siblings = getSiblings(elem);
+                if (!siblings) return;
+
+                for (var pos = 0, i = 0, j = siblings.length; i < j; i++) {
+                    if (siblings[i] === elem) {
+                        if (func(pos)) return next(elem);
+                        return;
+                    }
+                    if (getName(siblings[i]) === getName(elem)) pos++;
+                }
+            };
+        },
+        "nth-last-of-type": function(next, rule) {
+            var func = getNCheck(rule);
+            if (func === null) return next;
+            if (func === false)
+                return function() {
+                    return false;
+                };
+
+            return function(elem) {
+                var siblings = getSiblings(elem);
+                if (!siblings) return;
+                for (var pos = 0, i = siblings.length - 1; i >= 0; i--) {
+                    if (siblings[i] === elem) {
+                        if (func(pos)) return next(elem);
+                        return;
+                    }
+                    if (getName(siblings[i]) === getName(elem)) pos++;
                 }
             };
         }
@@ -167,24 +222,69 @@
     function getIndex(elem) {
         var siblings = getSiblings(elem);
         if (!siblings) return -1;
-        var count = 0;
-        for (var i = 0, j = siblings.length; i < j; i++) {
+        for (var count = 0, i = 0, j = siblings.length; i < j; i++) {
             if (siblings[i] === elem) return count;
             if (isElement(siblings[i])) count++;
         }
         return -1;
     }
-    function parseNth(formula) {
-        formula = formula.trim().toLowerCase();
-        if (formula === "even") return [2, 0];
-        if (formula === "odd") return [2, 1];
 
-        var parts = formula.match(re_nthElement);
-        if (!parts) return null;
-        return [
-            (parts[1] && parseInt(parts[1], 10)) || 0,
-            parts[3] ? (parts[2] && parts[2] === "-" ? -1 : 1) * parseInt(parts[3], 10) : 0
-        ];
+    /*
+	returns a function that checks if an elements index matches the given rule
+	highly optimized to return the fastest solution
+*/
+    function getNCheck(formula) {
+        var a, b;
+
+        //parse the formula
+        //b is lowered by 1 as the rule uses index 1 as the start
+        formula = formula.trim().toLowerCase();
+        if (formula === "even") {
+            a = 2;
+            b = -1;
+        } else if (formula === "odd") {
+            a = 2;
+            b = 0;
+        } else {
+            formula = formula.match(re_nthElement);
+            if (!formula) return null; //rule couldn't be parsed
+            a = formula[1] ? parseInt(formula[1], 10) || 1 : 0;
+            if (formula[3]) b = parseInt((formula[2] || "") + formula[3], 10) - 1;
+            else b = -1;
+        }
+
+        //when b <= 0, a*n won't be possible for any matches when a < 0
+        //besides, the specification says that no element is matched when a and b are 0
+        if (b < 0 && a <= 0) return false;
+
+        //when b <= 0 and a === 1, they match any element
+        if (b < 0 && a === 1) return null;
+
+        //when a is in the range -1..1, it matches any element (so only b is checked)
+        if (a === -1)
+            return function(pos) {
+                return pos - b <= 0;
+            };
+        if (a === 1)
+            return function(pos) {
+                return pos - b >= 0;
+            };
+        if (a === 0)
+            return function(pos) {
+                return pos === b;
+            };
+
+        //when a > 0, modulo can be used to check if there is a match
+        //TODO: needs to be checked
+        if (a > 1)
+            return function(pos) {
+                return pos >= 0 && (pos -= b) >= 0 && pos % a === 0;
+            };
+
+        a *= -1; //make a positive
+        return function(pos) {
+            return pos >= 0 && (pos -= b) >= 0 && pos % a === 0 && pos / a < b;
+        };
     }
 
     var parse = function(selector) {
