@@ -62,12 +62,6 @@
             return function(elem) {
                 var children = getChildren(elem);
                 if (!children || children.length === 0) return next(elem);
-
-                for (var i = 0, j = children.length; i < j; i++) {
-                    if (isElement(children[i])) return;
-                }
-
-                return next(elem);
             };
         },
         //first- and last-child methods return as soon as they find another element
@@ -216,9 +210,14 @@
                 }
             };
         }
+        //to consider: :target, :checked, :enabled, :disabled
     };
 
     //helper methods
+
+    /*
+	finds the position of an element among its siblings
+*/
     function getIndex(elem) {
         var siblings = getSiblings(elem);
         if (!siblings) return -1;
