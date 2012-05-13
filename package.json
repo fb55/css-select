@@ -11,7 +11,8 @@
 		"url": "git://github.com/fb55/cssselect.git"
 	},
 	"devDependencies": {
-		"htmlparser2": ">= 2.2.8"
+		"htmlparser2": ">= 2.2.8",
+		"cheerio-soupselect": "*"
 	},
 	"scripts": {
 		"test": "node tests/test.js"
