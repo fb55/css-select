@@ -6,4 +6,4 @@ var CSSselect = require("../"),
 
 console.log("Parsing took:", ben(1e5, function(){CSSselect(testString);})*1e3);
 testString = parse(testString);
-console.log("Executing took:", ben(1e6, function(){CSSselect.iterate(testString, dom);})*1e3);
+console.log("Executing took:", ben(1e6, function(){CSSselect.iterate(dom, testString);})*1e3);
