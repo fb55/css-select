@@ -3,4 +3,4 @@ var CSSselect = require("../"),
     helper = require("./helper.js"),
     dom = helper.getDefaultDom();
 
-console.log("result:", CSSselect.iterate(testString, dom).length);
+console.log("result:", CSSselect.iterate(dom, testString).length);

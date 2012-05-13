@@ -26,9 +26,11 @@
         var text = "",
             childs = getChildren(elem);
 
+        if (!childs) return text;
+
         for (var i = 0, j = childs.length; i < j; i++) {
-            if (isElement(childs[i])) ret += getText(childs[i]);
-            else ret += childs[i].data;
+            if (isElement(childs[i])) text += getText(childs[i]);
+            else text += childs[i].data;
         }
 
         return text;
@@ -515,17 +517,22 @@
     };
 
     CSSselect.parse = CSSselect;
-    CSSselect.iterate = function iterate(query, elems) {
+    CSSselect.filters = filters;
+    CSSselect.iterate = function(elems, query) {
         if (typeof query === "string") query = CSSselect(query);
+        return iterate(elems, query);
+    };
+
+    function iterate(elems, query) {
         var result = [];
         for (var i = 0, j = elems.length; i < j; i++) {
             if (!isElement(elems[i])) continue;
             if (query(elems[i])) result.push(elems[i]);
             if (getChildren(elems[i]))
-                Array.prototype.push.apply(result, iterate(query, getChildren(elems[i])));
+                Array.prototype.push.apply(result, iterate(getChildren(elems[i]), query));
         }
         return result;
-    };
+    }
 
     if (typeof module !== "undefined" && "exports" in module) {
         module.exports = CSSselect;
