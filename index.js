@@ -37,10 +37,10 @@
     }
 
     //regexps
-    var re_whitespace = /\s+/,
-        re_name = /^(?:[\w\-]|\\.)+/,
-        re_cleanSelector = / ?([>~+]) ?/g,
-        re_nthElement = /^([+\-]?\d*n)?\s*([+\-])?\s*(\d)?$/;
+    var re_name = /^(?:[\w\-\u00c0-\uFFFF]|\\.)+/,
+        re_cleanSelector = /\s*([>~+])\s*/g,
+        re_nthElement = /^([+\-]?\d*n)?\s*([+\-])?\s*(\d)?$/,
+        re_attr = /^\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?)=\s*(?:(['"])(.*?)\3|(#?(?:[\w\u00c0-\uFFFF\-]|\\.)*)|)|)\s*(i)?\]/; //https://github.com/jquery/sizzle/blob/master/sizzle.js#L374
 
     //filters
     var filters = {
@@ -55,6 +55,22 @@
                 if (getText(elem).indexOf(text) !== -1) return next(elem);
             };
         },
+        has: function(next, select) {
+            var func = parse(select),
+                proc = function(elem) {
+                    var children = getChildren(elem);
+                    if (!children) return;
+                    for (var i = 0, j = children.length; i < j; i++) {
+                        if (!isElement(children[i])) continue;
+                        if (func(children[i])) return true;
+                        if (proc(children[i])) return true;
+                    }
+                };
+
+            return function proc(elem) {
+                if (proc(elem)) return next(elem);
+            };
+        },
         root: function(next) {
             return function(elem) {
                 if (!getParent(elem)) return next(elem);
@@ -64,6 +80,13 @@
             return function(elem) {
                 var children = getChildren(elem);
                 if (!children || children.length === 0) return next(elem);
+            };
+        },
+        parent: function(next) {
+            //:parent is the inverse of :empty
+            return function(elem) {
+                var children = getChildren(elem);
+                if (children && children.length !== 0) return next(elem);
             };
         },
         //first- and last-child methods return as soon as they find another element
@@ -211,6 +234,65 @@
                     if (getName(siblings[i]) === getName(elem)) pos++;
                 }
             };
+        },
+        header: function(next) {
+            return function(elem) {
+                var name = getName(elem);
+                if (
+                    name === "h1" ||
+                    name === "h2" ||
+                    name === "h3" ||
+                    name === "h4" ||
+                    name === "h5" ||
+                    name === "h6"
+                )
+                    return next(elem);
+            };
+        },
+        button: function(next) {
+            return function(elem) {
+                if (
+                    getName(elem) === "button" ||
+                    (getName(elem) === "input" &&
+                        hasAttrib(elem, "type") &&
+                        getAttributeValue(elem, "type") === "button")
+                )
+                    return next(elem);
+            };
+        },
+        checkbox: function(next) {
+            return checkAttrib(next, "type", "checkbox");
+        },
+        file: function(next) {
+            return checkAttrib(next, "type", "file");
+        },
+        image: function(next) {
+            return checkAttrib(next, "type", "image");
+        },
+        input: function(next) {
+            return function(elem) {
+                var name = getName(elem);
+                if (name === "input" || name === "textarea" || name === "select" || name === "button")
+                    return next(elem);
+            };
+        },
+        password: function(next) {
+            return checkAttrib(next, "type", "password");
+        },
+        radio: function(next) {
+            return checkAttrib(next, "type", "radio");
+        },
+        reset: function(next) {
+            return checkAttrib(next, "type", "reset");
+        },
+        submit: function(next) {
+            return checkAttrib(next, "type", "submit");
+        },
+        text: function(next) {
+            return function(elem) {
+                if (getName(elem) !== "input") return;
+                if (!hasAttrib(elem, "type") || getAttributeValue(elem, "type") === "text") return next(elem);
+            };
         }
         //to consider: :target, :checked, :enabled, :disabled
     };
@@ -288,35 +370,60 @@
         };
     }
 
-    var parse = function(selector) {
+    function checkAttrib(next, name, value) {
+        return function(elem) {
+            if (hasAttrib(elem, name) && getAttributeValue(elem, name) === value) {
+                return next(elem);
+            }
+        };
+    }
+
+    function rootFunc() {
+        return true;
+    }
+
+    function parse(selector) {
         var p = new Parser(selector);
         return p.getFunc();
-    };
+    }
 
     var Parser = function(selector) {
         this._selector = selector;
+        this._functions = [];
+        this.func = rootFunc;
 
         this._clean();
         this._parse();
     };
 
     Parser.prototype = {
-        func: function() {
-            return true;
-        },
         getFunc: function() {
-            return this.func;
+            var functions = this._functions.concat(this.func);
+            functions = functions.filter(function(func) {
+                return func !== rootFunc;
+            });
+            var num = functions.length;
+
+            if (num === 1) return functions[0];
+
+            return function(elem) {
+                for (var i = 0; i < num; i++) {
+                    if (functions[i](elem)) return true;
+                }
+                return false;
+            };
         },
         _clean: function(selector) {
-            this._selector = this._selector
-                .trim()
-                .replace(re_whitespace, " ")
-                .replace(re_cleanSelector, "$1");
+            this._selector = this._selector.trim().replace(re_cleanSelector, "$1");
         },
         _getName: function() {
             var sub = this._selector.match(re_name)[0];
             this._selector = this._selector.substr(sub.length);
             return sub;
+        },
+        _processComma: function() {
+            this._functions.push(this.func);
+            this.func = rootFunc;
         },
         _processClass: function() {
             this._matchElement("class", this._getName(), false);
@@ -355,22 +462,58 @@
             var next = this.func;
 
             this.func = function(elem) {
-                var siblings = getSiblings(elem);
-                if (!siblings) return;
-                for (var i = 0, j = siblings.length; i < j; i++) {
-                    if (elem === siblings[i]) continue;
-                    if (isElement(siblings[i]) && next(siblings[i])) return true;
-                }
+                var index = getIndex(elem),
+                    siblings = getSiblings(elem);
+
+                while (index-- > 0 && !isElement(siblings[index]));
+                if (index >= 0) return next(siblings[index]);
             };
         },
-        _matchExact: function(name, value, ignoreCase) {
-            if (ignoreCase) {
-                this._buildRe(name, "^" + value + "$", true);
-                return;
-            }
-            var next = this.func;
+        _matchExact: function(name, value, i) {
+            if (i) return this._buildRe(name, "^" + value + "$", i); //TODO
+            this.func = checkAttrib(this.func, name, value);
+        },
+        _matchEnd: function(name, value, i) {
+            if (i) return this._buildRe(name, value + "$", i); //TODO
+
+            var next = this.func,
+                len = -value.length;
+
             this.func = function(elem) {
-                if (hasAttrib(elem, name) && getAttributeValue(elem, name) === value) return next(elem);
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(len) === value)
+                    return next(elem);
+            };
+        },
+        _matchStart: function(name, value, i) {
+            if (i) return this._buildRe(name, "^" + value, i); //TODO
+
+            var next = this.func,
+                len = value.length;
+
+            this.func = function(elem) {
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(0, len) === value)
+                    return next(elem);
+            };
+        },
+        _matchAny: function(name, value, i) {
+            if (i) return this._buildRe(name, value, i); //TODO
+
+            var next = this.func;
+
+            this.func = function(elem) {
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).indexOf(value) >= 0)
+                    return next(elem);
+            };
+        },
+        _matchNot: function(name, value, i) {
+            if (i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
+
+            var next = this.func;
+
+            this.func = function(elem) {
+                if (!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value) {
+                    return next(elem);
+                }
             };
         },
         _buildRe: function(name, value, ignoreCase) {
@@ -392,14 +535,24 @@
                 }
             };
         },
+        _processAsterix: function() {
+            if (this.func === rootFunc)
+                this.func = function() {
+                    return true;
+                };
+        },
         _processColon: function() {
             //if(selector.charAt(0) === ":"){} //TODO pseudo-element
             var name = this._getName(),
                 subselect = "";
 
             if (this._selector.charAt(0) === "(") {
-                subselect = this._selector.substr(1, this._selector.indexOf(")", 2) - 1);
-                this._selector = this._selector.substr(subselect.length + 2);
+                for (var pos = 1, counter = 1; counter > 0 && pos < this._selector.length; pos++) {
+                    if (this._selector.charAt(pos) === "(") counter++;
+                    else if (this._selector.charAt(pos) === ")") counter--;
+                }
+                subselect = this._selector.substr(1, pos - 2);
+                this._selector = this._selector.substr(pos);
             }
             if (name in filters) this.func = filters[name](this.func, subselect);
         }
@@ -414,8 +567,6 @@
                 firstChar = this._selector.charAt(0);
                 this._selector = this._selector.substr(1);
                 switch (firstChar) {
-                    case "*":
-                        continue;
                     case "#":
                         this._processId();
                         break;
@@ -437,8 +588,14 @@
                     case ">":
                         this._processArrow();
                         break;
+                    case ",":
+                        this._processComma();
+                        break;
                     case "[":
                         this._processBracket();
+                        break;
+                    case "*":
+                        this._processAsterix();
                         break;
                     //otherwise, the parser needs to throw or it would enter an infinite loop
                     default:
@@ -451,71 +608,42 @@
     Parser.prototype._processBracket = function() {
         var next = this.func;
 
-        if (this._selector.charAt(0) === " ") this._selector = this._selector.substr(1);
+        var match = this._selector.match(re_attr);
+        this._selector = this._selector.substr(match[0].length);
 
-        var name = this._getName(),
-            action = this._selector.charAt(0);
+        var name = match[1],
+            action = match[2],
+            value = match[4] || match[5],
+            i = !!match[6];
 
-        if (action === " ") {
-            action = this._selector.charAt(1);
-            this._selector = this._selector.substr(2);
-        } else this._selector = this._selector.substr(1);
-
-        if (action === "]") {
-            return function(elem) {
+        if (typeof action !== "string") {
+            this.func = function(elem) {
                 if (hasAttrib(elem, name)) return next(elem);
             };
+            return;
         }
-
-        var value = this._selector.substr(0, this._selector.indexOf("]"));
-        this._selector = this._selector.substr(value.length + 1);
-
-        value = value.trim();
-
-        if (action !== "=") {
-            if (value.charAt(0) !== "=") return;
-            if (value.charAt(1) === " ") value = value.substr(2);
-            else value = value.substr(1);
-        } else {
-            if (value.charAt(1) === " ") value = value.substr(1);
-        }
-
-        var i = value.substr(-2) === " i";
-        if (i) value = value.slice(0, -2);
-
-        if (value.charAt(0) === '"') value = value.substr(1, value.indexOf('"', 1));
-        if (value.charAt(0) === "'") value = value.substr(1, value.indexOf("'", 1));
 
         switch (action) {
-            case "=":
+            case "":
                 return this._matchExact(name, value, i);
             case "~":
                 return this._matchElement(name, value, i);
             case "*":
-                return this._buildRe(name, value, i);
+                return this._matchAny(name, value, i);
             case "$":
-                return this._buildRe(name, value + "$", i);
+                return this._matchEnd(name, value + "$", i);
             case "^":
-                return this._buildRe(name, "^" + value, i);
+                return this._matchStart(name, "^" + value, i);
             case "|":
                 return this._buildRe(name, "^" + value + "(?:$|-)", i);
+            case "!":
+                return this._matchNot(name, value, i);
             default:
-                return; // ignore it
+                throw Error("unrecognized operator: " + action);
         }
     };
 
-    var CSSselect = function(selector) {
-        var parts = selector.split(",").map(parse),
-            num = parts.length;
-
-        if (num === 1) return parts[0];
-        return function(elem) {
-            for (var i = 0; i < num; i++) {
-                if (parts[i](elem)) return true;
-            }
-        };
-    };
-
+    var CSSselect = parse;
     CSSselect.parse = CSSselect;
     CSSselect.filters = filters;
     CSSselect.iterate = function(elems, query) {
@@ -528,8 +656,7 @@
         for (var i = 0, j = elems.length; i < j; i++) {
             if (!isElement(elems[i])) continue;
             if (query(elems[i])) result.push(elems[i]);
-            if (getChildren(elems[i]))
-                Array.prototype.push.apply(result, iterate(getChildren(elems[i]), query));
+            if (getChildren(elems[i])) result = result.concat(iterate(getChildren(elems[i]), query));
         }
         return result;
     }
