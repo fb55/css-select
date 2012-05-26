@@ -5,10 +5,6 @@
 function isElement(elem){
 	return elem.type === "tag" || elem.type === "style" || elem.type === "script";
 }
-function getSiblings(elem){
-	var parent = getParent(elem);
-	return parent && getChildren(parent);
-}
 function getChildren(elem){
 	return elem.children;
 }
@@ -68,7 +64,7 @@ var filters = {
 					if(proc(children[i])) return true;
 				}
 			};
-	
+
 		return function proc(elem){
 			if(proc(elem)) return next(elem);
 		};
@@ -91,16 +87,10 @@ var filters = {
 		};
 	},
 	//first- and last-child methods return as soon as they find another element
-	//nth-child could be used, but this way it's faster
+	//nth-[last-]child could be used, but this way it's faster
 	"first-child": function(next){
 		return function(elem){
-			var siblings = getSiblings(elem);
-			if(!siblings) return;
-
-			for(var i = 0, j = siblings.length; i < j; i++){
-				if(siblings[i] === elem) return next(elem);
-				if(isElement(siblings[i])) return;
-			}
+			if(getFirstElement(getSiblings(elem)) === elem) return next(elem);
 		};
 	},
 	"last-child": function(next){
@@ -154,7 +144,7 @@ var filters = {
 			var siblings = getSiblings(elem);
 			if(!siblings) return;
 			if(siblings.length === 1) return next(elem);
-	
+
 			for(var i = 0, j = siblings.length; i < j; i++){
 				if(isElement(siblings[i]) && siblings[i] !== elem) return;
 			}
@@ -287,6 +277,15 @@ var filters = {
 				getAttributeValue(elem, "type") === "text"
 			) return next(elem);
 		};
+	},
+	selected: function(next){
+		return function(elem){
+			if(hasAttrib(elem, "selected")) return next(elem);
+			//the first <option> in a <select> is also selected
+			//TODO this only works for direct descendents
+			if(getName(getParent(elem)) !== "option") return;
+			if(getFirstElement(getSiblings(elem)) === elem) return next(elem);
+		};
 	}
 	//to consider: :target, :checked, :enabled, :disabled
 };
@@ -296,6 +295,9 @@ var pseudos = {};
 
 //helper methods
 
+function getSiblings(elem){
+	return getParent(elem) && getChildren(getParent(elem));
+}
 /*
 	finds the position of an element among its siblings
 */
@@ -309,13 +311,20 @@ function getIndex(elem){
 	return -1;
 }
 
+function getFirstElement(elems){
+	if(!elems) return;
+	for(var i = 0, j = elems.length; i < j; i++){
+		if(isElement(elems[i])) return elems[i];
+	}
+}
+
 /*
 	returns a function that checks if an elements index matches the given rule
 	highly optimized to return the fastest solution
 */
 function getNCheck(formula){
 	var a, b;
-	
+
 	//parse the formula
 	//b is lowered by 1 as the rule uses index 1 as the start
 	formula = formula.trim().toLowerCase();
@@ -437,7 +446,7 @@ Parser.prototype = {
 	},
 	_processSpace: function(){
 		var next = this.func;
-	
+
 		this.func = function(elem){
 			while(elem = getParent(elem)){
 				if(next(elem)) return true;
@@ -452,7 +461,7 @@ Parser.prototype = {
 	},
 	_processArrow: function(){
 		var next = this.func;
-	
+
 		this.func = function(elem){
 			var parent = getParent(elem);
 			if(parent) return next(parent);
@@ -460,7 +469,7 @@ Parser.prototype = {
 	},
 	_processPlus: function(){
 		var next = this.func;
-	
+
 		this.func = function(elem){
 			var index = getIndex(elem),
 				siblings = getSiblings(elem);
@@ -475,10 +484,10 @@ Parser.prototype = {
 	},
 	_matchEnd: function(name, value, i){
 		if(i) return this._buildRe(name, value + "$", i); //TODO
-	
+
 		var next = this.func,
 		    len = -value.length;
-	
+
 		this.func = function(elem){
 			if(
 				hasAttrib(elem, name) &&
@@ -488,10 +497,10 @@ Parser.prototype = {
 	},
 	_matchStart: function(name, value, i){
 		if(i) return this._buildRe(name, "^" + value, i); //TODO
-		
+
 		var next = this.func,
 		    len = value.length;
-		
+
 		this.func = function(elem){
 			if(
 				hasAttrib(elem, name) &&
@@ -501,9 +510,9 @@ Parser.prototype = {
 	},
 	_matchAny: function(name, value, i){
 		if(i) return this._buildRe(name, value, i); //TODO
-	
+
 		var next = this.func;
-		
+
 		this.func = function(elem){
 			if(
 				hasAttrib(elem, name) &&
@@ -512,10 +521,16 @@ Parser.prototype = {
 		};
 	},
 	_matchNot: function(name, value, i){
-		if(i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
-		
 		var next = this.func;
-		
+
+		if(value === ""){
+			this.func = function(elem){
+				if(hasAttrib(elem, name) && getAttributeValue(elem, name) !== "") return next(elem);
+			};
+		}
+
+		if(i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
+
 		this.func = function(elem){
 			if(!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value){
 				return next(elem);
@@ -525,14 +540,14 @@ Parser.prototype = {
 	_buildRe: function(name, value, ignoreCase){
 		var next = this.func,
 			regex = new RegExp(value, ignoreCase ? "i" : "");
-	
+
 		this.func = function(elem){
 			if(hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
 		};
 	},
 	_processTilde: function(){
 		var next = this.func;
-	
+
 		this.func = function(elem){
 			var index = getIndex(elem),
 				siblings = getSiblings(elem);
@@ -548,7 +563,7 @@ Parser.prototype = {
 		//if(this._selector.charAt(0) === ":"){} //TODO pseudo-element
 		var name = this._getName(),
 			subselect = "";
-	
+
 		if(this._selector.charAt(0) === "("){
 			for(var pos = 1, counter = 1; counter > 0 && pos < this._selector.length; pos++){
 				if(this._selector.charAt(pos) === "(") counter++;
@@ -579,7 +594,6 @@ Parser.prototype._parse = function(){
 				case "#": this._processId(); break;
 				case "+": this._processPlus(); break;
 				case ".": this._processClass(); break;
-				case " ": this._processSpace(); break;
 				case "~": this._processTilde(); break;
 				case ":": this._processColon(); break;
 				case ">": this._processArrow(); break;
@@ -587,7 +601,13 @@ Parser.prototype._parse = function(){
 				case "[": this._processBracket(); break;
 				case "*": this._processAsterix(); break;
 				//otherwise, the parser needs to throw or it would enter an infinite loop
-				default: throw new Error("Unmatched selector:" + firstChar + this._selector);
+				default: {
+					if(/^\s$/.test(firstChar)){
+						this._processSpace();
+						this._selector = this._selector.trimLeft();
+					}
+					else throw new Error("Unmatched selector:" + firstChar + this._selector);
+				}
 			}
 		}
 	}
@@ -598,10 +618,10 @@ Parser.prototype._processBracket = function(){
 
 	var match = this._selector.match(re_attr);
 	this._selector = this._selector.substr(match[0].length);
-	
+
 	var name = match[1],
 	    action = match[2],
-	    value = match[4] || match[5],
+	    value = match[4] || match[5] || "",
 	    i = !!match[6];
 
 	if(typeof action !== "string"){
@@ -611,15 +631,17 @@ Parser.prototype._processBracket = function(){
 		return;
 	}
 
+	if(i) value = value.toLowerCase();
+
 	switch(action){
-		case "": return this._matchExact(name, value, i);
+		case  "": return this._matchExact(name, value, i);
 		case "~": return this._matchElement(name, value, i);
 		case "*": return this._matchAny(name, value, i);
-		case "$": return this._matchEnd(name, value + "$", i);
-		case "^": return this._matchStart(name, "^" + value, i);
+		case "$": return this._matchEnd(name, value, i);
+		case "^": return this._matchStart(name, value, i);
 		case "|": return this._buildRe(name, "^" + value + "(?:$|-)", i);
 		case "!": return this._matchNot(name, value, i);
-		default: throw new Error("unrecognized operator: " + action);
+		default:  throw new Error("unrecognized operator: " + action);
 	}
 };
 
