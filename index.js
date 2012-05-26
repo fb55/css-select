@@ -5,10 +5,6 @@
     function isElement(elem) {
         return elem.type === "tag" || elem.type === "style" || elem.type === "script";
     }
-    function getSiblings(elem) {
-        var parent = getParent(elem);
-        return parent && getChildren(parent);
-    }
     function getChildren(elem) {
         return elem.children;
     }
@@ -92,16 +88,10 @@
             };
         },
         //first- and last-child methods return as soon as they find another element
-        //nth-child could be used, but this way it's faster
+        //nth-[last-]child could be used, but this way it's faster
         "first-child": function(next) {
             return function(elem) {
-                var siblings = getSiblings(elem);
-                if (!siblings) return;
-
-                for (var i = 0, j = siblings.length; i < j; i++) {
-                    if (siblings[i] === elem) return next(elem);
-                    if (isElement(siblings[i])) return;
-                }
+                if (getFirstElement(getSiblings(elem)) === elem) return next(elem);
             };
         },
         "last-child": function(next) {
@@ -286,6 +276,15 @@
                 if (getName(elem) !== "input") return;
                 if (!hasAttrib(elem, "type") || getAttributeValue(elem, "type") === "text") return next(elem);
             };
+        },
+        selected: function(next) {
+            return function(elem) {
+                if (hasAttrib(elem, "selected")) return next(elem);
+                //the first <option> in a <select> is also selected
+                //TODO this only works for direct descendents
+                if (getName(getParent(elem)) !== "option") return;
+                if (getFirstElement(getSiblings(elem)) === elem) return next(elem);
+            };
         }
         //to consider: :target, :checked, :enabled, :disabled
     };
@@ -295,6 +294,9 @@
 
     //helper methods
 
+    function getSiblings(elem) {
+        return getParent(elem) && getChildren(getParent(elem));
+    }
     /*
 	finds the position of an element among its siblings
 */
@@ -306,6 +308,13 @@
             if (isElement(siblings[i])) count++;
         }
         return -1;
+    }
+
+    function getFirstElement(elems) {
+        if (!elems) return;
+        for (var i = 0, j = elems.length; i < j; i++) {
+            if (isElement(elems[i])) return elems[i];
+        }
     }
 
     /*
@@ -513,9 +522,15 @@
             };
         },
         _matchNot: function(name, value, i) {
-            if (i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
-
             var next = this.func;
+
+            if (value === "") {
+                this.func = function(elem) {
+                    if (hasAttrib(elem, name) && getAttributeValue(elem, name) !== "") return next(elem);
+                };
+            }
+
+            if (i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
 
             this.func = function(elem) {
                 if (!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value) {
@@ -589,9 +604,6 @@
                     case ".":
                         this._processClass();
                         break;
-                    case " ":
-                        this._processSpace();
-                        break;
                     case "~":
                         this._processTilde();
                         break;
@@ -611,8 +623,12 @@
                         this._processAsterix();
                         break;
                     //otherwise, the parser needs to throw or it would enter an infinite loop
-                    default:
-                        throw new Error("Unmatched selector:" + firstChar + this._selector);
+                    default: {
+                        if (/^\s$/.test(firstChar)) {
+                            this._processSpace();
+                            this._selector = this._selector.trimLeft();
+                        } else throw new Error("Unmatched selector:" + firstChar + this._selector);
+                    }
                 }
             }
         }
@@ -626,7 +642,7 @@
 
         var name = match[1],
             action = match[2],
-            value = match[4] || match[5],
+            value = match[4] || match[5] || "",
             i = !!match[6];
 
         if (typeof action !== "string") {
@@ -636,6 +652,8 @@
             return;
         }
 
+        if (i) value = value.toLowerCase();
+
         switch (action) {
             case "":
                 return this._matchExact(name, value, i);
@@ -644,9 +662,9 @@
             case "*":
                 return this._matchAny(name, value, i);
             case "$":
-                return this._matchEnd(name, value + "$", i);
+                return this._matchEnd(name, value, i);
             case "^":
-                return this._matchStart(name, "^" + value, i);
+                return this._matchStart(name, value, i);
             case "|":
                 return this._buildRe(name, "^" + value + "(?:$|-)", i);
             case "!":
