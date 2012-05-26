@@ -1,6 +1,6 @@
 {
 	"name": "CSSselect",
-	"version": "0.1.0",
+	"version": "0.1.2",
 	"description": "a CSS selector parser in JS",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
@@ -12,7 +12,8 @@
 	},
 	"devDependencies": {
 		"htmlparser2": ">= 2.2.8",
-		"cheerio-soupselect": "*"
+		"cheerio-soupselect": "*",
+		"sink-test": "*"
 	},
 	"scripts": {
 		"test": "node tests/test.js"
