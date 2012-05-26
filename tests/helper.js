@@ -3,13 +3,14 @@ var Parser = require("htmlparser2/lib/Parser.js"),
 	CSSselect = require("../");
 
 module.exports = {
+	CSSselect: CSSselect,
 	getFile: function(name){
 		return module.exports.getDOM(
 			require("fs").readFileSync(__dirname + "/docs/" + name).toString()
 		);
 	},
 	getDOM: function(data){
-		var h = new Handler({refParent: true}),
+		var h = new Handler({refParent: true, ignoreWhitespace: true}),
 			p = new Parser(h);
 		
 		p.write(data);
