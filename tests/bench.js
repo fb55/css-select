@@ -2,13 +2,14 @@ var CSSselect = require("../"),
     ben = require("ben"),
     testString = 'doo, *#foo > elem.bar[class$=bAz i]:not([ id *= "2" ])',
     helper = require("./helper.js"),
+    parse = require("../"),
     dom = helper.getDefaultDom();
 
 console.log(
     "Parsing took:",
     ben(1e5, function() {
         CSSselect(testString);
-    }) * 1e3
+    })
 );
 testString = parse(testString);
 console.log(

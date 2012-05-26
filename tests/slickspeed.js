@@ -35,7 +35,12 @@ var helper = require("./helper.js"),
         "div[class~=example]" /*, "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/
     ];
 
-var engines = [CSSselect.iterate, soupselect.select];
+var engines = [
+    function(a, b) {
+        return CSSselect.iterate(b, a);
+    },
+    soupselect.select
+];
 
 //returns true when an error occurs
 function testResult(rule, index) {
