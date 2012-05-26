@@ -318,6 +318,20 @@ function getFirstElement(elems){
 	}
 }
 
+function unescapeCSS(str){
+	//based on http://mathiasbynens.be/notes/css-escapes
+	//TODO support short sequences (/\\\d{1,5} /)
+	return str.replace(/\\(\d{6}|.)/g, function(m, s){
+		if(isNaN(s)) return s;
+		return String.fromCharCode(parseInt(s, 10));
+	})
+}
+
+function escapeRe(str){
+	//https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
+	return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
+}
+
 /*
 	returns a function that checks if an elements index matches the given rule
 	highly optimized to return the fastest solution
@@ -429,7 +443,7 @@ Parser.prototype = {
 	_getName: function(){
 		var sub = this._selector.match(re_name)[0];
 		this._selector = this._selector.substr(sub.length);
-		return sub;
+		return unescapeCSS(sub);
 	},
 	_processComma: function(){
 		this._functions.push(this.func);
@@ -439,7 +453,7 @@ Parser.prototype = {
 		this._matchElement("class", this._getName(), false);
 	},
 	_matchElement: function(name, value, ignoreCase){
-		this._buildRe(name, "(?:^|\\s)" + value + "(?:$|\\s)", ignoreCase);
+		this._buildRe(name, "(?:^|\\s)" + escapeRe(value) + "(?:$|\\s)", ignoreCase);
 	},
 	_processId: function(){
 		this._matchExact("id", this._getName(), false);
@@ -479,11 +493,11 @@ Parser.prototype = {
 		};
 	},
 	_matchExact: function(name, value, i){
-		if(i) return this._buildRe(name, "^"+value+"$", i); //TODO
+		if(i) return this._buildRe(name, "^" + escapeRe(value) + "$", i); //TODO
 		this.func = checkAttrib(this.func, name, value);
 	},
 	_matchEnd: function(name, value, i){
-		if(i) return this._buildRe(name, value + "$", i); //TODO
+		if(i) return this._buildRe(name, escapeRe(value) + "$", i); //TODO
 
 		var next = this.func,
 		    len = -value.length;
@@ -496,7 +510,7 @@ Parser.prototype = {
 		};
 	},
 	_matchStart: function(name, value, i){
-		if(i) return this._buildRe(name, "^" + value, i); //TODO
+		if(i) return this._buildRe(name, "^" + escapeRe(value), i); //TODO
 
 		var next = this.func,
 		    len = value.length;
@@ -509,7 +523,7 @@ Parser.prototype = {
 		};
 	},
 	_matchAny: function(name, value, i){
-		if(i) return this._buildRe(name, value, i); //TODO
+		if(i) return this._buildRe(name, escapeRe(value), i); //TODO
 
 		var next = this.func;
 
@@ -529,7 +543,7 @@ Parser.prototype = {
 			};
 		}
 
-		if(i) return this._buildRe(name, "^(?!^" + value + "$)", i); //TODO
+		if(i) return this._buildRe(name, "^(?!^" + escapeRe(value) + "$)", i); //TODO
 
 		this.func = function(elem){
 			if(!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value){
@@ -632,6 +646,7 @@ Parser.prototype._processBracket = function(){
 	}
 
 	if(i) value = value.toLowerCase();
+	value = unescapeCSS(value);
 
 	switch(action){
 		case  "": return this._matchExact(name, value, i);
@@ -639,7 +654,7 @@ Parser.prototype._processBracket = function(){
 		case "*": return this._matchAny(name, value, i);
 		case "$": return this._matchEnd(name, value, i);
 		case "^": return this._matchStart(name, value, i);
-		case "|": return this._buildRe(name, "^" + value + "(?:$|-)", i);
+		case "|": return this._buildRe(name, "^" + escapeRe(value) + "(?:$|-)", i);
 		case "!": return this._matchNot(name, value, i);
 		default:  throw new Error("unrecognized operator: " + action);
 	}
