@@ -1,4 +1,6 @@
 (function(global) {
+    "use strict";
+
     //functions that make porting the library to another DOM easy
     function isElement(elem) {
         return elem.type === "tag" || elem.type === "style" || elem.type === "script";
@@ -164,10 +166,7 @@
         "nth-child": function(next, rule) {
             var func = getNCheck(rule);
             if (func === null) return next;
-            if (func === false)
-                return function() {
-                    return false;
-                };
+            if (func === false) return falseFunc;
 
             return function(elem) {
                 if (func(getIndex(elem))) return next(elem);
@@ -176,10 +175,7 @@
         "nth-last-child": function(next, rule) {
             var func = getNCheck(rule);
             if (func === null) return next;
-            if (func === false)
-                return function() {
-                    return false;
-                };
+            if (func === false) return falseFunc;
 
             return function(elem) {
                 var siblings = getSiblings(elem);
@@ -197,10 +193,7 @@
         "nth-of-type": function(next, rule) {
             var func = getNCheck(rule);
             if (func === null) return next;
-            if (func === false)
-                return function() {
-                    return false;
-                };
+            if (func === false) return falseFunc;
 
             return function(elem) {
                 var siblings = getSiblings(elem);
@@ -297,6 +290,9 @@
         //to consider: :target, :checked, :enabled, :disabled
     };
 
+    //while filters are precompiled, pseudos get called when they are needed
+    var pseudos = {};
+
     //helper methods
 
     /*
@@ -331,7 +327,13 @@
         } else {
             formula = formula.match(re_nthElement);
             if (!formula) return null; //rule couldn't be parsed
-            a = formula[1] ? parseInt(formula[1], 10) || 1 : 0;
+            if (formula[1]) {
+                a = parseInt(formula[1], 10);
+                if (!a) {
+                    if (formula[1].charAt(0) === "-") a = -1;
+                    else a = 1;
+                }
+            } else a = 0;
             if (formula[3]) b = parseInt((formula[2] || "") + formula[3], 10) - 1;
             else b = -1;
         }
@@ -382,13 +384,17 @@
         return true;
     }
 
+    function falseFunc() {
+        return false;
+    }
+
     function parse(selector) {
         var p = new Parser(selector);
         return p.getFunc();
     }
 
     var Parser = function(selector) {
-        this._selector = selector;
+        this._selector = selector + "";
         this._functions = [];
         this.func = rootFunc;
 
@@ -400,10 +406,11 @@
         getFunc: function() {
             var functions = this._functions.concat(this.func);
             functions = functions.filter(function(func) {
-                return func !== rootFunc;
+                return func !== rootFunc && func !== falseFunc;
             });
             var num = functions.length;
 
+            if (num === 0) return falseFunc;
             if (num === 1) return functions[0];
 
             return function(elem) {
@@ -542,7 +549,7 @@
                 };
         },
         _processColon: function() {
-            //if(selector.charAt(0) === ":"){} //TODO pseudo-element
+            //if(this._selector.charAt(0) === ":"){} //TODO pseudo-element
             var name = this._getName(),
                 subselect = "";
 
@@ -555,6 +562,12 @@
                 this._selector = this._selector.substr(pos);
             }
             if (name in filters) this.func = filters[name](this.func, subselect);
+            else if (name in pseudos) {
+                var next = this.func;
+                this.func = function(elem) {
+                    if (pseudos[name](elem)) return next(elem);
+                };
+            }
         }
     };
 
@@ -599,7 +612,7 @@
                         break;
                     //otherwise, the parser needs to throw or it would enter an infinite loop
                     default:
-                        throw Error("Unmatched selector:" + firstChar + this._selector);
+                        throw new Error("Unmatched selector:" + firstChar + this._selector);
                 }
             }
         }
@@ -639,24 +652,34 @@
             case "!":
                 return this._matchNot(name, value, i);
             default:
-                throw Error("unrecognized operator: " + action);
+                throw new Error("unrecognized operator: " + action);
         }
     };
 
-    var CSSselect = parse;
-    CSSselect.parse = CSSselect;
+    var CSSselect = function(query, elems) {
+        if (typeof query !== "function") query = parse(query);
+        if (arguments.length === 1) return query;
+        return iterate(query, elems);
+    };
+    CSSselect.parse = parse;
     CSSselect.filters = filters;
-    CSSselect.iterate = function(elems, query) {
-        if (typeof query === "string") query = CSSselect(query);
-        return iterate(elems, query);
+    CSSselect.pseudos = pseudos;
+    CSSselect.iterate = function(query, elems) {
+        if (typeof query !== "function") query = parse(query);
+        if (!Array.isArray(elems)) elems = [elems];
+        return iterate(query, elems);
+    };
+    CSSselect.is = function(elem, query) {
+        if (typeof query !== "function") query = parse(query);
+        return query(elem);
     };
 
-    function iterate(elems, query) {
+    function iterate(query, elems) {
         var result = [];
         for (var i = 0, j = elems.length; i < j; i++) {
             if (!isElement(elems[i])) continue;
             if (query(elems[i])) result.push(elems[i]);
-            if (getChildren(elems[i])) result = result.concat(iterate(getChildren(elems[i]), query));
+            if (getChildren(elems[i])) result = result.concat(iterate(query, getChildren(elems[i])));
         }
         return result;
     }
