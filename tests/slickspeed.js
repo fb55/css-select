@@ -48,7 +48,7 @@ function testSpeed(rule){
 	
 	//also add a precompiled CSSselect test
 	var compiled = CSSselect(rule);
-	results.unshift(function(){ return CSSselect.iterate(doc, compiled); });
+	results.unshift(function(){ return CSSselect.iterate(compiled, doc); });
 	
 	results = results.map(ben);
 	
