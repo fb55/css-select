@@ -15,6 +15,6 @@ testString = parse(testString);
 console.log(
     "Executing took:",
     ben(1e6, function() {
-        CSSselect.iterate(dom, testString);
+        CSSselect.iterate(testString, dom);
     }) * 1e3
 );

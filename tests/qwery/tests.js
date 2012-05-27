@@ -1,3 +1,53 @@
+//Some boilerplate to run this in node & with CSSselect
+var sinktest = require("sink-test"),
+    sink = sinktest.sink,
+    start = sinktest.start,
+    DomUtils = require("htmlparser2").DomUtils,
+    helper = require("../helper.js"),
+    document = helper.getDOM(require("fs").readFileSync(__dirname + "/index.html") + ""),
+    window = { document: document },
+    Q = function(query, doc) {
+        if (typeof doc === "string") doc = Q(doc);
+        if (typeof query === "object") {
+            return Array.prototype.slice.call(arguments, 0);
+        }
+        if (typeof doc === "object" && !Array.isArray(doc)) doc = doc.children;
+        return helper.CSSselect(query, doc || document);
+    };
+
+Q.is = helper.CSSselect.is;
+Q.pseudos = helper.CSSselect.pseudos;
+Q.configure = function() {};
+Q.uniq = function(arr) {
+    return arr.filter(function(e, i) {
+        return arr.indexOf(e) === i;
+    });
+};
+
+//just assign these methods to Object.prototype, it's only for testing
+Object.prototype.getElementById = function(id) {
+    return DomUtils.getElementById(id, this);
+};
+Object.prototype.getElementsByTagName = function(tag) {
+    return DomUtils.getElementsByTagName(tag, this);
+};
+Object.prototype.createElement = function(name) {
+    var obj = helper.getDOM("<" + name + ">");
+    obj.__defineSetter__("innerHTML", function(data) {
+        obj[0].children = helper.getDOM(data);
+    });
+    return obj;
+};
+Object.prototype.getAttribute = function(name) {
+    return this.attrs && this.attrs[name];
+};
+Object.prototype.__defineGetter__("tagName", function() {
+    return this.name;
+});
+
+var location = {};
+
+//https://github.com/ded/qwery/blob/master/tests/tests.js
 // silly custom pseudo just for tests
 Q.pseudos.humanoid = function(e, v) {
     return Q.is(e, "li:contains(human)") || Q.is(e, "ol:contains(human)");
