@@ -1,6 +1,6 @@
 {
 	"name": "CSSselect",
-	"version": "0.2.1",
+	"version": "0.2.2",
 	"description": "a rtl CSS selector engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],

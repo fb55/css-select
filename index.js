@@ -673,5 +673,5 @@ if(typeof module !== "undefined" && "exports" in module){
 
 })(
 	typeof window === "object" ? window : this,
-	typeof CSSwhat === "undefined" ? require("../CSSwhat") : CSSwhat
+	typeof CSSwhat === "undefined" ? require("CSSwhat") : CSSwhat
 );
