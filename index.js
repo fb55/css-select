@@ -49,6 +49,14 @@
     var filters = {
         not: function(next, select) {
             var func = parse(select);
+
+            if (func === falseFunc) {
+                if (next === rootFunc) return trueFunc;
+                else return next;
+            }
+            if (func === trueFunc) return falseFunc;
+            if (func === rootFunc) return falseFunc;
+
             return function(elem) {
                 if (!func(elem)) return next(elem);
             };
@@ -161,8 +169,13 @@
         },
         "nth-child": function(next, rule) {
             var func = getNCheck(rule);
+
             if (func === null) return next;
-            if (func === false) return falseFunc;
+            if (func === falseFunc) return func;
+            if (func === trueFunc) {
+                if (next === rootFunc) return func;
+                else return next;
+            }
 
             return function(elem) {
                 if (func(getIndex(elem))) return next(elem);
@@ -170,8 +183,13 @@
         },
         "nth-last-child": function(next, rule) {
             var func = getNCheck(rule);
+
             if (func === null) return next;
-            if (func === false) return falseFunc;
+            if (func === falseFunc) return func;
+            if (func === trueFunc) {
+                if (next === rootFunc) return func;
+                else return next;
+            }
 
             return function(elem) {
                 var siblings = getSiblings(elem);
@@ -188,8 +206,13 @@
         },
         "nth-of-type": function(next, rule) {
             var func = getNCheck(rule);
+
             if (func === null) return next;
-            if (func === false) return falseFunc;
+            if (func === falseFunc) return func;
+            if (func === trueFunc) {
+                if (next === rootFunc) return func;
+                else return next;
+            }
 
             return function(elem) {
                 var siblings = getSiblings(elem);
@@ -206,11 +229,13 @@
         },
         "nth-last-of-type": function(next, rule) {
             var func = getNCheck(rule);
+
             if (func === null) return next;
-            if (func === false)
-                return function() {
-                    return false;
-                };
+            if (func === falseFunc) return func;
+            if (func === trueFunc) {
+                if (next === rootFunc) return func;
+                else return next;
+            }
 
             return function(elem) {
                 var siblings = getSiblings(elem);
@@ -349,10 +374,10 @@
 
         //when b <= 0, a*n won't be possible for any matches when a < 0
         //besides, the specification says that no element is matched when a and b are 0
-        if (b < 0 && a <= 0) return false;
+        if (b < 0 && a <= 0) return falseFunc;
 
         //when b <= 0 and a === 1, they match any element
-        if (b < 0 && a === 1) return null;
+        if (b < 0 && a === 1) return trueFunc;
 
         //when a is in the range -1..1, it matches any element (so only b is checked)
         if (a === -1)
@@ -396,6 +421,10 @@
     }
 
     function rootFunc() {
+        return true;
+    }
+
+    function trueFunc() {
         return true;
     }
 
@@ -450,10 +479,7 @@
             };
         },
         universal: function(next) {
-            if (next === rootFunc)
-                return function() {
-                    return true;
-                };
+            if (next === rootFunc) return trueFunc;
             return next;
         },
 
@@ -576,6 +602,7 @@
                 var func = rootFunc;
                 for (var i = 0, j = arr.length; i < j; i++) {
                     func = generalRules[arr[i].type](func, arr[i]);
+                    if (func === falseFunc) return func;
                 }
                 return func;
             })
@@ -611,6 +638,7 @@
 
     CSSselect.iterate = function(query, elems) {
         if (typeof query !== "function") query = parse(query);
+        if (query === falseFunc) return [];
         if (!Array.isArray(elems)) elems = [elems];
         return iterate(query, elems);
     };
