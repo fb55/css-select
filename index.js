@@ -671,7 +671,4 @@
         }
         global.CSSselect = CSSselect;
     }
-})(
-    typeof window === "object" ? window : this,
-    typeof CSSwhat === "undefined" ? require("../CSSwhat") : CSSwhat
-);
+})(typeof window === "object" ? window : this, typeof CSSwhat === "undefined" ? require("CSSwhat") : CSSwhat);
