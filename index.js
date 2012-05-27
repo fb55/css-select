@@ -1,4 +1,4 @@
-(function(global) {
+(function(global, CSSwhat) {
     "use strict";
 
     //functions that make porting the library to another DOM easy
@@ -34,13 +34,18 @@
         return text;
     }
 
-    //regexps
-    var re_name = /^(?:[\w\-\u00c0-\uFFFF]|\\.)+/,
-        re_cleanSelector = /\s*([>~+])\s*/g,
-        re_nthElement = /^([+\-]?\d*n)?\s*([+\-])?\s*(\d)?$/,
-        re_attr = /^\s*((?:[\w\u00c0-\uFFFF\-]|\\.)+)\s*(?:(\S?)=\s*(?:(['"])(.*?)\3|(#?(?:[\w\u00c0-\uFFFF\-]|\\.)*)|)|)\s*(i)?\]/; //https://github.com/jquery/sizzle/blob/master/sizzle.js#L374
-
-    //filters
+    /*
+	pseudo selectors
+	
+	---
+	
+	they are available in two forms:
+	* filters called when the selector 
+	  is compiled and return a function
+	  that needs to return next()
+	* pseudos get called on execution
+	  they need to return a boolean
+*/
     var filters = {
         not: function(next, select) {
             var func = parse(select);
@@ -87,8 +92,9 @@
                 if (children && children.length !== 0) return next(elem);
             };
         },
+
+        //location specific methods
         //first- and last-child methods return as soon as they find another element
-        //nth-[last-]child could be used, but this way it's faster
         "first-child": function(next) {
             return function(elem) {
                 if (getFirstElement(getSiblings(elem)) === elem) return next(elem);
@@ -218,6 +224,19 @@
                 }
             };
         },
+
+        //forms
+        selected: function(next) {
+            return function(elem) {
+                if (hasAttrib(elem, "selected")) return next(elem);
+                //the first <option> in a <select> is also selected
+                //TODO this only works for direct descendents
+                if (getName(getParent(elem)) !== "option") return;
+                if (getFirstElement(getSiblings(elem)) === elem) return next(elem);
+            };
+        },
+
+        //jQuery extensions
         header: function(next) {
             return function(elem) {
                 var name = getName(elem);
@@ -243,12 +262,6 @@
                     return next(elem);
             };
         },
-        checkbox: function(next) {
-            return checkAttrib(next, "type", "checkbox");
-        },
-        file: function(next) {
-            return checkAttrib(next, "type", "file");
-        },
         image: function(next) {
             return checkAttrib(next, "type", "image");
         },
@@ -259,33 +272,18 @@
                     return next(elem);
             };
         },
-        password: function(next) {
-            return checkAttrib(next, "type", "password");
-        },
-        radio: function(next) {
-            return checkAttrib(next, "type", "radio");
-        },
-        reset: function(next) {
-            return checkAttrib(next, "type", "reset");
-        },
-        submit: function(next) {
-            return checkAttrib(next, "type", "submit");
-        },
         text: function(next) {
             return function(elem) {
                 if (getName(elem) !== "input") return;
                 if (!hasAttrib(elem, "type") || getAttributeValue(elem, "type") === "text") return next(elem);
             };
         },
-        selected: function(next) {
-            return function(elem) {
-                if (hasAttrib(elem, "selected")) return next(elem);
-                //the first <option> in a <select> is also selected
-                //TODO this only works for direct descendents
-                if (getName(getParent(elem)) !== "option") return;
-                if (getFirstElement(getSiblings(elem)) === elem) return next(elem);
-            };
-        }
+        checkbox: getAttribFunc("type", "checkbox"),
+        file: getAttribFunc("type", "file"),
+        password: getAttribFunc("type", "password"),
+        radio: getAttribFunc("type", "radio"),
+        reset: getAttribFunc("type", "reset"),
+        submit: getAttribFunc("type", "submit")
         //to consider: :target, :checked, :enabled, :disabled
     };
 
@@ -317,24 +315,12 @@
         }
     }
 
-    function unescapeCSS(str) {
-        //based on http://mathiasbynens.be/notes/css-escapes
-        //TODO support short sequences (/\\\d{1,5} /)
-        return str.replace(/\\(\d{6}|.)/g, function(m, s) {
-            if (isNaN(s)) return s;
-            return String.fromCharCode(parseInt(s, 10));
-        });
-    }
-
-    function escapeRe(str) {
-        //https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
-        return str.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-    }
-
     /*
 	returns a function that checks if an elements index matches the given rule
 	highly optimized to return the fastest solution
 */
+    var re_nthElement = /^([+\-]?\d*n)?\s*([+\-])?\s*(\d)?$/;
+
     function getNCheck(formula) {
         var a, b;
 
@@ -395,6 +381,12 @@
         };
     }
 
+    function getAttribFunc(name, value) {
+        return function(next) {
+            return checkAttrib(next, name, value);
+        };
+    }
+
     function checkAttrib(next, name, value) {
         return function(elem) {
             if (hasAttrib(elem, name) && getAttributeValue(elem, name) === value) {
@@ -411,159 +403,36 @@
         return false;
     }
 
-    function parse(selector) {
-        var p = new Parser(selector);
-        return p.getFunc();
-    }
+    /*
+	all available rules
+*/
+    var generalRules = {
+        __proto__: null,
 
-    var Parser = function(selector) {
-        this._selector = selector + "";
-        this._functions = [];
-        this.func = rootFunc;
-
-        this._clean();
-        this._parse();
-    };
-
-    Parser.prototype = {
-        getFunc: function() {
-            var functions = this._functions.concat(this.func);
-            functions = functions.filter(function(func) {
-                return func !== rootFunc && func !== falseFunc;
-            });
-            var num = functions.length;
-
-            if (num === 0) return falseFunc;
-            if (num === 1) return functions[0];
-
+        //tags
+        tag: function(next, data) {
+            var name = data.name;
             return function(elem) {
-                for (var i = 0; i < num; i++) {
-                    if (functions[i](elem)) return true;
-                }
-                return false;
+                if (getName(elem) === name) return next(elem);
             };
         },
-        _clean: function(selector) {
-            this._selector = this._selector.trim().replace(re_cleanSelector, "$1");
-        },
-        _getName: function() {
-            var sub = this._selector.match(re_name)[0];
-            this._selector = this._selector.substr(sub.length);
-            return unescapeCSS(sub);
-        },
-        _processComma: function() {
-            this._functions.push(this.func);
-            this.func = rootFunc;
-        },
-        _processClass: function() {
-            this._matchElement("class", this._getName(), false);
-        },
-        _matchElement: function(name, value, ignoreCase) {
-            this._buildRe(name, "(?:^|\\s)" + escapeRe(value) + "(?:$|\\s)", ignoreCase);
-        },
-        _processId: function() {
-            this._matchExact("id", this._getName(), false);
-        },
-        _processSpace: function() {
-            var next = this.func;
 
-            this.func = function(elem) {
+        //traversal
+        descendant: function(next) {
+            return function(elem) {
                 while ((elem = getParent(elem))) {
                     if (next(elem)) return true;
                 }
             };
         },
-        _processTag: function() {
-            var next = this.func,
-                name = this._getName().toLowerCase();
-            this.func = function(elem) {
-                if (getName(elem) === name) return next(elem);
-            };
-        },
-        _processArrow: function() {
-            var next = this.func;
-
-            this.func = function(elem) {
+        child: function(next) {
+            return function(elem) {
                 var parent = getParent(elem);
                 if (parent) return next(parent);
             };
         },
-        _processPlus: function() {
-            var next = this.func;
-
-            this.func = function(elem) {
-                var index = getIndex(elem),
-                    siblings = getSiblings(elem);
-
-                while (index-- > 0 && !isElement(siblings[index]));
-                if (index >= 0) return next(siblings[index]);
-            };
-        },
-        _matchExact: function(name, value, i) {
-            if (i) return this._buildRe(name, "^" + escapeRe(value) + "$", i); //TODO
-            this.func = checkAttrib(this.func, name, value);
-        },
-        _matchEnd: function(name, value, i) {
-            if (i) return this._buildRe(name, escapeRe(value) + "$", i); //TODO
-
-            var next = this.func,
-                len = -value.length;
-
-            this.func = function(elem) {
-                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(len) === value)
-                    return next(elem);
-            };
-        },
-        _matchStart: function(name, value, i) {
-            if (i) return this._buildRe(name, "^" + escapeRe(value), i); //TODO
-
-            var next = this.func,
-                len = value.length;
-
-            this.func = function(elem) {
-                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(0, len) === value)
-                    return next(elem);
-            };
-        },
-        _matchAny: function(name, value, i) {
-            if (i) return this._buildRe(name, escapeRe(value), i); //TODO
-
-            var next = this.func;
-
-            this.func = function(elem) {
-                if (hasAttrib(elem, name) && getAttributeValue(elem, name).indexOf(value) >= 0)
-                    return next(elem);
-            };
-        },
-        _matchNot: function(name, value, i) {
-            var next = this.func;
-
-            if (value === "") {
-                this.func = function(elem) {
-                    if (hasAttrib(elem, name) && getAttributeValue(elem, name) !== "") return next(elem);
-                };
-            }
-
-            if (i) return this._buildRe(name, "^(?!^" + escapeRe(value) + "$)", i); //TODO
-
-            this.func = function(elem) {
-                if (!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value) {
-                    return next(elem);
-                }
-            };
-        },
-        _buildRe: function(name, value, ignoreCase) {
-            var next = this.func,
-                regex = new RegExp(value, ignoreCase ? "i" : "");
-
-            this.func = function(elem) {
-                if (hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
-            };
-        },
-        _processTilde: function() {
-            var next = this.func;
-
-            this.func = function(elem) {
+        sibling: function(next) {
+            return function(elem) {
                 var index = getIndex(elem),
                     siblings = getSiblings(elem);
                 while (--index >= 0) {
@@ -571,137 +440,181 @@
                 }
             };
         },
-        _processAsterix: function() {
-            if (this.func === rootFunc)
-                this.func = function() {
+        adjacent: function(next) {
+            return function(elem) {
+                var index = getIndex(elem),
+                    siblings = getSiblings(elem);
+
+                while (index-- > 0 && !isElement(siblings[index]));
+                if (index >= 0) return next(siblings[index]);
+            };
+        },
+        universal: function(next) {
+            if (next === rootFunc)
+                return function() {
                     return true;
                 };
+            return next;
         },
-        _processColon: function() {
-            //if(this._selector.charAt(0) === ":"){} //TODO pseudo-element
-            var name = this._getName(),
-                subselect = "";
 
-            if (this._selector.charAt(0) === "(") {
-                for (var pos = 1, counter = 1; counter > 0 && pos < this._selector.length; pos++) {
-                    if (this._selector.charAt(pos) === "(") counter++;
-                    else if (this._selector.charAt(pos) === ")") counter--;
-                }
-                subselect = this._selector.substr(1, pos - 2);
-                this._selector = this._selector.substr(pos);
-            }
-            if (name in filters) this.func = filters[name](this.func, subselect);
-            else if (name in pseudos) {
-                var next = this.func;
-                this.func = function(elem) {
-                    if (pseudos[name](elem)) return next(elem);
-                };
-            }
-        }
-    };
-
-    Parser.prototype._parse = function() {
-        var firstChar;
-        while (this._selector !== "") {
-            if (re_name.test(this._selector)) {
-                this._processTag();
+        //attributes
+        id: function(next, data) {
+            return attributeRules.equals(next, "id", data.value, false);
+        },
+        class: function(next, data) {
+            return attributeRules.element(next, "class", data.value, false);
+        },
+        attribute: function(next, data) {
+            if (data.ignoreCase) {
+                return noCaseAttributeRules[data.action](next, data.name, data.value, data.ignoreCase);
             } else {
-                firstChar = this._selector.charAt(0);
-                this._selector = this._selector.substr(1);
-                switch (firstChar) {
-                    case "#":
-                        this._processId();
-                        break;
-                    case "+":
-                        this._processPlus();
-                        break;
-                    case ".":
-                        this._processClass();
-                        break;
-                    case "~":
-                        this._processTilde();
-                        break;
-                    case ":":
-                        this._processColon();
-                        break;
-                    case ">":
-                        this._processArrow();
-                        break;
-                    case ",":
-                        this._processComma();
-                        break;
-                    case "[":
-                        this._processBracket();
-                        break;
-                    case "*":
-                        this._processAsterix();
-                        break;
-                    //otherwise, the parser needs to throw or it would enter an infinite loop
-                    default: {
-                        if (/^\s$/.test(firstChar)) {
-                            this._processSpace();
-                            this._selector = this._selector.trimLeft();
-                        } else throw new Error("Unmatched selector:" + firstChar + this._selector);
-                    }
-                }
+                return attributeRules[data.action](next, data.name, data.value, data.ignoreCase);
+            }
+        },
+
+        //pseudos
+        pseudo: function(next, data) {
+            var name = data.name,
+                subselect = data.data;
+
+            if (name in filters) return filters[name](next, subselect);
+            else if (name in pseudos) {
+                return function(elem) {
+                    if (pseudos[name](elem, data)) return next(elem);
+                };
+            } else {
+                //console.log("unmatched pseudo-class:", name);
+                return next;
             }
         }
     };
 
-    Parser.prototype._processBracket = function() {
-        var next = this.func;
+    /*
+	attribute selectors
+*/
+    var reChars = /[-[\]{}()*+?.,\\^$|#\s]/g; //https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
+    function escapeRe(str) {
+        return str.replace(reChars, "\\$&");
+    }
 
-        var match = this._selector.match(re_attr);
-        this._selector = this._selector.substr(match[0].length);
+    function wrapReRule(pre, post) {
+        return function(next, name, value, ignoreCase) {
+            return buildRe(next, name, pre + escapeRe(value) + post, ignoreCase);
+        };
+    }
 
-        var name = match[1],
-            action = match[2],
-            value = match[4] || match[5] || "",
-            i = !!match[6];
+    function buildRe(next, name, value, ignoreCase) {
+        var regex = new RegExp(value, ignoreCase ? "i" : "");
 
-        if (typeof action !== "string") {
-            this.func = function(elem) {
+        return function(elem) {
+            if (hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
+        };
+    }
+
+    var noCaseAttributeRules = {
+        __proto__: null,
+        exists: function(next, name) {
+            return function(elem) {
                 if (hasAttrib(elem, name)) return next(elem);
             };
-            return;
-        }
+        },
+        element: wrapReRule("(?:^|\\s)", "(?:$|\\s)"),
+        equals: wrapReRule("^", "$"),
+        hyphen: wrapReRule("^", "(?:$|-)"),
+        start: wrapReRule("^", ""),
+        end: wrapReRule("", "$"),
+        any: wrapReRule("", ""),
+        not: wrapReRule("^(?!^", "$)")
+    };
 
-        if (i) value = value.toLowerCase();
-        value = unescapeCSS(value);
+    var attributeRules = {
+        __proto__: null,
+        equals: checkAttrib,
+        exists: noCaseAttributeRules.exists,
+        hyphen: noCaseAttributeRules.hyphen,
+        element: noCaseAttributeRules.element,
+        start: function(next, name, value) {
+            var len = value.length;
 
-        switch (action) {
-            case "":
-                return this._matchExact(name, value, i);
-            case "~":
-                return this._matchElement(name, value, i);
-            case "*":
-                return this._matchAny(name, value, i);
-            case "$":
-                return this._matchEnd(name, value, i);
-            case "^":
-                return this._matchStart(name, value, i);
-            case "|":
-                return this._buildRe(name, "^" + escapeRe(value) + "(?:$|-)", i);
-            case "!":
-                return this._matchNot(name, value, i);
-            default:
-                throw new Error("unrecognized operator: " + action);
+            return function(elem) {
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(0, len) === value)
+                    return next(elem);
+            };
+        },
+        end: function(next, name, value) {
+            var len = -value.length;
+
+            return function(elem) {
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).substr(len) === value)
+                    return next(elem);
+            };
+        },
+        any: function(next, name, value) {
+            return function(elem) {
+                if (hasAttrib(elem, name) && getAttributeValue(elem, name).indexOf(value) >= 0)
+                    return next(elem);
+            };
+        },
+        not: function(next, name, value) {
+            if (value === "") {
+                return function(elem) {
+                    if (hasAttrib(elem, name) && getAttributeValue(elem, name) !== "") return next(elem);
+                };
+            }
+
+            return function(elem) {
+                if (!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value) {
+                    return next(elem);
+                }
+            };
         }
     };
 
+    function parse(selector) {
+        var functions = CSSwhat(selector)
+            .map(function(arr) {
+                var func = rootFunc;
+                for (var i = 0, j = arr.length; i < j; i++) {
+                    func = generalRules[arr[i].type](func, arr[i]);
+                }
+                return func;
+            })
+            .filter(function(func) {
+                return func !== rootFunc && func !== falseFunc;
+            });
+
+        var num = functions.length;
+
+        if (num === 0) return falseFunc;
+        if (num === 1) return functions[0];
+
+        return function(elem) {
+            for (var i = 0; i < num; i++) {
+                if (functions[i](elem)) return true;
+            }
+            return false;
+        };
+    }
+
+    /*
+	the exported interface
+*/
     var CSSselect = function(query, elems) {
         if (typeof query !== "function") query = parse(query);
         if (arguments.length === 1) return query;
         return iterate(query, elems);
     };
+
     CSSselect.parse = parse;
     CSSselect.filters = filters;
     CSSselect.pseudos = pseudos;
+
     CSSselect.iterate = function(query, elems) {
         if (typeof query !== "function") query = parse(query);
         if (!Array.isArray(elems)) elems = [elems];
         return iterate(query, elems);
     };
+
     CSSselect.is = function(elem, query) {
         if (typeof query !== "function") query = parse(query);
         return query(elem);
@@ -717,6 +630,9 @@
         return result;
     }
 
+    /*
+	export CSSselect
+*/
     if (typeof module !== "undefined" && "exports" in module) {
         module.exports = CSSselect;
     } else {
@@ -727,4 +643,7 @@
         }
         global.CSSselect = CSSselect;
     }
-})(typeof window === "object" ? window : this);
+})(
+    typeof window === "object" ? window : this,
+    typeof CSSwhat === "undefined" ? require("../CSSwhat") : CSSwhat
+);
