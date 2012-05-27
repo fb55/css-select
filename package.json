@@ -1,7 +1,7 @@
 {
 	"name": "CSSselect",
-	"version": "0.1.2",
-	"description": "a CSS selector parser in JS",
+	"version": "0.2.0",
+	"description": "a rtl CSS selector engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
 	"main": "index.js",
@@ -9,6 +9,9 @@
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/fb55/cssselect.git"
+	},
+	"dependencies": {
+		"CSSwhat": "0.x"
 	},
 	"devDependencies": {
 		"htmlparser2": ">= 2.2.8",
