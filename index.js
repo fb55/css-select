@@ -482,7 +482,7 @@ var generalRules = {
 	id: function(next, data){
 		return attributeRules.equals(next, "id", data.value, false);
 	},
-	class: function(next, data){
+	"class": function(next, data){
 		return attributeRules.element(next, "class", data.value, false);
 	},
 	attribute: function(next, data){
