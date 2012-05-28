@@ -20,6 +20,6 @@
 		"expect.js": "*"
 	},
 	"scripts": {
-		"test": "mocha -u exports -R list tests/qwery/tests.js"
+		"test": "mocha -u exports -R list tests/qwery"
 	}
 }
