@@ -39,6 +39,8 @@ var doc = helper.getDOM(
 
 var el = DomUtils.getElementById("attr-child-boosh", document);
 
+var pseudos = DomUtils.getElementById("pseudos", document);
+
 module.exports = {
     Contexts: {
         "should be able to pass optional context": function() {
@@ -333,14 +335,12 @@ module.exports = {
         },
 
         ":first-child": function() {
-            expect(CSSselect("#pseudos div:first-child", document)[0]).to.be(
-                DomUtils.getElementById("pseudos", document).children[0]
-            ); //found first child
+            expect(CSSselect("#pseudos div:first-child", document)[0]).to.be(pseudos.children[0]); //found first child
             expect(CSSselect("#pseudos div:first-child", document)).to.have.length(1); //found only 1
         },
 
         ":last-child": function() {
-            var all = DomUtils.getElementsByTagName("div", DomUtils.getElementById("pseudos", document));
+            var all = DomUtils.getElementsByTagName("div", pseudos);
             expect(CSSselect("#pseudos div:last-child", document)[0]).to.be(all[all.length - 1]); //found last child
             expect(CSSselect("#pseudos div:last-child", document)).to.have.length(1); //found only 1
         },
@@ -352,10 +352,7 @@ module.exports = {
         },
 
         ":nth-child(odd|even|x)": function() {
-            var second = DomUtils.getElementsByTagName(
-                "div",
-                DomUtils.getElementById("pseudos", document)
-            )[1];
+            var second = DomUtils.getElementsByTagName("div", pseudos)[1];
             expect(CSSselect("#pseudos :nth-child(odd)", document)).to.have.length(4); //found 4 odd elements
             expect(CSSselect("#pseudos div:nth-child(odd)", document)).to.have.length(3); //found 3 odd elements with div tag
             expect(CSSselect("#pseudos div:nth-child(even)", document)).to.have.length(3); //found 3 even elements with div tag
@@ -363,11 +360,11 @@ module.exports = {
         },
 
         ":nth-child(expr)": function() {
-            var fifth = DomUtils.getElementsByTagName("a", DomUtils.getElementById("pseudos", document))[0];
-            var sixth = DomUtils.getElementsByTagName("div", DomUtils.getElementById("pseudos", document))[4];
+            var fifth = DomUtils.getElementsByTagName("a", pseudos)[0];
+            var sixth = DomUtils.getElementsByTagName("div", pseudos)[4];
 
             expect(CSSselect("#pseudos :nth-child(3n+1)", document)).to.have.length(3); //found 3 elements
-            ok(CSSselect("#pseudos :nth-child(3n-2)", document).length == 3, "found 3 elements"); // was +3n-2 but older safari no likey +
+            expect(CSSselect("#pseudos :nth-child(+3n-2)", document)).to.have.length(3); //found 3 elements'
             expect(CSSselect("#pseudos :nth-child(-n+6)", document)).to.have.length(6); //found 6 elements
             expect(CSSselect("#pseudos :nth-child(-n+5)", document)).to.have.length(5); //found 5 elements
             expect(CSSselect("#pseudos :nth-child(3n+2)", document)[1]).to.be(fifth); //second :nth-child(3n+2) is the fifth child
@@ -375,10 +372,7 @@ module.exports = {
         },
 
         ":nth-last-child(odd|even|x)": function() {
-            var second = DomUtils.getElementsByTagName(
-                "div",
-                DomUtils.getElementById("pseudos", document)
-            )[1];
+            var second = DomUtils.getElementsByTagName("div", pseudos)[1];
             expect(CSSselect("#pseudos :nth-last-child(odd)", document)).to.have.length(4); //found 4 odd elements
             expect(CSSselect("#pseudos div:nth-last-child(odd)", document)).to.have.length(3); //found 3 odd elements with div tag
             expect(CSSselect("#pseudos div:nth-last-child(even)", document)).to.have.length(3); //found 3 even elements with div tag
@@ -386,7 +380,7 @@ module.exports = {
         },
 
         ":nth-last-child(expr)": function() {
-            var third = DomUtils.getElementsByTagName("div", DomUtils.getElementById("pseudos", document))[2];
+            var third = DomUtils.getElementsByTagName("div", pseudos)[2];
 
             expect(CSSselect("#pseudos :nth-last-child(3n+1)", document)).to.have.length(3); //found 3 elements
             expect(CSSselect("#pseudos :nth-last-child(3n-2)", document)).to.have.length(3); //found 3 elements
@@ -396,7 +390,7 @@ module.exports = {
         },
 
         ":nth-of-type(expr)": function() {
-            var a = DomUtils.getElementsByTagName("a", DomUtils.getElementById("pseudos", document))[0];
+            var a = DomUtils.getElementsByTagName("a", pseudos)[0];
 
             expect(CSSselect("#pseudos div:nth-of-type(3n+1)", document)).to.have.length(2); //found 2 div elements
             expect(CSSselect("#pseudos a:nth-of-type(3n+1)", document)).to.have.length(1); //found 1 a element
@@ -407,10 +401,7 @@ module.exports = {
         },
 
         ":nth-last-of-type(expr)": function() {
-            var second = DomUtils.getElementsByTagName(
-                "div",
-                DomUtils.getElementById("pseudos", document)
-            )[1];
+            var second = DomUtils.getElementsByTagName("div", pseudos)[1];
 
             expect(CSSselect("#pseudos div:nth-last-of-type(3n+1)", document)).to.have.length(2); //found 2 div elements
             expect(CSSselect("#pseudos a:nth-last-of-type(3n+1)", document)).to.have.length(1); //found 1 a element
@@ -419,20 +410,20 @@ module.exports = {
 
         ":first-of-type": function() {
             expect(CSSselect("#pseudos a:first-of-type", document)[0]).to.be(
-                DomUtils.getElementsByTagName("a", DomUtils.getElementById("pseudos", document))[0]
+                DomUtils.getElementsByTagName("a", pseudos)[0]
             ); //found first a element
             expect(CSSselect("#pseudos a:first-of-type", document)).to.have.length(1); //found only 1
         },
 
         ":last-of-type": function() {
-            var all = DomUtils.getElementsByTagName("div", DomUtils.getElementById("pseudos", document));
+            var all = DomUtils.getElementsByTagName("div", pseudos);
             expect(CSSselect("#pseudos div:last-of-type", document)[0]).to.be(all[all.length - 1]); //found last div element
             expect(CSSselect("#pseudos div:last-of-type", document)).to.have.length(1); //found only 1
         },
 
         ":only-of-type": function() {
             expect(CSSselect("#pseudos a:only-of-type", document)[0]).to.be(
-                DomUtils.getElementsByTagName("a", DomUtils.getElementById("pseudos", document))[0]
+                DomUtils.getElementsByTagName("a", pseudos)[0]
             ); //found the only a element
             expect(CSSselect("#pseudos a:first-of-type", document)).to.have.length(1); //found only 1
         },
