@@ -6,6 +6,13 @@ var expect = require("expect.js"),
     document = helper.getDOM(require("fs").readFileSync(__dirname + "/index.html") + ""),
     CSSselect = helper.CSSselect;
 
+var location = { hash: "" };
+CSSselect.filters.target = function(next) {
+    return function(elem) {
+        return elem.attribs && elem.attribs.id === location.hash.substr(1);
+    };
+};
+
 //---
 
 /*
@@ -427,15 +434,15 @@ module.exports = {
             ); //found the only a element
             expect(CSSselect("#pseudos a:first-of-type", document)).to.have.length(1); //found only 1
         },
-        /*
-	':target': function () {
-		location.hash = '';
-		expect(CSSselect('#pseudos:target', document)).to.be.empty(); //#pseudos is not the target
-		location.hash = '#pseudos';
-		expect(CSSselect('#pseudos:target', document)).to.have.length(1); //now #pseudos is the target
-		location.hash = '';
-	},
-*/
+
+        ":target": function() {
+            location.hash = "";
+            expect(CSSselect("#pseudos:target", document)).to.be.empty(); //#pseudos is not the target
+            location.hash = "#pseudos";
+            expect(CSSselect("#pseudos:target", document)).to.have.length(1); //now #pseudos is the target
+            location.hash = "";
+        },
+
         "custom pseudos": function() {
             // :humanoid implemented just for testing purposes
             expect(CSSselect(":humanoid", document)).to.have.length(2); //selected using custom pseudo
