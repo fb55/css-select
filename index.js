@@ -638,7 +638,7 @@ CSSselect.pseudos = pseudos;
 CSSselect.iterate = function(query, elems){
 	if(typeof query !== "function") query = parse(query);
 	if(query === falseFunc) return [];
-	if(!Array.isArray(elems)) elems = [elems];
+	if(!Array.isArray(elems)) elems = getChildren(elems);
 	return iterate(query, elems);
 };
 
