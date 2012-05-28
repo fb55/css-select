@@ -1,3 +1,5 @@
+#CSSselect [![Build Status](https://secure.travis-ci.org/FB55/CSSselect.png?branch=master)](http://travis-ci.org/FB55/CSSselect)
+
 ##What?
 
 CSSselect is CSS selector engine. It returns a function that tests elements if they match a selector - checking needs to happen "from the top", like browser engines execute queries.
