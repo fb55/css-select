@@ -457,10 +457,12 @@ var generalRules = {
 	},
 	sibling: function(next){
 		return function(elem){
-			var index = getIndex(elem),
-				siblings = getSiblings(elem);
-			while(--index >= 0){
-				if(next(siblings[index])) return true;
+			var siblings = getSiblings(elem);
+			if(!siblings) return;
+			for(var i = 0, j = siblings.length; i < j; i++){
+				if(!isElement(siblings[i])) continue;
+				if(siblings[i] === elem) return;
+				if(next(siblings[i])) return true;
 			}
 		};
 	},
@@ -597,9 +599,51 @@ var attributeRules = {
 	}
 };
 
+/*
+	sort the parts of the passed selector,
+	as there is potential for optimization
+*/
+var procedure = {
+	__proto__: null,
+	universal: 5, //should be last so that it can be ignored
+	id: 4, //there should only be a single element with an id
+	tag: 3, //very quick test
+	"class": 2, //not the fastest, but pretty specific
+	attribute: 1, //can be faster than class
+	pseudo: 0, //can be pretty expensive (especially :has)
+
+	//everything else shouldn't be moved
+	descendant: -1,
+	child: -1,
+	sibling: -1,
+	adjacent: -1
+};
+
+function sortByProcedure(arr){
+	//TODO optimize, DRY
+	var parts = [],
+		last = 0;
+	for(var i = 0, j = arr.length-1; i <= j; i++){
+		if(procedure[arr[i].type] === -1 || i === j){
+			parts = parts.concat(arr.slice(last, i).sort(function(a, b){
+				return procedure[a.type] - procedure[b.type];
+			}));
+			parts.push(arr[i]);
+			last = i+1;
+		}
+	}
+	if(last !== i){
+		parts = parts.concat(arr.slice(last).sort(function(a, b){
+			return procedure[a.type] - procedure[b.type];
+		}));
+	}
+	return parts;
+}
+
 function parse(selector){
 	var functions = CSSwhat(selector).map(function(arr){
 		var func = rootFunc;
+		arr = sortByProcedure(arr);
 		for(var i = 0, j = arr.length; i < j; i++){
 			func = generalRules[arr[i].type](func, arr[i]);
 			if(func === falseFunc) return func;
