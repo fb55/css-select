@@ -629,7 +629,7 @@
     var CSSselect = function(query, elems) {
         if (typeof query !== "function") query = parse(query);
         if (arguments.length === 1) return query;
-        return iterate(query, elems);
+        return CSSselect.iterate(query, elems);
     };
 
     CSSselect.parse = parse;
