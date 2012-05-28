@@ -16,9 +16,10 @@
 	"devDependencies": {
 		"htmlparser2": ">= 2.2.8",
 		"cheerio-soupselect": "*",
-		"sink-test": "*"
+		"mocha": "*",
+		"expect.js": "*"
 	},
 	"scripts": {
-		"test": "node tests/test.js"
+		"test": "mocha -u exports -R list tests/qwery/tests.js"
 	}
 }
