@@ -67,8 +67,12 @@ var filters = {
 		};
 	},
 	has: function(next, select){
-		var func = parse(select),
-			proc = function(elem){
+		var func = parse(select);
+
+		if(func === rootFunc || func === trueFunc) return next;
+		if(func === falseFunc) return falseFunc;
+		
+		var proc = function(elem){
 				var children = getChildren(elem);
 				if(!children) return;
 				for(var i = 0, j = children.length; i < j; i++){
@@ -284,9 +288,6 @@ var filters = {
 			) return next(elem);
 		};
 	},
-	image: function(next){
-		return checkAttrib(next, "type", "image");
-	},
 	input: function(next){
 		return function(elem){
 			var name = getName(elem);
@@ -312,6 +313,7 @@ var filters = {
 	password: getAttribFunc("type", "password"),
 	radio: getAttribFunc("type", "radio"),
 	reset: getAttribFunc("type", "reset"),
+	image: getAttribFunc("type", "image"),
 	submit: getAttribFunc("type", "submit")
 	//to consider: :target, :checked, :enabled, :disabled
 };
@@ -511,7 +513,7 @@ var generalRules = {
 		if(name in filters) return filters[name](next, subselect);
 		else if(name in pseudos){
 			return function(elem){
-				if(pseudos[name](elem, data)) return next(elem);
+				if(pseudos[name](elem, subselect)) return next(elem);
 			};
 		} else {
 			//console.log("unmatched pseudo-class:", name);
@@ -635,11 +637,6 @@ function sortByProcedure(arr){
 			parts.push(arr[i]);
 			last = i+1;
 		}
-	}
-	if(last !== i){
-		parts = parts.concat(arr.slice(last).sort(function(a, b){
-			return procedure[a.type] - procedure[b.type];
-		}));
 	}
 	return parts;
 }
