@@ -468,11 +468,19 @@ var generalRules = {
 	},
 	adjacent: function(next){
 		return function(elem){
-			var index = getIndex(elem),
-				siblings = getSiblings(elem);
-
-			while(index-- > 0 && !isElement(siblings[index]));
-			if(index >= 0) return next(siblings[index]);
+			var siblings = getSiblings(elem),
+			    lastElement;
+			
+			if(!siblings) return;
+			for(var i = 0, j = siblings.length; i < j; i++){
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem){
+						if(lastElement) return next(lastElement);
+						return;
+					}
+					lastElement = siblings[i];
+				}
+			}
 		};
 	},
 	universal: function(next){
