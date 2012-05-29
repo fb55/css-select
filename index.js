@@ -530,15 +530,11 @@ function escapeRe(str){
 
 function wrapReRule(pre, post){
 	return function(next, name, value, ignoreCase){
-		return buildRe(next, name, pre + escapeRe(value) + post, ignoreCase);
-	};
-}
+		var regex = new RegExp(pre + escapeRe(value) + post, ignoreCase ? "i" : "");
 
-function buildRe(next, name, value, ignoreCase){
-	var regex = new RegExp(value, ignoreCase ? "i" : "");
-
-	return function(elem){
-	    if(hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
+		return function(elem){
+			if(hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
+		};
 	};
 }
 
@@ -665,6 +661,8 @@ function parse(selector){
 
 	if(num === 0) return falseFunc;
 	if(num === 1) return functions[0];
+
+	if(functions.indexOf(trueFunc) >= 0) return trueFunc;
 
 	return function(elem){
 	    for(var i = 0; i < num; i++){
