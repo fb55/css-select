@@ -44,7 +44,7 @@ var doc = helper.getDOM(
 
 var el = DomUtils.getElementById('attr-child-boosh', document);
 
-var pseudos = DomUtils.getElementById('pseudos', document);
+var pseudos = DomUtils.getElementById('pseudos', document).children;
 
 module.exports = {
 
@@ -64,7 +64,7 @@ module.exports = {
 		expect(CSSselect('.b', '#boosh .b')).to.be.empty(); //context found 0 elements(.b, #boosh .b)
 	},
 */
-
+/*
 	'should be able to pass qwery result as context': function() {
 		expect(CSSselect('.a', CSSselect('#boosh', document))).to.have.length(2); //context found 2 elements(.a, #boosh)
 		expect(CSSselect('.a', CSSselect('.a', document))).to.be.empty(); //context found 0 elements(.a, .a)
@@ -72,7 +72,7 @@ module.exports = {
 		expect(CSSselect('.a', CSSselect('#boosh .b', document))).to.have.length(1); //context found 1 elements(.a, #boosh .b)
 		expect(CSSselect('.b', CSSselect('#boosh .b', document))).to.be.empty(); //context found 0 elements(.b, #boosh .b)
 	},
-
+*/
 	'should not return duplicates from combinators': function () {
 		expect(CSSselect('#boosh,#boosh', document)).to.have.length(1); //two booshes dont make a thing go right
 		expect(CSSselect('#boosh,.apples,#boosh', document)).to.have.length(1); //two booshes and an apple dont make a thing go right
@@ -340,7 +340,7 @@ module.exports = {
 	},
 
 	':first-child': function () {
-		expect(CSSselect('#pseudos div:first-child', document)[0]).to.be(pseudos.children[0]); //found first child
+		expect(CSSselect('#pseudos div:first-child', document)[0]).to.be(pseudos[0]); //found first child
 		expect(CSSselect('#pseudos div:first-child', document)).to.have.length(1); //found only 1
 	},
 
