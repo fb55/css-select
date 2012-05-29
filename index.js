@@ -473,11 +473,19 @@
         },
         adjacent: function(next) {
             return function(elem) {
-                var index = getIndex(elem),
-                    siblings = getSiblings(elem);
+                var siblings = getSiblings(elem),
+                    lastElement;
 
-                while (index-- > 0 && !isElement(siblings[index]));
-                if (index >= 0) return next(siblings[index]);
+                if (!siblings) return;
+                for (var i = 0, j = siblings.length; i < j; i++) {
+                    if (isElement(siblings[i])) {
+                        if (siblings[i] === elem) {
+                            if (lastElement) return next(lastElement);
+                            return;
+                        }
+                        lastElement = siblings[i];
+                    }
+                }
             };
         },
         universal: function(next) {
