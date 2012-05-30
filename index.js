@@ -626,16 +626,17 @@ var procedure = {
 };
 
 function sortByProcedure(arr){
-	//TODO optimize, DRY
+	//TODO optimize
 	var parts = [],
-		last = 0;
+		last = 0,
+		end = false;
 	for(var i = 0, j = arr.length-1; i <= j; i++){
-		if(procedure[arr[i].type] === -1 || i === j){
+		if(procedure[arr[i].type] === -1 || (end = i === j)){
+			if(end) i++;
 			parts = parts.concat(arr.slice(last, i).sort(function(a, b){
 				return procedure[a.type] - procedure[b.type];
 			}));
-			parts.push(arr[i]);
-			last = i+1;
+			if(!end) last = parts.push(arr[i]);
 		}
 	}
 	return parts;
