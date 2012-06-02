@@ -1,6 +1,6 @@
 {
 	"name": "CSSselect",
-	"version": "0.2.3",
+	"version": "0.2.4",
 	"description": "a rtl CSS selector engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
@@ -20,6 +20,6 @@
 		"expect.js": "*"
 	},
 	"scripts": {
-		"test": "mocha -u exports -R list tests/qwery"
+		"test": "mocha -u exports -R list tests/qwery tests/nwmatcher/scotch"
 	}
 }
