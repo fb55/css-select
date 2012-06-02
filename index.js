@@ -254,6 +254,7 @@ var filters = {
 	},
 	
 	//forms
+	//to consider: :target, :enabled
 	selected: function(next){
 		return function(elem){
 			if(hasAttrib(elem, "selected")) return next(elem);
@@ -261,6 +262,21 @@ var filters = {
 			//TODO this only works for direct descendents
 			if(getName(getParent(elem)) !== "option") return;
 			if(getFirstElement(getSiblings(elem)) === elem) return next(elem);
+		};
+	},
+	disabled: function(next){
+		return function(elem){
+			if(hasAttrib(elem, "disabled")) return next(elem);
+		};
+	},
+	enabled: function(next){
+		return function(elem){
+			if(!hasAttrib(elem, "disabled")) return next(elem);
+		};
+	},
+	checked: function(next){
+		return function(elem){
+			if(hasAttrib(elem, "checked")) return next(elem);
 		};
 	},
 	
@@ -315,7 +331,6 @@ var filters = {
 	reset: getAttribFunc("type", "reset"),
 	image: getAttribFunc("type", "image"),
 	submit: getAttribFunc("type", "submit")
-	//to consider: :target, :checked, :enabled, :disabled
 };
 
 //while filters are precompiled, pseudos get called when they are needed
