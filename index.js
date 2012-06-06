@@ -511,12 +511,6 @@
         },
 
         //attributes
-        id: function(next, data) {
-            return attributeRules.equals(next, "id", data.value, false);
-        },
-        class: function(next, data) {
-            return attributeRules.element(next, "class", data.value, false);
-        },
         attribute: function(next, data) {
             if (data.ignoreCase) {
                 return noCaseAttributeRules[data.action](next, data.name, data.value, data.ignoreCase);
@@ -626,9 +620,7 @@
     var procedure = {
         __proto__: null,
         universal: 5, //should be last so that it can be ignored
-        id: 4, //there should only be a single element with an id
         tag: 3, //very quick test
-        class: 2, //not the fastest, but pretty specific
         attribute: 1, //can be faster than class
         pseudo: 0, //can be pretty expensive (especially :has)
 
@@ -640,7 +632,7 @@
     };
 
     function sortByProcedure(arr) {
-        //TODO optimize
+        //TODO optimize, sort individual attribute selectors
         var parts = [],
             last = 0,
             end = false;
