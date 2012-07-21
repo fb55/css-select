@@ -670,10 +670,10 @@ function parse(selector){
 	if(functions.indexOf(trueFunc) >= 0) return trueFunc;
 
 	return function(elem){
-	    for(var i = 0; i < num; i++){
-	    	if(functions[i](elem)) return true;
-	    }
-	    return false;
+		for(var i = 0; i < num; i++){
+			if(functions[i](elem)) return true;
+		}
+		return false;
 	};
 }
 

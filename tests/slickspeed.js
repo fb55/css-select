@@ -17,7 +17,7 @@ function testResult(rule, index){
 		if(results[i-1].length !== results[i].length){
 			//console.log(rule, results[i-1].length, results[i].length);
 			return true;
-		};
+		}
 		for(var j = 0; j < results[i].length; j++){
 			if(results[i-1][j] !== results[i][j]){
 				if(results[i-1].indexOf(results[i][j]) === -1){
