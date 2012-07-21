@@ -7,10 +7,8 @@ var expect = require("expect.js"),
     CSSselect = helper.CSSselect;
 
 var location = { hash: "" };
-CSSselect.filters.target = function(next) {
-    return function(elem) {
-        return elem.attribs && elem.attribs.id === location.hash.substr(1);
-    };
+CSSselect.pseudos.target = function(elem) {
+    return elem.attribs && elem.attribs.id === location.hash.substr(1);
 };
 
 //---
