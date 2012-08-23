@@ -1,4 +1,4 @@
-#CSSselect [![Build Status](https://secure.travis-ci.org/FB55/CSSselect.png?branch=master)](http://travis-ci.org/FB55/CSSselect)
+#CSSselect [![Build Status](https://secure.travis-ci.org/fb55/CSSselect.png?branch=master)](http://travis-ci.org/fb55/CSSselect)
 
 ##What?
 
