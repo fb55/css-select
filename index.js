@@ -62,6 +62,12 @@ var filters = {
 		};
 	},
 	contains: function(next, text){
+		if(
+			(text.charAt(0) === "\"" || text.charAt(0) === "'") &&
+			text.charAt(0) === text.substr(-1)
+		){
+			text = text.slice(1, -1);
+		}
 		return function(elem){
 			if(getText(elem).indexOf(text) !== -1) return next(elem);
 		};
