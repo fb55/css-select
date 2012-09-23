@@ -179,7 +179,6 @@ var filters = {
 	"nth-child": function(next, rule){
 		var func = getNCheck(rule);
 
-		if(func === null) return next;
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
 			if(next === rootFunc) return func;
@@ -193,7 +192,6 @@ var filters = {
 	"nth-last-child": function(next, rule){
 		var func = getNCheck(rule);
 
-		if(func === null) return next;
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
 			if(next === rootFunc) return func;
@@ -216,7 +214,6 @@ var filters = {
 	"nth-of-type": function(next, rule){
 		var func = getNCheck(rule);
 
-		if(func === null) return next;
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
 			if(next === rootFunc) return func;
@@ -239,7 +236,6 @@ var filters = {
 	"nth-last-of-type": function(next, rule){
 		var func = getNCheck(rule);
 
-		if(func === null) return next;
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
 			if(next === rootFunc) return func;
@@ -388,7 +384,10 @@ function getNCheck(formula){
 	}
 	else {
 		formula = formula.match(re_nthElement);
-		if(!formula) return null; //rule couldn't be parsed
+		if(!formula){
+			//TODO forward rule to error
+			throw new SyntaxError("n-th rule couldn't be parsed");
+		}
 		if(formula[1]){
 			a = parseInt(formula[1], 10);
 			if(!a){
@@ -531,8 +530,7 @@ var generalRules = {
 				if(pseudos[name](elem, subselect)) return next(elem);
 			};
 		} else {
-			//console.log("unmatched pseudo-class:", name);
-			return next;
+			throw new SyntaxError("unmatched pseudo-class: " + name);
 		}
 	}
 };
