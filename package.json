@@ -21,5 +21,6 @@
 	},
 	"scripts": {
 		"test": "mocha -u exports -R list tests/qwery tests/nwmatcher/scotch.js"
-	}
+	},
+	"license": "BSD-like"
 }
