@@ -27,7 +27,7 @@ function getText(elem) {
 
 	if(!childs) return str;
 
-	for(var i = 0; i < childs.length){
+	for(var i = 0; i < childs.length; i++){
 		if(isElem(childs[i]) str += el.textContent || el.innerText || getText(childs[i])
 	}
 
