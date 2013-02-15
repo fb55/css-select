@@ -401,11 +401,11 @@
         //when a is in the range -1..1, it matches any element (so only b is checked)
         if (a === -1)
             return function(pos) {
-                return pos - b <= 0;
+                return pos <= b;
             };
         if (a === 1)
             return function(pos) {
-                return pos - b >= 0;
+                return pos >= b;
             };
         if (a === 0)
             return function(pos) {
