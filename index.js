@@ -407,8 +407,8 @@ function getNCheck(formula){
 	if(b < 0 && a === 1) return trueFunc;
 
 	//when a is in the range -1..1, it matches any element (so only b is checked)
-	if(a ===-1) return function(pos){ return pos - b <= 0; };
-	if(a === 1) return function(pos){ return pos - b >= 0; };
+	if(a ===-1) return function(pos){ return pos <= b; };
+	if(a === 1) return function(pos){ return pos >= b; };
 	if(a === 0) return function(pos){ return pos === b; };
 
 	//when a > 0, modulo can be used to check if there is a match
