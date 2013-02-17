@@ -360,7 +360,7 @@
 	returns a function that checks if an elements index matches the given rule
 	highly optimized to return the fastest solution
 */
-    var re_nthElement = /^([+\-]?\d*n)?\s*([+\-])?\s*(\d)?$/;
+    var re_nthElement = /^([+\-]?\d*n)?\s*(?:([+\-]?)\s*(\d+))?$/;
 
     function getNCheck(formula) {
         var a, b;
