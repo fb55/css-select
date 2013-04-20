@@ -1,7 +1,7 @@
 var htmlparser2 = require("htmlparser2"),
     Parser = htmlparser2.Parser,
     Handler = htmlparser2.DomHandler,
-    CSSselect = require("../");
+    CSSselect = require("../../");
 
 module.exports = {
 	CSSselect: CSSselect,

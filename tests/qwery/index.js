@@ -2,7 +2,7 @@
 
 var expect = require("expect.js"),
     DomUtils = require("htmlparser2").DomUtils,
-	helper = require("../helper.js"),
+	helper = require("../tools/helper.js"),
 	document = helper.getDOM(require("fs").readFileSync(__dirname + "/index.html")+""),
 	CSSselect = helper.CSSselect;
 
@@ -531,7 +531,7 @@ module.exports = {
 		expect(CSSselect('#hsoob #spanny', doc)).to.have.length(1); //found "#id #id" in frame
 		expect(CSSselect('.a #spanny', doc)).to.have.length(1); //found ".class #id" in frame
 		expect(CSSselect('.a #booshTest #spanny', doc)).to.have.length(1); //found ".class #id #id" in frame
-		//ok(CSSselect('> #hsoob', doc).length == 1, 'found "> #id" in frame') --> would be good to support this, needs some tweaking though
+		//expect(CSSselect('> #hsoob', doc)).to.have.length(1) //found "> #id" in frame
 	},
 
 	'byId sub-queries within sub-context': function () {

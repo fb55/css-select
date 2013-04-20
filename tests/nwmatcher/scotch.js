@@ -6,7 +6,7 @@
 
 var expect = require("expect.js"),
 	DomUtils = require("htmlparser2").DomUtils,
-	helper = require("../helper.js"),
+	helper = require("../tools/helper.js"),
 	document = helper.getDOM(require("fs").readFileSync(__dirname + "/test.html")+""),
 	CSSselect = helper.CSSselect;
 
