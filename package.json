@@ -4,8 +4,6 @@
 	"description": "a rtl CSS selector engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
-	"main": "index.js",
-	"engine": "",
 	"repository": {
 		"type": "git",
 		"url": "git://github.com/fb55/cssselect.git"
@@ -20,7 +18,7 @@
 		"expect.js": "*"
 	},
 	"scripts": {
-		"test": "mocha -u exports -R list tests/qwery tests/nwmatcher/scotch.js"
+		"test": "mocha"
 	},
 	"license": "BSD-like"
 }
