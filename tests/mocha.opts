@@ -1,0 +1,3 @@
+--check-leaks
+--reporter spec
+--ui exports
