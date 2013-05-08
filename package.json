@@ -6,7 +6,7 @@
 	"keywords": ["css", "selector"],
 	"repository": {
 		"type": "git",
-		"url": "git://github.com/fb55/cssselect.git"
+		"url": "git://github.com/fb55/CSSselect.git"
 	},
 	"dependencies": {
 		"CSSwhat": ">= 0.1"
