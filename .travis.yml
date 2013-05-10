@@ -3,6 +3,5 @@ node_js:
   - 0.4
   - 0.6
   - 0.8
-  - 0.9
-notifications:
-  email: false
+  - "0.10"
+  - 0.11
