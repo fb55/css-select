@@ -26,4 +26,6 @@ By stacking functions!
 
 Initially, we take a function that simply returns `true`. Every component of the selector (like tagname checks, attribute comparisons) is now turned into a function that first checks if the own condition is met (eg. if the tagname matches) and then passes the element to the function on it's left side. The rightmost function is then returned.
 
+---
+
 License: BSD-like
