@@ -695,7 +695,7 @@ function parse(selector){
 /*
 	the exported interface
 */
-var CSSselect = function(query, elems){
+function CSSselect(query, elems){
 	if(typeof query !== "function") query = parse(query);
 	if(arguments.length === 1) return query;
 	return CSSselect.iterate(query, elems);
