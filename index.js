@@ -1,5 +1,8 @@
-;(function(global, CSSwhat){
 "use strict";
+
+module.exports = CSSselect;
+
+var CSSwhat = require("CSSwhat");
 
 //functions that make porting the library to another DOM easy
 function isElement(elem){
@@ -471,6 +474,14 @@ var generalRules = {
 			}
 		};
 	},
+	parent: function(next){
+		return function(elem){
+			var childs = getChildren(elem);
+			for(var i = 0; i < childs.length; i++){
+				if(next(childs[i])) return true;
+			}
+		}
+	},
 	child: function(next){
 		return function(elem){
 			var parent = getParent(elem);
@@ -715,22 +726,3 @@ function iterate(query, elems){
 	}
 	return result;
 }
-
-/*
-	export CSSselect
-*/
-if(typeof module !== "undefined" && "exports" in module){
-	module.exports = CSSselect;
-} else {
-	if(typeof define === "function" && define.amd){
-		define("CSSselect", function(){
-			return CSSselect;
-		});
-	}
-	global.CSSselect = CSSselect;
-}
-
-})(
-	typeof window === "object" ? window : this,
-	typeof CSSwhat === "undefined" ? require("CSSwhat") : CSSwhat
-);
