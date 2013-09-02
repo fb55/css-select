@@ -9,7 +9,7 @@
 		"url": "git://github.com/fb55/CSSselect.git"
 	},
 	"dependencies": {
-		"CSSwhat": "0.1",
+		"CSSwhat": "0.3",
 		"domutils": "1"
 	},
 	"devDependencies": {
