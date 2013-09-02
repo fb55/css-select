@@ -2,7 +2,7 @@
 
 module.exports = CSSselect;
 
-var CSSwhat = require("CSSwhat"),
+var parse = require("CSSwhat"),
     Rules = require("./lib/general.js"),
     sortRules = require("./lib/sort.js"),
     Pseudos = require("./lib/pseudos.js"),
@@ -20,7 +20,7 @@ var CSSwhat = require("CSSwhat"),
 //so we add them here
 
 Pseudos.filters.not = function(next, select) {
-    var func = parse(select);
+    var func = compile(select);
 
     if (func === falseFunc) {
         return next === rootFunc ? trueFunc : next;
@@ -35,7 +35,7 @@ Pseudos.filters.not = function(next, select) {
 };
 
 Pseudos.filters.has = function(next, selector) {
-    var func = parse(selector);
+    var func = compile(selector);
 
     if (func === rootFunc || func === trueFunc) return next;
     if (func === falseFunc) return falseFunc;
@@ -45,8 +45,8 @@ Pseudos.filters.has = function(next, selector) {
     };
 };
 
-function parse(selector) {
-    var functions = CSSwhat(selector)
+function compile(selector) {
+    var functions = parse(selector)
         .map(function(arr) {
             var func = rootFunc;
             arr = sortRules(arr);
@@ -79,17 +79,18 @@ function parse(selector) {
 	the exported interface
 */
 function CSSselect(query, elems) {
-    if (typeof query !== "function") query = parse(query);
+    if (typeof query !== "function") query = compile(query);
     if (arguments.length === 1) return query;
     return CSSselect.iterate(query, elems);
 }
 
-CSSselect.parse = parse;
+CSSselect.parse = compile; //TODO: remove
+CSSselect.compile = compile;
 CSSselect.filters = Pseudos.filters;
 CSSselect.pseudos = Pseudos.pseudos;
 
 function parseConditional(query) {
-    return typeof query === "function" ? query : parse(query);
+    return typeof query === "function" ? query : compile(query);
 }
 
 CSSselect.iterate = function(query, elems) {
