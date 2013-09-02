@@ -2,22 +2,24 @@
 
 module.exports = CSSselect;
 
-var CSSwhat   = require("CSSwhat"),
-    DomUtils  = require("domutils"),
-    isElement = DomUtils.isTag,
-    getText   = DomUtils.getText,
-    findOne   = DomUtils.findOne,
-    findAll   = DomUtils.findAll,
-    getParent = DomUtils.getParent,
-    hasAttrib = DomUtils.hasAttrib,
-    getName   = DomUtils.getName,
+var CSSwhat     = require("CSSwhat"),
+    DomUtils    = require("domutils"),
+    isElement   = DomUtils.isTag,
+    getText     = DomUtils.getText,
+    findOne     = DomUtils.findOne,
+    findAll     = DomUtils.findAll,
+    getParent   = DomUtils.getParent,
+    hasAttrib   = DomUtils.hasAttrib,
+    getName     = DomUtils.getName,
     getChildren = DomUtils.getChildren,
-    getAttributeValue = DomUtils.getAttributeValue,
-    getNCheck = require("./lib/nth-check.js"),
-    baseFuncs = require("./lib/basefunctions.js"),
-    rootFunc  = baseFuncs.rootFunc,
-    trueFunc  = baseFuncs.trueFunc,
-    falseFunc = baseFuncs.falseFunc;
+    getAttribute= DomUtils.getAttributeValue,
+    getNCheck   = require("./lib/nth-check.js"),
+    attributes  = require("./lib/attributes.js"),
+    checkAttrib = attributes.rules.equals,
+    baseFuncs   = require("./lib/basefunctions.js"),
+    rootFunc    = baseFuncs.rootFunc,
+    trueFunc    = baseFuncs.trueFunc,
+    falseFunc   = baseFuncs.falseFunc;
 
 
 /*
@@ -290,7 +292,7 @@ var filters = {
 				getName(elem) === "button" ||
 				getName(elem) === "input" &&
 				hasAttrib(elem, "type") &&
-				getAttributeValue(elem, "type") === "button"
+				getAttribute(elem, "type") === "button"
 			) && next(elem);
 		};
 	},
@@ -309,7 +311,7 @@ var filters = {
 		return function(elem){
 			return getName(elem) !== "input" && (
 				!hasAttrib(elem, "type") ||
-				getAttributeValue(elem, "type") === "text"
+				getAttribute(elem, "type") === "text"
 			) && next(elem);
 		};
 	},
@@ -340,12 +342,6 @@ function getFirstElement(elems){
 function getAttribFunc(name, value){
 	return function(next){
 		return checkAttrib(next, name, value);
-	};
-}
-
-function checkAttrib(next, name, value){
-	return function(elem){
-		return getAttributeValue(elem, name) === value && next(elem);
 	};
 }
 
@@ -420,11 +416,7 @@ var generalRules = {
 	},
 
 	//attributes
-	attribute: function(next, data){
-		var map = data.ignoreCase ? noCaseAttributeRules : attributeRules;
-		
-		return map[data.action](next, data.name, data.value, data.ignoreCase);
-	},
+	attribute: attributes.compile,
 
 	//pseudos
 	pseudo: function(next, data){
@@ -440,84 +432,6 @@ var generalRules = {
 			throw new SyntaxError("unmatched pseudo-class: " + name);
 		}
 	}
-};
-
-/*
-	attribute selectors
-*/
-var reChars = /[-[\]{}()*+?.,\\^$|#\s]/g; //https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
-function escapeRe(str){
-	return str.replace(reChars, "\\$&");
-}
-
-function wrapReRule(pre, post){
-	return function(next, name, value, ignoreCase){
-		var regex = new RegExp(pre + escapeRe(value) + post, ignoreCase ? "i" : "");
-
-		return function(elem){
-			return hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name)) && next(elem);
-		};
-	};
-}
-
-var attributeRules = {
-	__proto__: null,
-	equals: checkAttrib,
-	hyphen: wrapReRule("^", "(?:$|-)"),
-	element: wrapReRule("(?:^|\\s)", "(?:$|\\s)"),
-	exists: function(next, name){
-		return function(elem){
-			return hasAttrib(elem, name) && next(elem);
-		};
-	},
-	start: function(next, name, value){
-		var len = value.length;
-
-		return function(elem){
-			return (
-				hasAttrib(elem, name) &&
-			    getAttributeValue(elem, name).substr(0, len) === value
-			) && next(elem);
-		};
-	},
-	end: function(next, name, value){
-		var len = -value.length;
-
-		return function(elem){
-			return (
-				hasAttrib(elem, name) &&
-			    getAttributeValue(elem, name).substr(len) === value
-			) && next(elem);
-		};
-	},
-	any: function(next, name, value){
-		return function(elem){
-			return (
-				hasAttrib(elem, name) &&
-			    getAttributeValue(elem, name).indexOf(value) >= 0
-			) && next(elem);
-		};
-	},
-	not: function(next, name, value){
-		if(value === ""){
-			return function(elem){
-				return hasAttrib(elem, name) && getAttributeValue(elem, name) !== "" && next(elem);
-			};
-		}
-
-		return function(elem){
-			return !(hasAttrib(elem, name) && getAttributeValue(elem, name) === value) && next(elem);
-		};
-	}
-};
-
-var noCaseAttributeRules = {
-	__proto__: attributeRules,
-	equals: wrapReRule("^", "$"),
-	start: wrapReRule("^", ""),
-	end: wrapReRule("", "$"),
-	any: wrapReRule("", ""),
-	not: wrapReRule("^(?!^", "$)")
 };
 
 /*
