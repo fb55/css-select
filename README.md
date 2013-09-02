@@ -22,7 +22,7 @@ And that's exactly what CSSselect does.
 
 By stacking functions!
 
-_//TODO: Better explanation (for now, if you're interested, have a look at the source code)_
+_//TODO: Better explanation. For now, if you're interested, have a look at the source code._
 
 ##API
 
@@ -30,25 +30,26 @@ _//TODO: Better explanation (for now, if you're interested, have a look at the s
 var CSSselect = require("CSSselect");
 ```
 
-####`CSSselect(query[, elems])`
+####`CSSselect(query, elems)`
 
-Compiles the query. If `elems` is specified, it's queried and the result is returned. Otherwise, the function is returned.
+- `query` can be either a function or a string. If it's a string, the string is compiled as a CSS selector.
+- `elems` can be either an array of elements, or a single element. If it is an element, its children will be used (so we're working with an array again).
 
-(Note: This is a pretty awful API. Don't use it. Will be changed.)
+Queries `elems`, returns an array containing all matches.
 
-####`CSSselect.parse(query)`
+Aliases: `CSSselect.selectAll(query, elems)`, `CSSselect.iterate(query, elems)`.
+
+####`CSSselect.compile(query)`
 
 Compiles the query, returns the function.
-
-(Note: Will be renamed to `compile`, but `parse` stays an alias.)
 
 ####`CSSselect.is(elem, query)`
 
 Tests whether or not an element is matched by `query`. `query` can be either a CSS selector or a function.
 
-####`CSSselect.iterate(query, elems)`
+####`CSSselect.selectOne(query, elems)`
 
-Traverses `elems` (or, if `elems` is only a single element, its children) and returns all elements that match `query`. Once again, `query` can be either a CSS selector or a function.
+Arguments are the same as for `CSSselect(query, elems)`. Only returns the first match, or `null` if there was no match.
 
 ---
 
