@@ -2,40 +2,22 @@
 
 module.exports = CSSselect;
 
-var CSSwhat = require("CSSwhat");
-
-//functions that make porting the library to another DOM easy
-function isElement(elem) {
-    return elem.type === "tag" || elem.type === "style" || elem.type === "script";
-}
-function getChildren(elem) {
-    return elem.children;
-}
-function getParent(elem) {
-    return elem.parent;
-}
-function getAttributeValue(elem, name) {
-    return elem.attribs[name];
-}
-function hasAttrib(elem, name) {
-    return elem.attribs && name in elem.attribs;
-}
-function getName(elem) {
-    return elem.name;
-}
-function getText(elem) {
-    var text = "",
-        childs = getChildren(elem);
-
-    if (!childs) return text;
-
-    for (var i = 0, j = childs.length; i < j; i++) {
-        if (isElement(childs[i])) text += getText(childs[i]);
-        else text += childs[i].data;
-    }
-
-    return text;
-}
+var CSSwhat = require("CSSwhat"),
+    DomUtils = require("domutils"),
+    isElement = DomUtils.isTag,
+    getText = DomUtils.getText,
+    findOne = DomUtils.findOne,
+    findAll = DomUtils.findAll,
+    getParent = DomUtils.getParent,
+    hasAttrib = DomUtils.hasAttrib,
+    getName = DomUtils.getName,
+    getChildren = DomUtils.getChildren,
+    getAttributeValue = DomUtils.getAttributeValue,
+    getNCheck = require("./lib/nth-check.js"),
+    baseFuncs = require("./lib/basefunctions.js"),
+    rootFunc = baseFuncs.rootFunc,
+    trueFunc = baseFuncs.trueFunc,
+    falseFunc = baseFuncs.falseFunc;
 
 /*
 	pseudo selectors
@@ -69,27 +51,17 @@ var filters = {
             text = text.slice(1, -1);
         }
         return function(elem) {
-            if (getText(elem).indexOf(text) !== -1) return next(elem);
+            if (getText(elem).indexOf(text) >= 0) return next(elem);
         };
     },
-    has: function(next, select) {
-        var func = parse(select);
+    has: function(next, selector) {
+        var func = parse(selector);
 
         if (func === rootFunc || func === trueFunc) return next;
         if (func === falseFunc) return falseFunc;
 
-        var proc = function(elem) {
-            var children = getChildren(elem);
-            if (!children) return;
-            for (var i = 0, j = children.length; i < j; i++) {
-                if (!isElement(children[i])) continue;
-                if (func(children[i])) return true;
-                if (proc(children[i])) return true;
-            }
-        };
-
         return function proc(elem) {
-            if (proc(elem)) return next(elem);
+            if (findOne(func, getChildren(elem)) !== null) return next(elem);
         };
     },
     root: function(next) {
@@ -359,75 +331,6 @@ function getFirstElement(elems) {
     }
 }
 
-/*
-	returns a function that checks if an elements index matches the given rule
-	highly optimized to return the fastest solution
-*/
-var re_nthElement = /^([+\-]?\d*n)?\s*(?:([+\-]?)\s*(\d+))?$/;
-
-function getNCheck(formula) {
-    var a, b;
-
-    //parse the formula
-    //b is lowered by 1 as the rule uses index 1 as the start
-    formula = formula.trim().toLowerCase();
-    if (formula === "even") {
-        a = 2;
-        b = -1;
-    } else if (formula === "odd") {
-        a = 2;
-        b = 0;
-    } else {
-        formula = formula.match(re_nthElement);
-        if (!formula) {
-            //TODO forward rule to error
-            throw new SyntaxError("n-th rule couldn't be parsed");
-        }
-        if (formula[1]) {
-            a = parseInt(formula[1], 10);
-            if (!a) {
-                if (formula[1].charAt(0) === "-") a = -1;
-                else a = 1;
-            }
-        } else a = 0;
-        if (formula[3]) b = parseInt((formula[2] || "") + formula[3], 10) - 1;
-        else b = -1;
-    }
-
-    //when b <= 0, a*n won't be possible for any matches when a < 0
-    //besides, the specification says that no element is matched when a and b are 0
-    if (b < 0 && a <= 0) return falseFunc;
-
-    //when b <= 0 and a === 1, they match any element
-    if (b < 0 && a === 1) return trueFunc;
-
-    //when a is in the range -1..1, it matches any element (so only b is checked)
-    if (a === -1)
-        return function(pos) {
-            return pos <= b;
-        };
-    if (a === 1)
-        return function(pos) {
-            return pos >= b;
-        };
-    if (a === 0)
-        return function(pos) {
-            return pos === b;
-        };
-
-    //when a > 0, modulo can be used to check if there is a match
-    //TODO: needs to be checked
-    if (a > 1)
-        return function(pos) {
-            return pos >= 0 && (pos -= b) >= 0 && pos % a === 0;
-        };
-
-    a *= -1; //make a positive
-    return function(pos) {
-        return pos >= 0 && (pos -= b) >= 0 && pos % a === 0 && pos / a < b;
-    };
-}
-
 function getAttribFunc(name, value) {
     return function(next) {
         return checkAttrib(next, name, value);
@@ -440,18 +343,6 @@ function checkAttrib(next, name, value) {
             return next(elem);
         }
     };
-}
-
-function rootFunc() {
-    return true;
-}
-
-function trueFunc() {
-    return true;
-}
-
-function falseFunc() {
-    return false;
 }
 
 /*
@@ -708,20 +599,10 @@ CSSselect.iterate = function(query, elems) {
     if (typeof query !== "function") query = parse(query);
     if (query === falseFunc) return [];
     if (!Array.isArray(elems)) elems = getChildren(elems);
-    return iterate(query, elems);
+    return findAll(query, elems);
 };
 
 CSSselect.is = function(elem, query) {
     if (typeof query !== "function") query = parse(query);
     return query(elem);
 };
-
-function iterate(query, elems) {
-    var result = [];
-    for (var i = 0, j = elems.length; i < j; i++) {
-        if (!isElement(elems[i])) continue;
-        if (query(elems[i])) result.push(elems[i]);
-        if (getChildren(elems[i])) result = result.concat(iterate(query, getChildren(elems[i])));
-    }
-    return result;
-}
