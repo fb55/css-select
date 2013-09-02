@@ -21,5 +21,8 @@
 	"scripts": {
 		"test": "mocha"
 	},
+	"browser": {
+		"domutils": "./browser_functions.js"
+	},
 	"license": "BSD-like"
 }
