@@ -2,7 +2,7 @@ function isTag(elem){
 	return elem.nodeType === 1;
 }
 function getChildren(elem){
-	return elem.childNodes;
+	return Array.prototype.slice.call(elem.childNodes, 0);
 }
 function getParent(elem){
 	return elem.parentElement;
