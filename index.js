@@ -37,14 +37,14 @@ var filters = {
 		var func = parse(select);
 
 		if(func === falseFunc){
-			if(next === rootFunc) return trueFunc;
-			else return next;
+			return next === rootFunc ? trueFunc : next;
 		}
-		if(func === trueFunc) return falseFunc;
-		if(func === rootFunc) return falseFunc;
+		if(func === trueFunc || func === rootFunc){
+			return falseFunc;
+		}
 
 		return function(elem){
-			if(!func(elem)) return next(elem);
+			return !func(elem) && next(elem);
 		};
 	},
 	contains: function(next, text){
@@ -55,7 +55,7 @@ var filters = {
 			text = text.slice(1, -1);
 		}
 		return function(elem){
-			if(getText(elem).indexOf(text) >= 0) return next(elem);
+			return getText(elem).indexOf(text) >= 0 && next(elem);
 		};
 	},
 	has: function(next, selector){
@@ -65,24 +65,23 @@ var filters = {
 		if(func === falseFunc) return falseFunc;
 
 		return function proc(elem){
-			if(findOne(func, getChildren(elem)) !== null) return next(elem);
+			return findOne(func, getChildren(elem)) !== null && next(elem);
 		};
 	},
 	root: function(next){
 		return function(elem){
-			if(!getParent(elem)) return next(elem);
+			var parent = getParent(elem);
+			return !parent && next(elem);
 		};
 	},
 	empty: function(next){
 		return function(elem){
-			var children = getChildren(elem);
-			if(!children || children.length === 0) return next(elem);
+			return getChildren(elem).length === 0 && next(elem);
 		};
 	},
 	parent: function(next){ //:parent is the inverse of :empty
 		return function(elem){
-			var children = getChildren(elem);
-			if(children && children.length !== 0) return next(elem);
+			return getChildren(elem).length !== 0 && next(elem);
 		};
 	},
 
@@ -90,50 +89,58 @@ var filters = {
 	//first- and last-child methods return as soon as they find another element
 	"first-child": function(next){
 		return function(elem){
-			if(getFirstElement(getSiblings(elem)) === elem) return next(elem);
+			return getFirstElement(getSiblings(elem)) === elem && next(elem);
 		};
 	},
 	"last-child": function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
-			for(var i = siblings.length-1; i >= 0; i--){
+			for(var i = siblings.length - 1; i >= 0; i--){
 				if(siblings[i] === elem) return next(elem);
-				if(isElement(siblings[i])) return;
+				if(isElement(siblings[i])) break;
 			}
+
+			return false;
 		};
 	},
 	"first-of-type": function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
-			for(var i = 0, j = siblings.length; i < j; i++){
-				if(siblings[i] === elem) return next(elem);
-				if(getName(siblings[i]) === getName(elem)) return;
+			for(var i = 0; i < siblings.length; i++){
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) return next(elem);
+					if(getName(siblings[i]) === getName(elem)) break;
+				}
 			}
+
+			return false;
 		};
 	},
 	"last-of-type": function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
 			for(var i = siblings.length-1; i >= 0; i--){
-				if(siblings[i] === elem) return next(elem);
-				if(getName(siblings[i]) === getName(elem)) return;
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) return next(elem);
+					if(getName(siblings[i]) === getName(elem)) break;
+				}
 			}
+
+			return false;
 		};
 	},
 	"only-of-type": function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
 			for(var i = 0, j = siblings.length; i < j; i++){
-				if(siblings[i] === elem) continue;
-				if(getName(siblings[i]) === getName(elem)) return;
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) continue;
+					if(getName(siblings[i]) === getName(elem)) return false;
+				}
 			}
 
 			return next(elem);
@@ -142,11 +149,9 @@ var filters = {
 	"only-child": function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
-			if(siblings.length === 1) return next(elem);
 
-			for(var i = 0, j = siblings.length; i < j; i++){
-				if(isElement(siblings[i]) && siblings[i] !== elem) return;
+			for(var i = 0; i < siblings.length; i++){
+				if(isElement(siblings[i]) && siblings[i] !== elem) return false;
 			}
 
 			return next(elem);
@@ -157,12 +162,20 @@ var filters = {
 
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
-			if(next === rootFunc) return func;
-			else return next;
+			return next === rootFunc ? func : next;
 		}
 
 		return function(elem){
-			if(func(getIndex(elem))) return next(elem);
+			var siblings = getSiblings(elem);
+
+			for(var i = 0, pos = 0; i < siblings.length; i++){
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) break;
+					else pos++;
+				}
+			}
+
+			return func(pos) && next(elem);
 		};
 	},
 	"nth-last-child": function(next, rule){
@@ -170,21 +183,20 @@ var filters = {
 
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
-			if(next === rootFunc) return func;
-			else return next;
+			return next === rootFunc ? func : next;
 		}
 
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
 			for(var pos = 0, i = siblings.length - 1; i >= 0; i--){
-				if(siblings[i] === elem){
-					if(func(pos)) return next(elem);
-					return;
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) break;
+					else pos++;
 				}
-				if(isElement(siblings[i])) pos++;
 			}
+
+			return func(pos) && next(elem);
 		};
 	},
 	"nth-of-type": function(next, rule){
@@ -192,21 +204,20 @@ var filters = {
 
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
-			if(next === rootFunc) return func;
-			else return next;
+			return next === rootFunc ? func : next;
 		}
 
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
 
-			for(var pos = 0, i = 0, j = siblings.length; i < j; i++){
-				if(siblings[i] === elem){
-					if(func(pos)) return next(elem);
-					return;
+			for(var pos = 0, i = 0; i < siblings.length; i++){
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) break;
+					if(getName(siblings[i]) === getName(elem)) pos++;
 				}
-				if(getName(siblings[i]) === getName(elem)) pos++;
 			}
+
+			return func(pos) && next(elem);
 		};
 	},
 	"nth-last-of-type": function(next, rule){
@@ -214,20 +225,18 @@ var filters = {
 
 		if(func === falseFunc) return func;
 		if(func === trueFunc){
-			if(next === rootFunc) return func;
-			else return next;
+			return next === rootFunc ? func : next;
 		}
 
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
+
 			for(var pos = 0, i = siblings.length-1; i >= 0; i--){
-				if(siblings[i] === elem){
-					if(func(pos)) return next(elem);
-					return;
-				}
+				if(siblings[i] === elem) break;
 				if(getName(siblings[i]) === getName(elem)) pos++;
 			}
+
+			return func(pos) && next(elem);
 		};
 	},
 	
@@ -235,26 +244,29 @@ var filters = {
 	//to consider: :target, :enabled
 	selected: function(next){
 		return function(elem){
-			if(hasAttrib(elem, "selected")) return next(elem);
-			//the first <option> in a <select> is also selected
-			//TODO this only works for direct descendents
-			if(getName(getParent(elem)) !== "option") return;
-			if(getFirstElement(getSiblings(elem)) === elem) return next(elem);
+			return hasAttrib(elem, "selected") ||
+				
+				//the first <option> in a <select> is also selected
+				//TODO this only works for direct descendents
+				getName(getParent(elem)) === "option" &&
+				getFirstElement(getSiblings(elem)) === elem &&
+				
+				next(elem);
 		};
 	},
 	disabled: function(next){
 		return function(elem){
-			if(hasAttrib(elem, "disabled")) return next(elem);
+			return hasAttrib(elem, "disabled") && next(elem);
 		};
 	},
 	enabled: function(next){
 		return function(elem){
-			if(!hasAttrib(elem, "disabled")) return next(elem);
+			return !hasAttrib(elem, "disabled") && next(elem);
 		};
 	},
 	checked: function(next){
 		return function(elem){
-			if(hasAttrib(elem, "checked")) return next(elem);
+			return hasAttrib(elem, "checked") && next(elem);
 		};
 	},
 	
@@ -262,44 +274,43 @@ var filters = {
 	header: function(next){
 		return function(elem){
 			var name = getName(elem);
-			if(
+			return (
 				name === "h1" ||
 				name === "h2" ||
 				name === "h3" ||
 				name === "h4" ||
 				name === "h5" ||
 				name === "h6"
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	button: function(next){
 		return function(elem){
-			if(
+			return (
 				getName(elem) === "button" ||
 				getName(elem) === "input" &&
 				hasAttrib(elem, "type") &&
 				getAttributeValue(elem, "type") === "button"
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	input: function(next){
 		return function(elem){
 			var name = getName(elem);
-			if(
+			return (
 				name === "input" ||
 				name === "textarea" ||
 				name === "select" ||
 				name === "button"
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	text: function(next){
 		return function(elem){
-			if(getName(elem) !== "input") return;
-			if(
+			return getName(elem) !== "input" && (
 				!hasAttrib(elem, "type") ||
 				getAttributeValue(elem, "type") === "text"
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	checkbox: getAttribFunc("type", "checkbox"),
@@ -315,26 +326,13 @@ var filters = {
 var pseudos = {};
 
 //helper methods
-
 function getSiblings(elem){
-	return getParent(elem) && getChildren(getParent(elem));
-}
-/*
-	finds the position of an element among its siblings
-*/
-function getIndex(elem){
-	var siblings = getSiblings(elem);
-	if(!siblings) return -1;
-	for(var count = 0, i = 0, j = siblings.length; i < j; i++){
-		if(siblings[i] === elem) return count;
-		if(isElement(siblings[i])) count++;
-	}
-	return -1;
+	var parent = getParent(elem);
+	return parent ? getChildren(parent) : [elem];
 }
 
 function getFirstElement(elems){
-	if(!elems) return;
-	for(var i = 0, j = elems.length; i < j; i++){
+	for(var i = 0; elems && i < elems.length; i++){
 		if(isElement(elems[i])) return elems[i];
 	}
 }
@@ -347,9 +345,7 @@ function getAttribFunc(name, value){
 
 function checkAttrib(next, name, value){
 	return function(elem){
-		if(hasAttrib(elem, name) && getAttributeValue(elem, name) === value){
-			return next(elem);
-		}
+		return getAttributeValue(elem, name) === value && next(elem);
 	};
 }
 
@@ -363,72 +359,71 @@ var generalRules = {
 	tag: function(next, data){
 		var name = data.name;
 		return function(elem){
-			if(getName(elem) === name) return next(elem);
+			return getName(elem) === name && next(elem);
 		};
 	},
 
 	//traversal
 	descendant: function(next){
 		return function(elem){
-			while(elem = getParent(elem)){
-				if(next(elem)) return true;
+			var found = false;
+
+			while(!found && (elem = getParent(elem))){
+				found = next(elem);
 			}
+
+			return found;
 		};
 	},
 	parent: function(next){
 		return function(elem){
-			var childs = getChildren(elem);
-			for(var i = 0; i < childs.length; i++){
-				if(next(childs[i])) return true;
-			}
-		}
+			return getChildren(elem).some(next);
+		};
 	},
 	child: function(next){
 		return function(elem){
 			var parent = getParent(elem);
-			if(parent) return next(parent);
+			return parent && next(parent);
 		};
 	},
 	sibling: function(next){
 		return function(elem){
 			var siblings = getSiblings(elem);
-			if(!siblings) return;
-			for(var i = 0, j = siblings.length; i < j; i++){
-				if(!isElement(siblings[i])) continue;
-				if(siblings[i] === elem) return;
-				if(next(siblings[i])) return true;
+
+			for(var i = 0; i < siblings.length; i++){
+				if(isElement(siblings[i])){
+					if(siblings[i] === elem) break;
+					if(next(siblings[i])) return true;
+				}
 			}
+
+			return false;
 		};
 	},
 	adjacent: function(next){
 		return function(elem){
 			var siblings = getSiblings(elem),
 			    lastElement;
-			
-			if(!siblings) return;
-			for(var i = 0, j = siblings.length; i < j; i++){
+
+			for(var i = 0; i < siblings.length; i++){
 				if(isElement(siblings[i])){
-					if(siblings[i] === elem){
-						if(lastElement) return next(lastElement);
-						return;
-					}
+					if(siblings[i] === elem) break;
 					lastElement = siblings[i];
 				}
 			}
+
+			return !!lastElement && next(lastElement);
 		};
 	},
 	universal: function(next){
-		if(next === rootFunc) return trueFunc;
-		return next;
+		return next === rootFunc ? trueFunc : next;
 	},
 
 	//attributes
 	attribute: function(next, data){
-		if(data.ignoreCase){
-			return noCaseAttributeRules[data.action](next, data.name, data.value, data.ignoreCase);
-		} else {
-			return attributeRules[data.action](next, data.name, data.value, data.ignoreCase);
-		}
+		var map = data.ignoreCase ? noCaseAttributeRules : attributeRules;
+		
+		return map[data.action](next, data.name, data.value, data.ignoreCase);
 	},
 
 	//pseudos
@@ -439,7 +434,7 @@ var generalRules = {
 		if(name in filters) return filters[name](next, subselect);
 		else if(name in pseudos){
 			return function(elem){
-				if(pseudos[name](elem, subselect)) return next(elem);
+				return pseudos[name](elem, subselect) && next(elem);
 			};
 		} else {
 			throw new SyntaxError("unmatched pseudo-class: " + name);
@@ -460,74 +455,69 @@ function wrapReRule(pre, post){
 		var regex = new RegExp(pre + escapeRe(value) + post, ignoreCase ? "i" : "");
 
 		return function(elem){
-			if(hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name))) return next(elem);
+			return hasAttrib(elem, name) && regex.test(getAttributeValue(elem, name)) && next(elem);
 		};
 	};
 }
 
-var noCaseAttributeRules = {
-	__proto__: null,
-	exists: function(next, name){
-		return function(elem){
-			if(hasAttrib(elem, name)) return next(elem);
-		};
-	},
-	element: wrapReRule("(?:^|\\s)", "(?:$|\\s)"),
-	equals: wrapReRule("^", "$"),
-	hyphen: wrapReRule("^", "(?:$|-)"),
-	start: wrapReRule("^", ""),
-	end: wrapReRule("", "$"),
-	any: wrapReRule("", ""),
-	not: wrapReRule("^(?!^", "$)")
-};
-
 var attributeRules = {
 	__proto__: null,
 	equals: checkAttrib,
-	exists: noCaseAttributeRules.exists,
-	hyphen: noCaseAttributeRules.hyphen,
-	element: noCaseAttributeRules.element,
+	hyphen: wrapReRule("^", "(?:$|-)"),
+	element: wrapReRule("(?:^|\\s)", "(?:$|\\s)"),
+	exists: function(next, name){
+		return function(elem){
+			return hasAttrib(elem, name) && next(elem);
+		};
+	},
 	start: function(next, name, value){
 		var len = value.length;
 
 		return function(elem){
-			if(
+			return (
 				hasAttrib(elem, name) &&
 			    getAttributeValue(elem, name).substr(0, len) === value
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	end: function(next, name, value){
 		var len = -value.length;
 
 		return function(elem){
-			if(
+			return (
 				hasAttrib(elem, name) &&
 			    getAttributeValue(elem, name).substr(len) === value
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	any: function(next, name, value){
 		return function(elem){
-			if(
+			return (
 				hasAttrib(elem, name) &&
 			    getAttributeValue(elem, name).indexOf(value) >= 0
-			) return next(elem);
+			) && next(elem);
 		};
 	},
 	not: function(next, name, value){
 		if(value === ""){
 			return function(elem){
-				if(hasAttrib(elem, name) && getAttributeValue(elem, name) !== "") return next(elem);
+				return hasAttrib(elem, name) && getAttributeValue(elem, name) !== "" && next(elem);
 			};
 		}
 
 		return function(elem){
-			if(!hasAttrib(elem, name) || getAttributeValue(elem, name) !== value){
-				return next(elem);
-			}
+			return !(hasAttrib(elem, name) && getAttributeValue(elem, name) === value) && next(elem);
 		};
 	}
+};
+
+var noCaseAttributeRules = {
+	__proto__: attributeRules,
+	equals: wrapReRule("^", "$"),
+	start: wrapReRule("^", ""),
+	end: wrapReRule("", "$"),
+	any: wrapReRule("", ""),
+	not: wrapReRule("^(?!^", "$)")
 };
 
 /*
@@ -548,6 +538,10 @@ var procedure = {
 	adjacent: -1
 };
 
+function procedureSorter(a, b){
+	return procedure[a.type] - procedure[b.type];
+}
+
 function sortByProcedure(arr){
 	//TODO optimize, sort individual attribute selectors
 	var parts = [],
@@ -556,9 +550,7 @@ function sortByProcedure(arr){
 	for(var i = 0, j = arr.length-1; i <= j; i++){
 		if(procedure[arr[i].type] === -1 || (end = i === j)){
 			if(end) i++;
-			parts = parts.concat(arr.slice(last, i).sort(function(a, b){
-				return procedure[a.type] - procedure[b.type];
-			}));
+			parts = parts.concat(arr.slice(last, i).sort(procedureSorter));
 			if(!end) last = parts.push(arr[i]);
 		}
 	}
