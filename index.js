@@ -45,6 +45,7 @@ Pseudos.filters.has = function(next, selector) {
     };
 };
 
+//compiles a selector to an executable function
 function compile(selector) {
     var functions = parse(selector)
         .map(function(arr) {
@@ -60,19 +61,15 @@ function compile(selector) {
             return func !== rootFunc && func !== falseFunc;
         });
 
-    var num = functions.length;
+    if (functions.length === 0) return falseFunc;
 
-    if (num === 0) return falseFunc;
-    if (num === 1) return functions[0];
-
-    if (functions.indexOf(trueFunc) >= 0) return trueFunc;
-
-    return function(elem) {
-        for (var i = 0; i < num; i++) {
-            if (functions[i](elem)) return true;
-        }
-        return false;
-    };
+    return functions.reduce(function(a, b) {
+        if (a === trueFunc) return a;
+        if (b === trueFunc) return b;
+        return function(elem) {
+            return a(elem) || b(elem);
+        };
+    });
 }
 
 /*
