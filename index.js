@@ -2,99 +2,46 @@
 
 module.exports = CSSselect;
 
-var parse     = require("CSSwhat"),
-    Rules       = require("./lib/general.js"),
-    sortRules   = require("./lib/sort.js"),
-    Pseudos     = require("./lib/pseudos.js"),
+var Pseudos     = require("./lib/pseudos.js"),
     DomUtils    = require("domutils"),
     findOne     = DomUtils.findOne,
     findAll     = DomUtils.findAll,
     getChildren = DomUtils.getChildren,
-    BaseFuncs   = require("./lib/basefunctions.js"),
-    rootFunc    = BaseFuncs.rootFunc,
-    trueFunc    = BaseFuncs.trueFunc,
-    falseFunc   = BaseFuncs.falseFunc;
+    falseFunc   = require("./lib/basefunctions.js").falseFunc,
+    compile     = require("./lib/compile.js");
 
-//:not and :has have to compile selectors
-//doing this in lib/pseudos.js would lead to circular dependencies,
-//so we add them here
+function selectAll(query, elems){
+	if(typeof query !== "function") query = compile(query);
+	if(!Array.isArray(elems)) elems = getChildren(elems);
+	return query === falseFunc ? [] : findAll(query, elems);
+}
 
-Pseudos.filters.not = function(next, select){
-	var func = compile(select);
+function selectOne(query, elems){
+	if(typeof query !== "function") query = compile(query);
+	if(!Array.isArray(elems)) elems = getChildren(elems);
+	return query === falseFunc ? null : findOne(query, elems);
+}
 
-	if(func === falseFunc){
-		return next === rootFunc ? trueFunc : next;
-	}
-	if(func === trueFunc || func === rootFunc){
-		return falseFunc;
-	}
-
-	return function(elem){
-		return !func(elem) && next(elem);
-	};
-};
-
-Pseudos.filters.has = function(next, selector){
-	var func = compile(selector);
-
-	if(func === rootFunc || func === trueFunc) return next;
-	if(func === falseFunc) return falseFunc;
-
-	return function proc(elem){
-		return findOne(func, getChildren(elem)) !== null && next(elem);
-	};
-};
-
-
-//compiles a selector to an executable function
-function compile(selector){
-	var functions = parse(selector).map(function(arr){
-		var func = rootFunc;
-		arr = sortRules(arr);
-		for(var i = 0, j = arr.length; i < j; i++){
-			func = Rules[arr[i].type](func, arr[i]);
-			if(func === falseFunc) return func;
-		}
-		return func;
-	}).filter(function(func){
-		return func !== rootFunc && func !== falseFunc;
-	});
-
-	if(functions.length === 0) return falseFunc;
-
-	return functions.reduce(function(a, b){
-		if(a === trueFunc) return a;
-		if(b === trueFunc) return b;
-		return function(elem){
-			return a(elem) || b(elem);
-		};
-	});
+function is(elem, query){
+	return (typeof query === "function" ? query : compile(query))(elem);
 }
 
 /*
 	the exported interface
 */
 function CSSselect(query, elems){
-	if(typeof query !== "function") query = compile(query);
-	if(arguments.length === 1) return query;
-	return CSSselect.iterate(query, elems);
+	return selectAll(query, elems);
 }
 
-CSSselect.parse = compile; //TODO: remove
 CSSselect.compile = compile;
 CSSselect.filters = Pseudos.filters;
 CSSselect.pseudos = Pseudos.pseudos;
 
-function parseConditional(query){
-	return typeof query === "function" ? query : compile(query);
-}
+CSSselect.selectAll = selectAll;
+CSSselect.selectOne = selectOne;
 
-CSSselect.iterate = function(query, elems){
-	query = parseConditional(query);
-	if(!Array.isArray(elems)) elems = getChildren(elems);
-	return query === falseFunc ? [] : findAll(query, elems);
-};
+CSSselect.is = is;
 
-CSSselect.is = function(elem, query){
-	return parseConditional(query)(elem);
-};
+//legacy methods (might be removed)
+CSSselect.parse = compile;
+CSSselect.iterate = selectAll;
