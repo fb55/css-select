@@ -1,6 +1,6 @@
 {
 	"name": "CSSselect",
-	"version": "0.3.3",
+	"version": "0.3.4",
 	"description": "a rtl CSS selector engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
@@ -9,7 +9,8 @@
 		"url": "git://github.com/fb55/CSSselect.git"
 	},
 	"dependencies": {
-		"CSSwhat": ">= 0.1"
+		"CSSwhat": "0.1",
+		"domutils": "1"
 	},
 	"devDependencies": {
 		"htmlparser2": ">= 2.2.8",
