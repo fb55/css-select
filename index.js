@@ -15,9 +15,9 @@ var CSSwhat = require("CSSwhat"),
     trueFunc = BaseFuncs.trueFunc,
     falseFunc = BaseFuncs.falseFunc;
 
-//:not and :has have to compile the selectors
+//:not and :has have to compile selectors
 //doing this in lib/pseudos.js would lead to circular dependencies,
-//so we add the selectors here
+//so we add them here
 
 Pseudos.filters.not = function(next, select) {
     var func = parse(select);
@@ -88,14 +88,16 @@ CSSselect.parse = parse;
 CSSselect.filters = Pseudos.filters;
 CSSselect.pseudos = Pseudos.pseudos;
 
+function parseConditional(query) {
+    return typeof query === "function" ? query : parse(query);
+}
+
 CSSselect.iterate = function(query, elems) {
-    if (typeof query !== "function") query = parse(query);
-    if (query === falseFunc) return [];
+    query = parseConditional(query);
     if (!Array.isArray(elems)) elems = getChildren(elems);
-    return findAll(query, elems);
+    return query === falseFunc ? [] : findAll(query, elems);
 };
 
 CSSselect.is = function(elem, query) {
-    if (typeof query !== "function") query = parse(query);
-    return query(elem);
+    return parseConditional(query)(elem);
 };
