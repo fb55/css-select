@@ -44,7 +44,7 @@ var doc = helper.getDOM(
 
 var el = DomUtils.getElementById("attr-child-boosh", document);
 
-var pseudos = DomUtils.getElementById("pseudos", document).children;
+var pseudos = DomUtils.getElementById("pseudos", document).children.filter(DomUtils.isTag);
 
 module.exports = {
     Contexts: {
