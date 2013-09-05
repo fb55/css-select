@@ -10,8 +10,8 @@ function getDOMFromPath(path, options){
 
 module.exports = {
 	CSSselect: CSSselect,
-	getFile: function(name){
-		return getDOMFromPath(path.join(__dirname, "docs", name));
+	getFile: function(name, options){
+		return getDOMFromPath(path.join(__dirname, "docs", name), options);
 	},
 	getDOMFromPath: getDOMFromPath,
 	getDOM: htmlparser2.parseDOM,
