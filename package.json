@@ -1,6 +1,6 @@
 {
 	"name": "CSSselect",
-	"version": "0.3.5",
+	"version": "0.3.6",
 	"description": "a CSS selector compiler/engine",
 	"author": "Felix Boehm <me@feedic.com>",
 	"keywords": ["css", "selector"],
