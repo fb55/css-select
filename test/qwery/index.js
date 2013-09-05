@@ -3,7 +3,8 @@
 var expect = require("expect.js"),
     DomUtils = require("htmlparser2").DomUtils,
 	helper = require("../tools/helper.js"),
-	document = helper.getDOM(require("fs").readFileSync(__dirname + "/index.html")+""),
+	path = require("path"),
+	document = helper.getDocument(path.join(__dirname, "index.html")),
 	CSSselect = helper.CSSselect;
 
 var location = {hash: ""};
