@@ -13,13 +13,13 @@ var Pseudos     = require("./lib/pseudos.js"),
 function selectAll(query, elems){
 	if(typeof query !== "function") query = compile(query);
 	if(!Array.isArray(elems)) elems = getChildren(elems);
-	return query === falseFunc ? [] : findAll(query, elems);
+	return (!elems || query === falseFunc) ? [] : findAll(query, elems);
 }
 
 function selectOne(query, elems){
 	if(typeof query !== "function") query = compile(query);
 	if(!Array.isArray(elems)) elems = getChildren(elems);
-	return query === falseFunc ? null : findOne(query, elems);
+	return (!elems || query === falseFunc) ? null : findOne(query, elems);
 }
 
 function is(elem, query){
