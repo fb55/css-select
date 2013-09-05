@@ -4,15 +4,16 @@ var fs = require("fs"),
     DomUtils = htmlparser2.DomUtils,
     CSSselect = require("../../");
 
-function getFile(path){
-	return htmlparser2.parseDOM(fs.readFileSync(path).toString());
+function getDOMFromPath(path, options){
+	return htmlparser2.parseDOM(fs.readFileSync(path).toString(), options);
 }
 
 module.exports = {
 	CSSselect: CSSselect,
 	getFile: function(name){
-		return getFile(path.join(__dirname, "docs", name));
+		return getDOMFromPath(path.join(__dirname, "docs", name));
 	},
+	getDOMFromPath: getDOMFromPath,
 	getDOM: htmlparser2.parseDOM,
 	getDefaultDom: function(){
 		return htmlparser2.parseDOM(
@@ -20,7 +21,7 @@ module.exports = {
 		);
 	},
 	getDocument: function(path){
-		var document = getFile(path);
+		var document = getDOMFromPath(path);
 
 		document.getElementsByTagName = function(name){
 			return DomUtils.getElementsByTagName("*", document);
@@ -28,7 +29,14 @@ module.exports = {
 		document.getElementById = function(id){
 			return DomUtils.getElementById(id, document);
 		};
+		document.createTextNode = function(content){
+			return {
+				type: "text",
+				data: "content"
+			};
+		};
 		document.body = DomUtils.getElementsByTagName("body", document, true, 1)[0];
+		document.documentElement = document.filter(DomUtils.isTag)[0];
 
 		return document;
 	}
