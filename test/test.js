@@ -2,6 +2,12 @@ describe("nwmatcher", function() {
     require("./nwmatcher/");
 });
 
+describe("sizzle", function() {
+    describe("selector", function() {
+        //require("./sizzle/selector");
+    });
+});
+
 describe("qwery", function() {
     exportsRun(require("./qwery/"));
 });
