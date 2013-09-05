@@ -1,6 +1,6 @@
 var helper = require("./helper.js"),
     doc = helper.getFile("W3C_Selectors.html"),
-    CSSselect = require("../../"),
+    CSSselect = helper.CSSselect,
     soupselect = require("cheerio-soupselect"),
     selectors = [
         "body",
@@ -37,7 +37,7 @@ var helper = require("./helper.js"),
 
 var engines = [
     function(a, b) {
-        return CSSselect.iterate(b, a);
+        return CSSselect(b, a);
     },
     soupselect.select
 ];
