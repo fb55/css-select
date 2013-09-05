@@ -6,7 +6,7 @@ var DomUtils = require("htmlparser2").DomUtils,
     helper = require("../tools/helper.js"),
     assert = require("assert"),
     path = require("path"),
-    document = helper.getDocument(path.join(__dirname, "/test.html")),
+    document = helper.getDocument(path.join(__dirname, "test.html")),
     CSSselect = helper.CSSselect;
 
 //Prototype's `$` function
