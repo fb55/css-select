@@ -47,6 +47,9 @@ function asyncTest(name, _, func) {
 jQuery.prototype.appendTo = function(elem) {
     if (typeof elem === "string") elem = Sizzle(elem)[0];
     Array.prototype.push.apply(elem.children, this);
+    this.each(function(i, child) {
+        child.parent = elem;
+    });
     return this;
 };
 
@@ -147,10 +150,24 @@ test("element", function() {
     // Check for unique-ness and sort order
     deepEqual(Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p");
 
-    //qunit heaaders aren't avalable
-    //t( "Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
-    //t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
-    //t( "Checking sort order", "#qunit-fixture p, #qunit-fixture p a", ["firstp", "simon1", "ap", "google", "groups", "anchor1", "mark", "sndp", "en", "yahoo", "sap", "anchor2", "simon", "first"] );
+    t("Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
+    //  t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
+    t("Checking sort order", "#qunit-fixture p, #qunit-fixture p a", [
+        "firstp",
+        "simon1",
+        "ap",
+        "google",
+        "groups",
+        "anchor1",
+        "mark",
+        "sndp",
+        "en",
+        "yahoo",
+        "sap",
+        "anchor2",
+        "simon",
+        "first"
+    ]);
 
     // Test Conflict ID
     lengthtest = document.getElementById("lengthtest");
@@ -172,6 +189,7 @@ test("element", function() {
         [DomUtils.getElementById("foo", iframe.children)],
         "Other document as context"
     );
+    iframe.children = [];
 
     html = "";
     for (i = 0; i < 100; i++) {
@@ -189,8 +207,12 @@ test("element", function() {
     html.remove();
 
     // Real use case would be using .watch in browsers with window.watch (see Issue #157)
-    q("qunit-fixture")[0].children.push(document.createElement("toString")).attribs.id = "toString";
-    t("Element name matches Object.prototype property", "toString#toString", ["toString"]);
+    var elem = document.createElement("tostring");
+    elem.attribs.id = "toString";
+    var siblings = q("qunit-fixture")[0].children;
+    siblings.push(elem);
+    t("Element name matches Object.prototype property", "tostring#toString", ["toString"]);
+    siblings.pop();
 });
 
 test("XML Document Selectors", function() {
@@ -770,13 +792,15 @@ test("attributes", function() {
     // deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ), q("attrbad_unicode"),
     // 	"Long numeric escape (non-BMP)" );
 
+    attrbad.remove();
+
     t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
     t("input[type=search]", "#form input[type=search]", ["search"]);
     t("script[src] (jQuery #13777)", "#moretests script[src]", ["script-src"]);
 
     // #3279
     div = document.createElement("div");
-    div.innerHTML = "<div id='foo' xml:test='something'></div>";
+    div.children = helper.getDOM("<div id='foo' xml:test='something'></div>");
 
     deepEqual(
         Sizzle("[xml\\:test]", div),
@@ -994,9 +1018,8 @@ test("pseudo - misc", function() {
 
     var select, tmp, input;
 
-    //qunit is not available, so the headers aren't either
-    //  t( "Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
-    //  t( "Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"] );
+    t("Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
+    t("Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
     t(
         "Multiple matches with the same context (cache check)",
         "#form select:has(option:first-child:contains('o'))",
@@ -1032,17 +1055,17 @@ test("pseudo - misc", function() {
         ok(Sizzle.matchesSelector(els[1], ":" + type), "Button Matches :" + type);
     });
 
-    document.body.removeChild(tmp);
+    document.body.children.pop();
 
     // Recreate tmp
     tmp = document.createElement("div");
-    tmp.id = "tmp_input";
-    tmp.innerHTML = "<span>Hello I am focusable.</span>";
+    tmp.attribs.id = "tmp_input";
+    tmp.children = helper.getDOM("<span>Hello I am focusable.</span>");
     // Setting tabIndex should make the element focusable
     // http://dev.w3.org/html5/spec/single-page.html#focus-management
-    document.body.appendChild(tmp);
+    document.body.children.push(tmp);
     tmp.tabIndex = 0;
-    tmp.focus();
+    //tmp.focus();
     if (
         document.activeElement !== tmp ||
         (document.hasFocus && !document.hasFocus()) ||
@@ -1056,18 +1079,18 @@ test("pseudo - misc", function() {
     }
 
     // Blur tmp
-    tmp.blur();
-    document.body.focus();
-    ok(!Sizzle.matchesSelector(tmp, ":focus"), ":focus doesn't match tabIndex div");
-    document.body.removeChild(tmp);
+    //tmp.blur();
+    //document.body.focus();
+    //ok( !Sizzle.matchesSelector( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
+    document.body.children.pop();
 
     // Input focus/active
     input = document.createElement("input");
-    input.type = "text";
-    input.id = "focus-input";
+    input.attribs.type = "text";
+    input.attribs.id = "focus-input";
 
-    document.body.appendChild(input);
-    input.focus();
+    document.body.children.push(input);
+    //input.focus();
 
     // Inputs can't be focused unless the document has focus
     if (
@@ -1082,15 +1105,15 @@ test("pseudo - misc", function() {
         ok(Sizzle.matchesSelector(input, ":focus"), ":focus matches");
     }
 
-    input.blur();
+    //input.blur();
 
     // When IE is out of focus, blur does not work. Force it here.
     if (document.activeElement === input) {
         document.body.focus();
     }
 
-    ok(!Sizzle.matchesSelector(input, ":focus"), ":focus doesn't match");
-    document.body.removeChild(input);
+    //ok( !Sizzle.matchesSelector( input, ":focus" ), ":focus doesn't match" );
+    document.body.children.pop();
 
     deepEqual(
         Sizzle("[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)", q("qunit-fixture")[0]),
