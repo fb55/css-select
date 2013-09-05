@@ -35,6 +35,14 @@ module.exports = {
                 data: "content"
             };
         };
+        document.createElement = function(name) {
+            return {
+                type: "tag",
+                name: name,
+                children: [],
+                attribs: {}
+            };
+        };
         document.body = DomUtils.getElementsByTagName("body", document, true, 1)[0];
         document.documentElement = document.filter(DomUtils.isTag)[0];
 
