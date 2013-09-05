@@ -6,14 +6,8 @@ var DomUtils = require("htmlparser2").DomUtils,
     helper = require("../tools/helper.js"),
     assert = require("assert"),
     path = require("path"),
-    file = require("fs").readFileSync(path.join(__dirname, "/test.html")),
-    document = helper.getDOM(file.toString()),
+    document = helper.getDocument(path.join(__dirname, "/test.html")),
     CSSselect = helper.CSSselect;
-
-document.getElementsByTagName = function(name) {
-    return DomUtils.getElementsByTagName("*", document);
-};
-document.body = DomUtils.getElementsByTagName("body", document, true, 1)[0];
 
 //Prototype's `$` function
 function getById(element) {
@@ -32,7 +26,7 @@ function getById(element) {
 var select = function(query, doc) {
         if (arguments.length === 1 || typeof doc === "undefined") doc = document;
         else if (typeof doc === "string") doc = select(doc);
-        return CSSselect.iterate(query, doc);
+        return CSSselect(query, doc);
     },
     match = CSSselect.is;
 
