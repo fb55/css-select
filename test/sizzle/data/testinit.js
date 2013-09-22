@@ -3,7 +3,8 @@ var assert = require("assert"),
     helper = require("../../tools/helper.js"),
     CSSselect = helper.CSSselect,
     path = require("path"),
-    document = helper.getDocument(path.join(__dirname, "index.html"));
+    docPath = path.join(__dirname, "index.html"),
+    document = null;
 
 
 //in this module, the only use-case is to compare arrays of
@@ -18,10 +19,14 @@ function deepEqual(a, b, msg){
 	}
 }
 
+function loadDoc(){
+	return document = helper.getDocument(docPath);
+}
+
 module.exports = {
 	q: q,
 	t: t,
-	document: document,
+	loadDoc: loadDoc,
 	createWithFriesXML: createWithFriesXML
 };
 
