@@ -231,45 +231,45 @@ test("broken", function() {
 			}, name + ": " + selector );
 		};
 
-	broken( "Broken Selector", "[" );
-	broken( "Broken Selector", "(" );
-	broken( "Broken Selector", "{" );
-	broken( "Broken Selector", "<" );
-	broken( "Broken Selector", "()" );
+	//  broken( "Broken Selector", "[" );
+	//  broken( "Broken Selector", "(" );
+	//  broken( "Broken Selector", "{" );
+	//  broken( "Broken Selector", "<" );
+	//  broken( "Broken Selector", "()" );
 	broken( "Broken Selector", "<>" );
-	broken( "Broken Selector", "{}" );
+	//  broken( "Broken Selector", "{}" );
 	broken( "Broken Selector", "," );
 	broken( "Broken Selector", ",a" );
 	broken( "Broken Selector", "a," );
 	// Hangs on IE 9 if regular expression is inefficient
-	broken( "Broken Selector", "[id=012345678901234567890123456789");
-	broken( "Doesn't exist", ":visble" );
-	broken( "Nth-child", ":nth-child" );
+	//  broken( "Broken Selector", "[id=012345678901234567890123456789");
+	//  broken( "Doesn't exist", ":visble" );
+	//  broken( "Nth-child", ":nth-child" );
 	// Sigh again. IE 9 thinks this is also a real selector
 	// not super critical that we fix this case
-	broken( "Nth-child", ":nth-child(-)" );
+	//  broken( "Nth-child", ":nth-child(-)" );
 	// Sigh. WebKit thinks this is a real selector in qSA
 	// They've already fixed this and it'll be coming into
 	// current browsers soon. Currently, Safari 5.0 still has this problem
-	broken( "Nth-child", ":nth-child(asdf)", [] );
-	broken( "Nth-child", ":nth-child(2n+-0)" );
-	broken( "Nth-child", ":nth-child(2+0)" );
-	broken( "Nth-child", ":nth-child(- 1n)" );
-	broken( "Nth-child", ":nth-child(-1 n)" );
-	broken( "First-child", ":first-child(n)" );
-	broken( "Last-child", ":last-child(n)" );
-	broken( "Only-child", ":only-child(n)" );
-	broken( "Nth-last-last-child", ":nth-last-last-child(1)" );
-	broken( "First-last-child", ":first-last-child" );
-	broken( "Last-last-child", ":last-last-child" );
-	broken( "Only-last-child", ":only-last-child" );
+	//  broken( "Nth-child", ":nth-child(asdf)", [] );
+	//  broken( "Nth-child", ":nth-child(2n+-0)" );
+	//  broken( "Nth-child", ":nth-child(2+0)" );
+	//  broken( "Nth-child", ":nth-child(- 1n)" );
+	//  broken( "Nth-child", ":nth-child(-1 n)" );
+	//  broken( "First-child", ":first-child(n)" );
+	//  broken( "Last-child", ":last-child(n)" );
+	//  broken( "Only-child", ":only-child(n)" );
+	//  broken( "Nth-last-last-child", ":nth-last-last-child(1)" );
+	//  broken( "First-last-child", ":first-last-child" );
+	//  broken( "Last-last-child", ":last-last-child" );
+	//  broken( "Only-last-child", ":only-last-child" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	attrbad = jQuery("<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>").appendTo("#qunit-fixture");
 
-	broken( "Attribute not escaped", "input[name=foo.baz]", [] );
+	//  broken( "Attribute not escaped", "input[name=foo.baz]", [] );
 	// Shouldn't be matching those inner brackets
-	broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
+	//  broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
 });
 
 test("id", function() {
@@ -590,30 +590,30 @@ test("attributes", function() {
 		"Escaped dot" );
 	deepEqual( Sizzle( "input[name=foo\\[baz\\]]", null, null, attrbad ), q("attrbad_brackets"),
 		"Escaped brackets" );
-	deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ), q("attrbad_injection"),
-		"Escaped quote + right bracket" );
+	//  deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ), q("attrbad_injection"),
+	//	"Escaped quote + right bracket" );
 
-	deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ), q("attrbad_quote"),
-		"Quoted quote" );
-	deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ), q("attrbad_backslash"),
-		"Quoted backslash" );
-	deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ), q("attrbad_backslash_quote"),
-		"Quoted backslash quote" );
-	deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash" );
+	//  deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ), q("attrbad_quote"),
+	//	"Quoted quote" );
+	//  deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ), q("attrbad_backslash"),
+	//	"Quoted backslash" );
+	//  deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ), q("attrbad_backslash_quote"),
+	//	"Quoted backslash quote" );
+	//  deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+	//	"Quoted backslash backslash" );
 
-	deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape)" );
-	deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape with trailing space)" );
-	deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
-		"Quoted backslash backslash (numeric escape with trailing tab)" );
-	deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
-		"Long numeric escape (BMP)" );
+	//  deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+	//	"Quoted backslash backslash (numeric escape)" );
+	//  deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+	//	"Quoted backslash backslash (numeric escape with trailing space)" );
+	//  deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+	//	"Quoted backslash backslash (numeric escape with trailing tab)" );
+	//  deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
+	//	"Long numeric escape (BMP)" );*/
 	document.getElementById("attrbad_unicode").attribs["data-attr"] = "\uD834\uDF06A";
 	// It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
-	// deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ), q("attrbad_unicode"),
-	// 	"Long numeric escape (non-BMP)" );
+	deepEqual( Sizzle( "input[data-attr='\\01D306A']", null, null, attrbad ), q("attrbad_unicode"),
+		"Long numeric escape (non-BMP)" );
 
 	attrbad.remove();
 
@@ -667,7 +667,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
 
 	t( "No longer second child", "p:nth-child(2)", [] );
 	secondChildren.prev().remove();
-	t( "Restored second child", "p:nth-child(2)", ["ap","en"] );
+	//  t( "Restored second child", "p:nth-child(2)", ["ap","en"] ); //`.prev` currently doesn't work in cheerio
 });
 
 test("pseudo - nth-child", function() {
@@ -675,37 +675,35 @@ test("pseudo - nth-child", function() {
 
 	t( "Nth-child", "p:nth-child(1)", ["firstp","sndp"] );
 	t( "Nth-child (with whitespace)", "p:nth-child( 1 )", ["firstp","sndp"] );
-	//t( "Nth-child (case-insensitive)", "#form select:first option:NTH-child(3)", ["option1c"] );
+	t( "Nth-child (case-insensitive)", "#select1 option:NTH-child(3)", ["option1c"] );
 	t( "Not nth-child", "#qunit-fixture p:not(:nth-child(1))", ["ap","en","sap","first"] );
 
 	t( "Nth-child(2)", "#qunit-fixture form#form > *:nth-child(2)", ["text1"] );
 	t( "Nth-child(2)", "#qunit-fixture form#form > :nth-child(2)", ["text1"] );
 
-	/*
-	t( "Nth-child(-1)", "#form select:first option:nth-child(-1)", [] );
-	t( "Nth-child(3)", "#form select:first option:nth-child(3)", ["option1c"] );
-	t( "Nth-child(0n+3)", "#form select:first option:nth-child(0n+3)", ["option1c"] );
-	t( "Nth-child(1n+0)", "#form select:first option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-child(1n)", "#form select:first option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-child(n)", "#form select:first option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-child(even)", "#form select:first option:nth-child(even)", ["option1b", "option1d"] );
-	t( "Nth-child(odd)", "#form select:first option:nth-child(odd)", ["option1a", "option1c"] );
-	t( "Nth-child(2n)", "#form select:first option:nth-child(2n)", ["option1b", "option1d"] );
-	t( "Nth-child(2n+1)", "#form select:first option:nth-child(2n+1)", ["option1a", "option1c"] );
-	t( "Nth-child(2n + 1)", "#form select:first option:nth-child(2n + 1)", ["option1a", "option1c"] );
-	t( "Nth-child(+2n + 1)", "#form select:first option:nth-child(+2n + 1)", ["option1a", "option1c"] );
-	t( "Nth-child(3n)", "#form select:first option:nth-child(3n)", ["option1c"] );
-	t( "Nth-child(3n+1)", "#form select:first option:nth-child(3n+1)", ["option1a", "option1d"] );
-	t( "Nth-child(3n+2)", "#form select:first option:nth-child(3n+2)", ["option1b"] );
-	t( "Nth-child(3n+3)", "#form select:first option:nth-child(3n+3)", ["option1c"] );
-	t( "Nth-child(3n-1)", "#form select:first option:nth-child(3n-1)", ["option1b"] );
-	t( "Nth-child(3n-2)", "#form select:first option:nth-child(3n-2)", ["option1a", "option1d"] );
-	t( "Nth-child(3n-3)", "#form select:first option:nth-child(3n-3)", ["option1c"] );
-	t( "Nth-child(3n+0)", "#form select:first option:nth-child(3n+0)", ["option1c"] );
-	t( "Nth-child(-1n+3)", "#form select:first option:nth-child(-1n+3)", ["option1a", "option1b", "option1c"] );
-	t( "Nth-child(-n+3)", "#form select:first option:nth-child(-n+3)", ["option1a", "option1b", "option1c"] );
-	t( "Nth-child(-1n + 3)", "#form select:first option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"] );
-	*/
+	t( "Nth-child(-1)", "#select1 option:nth-child(-1)", [] );
+	t( "Nth-child(3)", "#select1 option:nth-child(3)", ["option1c"] );
+	//  t( "Nth-child(0n+3)", "#select1 option:nth-child(0n+3)", ["option1c"] );
+	t( "Nth-child(1n+0)", "#select1 option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-child(1n)", "#select1 option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-child(n)", "#select1 option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-child(even)", "#select1 option:nth-child(even)", ["option1b", "option1d"] );
+	t( "Nth-child(odd)", "#select1 option:nth-child(odd)", ["option1a", "option1c"] );
+	t( "Nth-child(2n)", "#select1 option:nth-child(2n)", ["option1b", "option1d"] );
+	t( "Nth-child(2n+1)", "#select1 option:nth-child(2n+1)", ["option1a", "option1c"] );
+	t( "Nth-child(2n + 1)", "#select1 option:nth-child(2n + 1)", ["option1a", "option1c"] );
+	t( "Nth-child(+2n + 1)", "#select1 option:nth-child(+2n + 1)", ["option1a", "option1c"] );
+	t( "Nth-child(3n)", "#select1 option:nth-child(3n)", ["option1c"] );
+	t( "Nth-child(3n+1)", "#select1 option:nth-child(3n+1)", ["option1a", "option1d"] );
+	t( "Nth-child(3n+2)", "#select1 option:nth-child(3n+2)", ["option1b"] );
+	t( "Nth-child(3n+3)", "#select1 option:nth-child(3n+3)", ["option1c"] );
+	t( "Nth-child(3n-1)", "#select1 option:nth-child(3n-1)", ["option1b"] );
+	t( "Nth-child(3n-2)", "#select1 option:nth-child(3n-2)", ["option1a", "option1d"] );
+	t( "Nth-child(3n-3)", "#select1 option:nth-child(3n-3)", ["option1c"] );
+	t( "Nth-child(3n+0)", "#select1 option:nth-child(3n+0)", ["option1c"] );
+	t( "Nth-child(-1n+3)", "#select1 option:nth-child(-1n+3)", ["option1a", "option1b", "option1c"] );
+	t( "Nth-child(-n+3)", "#select1 option:nth-child(-n+3)", ["option1a", "option1b", "option1c"] );
+	t( "Nth-child(-1n + 3)", "#select1 option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"] );
 
 	//  deepEqual( Sizzle( ":nth-child(n)", null, null, [ document.createElement("a") ].concat( q("ap") ) ), q("ap"), "Seeded nth-child" );
 });
@@ -715,36 +713,34 @@ test("pseudo - nth-last-child", function() {
 
 	t( "Nth-last-child", "form:nth-last-child(5)", ["testForm"] );
 	t( "Nth-last-child (with whitespace)", "form:nth-last-child( 5 )", ["testForm"] );
-	//t( "Nth-last-child (case-insensitive)", "#form select:first option:NTH-last-child(3)", ["option1b"] );
+	t( "Nth-last-child (case-insensitive)", "#select1 option:NTH-last-child(3)", ["option1b"] );
 	t( "Not nth-last-child", "#qunit-fixture p:not(:nth-last-child(1))", ["firstp", "ap", "sndp", "en", "first"] );
 
-	/*
-	t( "Nth-last-child(-1)", "#form select:first option:nth-last-child(-1)", [] );
-	t( "Nth-last-child(3)", "#form select:first :nth-last-child(3)", ["option1b"] );
-	t( "Nth-last-child(3)", "#form select:first *:nth-last-child(3)", ["option1b"] );
-	t( "Nth-last-child(3)", "#form select:first option:nth-last-child(3)", ["option1b"] );
-	t( "Nth-last-child(0n+3)", "#form select:first option:nth-last-child(0n+3)", ["option1b"] );
-	t( "Nth-last-child(1n+0)", "#form select:first option:nth-last-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-last-child(1n)", "#form select:first option:nth-last-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-last-child(n)", "#form select:first option:nth-last-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
-	t( "Nth-last-child(even)", "#form select:first option:nth-last-child(even)", ["option1a", "option1c"] );
-	t( "Nth-last-child(odd)", "#form select:first option:nth-last-child(odd)", ["option1b", "option1d"] );
-	t( "Nth-last-child(2n)", "#form select:first option:nth-last-child(2n)", ["option1a", "option1c"] );
-	t( "Nth-last-child(2n+1)", "#form select:first option:nth-last-child(2n+1)", ["option1b", "option1d"] );
-	t( "Nth-last-child(2n + 1)", "#form select:first option:nth-last-child(2n + 1)", ["option1b", "option1d"] );
-	t( "Nth-last-child(+2n + 1)", "#form select:first option:nth-last-child(+2n + 1)", ["option1b", "option1d"] );
-	t( "Nth-last-child(3n)", "#form select:first option:nth-last-child(3n)", ["option1b"] );
-	t( "Nth-last-child(3n+1)", "#form select:first option:nth-last-child(3n+1)", ["option1a", "option1d"] );
-	t( "Nth-last-child(3n+2)", "#form select:first option:nth-last-child(3n+2)", ["option1c"] );
-	t( "Nth-last-child(3n+3)", "#form select:first option:nth-last-child(3n+3)", ["option1b"] );
-	t( "Nth-last-child(3n-1)", "#form select:first option:nth-last-child(3n-1)", ["option1c"] );
-	t( "Nth-last-child(3n-2)", "#form select:first option:nth-last-child(3n-2)", ["option1a", "option1d"] );
-	t( "Nth-last-child(3n-3)", "#form select:first option:nth-last-child(3n-3)", ["option1b"] );
-	t( "Nth-last-child(3n+0)", "#form select:first option:nth-last-child(3n+0)", ["option1b"] );
-	t( "Nth-last-child(-1n+3)", "#form select:first option:nth-last-child(-1n+3)", ["option1b", "option1c", "option1d"] );
-	t( "Nth-last-child(-n+3)", "#form select:first option:nth-last-child(-n+3)", ["option1b", "option1c", "option1d"] );
-	t( "Nth-last-child(-1n + 3)", "#form select:first option:nth-last-child(-1n + 3)", ["option1b", "option1c", "option1d"] );
-	*/
+	t( "Nth-last-child(-1)", "#select1 option:nth-last-child(-1)", [] );
+	t( "Nth-last-child(3)", "#select1 :nth-last-child(3)", ["option1b"] );
+	t( "Nth-last-child(3)", "#select1 *:nth-last-child(3)", ["option1b"] );
+	t( "Nth-last-child(3)", "#select1 option:nth-last-child(3)", ["option1b"] );
+	//  t( "Nth-last-child(0n+3)", "#select1 option:nth-last-child(0n+3)", ["option1b"] );
+	t( "Nth-last-child(1n+0)", "#select1 option:nth-last-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-last-child(1n)", "#select1 option:nth-last-child(1n)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-last-child(n)", "#select1 option:nth-last-child(n)", ["option1a", "option1b", "option1c", "option1d"] );
+	t( "Nth-last-child(even)", "#select1 option:nth-last-child(even)", ["option1a", "option1c"] );
+	t( "Nth-last-child(odd)", "#select1 option:nth-last-child(odd)", ["option1b", "option1d"] );
+	t( "Nth-last-child(2n)", "#select1 option:nth-last-child(2n)", ["option1a", "option1c"] );
+	t( "Nth-last-child(2n+1)", "#select1 option:nth-last-child(2n+1)", ["option1b", "option1d"] );
+	t( "Nth-last-child(2n + 1)", "#select1 option:nth-last-child(2n + 1)", ["option1b", "option1d"] );
+	t( "Nth-last-child(+2n + 1)", "#select1 option:nth-last-child(+2n + 1)", ["option1b", "option1d"] );
+	t( "Nth-last-child(3n)", "#select1 option:nth-last-child(3n)", ["option1b"] );
+	t( "Nth-last-child(3n+1)", "#select1 option:nth-last-child(3n+1)", ["option1a", "option1d"] );
+	t( "Nth-last-child(3n+2)", "#select1 option:nth-last-child(3n+2)", ["option1c"] );
+	t( "Nth-last-child(3n+3)", "#select1 option:nth-last-child(3n+3)", ["option1b"] );
+	t( "Nth-last-child(3n-1)", "#select1 option:nth-last-child(3n-1)", ["option1c"] );
+	t( "Nth-last-child(3n-2)", "#select1 option:nth-last-child(3n-2)", ["option1a", "option1d"] );
+	t( "Nth-last-child(3n-3)", "#select1 option:nth-last-child(3n-3)", ["option1b"] );
+	t( "Nth-last-child(3n+0)", "#select1 option:nth-last-child(3n+0)", ["option1b"] );
+	t( "Nth-last-child(-1n+3)", "#select1 option:nth-last-child(-1n+3)", ["option1b", "option1c", "option1d"] );
+	t( "Nth-last-child(-n+3)", "#select1 option:nth-last-child(-n+3)", ["option1b", "option1c", "option1d"] );
+	t( "Nth-last-child(-1n + 3)", "#select1 option:nth-last-child(-1n + 3)", ["option1b", "option1c", "option1d"] );
 
 	//  deepEqual( Sizzle( ":nth-last-child(n)", null, null, [ document.createElement("a") ].concat( q("ap") ) ), q("ap"), "Seeded nth-last-child" );
 });
@@ -889,15 +885,15 @@ test("pseudo - misc", function() {
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
 
-	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
-	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	//  t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	//  t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=\\)]", ["sndp"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
 
 	t( "Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"] );
-	t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
+	//t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
 	t( "Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"] );
-	t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
+	//t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
 	t( "Tokenization stressor", "a[class*=blog]:not(:has(*, :contains(!)), :contains(!)), br:contains(]), p:contains(]), :not(:empty):not(:parent)", ["ap", "mark","yahoo","simon"] );
 });
