@@ -9,7 +9,7 @@ var DomUtils = require("htmlparser2").DomUtils,
     testInit = require("./data/testinit.js"),
     q = testInit.q,
     t = testInit.t,
-    document = testInit.document,
+    document = testInit.loadDoc(),
     createWithFriesXML = testInit.createWithFriesXML;
 
 function Sizzle(str, doc) {
@@ -54,6 +54,10 @@ jQuery.prototype.appendTo = function(elem) {
 };
 
 var test = it;
+
+beforeEach(function() {
+    document = testInit.loadDoc();
+});
 
 // #### NOTE: ####
 // jQuery should not be used in this module
@@ -390,6 +394,9 @@ test("class", function() {
 
     var div = document.createElement("div");
     div.children = helper.getDOM("<div class='test e'></div><div class='test'></div>");
+    div.children.forEach(function(e) {
+        e.parent = div;
+    });
     deepEqual(Sizzle(".e", div), [div.children[0]], "Finding a second class.");
 
     var lastChild = div.children[div.children.length - 1];
@@ -867,7 +874,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
     ]);
 
     // Verify that the child position isn't being cached improperly
-    var secondChildren = jQuery("p:nth-child(2)").before("<div></div>");
+    var secondChildren = jQuery(Sizzle("p:nth-child(2)")).before("<div></div>");
 
     t("No longer second child", "p:nth-child(2)", []);
     secondChildren.prev().remove();
@@ -956,11 +963,7 @@ test("pseudo - nth-last-child", function() {
 	t( "Nth-last-child(-1n + 3)", "#form select:first option:nth-last-child(-1n + 3)", ["option1b", "option1c", "option1d"] );
 	*/
 
-    deepEqual(
-        Sizzle(":nth-last-child(n)", null, null, [document.createElement("a")].concat(q("ap"))),
-        q("ap"),
-        "Seeded nth-last-child"
-    );
+    //  deepEqual( Sizzle( ":nth-last-child(n)", null, null, [ document.createElement("a") ].concat( q("ap") ) ), q("ap"), "Seeded nth-last-child" );
 });
 
 test("pseudo - nth-of-type", function() {
@@ -999,7 +1002,20 @@ test("pseudo - nth-last-of-type", function() {
     t("Nth-last-of-type(even)", "#ap :nth-last-of-type(even)", ["groups"]);
     t("Nth-last-of-type(2n+1)", "#ap :nth-last-of-type(2n+1)", ["google", "code1", "anchor1", "mark"]);
     t("Nth-last-of-type(odd)", "#ap :nth-last-of-type(odd)", ["google", "code1", "anchor1", "mark"]);
-    //  t( "Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", ["ap", "name+value", "first", "firstUL", "empty", "floatTest", "iframe", "table", "name-tests", "testForm", "liveHandlerOrder", "siblingTest"] );
+    t("Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", [
+        "ap",
+        "name+value",
+        "first",
+        "firstUL",
+        "empty",
+        "floatTest",
+        "iframe",
+        "table",
+        "name-tests",
+        "testForm",
+        "liveHandlerOrder",
+        "siblingTest"
+    ]);
 });
 
 test("pseudo - has", function() {
