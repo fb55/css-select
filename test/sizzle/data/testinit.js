@@ -3,7 +3,7 @@ var assert = require("assert"),
     helper = require("../../tools/helper.js"),
     CSSselect = helper.CSSselect,
     path = require("path"),
-	document = helper.getDocument(path.join(__dirname, "index.html"));
+    document = helper.getDocument(path.join(__dirname, "index.html"));
 
 
 //in this module, the only use-case is to compare arrays of
