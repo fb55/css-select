@@ -4,7 +4,7 @@ describe("nwmatcher", function() {
 
 describe("sizzle", function() {
     describe("selector", function() {
-        //require("./sizzle/selector");
+        require("./sizzle/selector");
     });
 });
 
