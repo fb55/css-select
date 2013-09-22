@@ -16,7 +16,8 @@
 		"htmlparser2": ">= 2.2.8",
 		"cheerio-soupselect": "*",
 		"mocha": "*",
-		"expect.js": "*"
+		"expect.js": "*",
+		"cheerio": "*"
 	},
 	"scripts": {
 		"test": "mocha"
