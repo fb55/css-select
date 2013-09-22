@@ -1048,8 +1048,9 @@ test("pseudo - :target and :root", function() {
 	equal( Sizzle(":root")[0], document.documentElement, ":root selector" );
 });
 
+/*
 // TODO
-test("pseudo - :lang", noop, function() {
+test("pseudo - :lang", function() {
 	expect( 105 );
 
 	var docElem = document.documentElement,
@@ -1147,6 +1148,7 @@ test("pseudo - :lang", noop, function() {
 	}
 	docElem.lang = docLang;
 });
+*/
 
 test("caching", function() {
 	expect( 1 );
