@@ -18,7 +18,7 @@ CSSselect.pseudos.target = function(elem) {
 	The following is taken from https://github.com/ded/qwery/blob/master/tests/tests.js
 */
 
-CSSselect.pseudos.humanoid = function(e, v) {
+CSSselect.pseudos.humanoid = function(e) {
     return CSSselect.is(e, "li:contains(human)") || CSSselect.is(e, "ol:contains(human)");
 };
 
