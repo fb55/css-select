@@ -1,7 +1,6 @@
 var DomUtils = require("htmlparser2").DomUtils,
 	helper = require("../tools/helper.js"),
 	CSSselect = helper.CSSselect,
-	jQuery = require("cheerio"),
 	assert = require("assert"),
 	equal = assert.equal,
 	deepEqual = assert.deepEqual,
@@ -16,6 +15,43 @@ function Sizzle(str, doc){
 	return CSSselect(str, doc || document);
 }
 
+function jQuery(dom){
+	if(typeof dom === "string") dom = helper.getDOM(dom);
+	var ret = {
+		appendTo: function(elem){
+			if(typeof elem === "string") elem = Sizzle(elem)[0];
+			dom.forEach(function(child){
+				DomUtils.appendChild(elem, child);
+			});
+			return this;
+		},
+		remove: function(){
+			dom.forEach(DomUtils.removeElement);
+			return this;
+		},
+		prev: function(){
+			dom = dom.map(function(elem){
+				return elem.prev;
+			});
+			return this;
+		},
+		before: function(str){
+			dom.forEach(function(elem){
+				helper.getDOM(str).forEach(function(child){
+					DomUtils.prepend(elem, child);
+				});
+			});
+			return this;
+		}
+	};
+
+	dom.forEach(function(elem, i){
+		ret[i] = elem;
+	});
+
+	return ret;
+}
+
 Sizzle.matches = function(selector, elements){
 	return elements.filter(CSSselect.compile(selector));
 };
@@ -26,18 +62,7 @@ function noop(){}
 
 var expect = noop;
 
-function raises(func, check, msg){
-	var threw = false;
-
-	try {
-		func();
-	} catch(e){
-		threw = true;
-		ok(check(e), msg);
-	}
-
-	ok(!threw, "didn't throw");
-}
+var raises = assert.throws;
 
 function asyncTest(name, _, func){
 	it(name, func);
@@ -226,9 +251,7 @@ test("broken", function() {
 				// For whatever reason, without this,
 				// Sizzle.error will be called but no error will be seen in oldIE
 				Sizzle.call( null, selector );
-			}, function( e ) {
-				return e.message.indexOf("Syntax error") >= 0;
-			}, name + ": " + selector );
+			}, SyntaxError, name + ": " + selector );
 		};
 
 	//  broken( "Broken Selector", "[" );
@@ -236,33 +259,33 @@ test("broken", function() {
 	//  broken( "Broken Selector", "{" );
 	//  broken( "Broken Selector", "<" );
 	//  broken( "Broken Selector", "()" );
-	broken( "Broken Selector", "<>" );
-	//  broken( "Broken Selector", "{}" );
+	//  broken( "Broken Selector", "<>" );
+	broken( "Broken Selector", "{}" );
 	broken( "Broken Selector", "," );
 	broken( "Broken Selector", ",a" );
 	broken( "Broken Selector", "a," );
 	// Hangs on IE 9 if regular expression is inefficient
 	//  broken( "Broken Selector", "[id=012345678901234567890123456789");
-	//  broken( "Doesn't exist", ":visble" );
-	//  broken( "Nth-child", ":nth-child" );
+	broken( "Doesn't exist", ":visble" );
+	broken( "Nth-child", ":nth-child" );
 	// Sigh again. IE 9 thinks this is also a real selector
 	// not super critical that we fix this case
-	//  broken( "Nth-child", ":nth-child(-)" );
+	broken( "Nth-child", ":nth-child(-)" );
 	// Sigh. WebKit thinks this is a real selector in qSA
 	// They've already fixed this and it'll be coming into
 	// current browsers soon. Currently, Safari 5.0 still has this problem
-	//  broken( "Nth-child", ":nth-child(asdf)", [] );
-	//  broken( "Nth-child", ":nth-child(2n+-0)" );
-	//  broken( "Nth-child", ":nth-child(2+0)" );
-	//  broken( "Nth-child", ":nth-child(- 1n)" );
-	//  broken( "Nth-child", ":nth-child(-1 n)" );
-	//  broken( "First-child", ":first-child(n)" );
-	//  broken( "Last-child", ":last-child(n)" );
-	//  broken( "Only-child", ":only-child(n)" );
-	//  broken( "Nth-last-last-child", ":nth-last-last-child(1)" );
-	//  broken( "First-last-child", ":first-last-child" );
-	//  broken( "Last-last-child", ":last-last-child" );
-	//  broken( "Only-last-child", ":only-last-child" );
+	broken( "Nth-child", ":nth-child(asdf)", [] );
+	broken( "Nth-child", ":nth-child(2n+-0)" );
+	broken( "Nth-child", ":nth-child(2+0)" );
+	broken( "Nth-child", ":nth-child(- 1n)" );
+	broken( "Nth-child", ":nth-child(-1 n)" );
+	broken( "First-child", ":first-child(n)" );
+	broken( "Last-child", ":last-child(n)" );
+	broken( "Only-child", ":only-child(n)" );
+	broken( "Nth-last-last-child", ":nth-last-last-child(1)" );
+	broken( "First-last-child", ":first-last-child" );
+	broken( "Last-last-child", ":last-last-child" );
+	broken( "Only-last-child", ":only-last-child" );
 
 	// Make sure attribute value quoting works correctly. See: #6093
 	attrbad = jQuery("<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>").appendTo("#qunit-fixture");
@@ -337,7 +360,7 @@ test("class", function() {
 	t( "Parent Class Selector", "p .blog", ["mark","simon"] );
 
 	t( "Class selector using UTF8", ".台北Táiběi", ["utf8class1"] );
-	//t( "Class selector using UTF8", ".台北", ["utf8class1","utf8class2"] );
+	t( "Class selector using UTF8", ".台北", ["utf8class1","utf8class2"] );
 	t( "Class selector using UTF8", ".台北Táiběi.台北", ["utf8class1"] );
 	t( "Class selector using UTF8", ".台北Táiběi, .台北", ["utf8class1","utf8class2"] );
 	t( "Descendant class selector using UTF8", "div .台北Táiběi", ["utf8class1"] );
@@ -405,7 +428,7 @@ test("name", function() {
 	t( "Find elements that have similar IDs", "[name=tName2]", ["tName2ID"] );
 	t( "Find elements that have similar IDs", "#tName2ID", ["tName2ID"] );
 });
-/* //depends on qunit elements
+
 test("multiple", function() {
 	expect(6);
 
@@ -416,7 +439,7 @@ test("multiple", function() {
 	t( "Comma Support", "h2,#qunit-fixture p ", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
 	t( "Comma Support", "h2\t,\r#qunit-fixture p\n", ["qunit-banner","qunit-userAgent","firstp","ap","sndp","en","sap","first"] );
 });
-*/
+
 test("child and adjacent", function() {
 	expect( 42 );
 
@@ -667,7 +690,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
 
 	t( "No longer second child", "p:nth-child(2)", [] );
 	secondChildren.prev().remove();
-	//  t( "Restored second child", "p:nth-child(2)", ["ap","en"] ); //`.prev` currently doesn't work in cheerio
+	//  t( "Restored second child", "p:nth-child(2)", ["ap","en"] );
 });
 
 test("pseudo - nth-child", function() {
