@@ -10,14 +10,13 @@
 	},
 	"dependencies": {
 		"CSSwhat": "0.4",
-		"domutils": "1"
+		"domutils": "1.2"
 	},
 	"devDependencies": {
-		"htmlparser2": ">= 2.2.8",
+		"htmlparser2": "*",
 		"cheerio-soupselect": "*",
 		"mocha": "*",
-		"expect.js": "*",
-		"cheerio": "*"
+		"expect.js": "*"
 	},
 	"scripts": {
 		"test": "mocha"
