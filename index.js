@@ -10,17 +10,21 @@ var Pseudos     = require("./lib/pseudos.js"),
     falseFunc   = require("./lib/basefunctions.js").falseFunc,
     compile     = require("./lib/compile.js");
 
-function selectAll(query, elems, options){
-	if(typeof query !== "function") query = compile(query, options);
-	if(!Array.isArray(elems)) elems = getChildren(elems);
-	return (!elems || query === falseFunc) ? [] : findAll(query, elems);
+function getSelectorFunc(searchFunc){
+	return function select(query, elems, options){
+		if(typeof query !== "function") query = compile(query, options);
+		if(!Array.isArray(elems)) elems = getChildren(elems);
+		return searchFunc(query, elems);
+	};
 }
 
-function selectOne(query, elems, options){
-	if(typeof query !== "function") query = compile(query, options);
-	if(!Array.isArray(elems)) elems = getChildren(elems);
-	return (!elems || query === falseFunc) ? null : findOne(query, elems);
-}
+var selectAll = getSelectorFunc(function selectAll(query, elems){
+	return (query === falseFunc || !elems || elems.length === 0) ? [] : findAll(query, elems);
+});
+
+var selectOne = getSelectorFunc(function selectOne(query, elems){
+	return (query === falseFunc || !elems || elems.length === 0) ? null : findOne(query, elems);
+});
 
 function is(elem, query, options){
 	return (typeof query === "function" ? query : compile(query, options))(elem);
