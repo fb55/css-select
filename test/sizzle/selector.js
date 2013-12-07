@@ -1,4 +1,4 @@
-var DomUtils = require("htmlparser2").DomUtils,
+var DomUtils = require("domutils"),
 	helper = require("../tools/helper.js"),
 	CSSselect = helper.CSSselect,
 	assert = require("assert"),
