@@ -10,7 +10,7 @@
 	},
 	"dependencies": {
 		"CSSwhat": "0.4",
-		"domutils": "1.2"
+		"domutils": "1.2.1"
 	},
 	"devDependencies": {
 		"htmlparser2": "*",
