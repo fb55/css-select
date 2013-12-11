@@ -7,6 +7,7 @@ var Pseudos = require("./lib/pseudos.js"),
     findOne = DomUtils.findOne,
     findAll = DomUtils.findAll,
     getChildren = DomUtils.getChildren,
+    removeSubsets = DomUtils.removeSubsets,
     falseFunc = require("./lib/basefunctions.js").falseFunc,
     compile = require("./lib/compile.js");
 
@@ -14,6 +15,7 @@ function getSelectorFunc(searchFunc) {
     return function select(query, elems, options) {
         if (typeof query !== "function") query = compile(query, options);
         if (!Array.isArray(elems)) elems = getChildren(elems);
+        else elems = removeSubsets(elems);
         return searchFunc(query, elems);
     };
 }
