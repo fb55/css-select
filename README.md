@@ -54,3 +54,7 @@ Arguments are the same as for `CSSselect(query, elems)`. Only returns the first 
 ---
 
 License: BSD-like
+
+
+[![Bitdeli Badge](https://d2weczhvl823v0.cloudfront.net/fb55/cssselect/trend.png)](https://bitdeli.com/free "Bitdeli Badge")
+
