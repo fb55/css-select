@@ -1,25 +1,30 @@
 {
-	"name": "CSSselect",
-	"version": "0.4.1",
-	"description": "a CSS selector compiler/engine",
-	"author": "Felix Boehm <me@feedic.com>",
-	"keywords": ["css", "selector"],
-	"repository": {
-		"type": "git",
-		"url": "git://github.com/fb55/CSSselect.git"
-	},
-	"dependencies": {
-		"CSSwhat": "0.4",
-		"domutils": "1.4"
-	},
-	"devDependencies": {
-		"htmlparser2": "*",
-		"cheerio-soupselect": "*",
-		"mocha": "*",
-		"expect.js": "*"
-	},
-	"scripts": {
-		"test": "mocha"
-	},
-	"license": "BSD-like"
+  "name": "CSSselect",
+  "version": "0.4.1",
+  "description": "a CSS selector compiler/engine",
+  "author": "Felix Boehm <me@feedic.com>",
+  "keywords": [
+    "css",
+    "selector"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/fb55/CSSselect.git"
+  },
+  "dependencies": {
+    "CSSwhat": "0.4",
+    "domutils": "1.4",
+    "boolbase": "~1.0.0",
+    "nth-check": "~1.0.0"
+  },
+  "devDependencies": {
+    "htmlparser2": "*",
+    "cheerio-soupselect": "*",
+    "mocha": "*",
+    "expect.js": "*"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "license": "BSD-like"
 }

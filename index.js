@@ -8,7 +8,7 @@ var Pseudos = require("./lib/pseudos.js"),
     findAll = DomUtils.findAll,
     getChildren = DomUtils.getChildren,
     removeSubsets = DomUtils.removeSubsets,
-    falseFunc = require("./lib/basefunctions.js").falseFunc,
+    falseFunc = require("boolbase").falseFunc,
     compile = require("./lib/compile.js"),
     compileUnsafe = compile.compileUnsafe;
 
