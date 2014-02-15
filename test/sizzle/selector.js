@@ -2,6 +2,7 @@ var DomUtils = require("domutils"),
 	helper = require("../tools/helper.js"),
 	CSSselect = helper.CSSselect,
 	assert = require("assert"),
+	raises = assert.throws,
 	equal = assert.equal,
 	deepEqual = assert.deepEqual,
 	ok = assert.ok,
@@ -9,11 +10,19 @@ var DomUtils = require("domutils"),
 	q = testInit.q,
 	t = testInit.t,
 	document = testInit.loadDoc(),
-	createWithFriesXML = testInit.createWithFriesXML;
+	createWithFriesXML = testInit.createWithFriesXML,
+	expect = function(){},
+	test = it;
 
 function Sizzle(str, doc){
 	return CSSselect(str, doc || document);
 }
+
+Sizzle.matches = function(selector, elements){
+	return elements.filter(CSSselect.compile(selector));
+};
+
+Sizzle.matchesSelector = CSSselect.is;
 
 function jQuery(dom){
 	if(typeof dom === "string") dom = helper.getDOM(dom);
@@ -52,33 +61,9 @@ function jQuery(dom){
 	return ret;
 }
 
-Sizzle.matches = function(selector, elements){
-	return elements.filter(CSSselect.compile(selector));
-};
-
-Sizzle.matchesSelector = CSSselect.is;
-
-function noop(){}
-
-var expect = noop;
-
-var raises = assert.throws;
-
 function asyncTest(name, _, func){
 	it(name, func);
 }
-
-//add an `appendTo` method to cheerio
-jQuery.prototype.appendTo = function(elem){
-	if(typeof elem === "string") elem = Sizzle(elem)[0];
-	Array.prototype.push.apply(elem.children, this);
-	this.each(function(i, child){
-		child.parent = elem;
-	});
-	return this;
-};
-
-var test = it;
 
 beforeEach(function(){
 	document = testInit.loadDoc();
