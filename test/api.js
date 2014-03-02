@@ -36,6 +36,8 @@ describe("API", function(){
 			assert.equal(func, bools.falseFunc);
 			func = CSSselect._compileUnsafe(":not(:nth-child(-1n-1))");
 			assert.equal(func, bools.trueFunc);
+			func = CSSselect._compileUnsafe(":not(:not(:not(*)))");
+			assert.equal(func, bools.falseFunc);
 		});
 
 		it("in :has", function(){
