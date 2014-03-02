@@ -52,3 +52,6 @@ CSSselect.is = is;
 //legacy methods (might be removed)
 CSSselect.parse = compile;
 CSSselect.iterate = selectAll;
+
+//useful for debugging
+CSSselect._compileUnsafe = compileUnsafe;

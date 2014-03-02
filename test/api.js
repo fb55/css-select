@@ -29,4 +29,31 @@ describe("API", function(){
 		});
 		//probably more cases should be added here
 	});
+
+	describe("optimizes unsatisfiable and universally valid selectors", function(){
+		it("in :not", function(){
+			var func = CSSselect._compileUnsafe(":not(*)");
+			assert.equal(func, bools.falseFunc);
+			func = CSSselect._compileUnsafe(":not(:nth-child(-1n-1))");
+			assert.equal(func, bools.trueFunc);
+		});
+
+		it("in :has", function(){
+			var matches = CSSselect.selectAll(":has(*)", [dom]);
+			assert.equal(matches.length, 1);
+			assert.equal(matches[0], dom);
+			var func = CSSselect._compileUnsafe(":has(:nth-child(-1n-1))");
+			assert.equal(func, bools.falseFunc);
+		});
+
+		it("should skip unsatisfiable", function(){
+			var func = CSSselect._compileUnsafe("* :not(*) foo");
+			assert.equal(func, bools.falseFunc);
+		});
+
+		it("should promote universally valid", function(){
+			var func = CSSselect._compileUnsafe("*, foo");
+			assert.equal(func, bools.trueFunc);
+		});
+	});
 });
