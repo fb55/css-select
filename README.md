@@ -51,6 +51,40 @@ By stacking functions!
 
 _//TODO: Better explanation. For now, if you're interested, have a look at the source code._
 
+##Supported selectors:
+
+* Universal (`*`)
+* Tag (`<tagname>`)
+* Descendant (` `)
+* Child (`>`)
+* Parent (`<`) *
+* Sibling (`+`)
+* Adjacent (`~`)
+* Attribute (`[attr=foo]`), with supported comparisons:
+  * `[attr]` (existential)
+  * `=`
+  * `~=`
+  * `|=`
+  * `*=`
+  * `^=`
+  * `$=`
+  * `!=` *
+  * Also, `i` can be added after the comparison to make the comparison case-insensitive (eg. `[attr=foo i]`) *
+* Pseudos:
+  * `:not`
+  * `:contains`
+  * `:has`
+  * `:root`
+  * `:empty`
+  * `:parent`
+  * `:[first|last]-child[-of-type]`
+  * `:only-of-type`, `:only-child`
+  * `:nth-[last-]child[-of-type]`
+  * `:selected` *, `:checked`
+  * `:enabled`, `:disabled`
+  * `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`, `:password`, `:reset`, `:radio` etc. *
+
+__*__: Non-standard extensions
 
 ---
 
