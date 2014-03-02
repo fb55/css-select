@@ -72,11 +72,11 @@ _//TODO: Better explanation. For now, if you're interested, have a look at the s
   * Also, `i` can be added after the comparison to make the comparison case-insensitive (eg. `[attr=foo i]`) *
 * Pseudos:
   * `:not`
-  * `:contains`
-  * `:has`
+  * `:contains` *
+  * `:has` *
   * `:root`
   * `:empty`
-  * `:parent`
+  * `:parent` *
   * `:[first|last]-child[-of-type]`
   * `:only-of-type`, `:only-child`
   * `:nth-[last-]child[-of-type]`
