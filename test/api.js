@@ -20,4 +20,15 @@ describe("API", function() {
             assert.equal(matches.length, 1, "Removes duplicate matches");
         });
     });
+
+    describe("can be queried by function", function() {
+        it("in `is`", function() {
+            assert(
+                CSSselect.is(dom, function(elem) {
+                    return elem.attribs.id === "foo";
+                })
+            );
+        });
+        //probably more cases should be added here
+    });
 });
