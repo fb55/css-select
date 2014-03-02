@@ -30,7 +30,7 @@ describe("API", function(){
 		//probably more cases should be added here
 	});
 
-	describe("optimizes unsatisfiable and universally valid selectors", function(){
+	describe("unsatisfiable and universally valid selectors", function(){
 		it("in :not", function(){
 			var func = CSSselect._compileUnsafe(":not(*)");
 			assert.equal(func, bools.falseFunc);
@@ -59,7 +59,7 @@ describe("API", function(){
 		});
 	});
 
-	describe("should have a functional parent selector (<)", function(){
+	describe("parent selector (<)", function(){
 		it("should select the right element", function(){
 			var matches = CSSselect.selectAll("p < div", [dom]);
 			assert.equal(matches.length, 1);
@@ -68,6 +68,22 @@ describe("API", function(){
 		it("should not select nodes without children", function(){
 			var matches = CSSselect.selectAll("p < div", [dom]);
 			assert.deepEqual(matches, CSSselect.selectAll("* < *", [dom]));
+		});
+	});
+
+	describe("selectOne", function(){
+		it("should select elements in traversal order", function(){
+			var match = CSSselect.selectOne("p", [dom]);
+			assert.equal(match, dom.children[0]);
+			match = CSSselect.selectOne(":contains(foo)", [dom]);
+			assert.equal(match, dom);
+		});
+		it("should take shortcuts when applicable", function(){
+			//TODO this is currently only visible in coverage reports
+			var match = CSSselect.selectOne(bools.falseFunc, [dom]);
+			assert.equal(match, null);
+			match = CSSselect.selectOne("*", []);
+			assert.equal(match, null);
 		});
 	});
 });
