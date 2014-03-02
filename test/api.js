@@ -3,7 +3,7 @@ var CSSselect = require(".."),
     bools = require("boolbase"),
     assert = require("assert");
 
-var dom = makeDom("<div id=foo><p></p></div>")[0];
+var dom = makeDom("<div id=foo><p>foo</p></div>")[0];
 
 describe("API", function() {
     describe("removes duplicates", function() {
@@ -58,6 +58,18 @@ describe("API", function() {
         it("should promote universally valid", function() {
             var func = CSSselect._compileUnsafe("*, foo");
             assert.equal(func, bools.trueFunc);
+        });
+    });
+
+    describe("should have a functional parent selector (<)", function() {
+        it("should select the right element", function() {
+            var matches = CSSselect.selectAll("p < div", [dom]);
+            assert.equal(matches.length, 1);
+            assert.equal(matches[0], dom);
+        });
+        it("should not select nodes without children", function() {
+            var matches = CSSselect.selectAll("p < div", [dom]);
+            assert.deepEqual(matches, CSSselect.selectAll("* < *", [dom]));
         });
     });
 });
