@@ -8,6 +8,12 @@ CSSselect turns CSS selectors into functions that tests if elements match them. 
 
 In its default configuration, CSSselect queries the DOM structure of the [`domhandler`](https://github.com/fb55/domhandler) module.
 
+__Features:__
+
+- Full implementation of CSS3 selectors
+- Partial implementation of jQuery/Sizzle extensions
+- 100% test coverage
+
 ##API
 
 ```js
