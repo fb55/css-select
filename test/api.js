@@ -104,12 +104,8 @@ describe("API", function(){
 			assert.throws(CSSselect.compile.bind(null, "[attr!=val i]", opts), SyntaxError);
 			assert.throws(CSSselect.compile.bind(null, "foo < bar", opts), SyntaxError);
 			assert.throws(CSSselect.compile.bind(null, ":not(:parent)", opts), SyntaxError);
-
-			/*
-			//TODO
 			assert.throws(CSSselect.compile.bind(null, ":not(a > b)", opts), SyntaxError);
 			assert.throws(CSSselect.compile.bind(null, ":not(a, b)",  opts), SyntaxError);
-			*/
 		});
 	});
 });
