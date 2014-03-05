@@ -89,10 +89,27 @@ describe("API", function(){
 	});
 
 	describe("options", function(){
+		var opts = {xmlMode: true};
 		it("should recognize xmlMode in :has and :not", function(){
-			assert(CSSselect.is(xmlDom, "DiV:has(P)",   {xmlMode: true}));
-			assert(CSSselect.is(xmlDom, "DiV:not(div)", {xmlMode: true}));
-			assert(CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", {xmlMode: true}));
+			assert(CSSselect.is(xmlDom, "DiV:has(P)",   opts));
+			assert(CSSselect.is(xmlDom, "DiV:not(div)", opts));
+			assert(CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", opts));
+		});
+
+		it("should be strict", function(){
+			var opts = {strict: true};
+			assert.throws(CSSselect.compile.bind(null, ":checkbox", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, "[attr=val i]", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, "[attr!=val]", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, "[attr!=val i]", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, "foo < bar", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, ":not(:parent)", opts), SyntaxError);
+
+			/*
+			//TODO
+			assert.throws(CSSselect.compile.bind(null, ":not(a > b)", opts), SyntaxError);
+			assert.throws(CSSselect.compile.bind(null, ":not(a, b)",  opts), SyntaxError);
+			*/
 		});
 	});
 });
