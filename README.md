@@ -46,6 +46,7 @@ Arguments are the same as for `CSSselect(query, elems)`. Only returns the first 
 
 - `xmlMode`: When enabled, tag names will be case-sensitive. Default: `false`.
 - `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
+- `rootFunc`: The last function in the stack. Will be called with the last element that's looked at. Should return `true` if it shouldn't be called again for every matching subselector.
 
 ##Why?
 
