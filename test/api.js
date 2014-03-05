@@ -3,7 +3,8 @@ var CSSselect = require(".."),
     bools = require("boolbase"),
     assert = require("assert");
 
-var dom = makeDom("<div id=foo><p>foo</p></div>")[0];
+var dom = makeDom("<div id=foo><p>foo</p></div>")[0],
+    xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", {xmlMode: true})[0];
 
 describe("API", function(){
 	describe("removes duplicates", function(){
@@ -84,6 +85,14 @@ describe("API", function(){
 			assert.equal(match, null);
 			match = CSSselect.selectOne("*", []);
 			assert.equal(match, null);
+		});
+	});
+
+	describe("options", function(){
+		it("should recognize xmlMode in :has and :not", function(){
+			assert(CSSselect.is(xmlDom, "DiV:has(P)",   {xmlMode: true}));
+			assert(CSSselect.is(xmlDom, "DiV:not(div)", {xmlMode: true}));
+			assert(CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", {xmlMode: true}));
 		});
 	});
 });
