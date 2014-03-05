@@ -20,10 +20,11 @@ __Features:__
 var CSSselect = require("CSSselect");
 ```
 
-####`CSSselect(query, elems)`
+####`CSSselect(query, elems, options)`
 
 - `query` can be either a function or a string. If it's a string, the string is compiled as a CSS selector.
 - `elems` can be either an array of elements, or a single element. If it is an element, its children will be used (so we're working with an array again).
+- `options` is described below.
 
 Queries `elems`, returns an array containing all matches.
 
@@ -33,13 +34,18 @@ Aliases: `CSSselect.selectAll(query, elems)`, `CSSselect.iterate(query, elems)`.
 
 Compiles the query, returns the function.
 
-####`CSSselect.is(elem, query)`
+####`CSSselect.is(elem, query, options)`
 
 Tests whether or not an element is matched by `query`. `query` can be either a CSS selector or a function.
 
-####`CSSselect.selectOne(query, elems)`
+####`CSSselect.selectOne(query, elems, options)`
 
 Arguments are the same as for `CSSselect(query, elems)`. Only returns the first match, or `null` if there was no match.
+
+###Options
+
+- `xmlMode`: When enabled, tag names will be case-sensitive. Default: `false`.
+- `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
 
 ##Why?
 
