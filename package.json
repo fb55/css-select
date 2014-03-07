@@ -28,7 +28,7 @@
   },
   "scripts": {
     "test": "mocha",
-    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat coverage/lcov.info | coveralls"
+    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && (cat coverage/lcov.info | coveralls || exit 0)"
   },
   "license": "BSD-like"
 }
