@@ -1,4 +1,4 @@
-#CSSselect [![Build Status](https://secure.travis-ci.org/fb55/CSSselect.png?branch=master)](http://travis-ci.org/fb55/CSSselect)
+#CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](http://img.shields.io/travis/fb55/CSSselect.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect)
 
 a CSS selector compiler/engine
 
