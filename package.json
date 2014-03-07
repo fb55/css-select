@@ -21,10 +21,14 @@
     "htmlparser2": "*",
     "cheerio-soupselect": "*",
     "mocha": "*",
+    "mocha-lcov-reporter": "*",
+    "coveralls": "*",
+    "istanbul":  "*",
     "expect.js": "*"
   },
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "coveralls": "istanbul cover _mocha --report lcovonly -- -R spec && cat coverage/lcov.info | coveralls"
   },
   "license": "BSD-like"
 }
