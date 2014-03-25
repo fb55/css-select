@@ -1,4 +1,4 @@
-#CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](http://img.shields.io/travis/fb55/CSSselect.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Coverage](http://img.shields.io/coveralls/fb55/CSSselect.svg)](https://coveralls.io/r/fb55/CSSselect)
+#CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](https://travis-ci.org/fb55/htmlparser2.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Coverage](http://img.shields.io/coveralls/fb55/CSSselect.svg)](https://coveralls.io/r/fb55/CSSselect)
 
 a CSS selector compiler/engine
 
