@@ -11,6 +11,10 @@
     "type": "git",
     "url": "git://github.com/fb55/CSSselect.git"
   },
+  "files": [
+    "index.js",
+    "lib"
+  ],
   "dependencies": {
     "CSSwhat": "0.4",
     "domutils": "1.4",
