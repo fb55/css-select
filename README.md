@@ -1,12 +1,12 @@
-# CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](https://travis-ci.org/fb55/htmlparser2.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Coverage](https://coveralls.io/repos/fb55/CSSselect/badge.svg?branch=master)](https://coveralls.io/r/fb55/CSSselect)
+# css-select [![NPM version](http://img.shields.io/npm/v/css-select.svg)](https://npmjs.org/package/css-select) [![Build Status](https://travis-ci.org/fb55/htmlparser2.svg)](http://travis-ci.org/fb55/css-select) [![Downloads](https://img.shields.io/npm/dm/css-select.svg)](https://npmjs.org/package/css-select) [![Coverage](https://coveralls.io/repos/fb55/css-select/badge.svg?branch=master)](https://coveralls.io/r/fb55/css-select)
 
 a CSS selector compiler/engine
 
 ## What?
 
-CSSselect turns CSS selectors into functions that tests if elements match them. When searching for elements, testing is executed "from the top", similar to how browsers execute CSS selectors.
+css-select turns CSS selectors into functions that tests if elements match them. When searching for elements, testing is executed "from the top", similar to how browsers execute CSS selectors.
 
-In its default configuration, CSSselect queries the DOM structure of the [`domhandler`](https://github.com/fb55/domhandler) module (also known as htmlparser2 DOM).
+In its default configuration, css-select queries the DOM structure of the [`domhandler`](https://github.com/fb55/domhandler) module (also known as htmlparser2 DOM).
 
 __Features:__
 
@@ -23,7 +23,7 @@ While this works, it has some downsides: Children of `a`s will be checked multip
 
 The far more efficient approach is to first look for `b` elements, then check if they have superior `a` elements: Using big O notation again, that would be `O(n)`. That's called right-to-left execution.
 
-And that's what CSSselect does – and why it's quite performant.
+And that's what css-select does – and why it's quite performant.
 
 ## How does it work?
 
@@ -56,7 +56,7 @@ _//TODO: More in-depth description. Implementation details. Build a spaceship._
 ## API
 
 ```js
-var CSSselect = require("CSSselect");
+var CSSselect = require("css-select");
 ```
 
 #### `CSSselect(query, elems, options)`
