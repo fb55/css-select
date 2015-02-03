@@ -62,6 +62,25 @@ describe("API", function() {
         });
     });
 
+    describe(":matches", function() {
+        it("should select multiple elements", function() {
+            var matches = CSSselect.selectAll(":matches(p, div)", [dom]);
+            assert.equal(matches.length, 2);
+            matches = CSSselect.selectAll(":matches(div, :not(div))", [dom]);
+            assert.equal(matches.length, 2);
+            matches = CSSselect.selectAll(":matches(boo, baa, tag, div, foo, bar, baz)", [dom]);
+            assert.equal(matches.length, 1);
+            assert.equal(matches[0], dom);
+        });
+
+        it("should strip quotes", function() {
+            var matches = CSSselect.selectAll(":matches('p, div')", [dom]);
+            assert.equal(matches.length, 2);
+            matches = CSSselect.selectAll(':matches("p, div")', [dom]);
+            assert.equal(matches.length, 2);
+        });
+    });
+
     describe("parent selector (<)", function() {
         it("should select the right element", function() {
             var matches = CSSselect.selectAll("p < div", [dom]);
