@@ -1,4 +1,4 @@
-#CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](https://travis-ci.org/fb55/htmlparser2.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Coverage](http://img.shields.io/coveralls/fb55/CSSselect.svg)](https://coveralls.io/r/fb55/CSSselect)
+#CSSselect [![NPM version](http://img.shields.io/npm/v/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Build Status](https://travis-ci.org/fb55/htmlparser2.svg)](http://travis-ci.org/fb55/CSSselect) [![Downloads](https://img.shields.io/npm/dm/CSSselect.svg)](https://npmjs.org/package/CSSselect) [![Coverage](https://coveralls.io/repos/fb55/CSSselect/badge.svg?branch=master)](https://coveralls.io/r/fb55/CSSselect)
 
 a CSS selector compiler/engine
 
@@ -96,8 +96,9 @@ _//TODO: Better explanation. For now, if you're interested, have a look at the s
   * `:selected` *, `:checked`
   * `:enabled`, `:disabled`
   * `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`, `:password`, `:reset`, `:radio` etc. *
+  * `:matches` *
 
-__*__: Non-standard extensions
+__*__: Not part of CSS3
 
 ---
 
