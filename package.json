@@ -1,22 +1,23 @@
 {
-  "name": "CSSselect",
-  "version": "0.7.0",
+  "name": "css-select",
+  "version": "1.0.0",
   "description": "a CSS selector compiler/engine",
   "author": "Felix Boehm <me@feedic.com>",
   "keywords": [
     "css",
-    "selector"
+    "selector",
+    "sizzle"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/fb55/CSSselect.git"
+    "url": "git://github.com/fb55/css-select.git"
   },
   "files": [
     "index.js",
     "lib"
   ],
   "dependencies": {
-    "CSSwhat": "0.4",
+    "css-what": "1.0",
     "domutils": "1.4",
     "boolbase": "~1.0.0",
     "nth-check": "~1.0.0"
