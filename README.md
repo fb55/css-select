@@ -31,7 +31,7 @@ By building a stack of functions.
 
 _Wait, what?_
 
-Okay, so let's suppose we want to compile the selector `a b` again, for right-to-left execution. We start by _parsing_ the selector, which means we turn the selector into an array of the building-blocks of the selector, so we can distinguish them easily. That's what the [`CSSwhat`](https://github.com/fb55/CSSwhat) module is for, if you want to have a look.
+Okay, so let's suppose we want to compile the selector `a b` again, for right-to-left execution. We start by _parsing_ the selector, which means we turn the selector into an array of the building-blocks of the selector, so we can distinguish them easily. That's what the [`css-what`](https://github.com/fb55/css-what) module is for, if you want to have a look.
 
 Anyway, after parsing, we end up with an array like this one:
 
