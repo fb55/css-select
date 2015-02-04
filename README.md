@@ -19,7 +19,7 @@ __Features:__
 
 The traditional approach of executing CSS selectors, named left-to-right execution, is to execute every component of the selector in order, from left to right _(duh)_. The execution of the selector `a b` for example will first query for `a` elements, then search these for `b` elements. (That's the approach of eg. [`Sizzle`](https://github.com/jquery/sizzle), [`nwmatcher`](https://github.com/dperini/nwmatcher/) and [`qwery`](https://github.com/ded/qwery).)
 
-While this works, it has some downsides: Children of `a`s will be checked multiple times; first, to check if they are also `a`s, then, for every superior `a` once, if they are `b`s. Using [Big O notation](http://en.wikipedia.org/wiki/Big_O_notation), that would be `O(n^k)`, where `k` is the number of descendant selectors (that's the space in the example above).
+While this works, it has some downsides: Children of `a`s will be checked multiple times; first, to check if they are also `a`s, then, for every superior `a` once, if they are `b`s. Using [Big O notation](http://en.wikipedia.org/wiki/Big_O_notation), that would be `O(n^(k+1))`, where `k` is the number of descendant selectors (that's the space in the example above).
 
 The far more efficient approach is to first look for `b` elements, then check if they have superior `a` elements: Using big O notation again, that would be `O(n)`. That's called right-to-left execution.
 
