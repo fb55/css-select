@@ -17,7 +17,7 @@
     "lib"
   ],
   "dependencies": {
-    "css-what": "1.0",
+    "css-what": "2.0",
     "domutils": "1.4",
     "boolbase": "~1.0.0",
     "nth-check": "~1.0.0"
