@@ -116,8 +116,10 @@ Arguments are the same as for `CSSselect(query, elems)`. Only returns the first 
   * `:[first|last]-child[-of-type]`
   * `:only-of-type`, `:only-child`
   * `:nth-[last-]child[-of-type]`
+  * `:link`, `:visited` (the latter doesn't match any elements)
   * `:selected` *, `:checked`
   * `:enabled`, `:disabled`
+  * `:required`, `:optional`
   * `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`, `:password`, `:reset`, `:radio` etc. *
   * `:matches` *
 
