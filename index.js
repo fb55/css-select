@@ -14,7 +14,7 @@ var Pseudos = require("./lib/pseudos.js"),
 
 function getSelectorFunc(searchFunc) {
     return function select(query, elems, options) {
-        if (typeof query !== "function") query = compileUnsafe(query, options);
+        if (typeof query !== "function") query = compileUnsafe(query, options, elems);
         if (!Array.isArray(elems)) elems = getChildren(elems);
         else elems = removeSubsets(elems);
         return searchFunc(query, elems);
@@ -30,7 +30,7 @@ var selectOne = getSelectorFunc(function selectOne(query, elems) {
 });
 
 function is(elem, query, options) {
-    return (typeof query === "function" ? query : compile(query, options))(elem);
+    return (typeof query === "function" ? query : compile(query, options, elem))(elem);
 }
 
 /*
