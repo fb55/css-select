@@ -131,7 +131,7 @@ describe("API", function(){
 			var div = CSSselect("div", [dom]),
 			    p = CSSselect("p", [dom]);
 
-			assert.equal(CSSselect.selectOne("div", div, {context: div}), null);
+			assert.equal(CSSselect.selectOne("div", div, {context: div}), div[0]);
 			assert.equal(CSSselect.selectOne("div", div, {context: p}), null);
 			assert.deepEqual(CSSselect.selectAll("p", div, {context: div}), p);
 		});
