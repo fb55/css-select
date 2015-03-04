@@ -30,7 +30,7 @@ var selectOne = getSelectorFunc(function selectOne(query, elems) {
 });
 
 function is(elem, query, options) {
-    return (typeof query === "function" ? query : compile(query, options, elem))(elem);
+    return (typeof query === "function" ? query : compile(query, options))(elem);
 }
 
 /*
