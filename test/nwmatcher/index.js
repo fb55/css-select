@@ -56,7 +56,7 @@ var runner = {
 				it(name, function(){
 					tests[name].call(validators);
 				});
-			});	
+			});
 		}
 	}
 }
@@ -123,7 +123,7 @@ var RUN_BENCHMARKS = false;
 			this.assertEquivalent(select('li#item_1.first.nonexistent'), []);
 		}
 	});
-	
+
 	runner.addGroup("Attribute Selectors").addTests(null, {
 		"[foo]": function(){
 			this.assertEquivalent(select('[href]', document.body), select('a[href]', document.body));
@@ -243,7 +243,7 @@ var RUN_BENCHMARKS = false;
 		}
 
 	});
-	
+
 	runner.addGroup("Structural pseudo-classes").addTests(null, {
 		"E:first-child": function(){
 			this.assertEqual(select('#level1>*:first-child')[0], getById('level2_1'));
@@ -320,7 +320,7 @@ var RUN_BENCHMARKS = false;
 			this.assertEquivalent(select('span:empty > *'), []);
 		}
 	});
-	
+
 	runner.addTests(null, {
 		"E:not(s)": function(){
 			//Negation pseudo-class
@@ -341,7 +341,7 @@ var RUN_BENCHMARKS = false;
 			this.assertEqual(select('#p a:not([rel$="nofollow"])>em')[0], getById('em'), 'attribute 4 (without whitespace)');
 		}
 	});
-	
+
 	runner.addGroup("UI element states pseudo-classes").addTests(null, {
 		"E:disabled": function(){
 			this.assertEqual(select('#troubleForm > p > *:disabled')[0], getById('disabled_text_field'));
@@ -350,7 +350,7 @@ var RUN_BENCHMARKS = false;
 			this.assertEquivalent(select('#troubleForm *:checked'), getById('checked_box', 'checked_radio'));
 		}
 	});
-	
+
 	runner.addGroup("Combinators").addTests(null, {
 		"E F": function(){
 			//Descendant
@@ -414,7 +414,7 @@ var RUN_BENCHMARKS = false;
 			}
 		}
 	});
-	
+
 	runner.addTests(null, {
 		"NW.Dom.match": function(){
 			var element = getById('dupL1');

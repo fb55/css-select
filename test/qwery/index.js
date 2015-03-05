@@ -21,16 +21,16 @@ CSSselect.pseudos.target = function(elem){
 CSSselect.pseudos.humanoid = function(e) { return CSSselect.is(e, 'li:contains(human)') || CSSselect.is(e, 'ol:contains(human)'); };
 
 var frag = helper.getDOM(
-	'<div class="d i v">' +
+	'<root><div class="d i v">' +
 		'<p id="oooo"><em></em><em id="emem"></em></p>' +
 	'</div>' +
 	'<p id="sep">' +
 		'<div class="a"><span></span></div>' +
-	'</p>'
+	'</p></root>'
 );
 
 var doc = helper.getDOM(
-	'<div id="hsoob">' +
+	'<root><div id="hsoob">' +
 		'<div class="a b">' +
 			'<div class="d e sib" test="fg" id="booshTest"><p><span id="spanny"></span></p></div>' +
 			'<em nopass="copyrighters" rel="copyright booshrs" test="f g" class="sib"></em>' +
@@ -38,7 +38,7 @@ var doc = helper.getDOM(
 		'</div>' +
 		'<p class="odd"></p>' +
 	'</div>' +
-	'<div id="lonelyHsoob"></div>'
+	'<div id="lonelyHsoob"></div></root>'
 );
 
 var el = DomUtils.getElementById('attr-child-boosh', document);
@@ -261,14 +261,14 @@ module.exports = {
 	// should be able to query on an element that hasn't been inserted into the dom
 	'detached fragments': function() {
 		expect(CSSselect('.a span', frag)).to.have.length(1); //should find child elements of fragment
-		//expect(CSSselect('> div p em', frag)).to.have.length(2); //should find child elements of fragment, relationship first
+		expect(CSSselect('> div p em', frag)).to.have.length(2); //should find child elements of fragment, relationship first
 	},
 
 	'byId sub-queries within detached fragment': function () {
 		expect(CSSselect('#emem', frag)).to.have.length(1); //found "#id" in fragment
 		expect(CSSselect('.d.i #emem', frag)).to.have.length(1); //found ".class.class #id" in fragment
 		expect(CSSselect('.d #oooo #emem', frag)).to.have.length(1); //found ".class #id #id" in fragment
-		//expect(CSSselect('> div #oooo', frag)).to.have.length(1); //found "> .class #id" in fragment
+		expect(CSSselect('> div #oooo', frag)).to.have.length(1); //found "> .class #id" in fragment
 		expect(CSSselect('#oooo', CSSselect('#emem', frag)).length).to.not.be.ok(); //shouldn't find #oooo (ancestor) within #emem (descendent)
 		expect(CSSselect('#sep', CSSselect('#emem', frag)).length).to.not.be.ok(); //shouldn't find #sep within #emem (unrelated)
 	},
@@ -532,7 +532,7 @@ module.exports = {
 		expect(CSSselect('#hsoob #spanny', doc)).to.have.length(1); //found "#id #id" in frame
 		expect(CSSselect('.a #spanny', doc)).to.have.length(1); //found ".class #id" in frame
 		expect(CSSselect('.a #booshTest #spanny', doc)).to.have.length(1); //found ".class #id #id" in frame
-		//expect(CSSselect('> #hsoob', doc)).to.have.length(1) //found "> #id" in frame
+		expect(CSSselect('> #hsoob', doc)).to.have.length(1) //found "> #id" in frame
 	},
 
 	'byId sub-queries within sub-context': function () {

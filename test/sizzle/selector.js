@@ -676,7 +676,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
 
 	t( "No longer second child", "p:nth-child(2)", [] );
 	secondChildren.prev().remove();
-	//  t( "Restored second child", "p:nth-child(2)", ["ap","en"] );
+	t( "Restored second child", "p:nth-child(2)", ["ap","en"] );
 });
 
 test("pseudo - nth-child", function() {
@@ -894,8 +894,8 @@ test("pseudo - misc", function() {
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"] );
 	t( "Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"] );
 
-	//  t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
-	//  t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
+	t( "Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=\\)]", ["sndp"] );
 	t( "Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"] );
 
