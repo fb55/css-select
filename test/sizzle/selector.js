@@ -209,6 +209,9 @@ test("element", function() {
     iframe = document.getElementById("iframe");
     //iframeDoc.open();
     iframe.children = helper.getDOM("<body><p id='foo'>bar</p></body>");
+    iframe.children.forEach(function(e) {
+        e.parent = iframe;
+    });
     //iframeDoc.close();
     deepEqual(
         Sizzle("p:contains(bar)", iframe),
