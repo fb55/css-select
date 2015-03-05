@@ -269,11 +269,9 @@ module.exports = {
             expect(CSSselect("#sep", CSSselect("#emem", frag)).length).to.not.be.ok(); //shouldn't find #sep within #emem (unrelated)
         },
 
-        /*
-	'exclude self in match': function() {
-		expect(CSSselect('.order-matters', CSSselect('#order-matters', document))).to.have.length(4); //should not include self in element-context queries
-	},
-*/
+        "exclude self in match": function() {
+            expect(CSSselect(".order-matters", CSSselect("#order-matters", document))).to.have.length(4); //should not include self in element-context queries
+        },
 
         // because form's have .length
         "forms can be used as contexts": function() {
@@ -504,11 +502,19 @@ module.exports = {
             expect(CSSselect.is(el, "li:contains(human)")).to.not.be.ok(); //non-matching :contains(text)
             expect(CSSselect.is(CSSselect("#list>li", document)[2], ":humanoid")).to.be.ok(); //matching custom pseudo
             expect(CSSselect.is(CSSselect("#list>li", document)[1], ":humanoid")).to.not.be.ok(); //non-matching custom pseudo
-        } /*,
-	'context': function () {
-		expect(CSSselect.is(el, 'li#attr-child-boosh[attr=boosh]', CSSselect('#list', document)[0])).to.be.ok(); //context
-		expect(CSSselect.is(el, 'ol#list li#attr-child-boosh[attr=boosh]', CSSselect('#boosh', document)[0])).to.not.be.ok(); //wrong context
-	}*/
+        },
+        context: function() {
+            expect(
+                CSSselect.is(el, "li#attr-child-boosh[attr=boosh]", {
+                    context: CSSselect("#list", document)[0]
+                })
+            ).to.be.ok(); //context
+            expect(
+                CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]", {
+                    context: CSSselect("#boosh", document)[0]
+                })
+            ).to.not.be.ok(); //wrong context
+        }
     },
 
     "selecting elements in other documents": {

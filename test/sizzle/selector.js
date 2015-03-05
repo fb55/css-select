@@ -190,9 +190,21 @@ test("element", function() {
     deepEqual(Sizzle("input[id='idTest']", lengthtest), q("idTest"), "Finding elements with id of ID.");
 
     siblingTest = document.getElementById("siblingTest"); // TODO
-    //  deepEqual( Sizzle("div em", siblingTest), [], "Element-rooted QSA does not select based on document context" );
-    //  deepEqual( Sizzle("div em, div em, div em:not(div em)", siblingTest), [], "Element-rooted QSA does not select based on document context" );
-    //  deepEqual( Sizzle("div em, em\\,", siblingTest), [], "Escaped commas do not get treated with an id in element-rooted QSA" );
+    deepEqual(
+        Sizzle("div em", siblingTest),
+        [],
+        "Element-rooted QSA does not select based on document context"
+    );
+    deepEqual(
+        Sizzle("div em, div em, div em:not(div em)", siblingTest),
+        [],
+        "Element-rooted QSA does not select based on document context"
+    );
+    deepEqual(
+        Sizzle("div em, em\\,", siblingTest),
+        [],
+        "Escaped commas do not get treated with an id in element-rooted QSA"
+    );
 
     iframe = document.getElementById("iframe");
     //iframeDoc.open();
@@ -275,18 +287,18 @@ test("broken", function() {
             );
         };
 
-    //  broken( "Broken Selector", "[" );
-    //  broken( "Broken Selector", "(" );
-    //  broken( "Broken Selector", "{" );
+    broken("Broken Selector", "[");
+    broken("Broken Selector", "(");
+    broken("Broken Selector", "{");
     //  broken( "Broken Selector", "<" );
-    //  broken( "Broken Selector", "()" );
+    broken("Broken Selector", "()");
     //  broken( "Broken Selector", "<>" );
     broken("Broken Selector", "{}");
     broken("Broken Selector", ",");
     broken("Broken Selector", ",a");
     broken("Broken Selector", "a,");
     // Hangs on IE 9 if regular expression is inefficient
-    //  broken( "Broken Selector", "[id=012345678901234567890123456789");
+    broken("Broken Selector", "[id=012345678901234567890123456789");
     broken("Doesn't exist", ":visble");
     broken("Nth-child", ":nth-child");
     // Sigh again. IE 9 thinks this is also a real selector
@@ -313,9 +325,9 @@ test("broken", function() {
         "<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>"
     ).appendTo("#qunit-fixture");
 
-    //  broken( "Attribute not escaped", "input[name=foo.baz]", [] );
+    broken("Attribute not escaped", "input[name=foo.baz]", []);
     // Shouldn't be matching those inner brackets
-    //  broken( "Attribute not escaped", "input[name=foo[baz]]", [] );
+    broken("Attribute not escaped", "input[name=foo[baz]]", []);
 });
 
 test("id", function() {
