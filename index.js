@@ -10,7 +10,8 @@ var Pseudos       = require("./lib/pseudos.js"),
     removeSubsets = DomUtils.removeSubsets,
     falseFunc     = require("boolbase").falseFunc,
     compile       = require("./lib/compile.js"),
-    compileUnsafe = compile.compileUnsafe;
+    compileUnsafe = compile.compileUnsafe,
+    compileToken  = compile.compileToken;
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
@@ -53,5 +54,6 @@ CSSselect.is = is;
 CSSselect.parse = compile;
 CSSselect.iterate = selectAll;
 
-//useful for debugging
+//hooks
 CSSselect._compileUnsafe = compileUnsafe;
+CSSselect._compileToken = compileToken;
