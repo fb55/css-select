@@ -87,7 +87,9 @@ Arguments are the same as for `CSSselect(query, elems)`. Only returns the first 
 - `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
 - `rootFunc`: The last function in the stack, will be called with the last element that's looked at. Should return `true`.
 
-## Supported selectors:
+## Supported selectors
+
+_As defined by CSS 4 and / or jQuery._
 
 * Universal (`*`)
 * Tag (`<tagname>`)
