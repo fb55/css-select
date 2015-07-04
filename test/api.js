@@ -33,6 +33,17 @@ describe("API", function() {
         //probably more cases should be added here
     });
 
+    describe("selectAll", function() {
+        it("should query array elements directly when they have no parents", function() {
+            var divs = [dom];
+            assert.deepEqual(CSSselect("div", divs), divs);
+        });
+        it("should query array elements directly when they have parents", function() {
+            var ps = CSSselect("p", [dom]);
+            assert.deepEqual(CSSselect("p", ps), ps);
+        });
+    });
+
     describe("unsatisfiable and universally valid selectors", function() {
         it("in :not", function() {
             var func = CSSselect._compileUnsafe(":not(*)");
