@@ -111,6 +111,7 @@ _As defined by CSS 4 and / or jQuery._
 * Pseudos:
   * `:not`
   * `:contains` *
+  * `:icontains` * (case-insensitive version of `:contains`)
   * `:has` *
   * `:root`
   * `:empty`
