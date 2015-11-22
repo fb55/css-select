@@ -18,7 +18,7 @@
   ],
   "dependencies": {
     "css-what": "2.0",
-    "domutils": "1.4",
+    "domutils": "1.5.1",
     "boolbase": "~1.0.0",
     "nth-check": "~1.0.1"
   },
