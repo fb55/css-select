@@ -5,7 +5,13 @@ var fs = require("fs"),
     CSSselect = require("../../");
 
 function getDOMFromPath(path, options){
-	return htmlparser2.parseDOM(fs.readFileSync(path).toString(), options);
+	return getDOM(fs.readFileSync(path).toString(), options);
+}
+
+function getDOM(str, opts){
+    if(!opts) opts = {};
+    opts.withDomLvl1 = true;
+    return htmlparser2.parseDOM(str, opts);
 }
 
 module.exports = {
@@ -14,9 +20,9 @@ module.exports = {
 		return getDOMFromPath(path.join(__dirname, "docs", name), options);
 	},
 	getDOMFromPath: getDOMFromPath,
-	getDOM: htmlparser2.parseDOM,
+	getDOM: getDOM,
 	getDefaultDom: function(){
-		return htmlparser2.parseDOM(
+		return getDOM(
 			"<elem id=foo><elem class='bar baz'><tag class='boom'> This is some simple text </tag></elem></elem>"
 		);
 	},
@@ -24,7 +30,7 @@ module.exports = {
 		var document = getDOMFromPath(path);
 
 		document.getElementsByTagName = function(name){
-			return DomUtils.getElementsByTagName("*", document);
+			return DomUtils.getElementsByTagName(name, document);
 		};
 		document.getElementById = function(id){
 			return DomUtils.getElementById(id, document);
@@ -32,7 +38,7 @@ module.exports = {
 		document.createTextNode = function(content){
 			return {
 				type: "text",
-				data: "content"
+				data: content
 			};
 		};
 		document.createElement = function(name){

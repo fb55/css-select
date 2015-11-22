@@ -106,7 +106,7 @@
 
 			<span id="台北Táiběi"></span>
 			<span id="台北" lang="中文"></span>
-			<span id="utf8class1" class="台北Táiběi 台北"></span>
+			<span id="utf8class1" class="台北Táiběi 台北">"'台北Táiběi"'</span>
 			<span id="utf8class2" class="台北"></span>
 			<span id="foo:bar" class="foo:bar"><span id="foo_descendent"></span></span>
 			<span id="test.foo[5]bar" class="test.foo[5]bar"></span>
@@ -130,7 +130,7 @@
 
 		<form id="testForm" action="#" method="get">
 			<textarea name="T3" rows="2" cols="15">?
-Z</textarea>
+	Z</textarea>
 			<input type="hidden" name="H1" value="x" />
 			<input type="hidden" name="H2" />
 			<input name="PWD" type="password" value="" />
@@ -198,11 +198,18 @@ Z</textarea>
 				<span id="name-is-div" name="div"></span>
 			</div>
 			<script id="script-no-src"></script>
-			<script id="script-src" src="http://src.test/path"></script>
+			<script id="script-src" src="/base/test/data/empty.js"></script>
 			<div id="id-name-tests">
 				<a id="tName1ID" name="tName1"><span></span></a>
 				<a id="tName2ID" name="tName2"><span></span></a>
 				<div id="tName1"><span id="tName1-span">C</span></div>
+			</div>
+			<div id="whitespace-lists">
+				<input id="t15233-single" data-15233="foo"/>
+				<input id="t15233-double" data-15233="foo bar"/>
+				<input id="t15233-double-tab" data-15233="foo	bar"/>
+				<input id="t15233-double-nl" data-15233="foo&#xA;bar"/>
+				<input id="t15233-triple" data-15233="foo bar baz"/>
 			</div>
 		</div>
 
@@ -240,8 +247,8 @@ Z</textarea>
 			</em>
 			<span id="siblingspan"></span>
 		</div>​
+		<br id="last"/>
 	</div>
 	</dl>
-	<br id="last"/>
 </body>
 </html>
