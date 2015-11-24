@@ -270,7 +270,7 @@ module.exports = {
         },
 
         "exclude self in match": function() {
-            expect(CSSselect(".order-matters", CSSselect("#order-matters", document))).to.have.length(4); //should not include self in element-context queries
+            expect(CSSselect(".order-matters", CSSselect("#order-matters", document)[0])).to.have.length(4); //should not include self in element-context queries
         },
 
         // because form's have .length
