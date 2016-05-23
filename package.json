@@ -25,7 +25,7 @@
   "devDependencies": {
     "htmlparser2": "*",
     "cheerio-soupselect": "*",
-    "mocha": "*",
+    "mocha": "2.5.0",
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
     "istanbul": "*",
