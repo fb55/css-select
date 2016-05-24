@@ -1,0 +1,17 @@
+##########
+# Custom #
+##########
+
+# ~
+#.gitignore
+
+
+#################
+# Project files #
+#################
+
+# modules
+node_modules/
+
+# debug
+npm-debug.log

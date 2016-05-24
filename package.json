@@ -17,9 +17,10 @@
     "lib"
   ],
   "dependencies": {
+    "boolbase": "~1.0.0",
     "css-what": "2.1",
     "domutils": "1.5.1",
-    "boolbase": "~1.0.0",
+    "is-pseudo": "^1.2.0",
     "nth-check": "~1.0.1"
   },
   "devDependencies": {

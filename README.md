@@ -10,7 +10,7 @@ In its default configuration, css-select queries the DOM structure of the [`domh
 
 __Features:__
 
-- Full implementation of CSS3 selectors
+- Full implementation of CSS3 / CSS4 selectors
 - Partial implementation of jQuery/Sizzle extensions
 - Very high test coverage
 - Pretty good performance
@@ -126,7 +126,7 @@ _As defined by CSS 4 and / or jQuery._
   * `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`, `:password`, `:reset`, `:radio` etc. *
   * `:matches` *
 
-__*__: Not part of CSS3
+__*__: Not part of the regular CSS specification
 
 ---
 
