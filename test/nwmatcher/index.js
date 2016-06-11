@@ -359,7 +359,7 @@ var RUN_BENCHMARKS = false;
 		},
 		"E + F": function(){
 			//Adjacent sibling
-			this.assertEqual(select('div.brothers + div.brothers')[0], getById("uncle"));
+			this.assertEqual(select('div.brothers + div.brothers')[0], getById('uncle'));
 			this.assertEqual(select('div.brothers + div')[0], getById('uncle'));
 			this.assertEqual(select('#level2_1+span')[0], getById('level2_2'));
 			this.assertEqual(select('#level2_1 + span')[0], getById('level2_2'));
@@ -369,6 +369,18 @@ var RUN_BENCHMARKS = false;
 			this.assertEqual(select('#level3_1 + *')[0], getById('level3_2'));
 			this.assertEquivalent(select('#level3_2 + *'), []);
 			this.assertEquivalent(select('#level3_1 + em'), []);
+
+			this.assertEqual(select('+ div.brothers', select('div.brothers'))[0], getById('uncle'));
+			this.assertEqual(select('+ div', select('div.brothers'))[0], getById('uncle'));
+			this.assertEqual(select('+span', select('#level2_1'))[0], getById('level2_2'));
+			this.assertEqual(select('+ span', select('#level2_1'))[0], getById('level2_2'));
+			this.assertEqual(select('+ *', select('#level2_1'))[0], getById('level2_2'));
+			this.assertEquivalent(select('+ span', select('#level2_2')), []);
+			this.assertEqual(select('+ span', select('#level3_1'))[0], getById('level3_2'));
+			this.assertEqual(select('+ *', select('#level3_1'))[0], getById('level3_2'));
+			this.assertEquivalent(select('+ *', select('#level3_2')), []);
+			this.assertEquivalent(select('+ em', select('#level3_1')), []);
+
 			if(RUN_BENCHMARKS){
 				this.wait(function(){
 					this.benchmark(function(){
@@ -385,6 +397,14 @@ var RUN_BENCHMARKS = false;
 			this.assertEquivalent(select('#level1 > span'), getById('level2_1', 'level2_2'));
 			this.assertEquivalent(select('#level2_1 > *'), getById('level3_1', 'level3_2'));
 			this.assertEquivalent(select('div > #nonexistent'), []);
+
+			this.assertEquivalent(select('> a', select('p.first')), getById('link_1', 'link_2'));
+			this.assertEquivalent(select('> div', select('div#grandfather')), getById('father', 'uncle'));
+			this.assertEquivalent(select('>span', select('#level1')), getById('level2_1', 'level2_2'));
+			this.assertEquivalent(select('> span', select('#level1')), getById('level2_1', 'level2_2'));
+			this.assertEquivalent(select('> *', select('#level2_1')), getById('level3_1', 'level3_2'));
+			this.assertEquivalent(select('> #nonexistent', select('div')), []);
+
 			if(RUN_BENCHMARKS){
 				this.wait(function(){
 					this.benchmark(function(){
@@ -405,6 +425,18 @@ var RUN_BENCHMARKS = false;
 			this.assertEquivalent(select('#level2_1 ~ *'), getById('level2_2', 'level2_3'));
 			this.assertEqual(select('#level3_1 ~ #level3_2')[0], getById('level3_2'));
 			this.assertEqual(select('span ~ #level3_2')[0], getById('level3_2'));
+
+			this.assertEqual(select('~ ul', select('h1'))[0], getById('list'));
+			this.assertEquivalent(select('~ span', select('#level2_2')), []);
+			this.assertEquivalent(select('~ *', select('#level3_2')), []);
+			this.assertEquivalent(select('~ em', select('#level3_1')), []);
+			this.assertEquivalent(select('~ #level3_2', select('div')), []);
+			this.assertEquivalent(select('~ #level2_3', select('div')), []);
+			this.assertEqual(select('~ span', select('#level2_1'))[0], getById('level2_2'));
+			this.assertEquivalent(select('~ *', select('#level2_1')), getById('level2_2', 'level2_3'));
+			this.assertEqual(select('~ #level3_2', select('#level3_1'))[0], getById('level3_2'));
+			this.assertEqual(select('~ #level3_2', select('span'))[0], getById('level3_2'));
+
 			if(RUN_BENCHMARKS){
 				this.wait(function(){
 					this.benchmark(function(){
