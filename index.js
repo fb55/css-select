@@ -15,8 +15,8 @@ var Pseudos       = require("./lib/pseudos.js"),
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
-        if(typeof query !== "function") query = compileUnsafe(query, options, elems);
-        if(!Array.isArray(elems)) elems = getChildren(elems);
+		if(typeof query !== "function") query = compileUnsafe(query, options, elems);
+		if(!Array.isArray(elems)) elems = getChildren(elems);
 		else elems = removeSubsets(elems);
 		return searchFunc(query, elems);
 	};
