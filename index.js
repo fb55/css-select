@@ -7,6 +7,7 @@ var Pseudos       = require("./lib/pseudos.js"),
     findOne       = DomUtils.findOne,
     findAll       = DomUtils.findAll,
     getChildren   = DomUtils.getChildren,
+    getSiblings   = DomUtils.getSiblings,
     removeSubsets = DomUtils.removeSubsets,
     falseFunc     = require("boolbase").falseFunc,
     compile       = require("./lib/compile.js"),
@@ -16,10 +17,29 @@ var Pseudos       = require("./lib/pseudos.js"),
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
 		if(typeof query !== "function") query = compileUnsafe(query, options, elems);
+		if (query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems);
 		if(!Array.isArray(elems)) elems = getChildren(elems);
 		else elems = removeSubsets(elems);
 		return searchFunc(query, elems);
 	};
+}
+
+function getNextSiblings(elem){
+	var siblings = getSiblings(elem);
+	if (!Array.isArray(siblings)) return [];
+	siblings = siblings.slice(0);
+	while (siblings.shift() !== elem);
+	return siblings;
+}
+
+function appendNextSiblings(elems){
+	// Order matters because jQuery seems to check the children before the siblings
+	var newElems = elems.slice(0);
+	for (var i = 0, len = elems.length; i < len; i++) {
+		var nextSiblings = getNextSiblings(newElems[i]);
+		newElems.push.apply(newElems, nextSiblings);
+	}
+	return newElems;
 }
 
 var selectAll = getSelectorFunc(function selectAll(query, elems){
