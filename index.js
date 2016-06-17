@@ -34,7 +34,9 @@ function getNextSiblings(elem){
 
 function appendNextSiblings(elems){
 	// Order matters because jQuery seems to check the children before the siblings
+	if (!Array.isArray(elems)) elems = [elems];
 	var newElems = elems.slice(0);
+
 	for (var i = 0, len = elems.length; i < len; i++) {
 		var nextSiblings = getNextSiblings(newElems[i]);
 		newElems.push.apply(newElems, nextSiblings);

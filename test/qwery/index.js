@@ -249,14 +249,12 @@ module.exports = {
 
 'element-context queries': {
 
-/*
 	'relationship-first queries': function() {
 		expect(CSSselect('> .direct-descend', CSSselect('#direct-descend', document))).to.have.length(2); //found two direct descendents using > first
 		expect(CSSselect('~ .sibling-selector', CSSselect('#sibling-selector', document))).to.have.length(2); //found two siblings with ~ first
 		expect(CSSselect('+ .sibling-selector', CSSselect('#sibling-selector', document))).to.have.length(1); //found one sibling with + first
 		expect(CSSselect('> .tokens a', CSSselect('.idless', document)[0])).to.have.length(1); //found one sibling from a root with no id
 	},
-*/
 
 	// should be able to query on an element that hasn't been inserted into the dom
 	'detached fragments': function() {
