@@ -285,7 +285,7 @@ test("broken", function() {
                     // Sizzle.error will be called but no error will be seen in oldIE
                     Sizzle.call(null, selector);
                 },
-                SyntaxError,
+                Error,
                 name + ": " + selector
             );
         };

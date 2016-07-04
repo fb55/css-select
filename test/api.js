@@ -36,11 +36,11 @@ describe("API", function() {
     describe("selectAll", function() {
         it("should query array elements directly when they have no parents", function() {
             var divs = [dom];
-            assert.deepEqual(CSSselect("div", divs), divs);
+            assert.deepEqual(CSSselect.selectAll("div", divs), divs);
         });
         it("should query array elements directly when they have parents", function() {
-            var ps = CSSselect("p", [dom]);
-            assert.deepEqual(CSSselect("p", ps), ps);
+            var ps = CSSselect.selectAll("p", [dom]);
+            assert.deepEqual(CSSselect.selectAll("p", ps), ps);
         });
     });
 
@@ -130,19 +130,19 @@ describe("API", function() {
 
         it("should be strict", function() {
             var opts = { strict: true };
-            assert.throws(CSSselect.compile.bind(null, ":checkbox", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, "[attr=val i]", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, "[attr!=val]", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, "[attr!=val i]", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, "foo < bar", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, ":not(:parent)", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, ":not(a > b)", opts), SyntaxError);
-            assert.throws(CSSselect.compile.bind(null, ":not(a, b)", opts), SyntaxError);
+            assert.throws(CSSselect.compile.bind(null, ":checkbox", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, "[attr=val i]", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, "[attr!=val]", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, "[attr!=val i]", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, "foo < bar", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, ":not(:parent)", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, ":not(a > b)", opts), Error);
+            assert.throws(CSSselect.compile.bind(null, ":not(a, b)", opts), Error);
         });
 
         it("should recognize contexts", function() {
-            var div = CSSselect("div", [dom]),
-                p = CSSselect("p", [dom]);
+            var div = CSSselect.selectAll("div", [dom]),
+                p = CSSselect.selectAll("p", [dom]);
 
             assert.equal(CSSselect.selectOne("div", div, { context: div }), div[0]);
             assert.equal(CSSselect.selectOne("div", div, { context: p }), null);
