@@ -37,29 +37,29 @@ describe("icontains", function(){
 			var matches = CSSselect.selectAll(":icontains(matter)", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
+				dom[0].children[1]]);
 			matches = CSSselect.selectAll(":icontains(mATter)", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
+				dom[0].children[1]]);
 		});
 
 		it("should match empty string", function(){
-            var matches = CSSselect.selectAll(":icontains()", dom);
+			var matches = CSSselect.selectAll(":icontains()", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
+				dom[0].children[1]]);
 		});
 
 		it("should match quoted string", function(){
-            var matches = CSSselect.selectAll(":icontains('')", dom);
+			var matches = CSSselect.selectAll(":icontains('')", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
-            matches = CSSselect.selectAll("p:icontains('matter')", dom);
+				dom[0].children[1]]);
+			matches = CSSselect.selectAll("p:icontains('matter')", dom);
 			assert.equal(matches.length, 1);
 			assert.deepEqual(matches, [dom[0].children[0]]);
-            matches = CSSselect.selectAll("p:icontains(\"matter\")", dom);
+			matches = CSSselect.selectAll("p:icontains(\"matter\")", dom);
 			assert.equal(matches.length, 1);
 			assert.deepEqual(matches, [dom[0].children[0]]);
 		});
@@ -68,19 +68,19 @@ describe("icontains", function(){
 			var matches = CSSselect.selectAll(":icontains( matter)", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
+				dom[0].children[1]]);
 			matches = CSSselect.selectAll(":icontains( mATter)", dom);
 			assert.equal(matches.length, 3);
 			assert.deepEqual(matches, [dom[0], dom[0].children[0],
-                dom[0].children[1]]);
+				dom[0].children[1]]);
 		});
-    });
+	});
 
 	describe("no matches", function(){
 		it("should not match", function(){
-            var matches = CSSselect.selectAll("p:icontains(indeed)", dom);
+			var matches = CSSselect.selectAll("p:icontains(indeed)", dom);
 			assert.equal(matches.length, 0);
 		});
 
-    });
+	});
 });

@@ -17,7 +17,7 @@ var Pseudos       = require("./lib/pseudos.js"),
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
 		if(typeof query !== "function") query = compileUnsafe(query, options, elems);
-		if (query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems);
+		if(query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems);
 		if(!Array.isArray(elems)) elems = getChildren(elems);
 		else elems = removeSubsets(elems);
 		return searchFunc(query, elems);
@@ -26,18 +26,18 @@ function getSelectorFunc(searchFunc){
 
 function getNextSiblings(elem){
 	var siblings = getSiblings(elem);
-	if (!Array.isArray(siblings)) return [];
+	if(!Array.isArray(siblings)) return [];
 	siblings = siblings.slice(0);
-	while (siblings.shift() !== elem);
+	while(siblings.shift() !== elem);
 	return siblings;
 }
 
 function appendNextSiblings(elems){
 	// Order matters because jQuery seems to check the children before the siblings
-	if (!Array.isArray(elems)) elems = [elems];
+	if(!Array.isArray(elems)) elems = [elems];
 	var newElems = elems.slice(0);
 
-	for (var i = 0, len = elems.length; i < len; i++) {
+	for(var i = 0, len = elems.length; i < len; i++) {
 		var nextSiblings = getNextSiblings(newElems[i]);
 		newElems.push.apply(newElems, nextSiblings);
 	}
