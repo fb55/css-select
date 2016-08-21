@@ -29,7 +29,7 @@
     "mocha": "*",
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
-    "istanbul": "*",
+    "istanbul": "0.4.5",
     "expect.js": "*"
   },
   "scripts": {
