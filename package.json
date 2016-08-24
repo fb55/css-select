@@ -25,7 +25,7 @@
   "devDependencies": {
     "htmlparser2": "*",
     "cheerio-soupselect": "*",
-    "eslint": "^3.0.0",
+    "eslint": "^3.3.0",
     "mocha": "*",
     "mocha-lcov-reporter": "*",
     "coveralls": "*",
