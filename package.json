@@ -28,7 +28,7 @@
     "eslint": "^3.0.0",
     "mocha": "*",
     "mocha-lcov-reporter": "*",
-    "coveralls": "*",
+    "coveralls": "2.11.11",
     "istanbul": "*",
     "expect.js": "*"
   },
