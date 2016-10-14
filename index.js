@@ -9,21 +9,21 @@ var DomUtils       = require("domutils"),
     defaultCompile = compileFactory(DomUtils);
 
 function getAdapter(options){
-	if( options && options.adapter ) return options.adapter;
+	if(options && options.adapter) return options.adapter;
 
 	return DomUtils;
 }
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
-		var adapter = getAdapter( options ),
-				compile,
-				compileUnsafe;
+		var adapter = getAdapter(options),
+        compile,
+        compileUnsafe;
 
-		if( adapter === DomUtils ){
+		if(adapter === DomUtils){
 			compile = defaultCompile;
 		} else {
-			compile = compileFactory( adapter );
+			compile = compileFactory(adapter);
 		}
 
 		compileUnsafe = compile.compileUnsafe;
@@ -65,13 +65,13 @@ var selectOne = getSelectorFunc(function selectOne(query, elems, adapter){
 });
 
 function is(elem, query, options){
-	var adapter = getAdapter( options ),
-			compile;
+	var adapter = getAdapter(options),
+      compile;
 
-	if( adapter === DomUtils ){
+	if(adapter === DomUtils){
 		compile = defaultCompile;
 	} else {
-		compile = compileFactory( adapter );
+		compile = compileFactory(adapter);
 	}
 
 	return (typeof query === "function" ? query : compile(query, options))(elem);

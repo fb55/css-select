@@ -12,24 +12,24 @@ function removeSubsets(nodes) {
 
 	// Check if each node (or one of its ancestors) is already contained in the
 	// array.
-	while (--idx > -1) {
+	while(--idx > -1) {
 		node = ancestor = nodes[idx];
 
 		// Temporarily remove the node under consideration
 		nodes[idx] = null;
 		replace = true;
 
-		while (ancestor) {
-			if (nodes.indexOf(ancestor) > -1) {
+		while(ancestor) {
+			if(nodes.indexOf(ancestor) > -1) {
 				replace = false;
 				nodes.splice(idx, 1);
 				break;
 			}
-			ancestor = getParent( ancestor )
+			ancestor = getParent(ancestor)
 		}
 
 		// If the node has been found to be unique, re-insert it.
-		if (replace) {
+		if(replace) {
 			nodes[idx] = node;
 		}
 	}
@@ -40,9 +40,9 @@ function removeSubsets(nodes) {
 var adapter = {
 	isTag: isTag,
 	existsOne: function(test, elems){
-		return elems.some( function( elem ){
-			return isTag( elem ) ?
-				test( elem ) || adapter.existsOne( test, getChildren( elem ) ) :
+		return elems.some(function(elem){
+			return isTag(elem) ?
+				test(elem) || adapter.existsOne(test, getChildren(elem)) :
 				false;
 		});
 	},
@@ -52,9 +52,10 @@ var adapter = {
 	},
 	getChildren: getChildren,
 	getParent: getParent,
-	getAttributeValue: function(elem, name){		
-		if( elem.attributes && elem.attributes[name])
+	getAttributeValue: function(elem, name){
+		if(elem.attributes && elem.attributes[name]){
 			return elem.attributes[name].value;
+		}
 	},
 	hasAttrib: function(elem, name){
 		return name in elem.attributes;
@@ -90,13 +91,13 @@ var adapter = {
 		return result;
 	},
 	getText: function getText(elem) {
-		if( Array.isArray( elem ) ) return elem.map( adapter.getText ).join( '' );
+		if(Array.isArray(elem)) return elem.map(adapter.getText).join("");
 
-		if( isTag( elem ) ) return adapter.getText( getChildren( elem ) );
+		if(isTag(elem)) return adapter.getText(getChildren(elem));
 
-		if( elem.nodeType === 3 ) return elem.nodeValue;
+		if(elem.nodeType === 3) return elem.nodeValue;
 
-		return '';
+		return "";
 	}
 };
 
