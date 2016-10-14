@@ -52,8 +52,9 @@ var adapter = {
 	},
 	getChildren: getChildren,
 	getParent: getParent,
-	getAttributeValue: function(elem, name){
-		return elem.attributes[name].value;
+	getAttributeValue: function(elem, name){		
+		if( elem.attributes && elem.attributes[name])
+			return elem.attributes[name].value;
 	},
 	hasAttrib: function(elem, name){
 		return name in elem.attributes;
