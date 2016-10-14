@@ -5,8 +5,8 @@ module.exports = CSSselect;
 var DomUtils       = require("domutils"),
     falseFunc      = require("boolbase").falseFunc,
     compileFactory = require("./lib/compile.js"),
-		browserAdapter = require("./browser-adapter"),
-		defaultCompile = compileFactory(DomUtils);
+    browserAdapter = require("./browser-adapter"),
+    defaultCompile = compileFactory(DomUtils);
 
 function getAdapter(options){
 	if( options && options.adapter ) return options.adapter;
