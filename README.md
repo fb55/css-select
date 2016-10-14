@@ -7,6 +7,7 @@ a CSS selector compiler/engine
 css-select turns CSS selectors into functions that tests if elements match them. When searching for elements, testing is executed "from the top", similar to how browsers execute CSS selectors.
 
 In its default configuration, css-select queries the DOM structure of the [`domhandler`](https://github.com/fb55/domhandler) module (also known as htmlparser2 DOM).
+It uses [`domutils`](https://github.com/fb55/domutils) as its default adapter over the DOM structure. See Options below for details on querying alternative DOM structures.
 
 __Features:__
 
@@ -86,6 +87,73 @@ Arguments are the same as for `CSSselect(query, elems)`. Only returns the first 
 - `xmlMode`: When enabled, tag names will be case-sensitive. Default: `false`.
 - `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
 - `rootFunc`: The last function in the stack, will be called with the last element that's looked at. Should return `true`.
+- `adapter`: The adapter to use when interacting with the backing DOM structure. By default it uses [`domutils`](https://github.com/fb55/domutils).
+
+#### Custom Adapters
+
+A custom adapter must implement the following functions:
+
+```
+isTag, existsOne, getAttributeValue, getChildren, getName, getParent,
+getSiblings, getText, hasAttrib, removeSubsets, findAll
+```
+
+The method signature notation used below should be fairly intuitive - if not,
+see the [`rtype`](https://github.com/ericelliott/rtype) or
+[`TypeScript`](https://www.typescriptlang.org/) docs, as it is very similar to
+both of those. You may also want to look at
+[`domutils`](https://github.com/fb55/domutils) to see the default
+implementation.
+
+```ts
+{
+  // is the node a tag?
+  isTag: ( node:Node ) => isTag:Boolean,
+
+  // does at least one of passed element nodes pass the test predicate?
+  existsOne: ( test:Predicate, elems:[ElementNode] ) => existsOne:Boolean,
+
+  // get the attribute value
+  getAttributeValue: ( elem:ElementNode, name:String ) => value:String,
+
+  // get the node's children
+  getChildren: ( node:Node ) => children:[Node],
+
+  // get the name of the tag
+  getName: ( elem:ElementNode ) => tagName:String,
+
+  // get the parent of the node
+  getParent: ( node:Node ) => parentNode:Node,
+
+  /*
+    get the siblings of the node. Note that unlike jQuery's `siblings` method,
+    this is expected to include the current node as well
+  */
+  getSiblings: ( node:Node ) => siblings:[Node],
+
+  // get the text content of the node, and its children if it has any
+  getText: ( node:Node ) => text:String,
+
+  // does the element have the named attribute?
+  hasAttrib: ( elem:ElementNode, name:String ) => hasAttrib:Boolean,
+
+  // takes an array of nodes, and removes any duplicates, as well as any nodes
+  // whose ancestors are also in the array
+  removeSubsets: ( nodes:[Node] ) => unique:[Node],
+
+  // finds all of the element nodes in the array that match the test predicate,
+  // as well as any of their children that match it
+  findAll: ( test:Predicate, nodes:[Node] ) => elems:[ElementNode],
+
+  /*
+    The adapter can also optionally include an equals method, if your DOM
+    structure needs a custom equality test to compare two objects which refer
+    to the same underlying node. If not provided, `css-select` will fall back to
+    `a === b`.
+  */
+  equals: ( a:Node, b:Node ) => Boolean
+}
+```
 
 ## Supported selectors
 

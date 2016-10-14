@@ -2,57 +2,78 @@
 
 module.exports = CSSselect;
 
-var Pseudos       = require("./lib/pseudos.js"),
-    DomUtils      = require("domutils"),
-    findOne       = DomUtils.findOne,
-    findAll       = DomUtils.findAll,
-    getChildren   = DomUtils.getChildren,
-    getSiblings   = DomUtils.getSiblings,
-    removeSubsets = DomUtils.removeSubsets,
-    falseFunc     = require("boolbase").falseFunc,
-    compile       = require("./lib/compile.js"),
-    compileUnsafe = compile.compileUnsafe,
-    compileToken  = compile.compileToken;
+var DomUtils       = require("domutils"),
+    falseFunc      = require("boolbase").falseFunc,
+    compileFactory = require("./lib/compile.js"),
+    browserAdapter = require("./browser-adapter"),
+    defaultCompile = compileFactory(DomUtils);
+
+function getAdapter(options){
+	if( options && options.adapter ) return options.adapter;
+
+	return DomUtils;
+}
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
+		var adapter = getAdapter( options ),
+				compile,
+				compileUnsafe;
+
+		if( adapter === DomUtils ){
+			compile = defaultCompile;
+		} else {
+			compile = compileFactory( adapter );
+		}
+
+		compileUnsafe = compile.compileUnsafe;
+
 		if(typeof query !== "function") query = compileUnsafe(query, options, elems);
-		if(query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems);
-		if(!Array.isArray(elems)) elems = getChildren(elems);
-		else elems = removeSubsets(elems);
-		return searchFunc(query, elems);
+		if(query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems, adapter);
+		if(!Array.isArray(elems)) elems = adapter.getChildren(elems);
+		else elems = adapter.removeSubsets(elems);
+		return searchFunc(query, elems, adapter);
 	};
 }
 
-function getNextSiblings(elem){
-	var siblings = getSiblings(elem);
+function getNextSiblings(elem, adapter){
+	var siblings = adapter.getSiblings(elem);
 	if(!Array.isArray(siblings)) return [];
 	siblings = siblings.slice(0);
 	while(siblings.shift() !== elem);
 	return siblings;
 }
 
-function appendNextSiblings(elems){
+function appendNextSiblings(elems, adapter){
 	// Order matters because jQuery seems to check the children before the siblings
 	if(!Array.isArray(elems)) elems = [elems];
 	var newElems = elems.slice(0);
 
 	for(var i = 0, len = elems.length; i < len; i++) {
-		var nextSiblings = getNextSiblings(newElems[i]);
+		var nextSiblings = getNextSiblings(newElems[i], adapter);
 		newElems.push.apply(newElems, nextSiblings);
 	}
 	return newElems;
 }
 
-var selectAll = getSelectorFunc(function selectAll(query, elems){
-	return (query === falseFunc || !elems || elems.length === 0) ? [] : findAll(query, elems);
+var selectAll = getSelectorFunc(function selectAll(query, elems, adapter){
+	return (query === falseFunc || !elems || elems.length === 0) ? [] : adapter.findAll(query, elems);
 });
 
-var selectOne = getSelectorFunc(function selectOne(query, elems){
-	return (query === falseFunc || !elems || elems.length === 0) ? null : findOne(query, elems);
+var selectOne = getSelectorFunc(function selectOne(query, elems, adapter){
+	return (query === falseFunc || !elems || elems.length === 0) ? null : adapter.findOne(query, elems);
 });
 
 function is(elem, query, options){
+	var adapter = getAdapter( options ),
+			compile;
+
+	if( adapter === DomUtils ){
+		compile = defaultCompile;
+	} else {
+		compile = compileFactory( adapter );
+	}
+
 	return (typeof query === "function" ? query : compile(query, options))(elem);
 }
 
@@ -63,19 +84,24 @@ function CSSselect(query, elems, options){
 	return selectAll(query, elems, options);
 }
 
-CSSselect.compile = compile;
-CSSselect.filters = Pseudos.filters;
-CSSselect.pseudos = Pseudos.pseudos;
+CSSselect.compile = defaultCompile;
+CSSselect.filters = defaultCompile.Pseudos.filters;
+CSSselect.pseudos = defaultCompile.Pseudos.pseudos;
 
 CSSselect.selectAll = selectAll;
 CSSselect.selectOne = selectOne;
 
 CSSselect.is = is;
 
+CSSselect.adapters = {
+	default: DomUtils,
+	browser: browserAdapter
+};
+
 //legacy methods (might be removed)
-CSSselect.parse = compile;
+CSSselect.parse = defaultCompile;
 CSSselect.iterate = selectAll;
 
 //hooks
-CSSselect._compileUnsafe = compileUnsafe;
-CSSselect._compileToken = compileToken;
+CSSselect._compileUnsafe = defaultCompile.compileUnsafe;
+CSSselect._compileToken = defaultCompile.compileToken;
