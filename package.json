@@ -23,14 +23,15 @@
     "nth-check": "^1.0.1"
   },
   "devDependencies": {
-    "htmlparser2": "*",
     "cheerio-soupselect": "*",
-    "eslint": "^3.0.0",
-    "mocha": "*",
-    "mocha-lcov-reporter": "*",
     "coveralls": "*",
+    "eslint": "^3.0.0",
+    "expect.js": "*",
+    "htmlparser2": "*",
     "istanbul": "*",
-    "expect.js": "*"
+    "jsdom": "^9.6.0",
+    "mocha": "*",
+    "mocha-lcov-reporter": "*"
   },
   "scripts": {
     "test": "mocha && npm run lint",

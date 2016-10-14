@@ -7,9 +7,45 @@ function getChildren(elem){
 function getParent(elem){
 	return elem.parentElement;
 }
+function removeSubsets(nodes) {
+	var idx = nodes.length, node, ancestor, replace;
 
-module.exports = {
+	// Check if each node (or one of its ancestors) is already contained in the
+	// array.
+	while (--idx > -1) {
+		node = ancestor = nodes[idx];
+
+		// Temporarily remove the node under consideration
+		nodes[idx] = null;
+		replace = true;
+
+		while (ancestor) {
+			if (nodes.indexOf(ancestor) > -1) {
+				replace = false;
+				nodes.splice(idx, 1);
+				break;
+			}
+			ancestor = getParent( ancestor )
+		}
+
+		// If the node has been found to be unique, re-insert it.
+		if (replace) {
+			nodes[idx] = node;
+		}
+	}
+
+	return nodes;
+}
+
+var adapter = {
 	isTag: isTag,
+	existsOne: function(test, elems){
+		return elems.some( function( elem ){
+			return isTag( elem ) ?
+				test( elem ) || adapter.existsOne( test, getChildren( elem ) ) :
+				false;
+		});
+	},
 	getSiblings: function(elem){
 		var parent = getParent(elem);
 		return parent && getChildren(parent);
@@ -22,6 +58,7 @@ module.exports = {
 	hasAttrib: function(elem, name){
 		return name in elem.attributes;
 	},
+	removeSubsets: removeSubsets,
 	getName: function(elem){
 		return elem.tagName.toLowerCase();
 	},
@@ -51,17 +88,15 @@ module.exports = {
 		}
 		return result;
 	},
-	//https://github.com/ded/qwery/blob/master/pseudos/qwery-pseudos.js#L47-54
 	getText: function getText(elem) {
-		var str = "",
-		    childs = getChildren(elem);
+		if( Array.isArray( elem ) ) return elem.map( adapter.getText ).join( '' );
 
-		if(!childs) return str;
+		if( isTag( elem ) ) return adapter.getText( getChildren( elem ) );
 
-		for(var i = 0; i < childs.length; i++){
-			if(isTag(childs[i])) str += elem.textContent || elem.innerText || getText(childs[i]);
-		}
+		if( elem.nodeType === 3 ) return elem.nodeValue;
 
-		return str;
+		return '';
 	}
 };
+
+module.exports = adapter;
