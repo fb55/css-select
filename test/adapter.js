@@ -1,3 +1,7 @@
+var select  = require( ".." );
+var adapter = require( "../browser-adapter" );
+var jsdom   = require( "jsdom" );
+var assert  = require("assert");
 
 var html = "<main><div></div><div class=\"apple\"></div><span class=\"pear potato\"><strong id=\"cheese-burger\">Hello</strong>, <em>World!</em></span></main>";
 
