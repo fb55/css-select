@@ -1,19 +1,15 @@
-var adapter   = require("../browser-adapter"),
-	jsdom       = require("jsdom"),
-	assert      = require("assert");
+var CSSselect = require(".."),
+	adapter   = require("../browser-adapter"),
+	jsdom     = require("jsdom"),
+	assert    = require("assert");
 
-var html = "<main><div></div><div class=\"apple\"></div><span><strong>Hello</strong>, <em>World!</em></span></main>";
+var html = "<main><div></div><div class=\"apple\"></div><span class=\"pear potato\"><strong id=\"cheese-burger\">Hello</strong>, <em>World!</em></span></main>";
 
 function getBody(html){
 	return jsdom.jsdom(html).defaultView.document.querySelector("body");
 }
 
-describe("Browser Adapter", function(){
-  /*
-    isTag, existsOne, getAttributeValue, getChildren, getName, getParent,
-    getSiblings, getText, hasAttrib, removeSubsets, findAll, equals
-  */
-
+describe("Adapter API", function(){
 	it("should isTag", function(){
 		var body = getBody(html);
 
@@ -87,5 +83,192 @@ describe("Browser Adapter", function(){
 
 		assert(adapter.hasAttrib(apple, "class"));
 		assert(!adapter.hasAttrib(body, "class"));
+	});
+
+	it("should removeSubsets", function(){
+		var body = getBody(html);
+		var divs = Array.from(body.querySelectorAll("div"));
+		var apple = body.querySelector(".apple");
+		var span = body.querySelector("span");
+		var strong = body.querySelector("strong");
+
+		var nonset = divs.concat([ apple, span, strong ]);
+
+		var set = adapter.removeSubsets(nonset);
+
+		assert.equal(set.length, 3);
+	});
+
+	it("should findAll", function(){
+		var body = getBody(html);
+		var els = body.querySelectorAll("main > *");
+		var arr = Array.from(els);
+
+		var classEls = adapter.findAll(function(node){
+			return adapter.hasAttrib(node, "class");
+		}, arr);
+
+		assert.equal(classEls.length, 2);
+	});
+});
+
+describe("Adapter Select", function(){
+	var options = { adapter: adapter };
+
+	it("should universal", function(){
+		var body = getBody(html);
+		var universal = CSSselect("*", body, options);
+
+		assert.equal(universal.length, 6);
+	});
+
+	it("should tag", function(){
+		var body = getBody(html);
+		var tag = CSSselect("div", body, options);
+
+		assert.equal(tag.length, 2);
+	});
+
+	it("should descendant", function(){
+		var body = getBody(html);
+		var descendant = CSSselect("main div", body, options);
+
+		assert.equal(descendant.length, 2);
+	});
+
+	it("should child", function(){
+		var body = getBody(html);
+		var child = CSSselect("main > div", body, options);
+
+		assert.equal(child.length, 2);
+	});
+
+	it("should parent", function(){
+		var body = getBody(html);
+		var parent = CSSselect("div < main", body, options);
+
+		assert.equal(parent.length, 1);
+	});
+
+	it("should sibling", function(){
+		var body = getBody(html);
+		var sibling = CSSselect("div + span", body, options);
+
+		assert.equal(sibling.length, 1);
+	});
+
+	it("should adjacent", function(){
+		var body = getBody(html);
+		var adjacent = CSSselect("strong ~ em", body, options);
+
+		assert.equal(adjacent.length, 1);
+	});
+
+	it("should attribute", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[class]", body, options);
+
+		assert.equal(attribute.length, 2);
+	});
+
+	it("should attribute =", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[class=\"apple\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute ~=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[class~=\"potato\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute |=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[id|=\"cheese\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute *=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[id*=\"ee\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute ^=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[id^=\"ch\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute $=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("[id$=\"burger\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should attribute !=", function(){
+		var body = getBody(html);
+		var attribute = CSSselect("div[class!=\"apple\"]", body, options);
+
+		assert.equal(attribute.length, 1);
+	});
+
+	it("should :not", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect("div:not( .apple )", body, options);
+
+		assert.equal(pseudo.length, 1);
+	});
+
+	it("should :contains", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect(":contains(Hello)", body, options);
+
+		assert.equal(pseudo.length, 3);
+	});
+
+	it("should :icontains", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect(":icontains(HELLO)", body, options);
+
+		assert.equal(pseudo.length, 3);
+	});
+
+	it("should :has", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect(":has( em )", body, options);
+
+		assert.equal(pseudo.length, 2);
+	});
+
+  //TODO
+  /*
+  it( 'should :root', function(){
+    var body = getBody( html );
+    var pseudo = CSSselect( ":root", body, options );
+
+    assert.equal( pseudo.length, 1 );
+  });
+  */
+
+	it("should :empty", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect("div:empty", body, options);
+
+		assert.equal(pseudo.length, 2);
+	});
+
+	it("should :first-child", function(){
+		var body = getBody(html);
+		var pseudo = CSSselect("div:first-child", body, options);
+
+		assert.equal(pseudo.length, 1);
 	});
 });
