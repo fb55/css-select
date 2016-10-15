@@ -17,8 +17,8 @@ function getAdapter(options){
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
 		var adapter = getAdapter(options),
-        compile,
-        compileUnsafe;
+		    compile,
+		    compileUnsafe;
 
 		if(adapter === DomUtils){
 			compile = defaultCompile;
@@ -66,7 +66,7 @@ var selectOne = getSelectorFunc(function selectOne(query, elems, adapter){
 
 function is(elem, query, options){
 	var adapter = getAdapter(options),
-      compile;
+	    compile;
 
 	if(adapter === DomUtils){
 		compile = defaultCompile;

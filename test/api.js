@@ -1,9 +1,8 @@
 var CSSselect = require(".."),
     makeDom = require("htmlparser2").parseDOM,
     bools = require("boolbase"),
-    assert = require("assert");
-
-var dom = makeDom("<div id=foo><p>foo</p></div>")[0],
+    assert = require("assert"),
+    dom = makeDom("<div id=foo><p>foo</p></div>")[0],
     xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", {xmlMode: true})[0];
 
 describe("API", function(){
