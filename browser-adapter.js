@@ -91,9 +91,9 @@ var adapter = {
 		return result;
 	},
 	getText: function getText(elem) {
-		if(Array.isArray(elem)) return elem.map(adapter.getText).join("");
+		if(Array.isArray(elem)) return elem.map(getText).join("");
 
-		if(isTag(elem)) return adapter.getText(getChildren(elem));
+		if(isTag(elem)) return getText(getChildren(elem));
 
 		if(elem.nodeType === 3) return elem.nodeValue;
 
