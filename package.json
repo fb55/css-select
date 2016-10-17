@@ -29,7 +29,6 @@
     "expect.js": "*",
     "htmlparser2": "*",
     "istanbul": "*",
-    "jsdom": "^9.6.0",
     "mocha": "*",
     "mocha-lcov-reporter": "*"
   },
