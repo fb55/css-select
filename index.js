@@ -8,7 +8,7 @@ var DomUtils       = require("domutils"),
     defaultCompile = compileFactory(DomUtils);
 
 function adapterCompile(adapter){
-	return adapter === DomUtils ? defaultCompile : compileFactory( adapter );
+	return adapter === DomUtils ? defaultCompile : compileFactory(adapter);
 }
 
 function getSelectorFunc(searchFunc){
