@@ -5,34 +5,23 @@ module.exports = CSSselect;
 var DomUtils       = require("domutils"),
     falseFunc      = require("boolbase").falseFunc,
     compileFactory = require("./lib/compile.js"),
-    browserAdapter = require("./browser-adapter"),
     defaultCompile = compileFactory(DomUtils);
 
-function getAdapter(options){
-	if(options && options.adapter) return options.adapter;
-
-	return DomUtils;
+function adapterCompile(adapter){
+	return adapter === DomUtils ? defaultCompile : compileFactory( adapter );
 }
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
-		var adapter = getAdapter(options),
-		    compile,
-		    compileUnsafe;
+		options = options || {}
+		options.adapter = options.adapter || DomUtils;
+		var compile = adapterCompile(options.adapter);
 
-		if(adapter === DomUtils){
-			compile = defaultCompile;
-		} else {
-			compile = compileFactory(adapter);
-		}
-
-		compileUnsafe = compile.compileUnsafe;
-
-		if(typeof query !== "function") query = compileUnsafe(query, options, elems);
-		if(query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems, adapter);
-		if(!Array.isArray(elems)) elems = adapter.getChildren(elems);
-		else elems = adapter.removeSubsets(elems);
-		return searchFunc(query, elems, adapter);
+		if(typeof query !== "function") query = compile.compileUnsafe(query, options, elems);
+		if(query.shouldTestNextSiblings) elems = appendNextSiblings((options && options.context) || elems, options.adapter);
+		if(!Array.isArray(elems)) elems = options.adapter.getChildren(elems);
+		else elems = options.adapter.removeSubsets(elems);
+		return searchFunc(query, elems, options);
 	};
 }
 
@@ -56,24 +45,18 @@ function appendNextSiblings(elems, adapter){
 	return newElems;
 }
 
-var selectAll = getSelectorFunc(function selectAll(query, elems, adapter){
-	return (query === falseFunc || !elems || elems.length === 0) ? [] : adapter.findAll(query, elems);
+var selectAll = getSelectorFunc(function selectAll(query, elems, options){
+	return (query === falseFunc || !elems || elems.length === 0) ? [] : options.adapter.findAll(query, elems);
 });
 
-var selectOne = getSelectorFunc(function selectOne(query, elems, adapter){
-	return (query === falseFunc || !elems || elems.length === 0) ? null : adapter.findOne(query, elems);
+var selectOne = getSelectorFunc(function selectOne(query, elems, options){
+	return (query === falseFunc || !elems || elems.length === 0) ? null : options.adapter.findOne(query, elems);
 });
 
 function is(elem, query, options){
-	var adapter = getAdapter(options),
-	    compile;
-
-	if(adapter === DomUtils){
-		compile = defaultCompile;
-	} else {
-		compile = compileFactory(adapter);
-	}
-
+	options = options || {}
+	options.adapter = options.adapter || DomUtils;
+	var compile = adapterCompile(options.adapter);
 	return (typeof query === "function" ? query : compile(query, options))(elem);
 }
 
@@ -92,11 +75,6 @@ CSSselect.selectAll = selectAll;
 CSSselect.selectOne = selectOne;
 
 CSSselect.is = is;
-
-CSSselect.adapters = {
-	default: DomUtils,
-	browser: browserAdapter
-};
 
 //legacy methods (might be removed)
 CSSselect.parse = defaultCompile;
