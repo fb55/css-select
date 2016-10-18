@@ -23,7 +23,7 @@
     "nth-check": "^1.0.1"
   },
   "devDependencies": {
-    "htmlparser2": "*",
+    "htmlparser2": "3.9.2",
     "cheerio-soupselect": "*",
     "eslint": "^3.0.0",
     "mocha": "*",
