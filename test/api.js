@@ -1,10 +1,10 @@
 var CSSselect = require(".."),
-    makeDom = require("htmlparser2").parseDOM,
-    bools = require("boolbase"),
-    assert = require("assert");
+	makeDom = require("htmlparser2").parseDOM,
+	bools = require("boolbase"),
+	assert = require("assert");
 
 var dom = makeDom("<div id=foo><p>foo</p></div>")[0],
-    xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", {xmlMode: true})[0];
+	xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", {xmlMode: true})[0];
 
 describe("API", function(){
 	describe("removes duplicates", function(){
@@ -32,11 +32,11 @@ describe("API", function(){
 	});
 
 	describe("selectAll", function(){
-		it("should query array elements directly when they have no parents", function() {
+		it("should query array elements directly when they have no parents", function(){
 			var divs = [dom];
 			assert.deepEqual(CSSselect.selectAll("div", divs), divs);
 		});
-		it("should query array elements directly when they have parents", function() {
+		it("should query array elements directly when they have parents", function(){
 			var ps = CSSselect.selectAll("p", [dom]);
 			assert.deepEqual(CSSselect.selectAll("p", ps), ps);
 		});

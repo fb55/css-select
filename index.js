@@ -3,16 +3,16 @@
 module.exports = CSSselect;
 
 var Pseudos       = require("./lib/pseudos.js"),
-    DomUtils      = require("domutils"),
-    findOne       = DomUtils.findOne,
-    findAll       = DomUtils.findAll,
-    getChildren   = DomUtils.getChildren,
-    getSiblings   = DomUtils.getSiblings,
-    removeSubsets = DomUtils.removeSubsets,
-    falseFunc     = require("boolbase").falseFunc,
-    compile       = require("./lib/compile.js"),
-    compileUnsafe = compile.compileUnsafe,
-    compileToken  = compile.compileToken;
+	DomUtils      = require("domutils"),
+	findOne       = DomUtils.findOne,
+	findAll       = DomUtils.findAll,
+	getChildren   = DomUtils.getChildren,
+	getSiblings   = DomUtils.getSiblings,
+	removeSubsets = DomUtils.removeSubsets,
+	falseFunc     = require("boolbase").falseFunc,
+	compile       = require("./lib/compile.js"),
+	compileUnsafe = compile.compileUnsafe,
+	compileToken  = compile.compileToken;
 
 function getSelectorFunc(searchFunc){
 	return function select(query, elems, options){
@@ -37,7 +37,7 @@ function appendNextSiblings(elems){
 	if(!Array.isArray(elems)) elems = [elems];
 	var newElems = elems.slice(0);
 
-	for(var i = 0, len = elems.length; i < len; i++) {
+	for(var i = 0, len = elems.length; i < len; i++){
 		var nextSiblings = getNextSiblings(newElems[i]);
 		newElems.push.apply(newElems, nextSiblings);
 	}

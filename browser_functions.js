@@ -52,7 +52,7 @@ module.exports = {
 		return result;
 	},
 	//https://github.com/ded/qwery/blob/master/pseudos/qwery-pseudos.js#L47-54
-	getText: function getText(elem) {
+	getText: function getText(elem){
 		var str = "",
 		    childs = getChildren(elem);
 

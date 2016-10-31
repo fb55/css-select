@@ -7,4 +7,4 @@ var ben = require("ben"),
 
 //console.log("Parsing took:", ben(1e5, function(){compile(testString);}));
 var compiled = compile(testString);
-console.log("Executing took:", ben(1e6, function(){CSSselect(compiled, dom);})*1e3);
+console.log("Executing took:", ben(1e6, function(){CSSselect(compiled, dom);}) * 1e3);

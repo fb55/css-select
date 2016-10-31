@@ -14,7 +14,7 @@ describe("qwery", function(){
 
 function exportsRun(mod){
 	Object.keys(mod).forEach(function(name){
-		if(typeof mod[name] === "object") {
+		if(typeof mod[name] === "object"){
 			describe(name, function(){
 				exportsRun(mod[name]);
 			});
