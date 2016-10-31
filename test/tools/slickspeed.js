@@ -43,7 +43,7 @@ var engines = [
 ];
 
 //returns true when an error occurs
-function testResult(rule, index) {
+function testResult(rule) {
     var results = engines.map(function(func) {
         return func(doc, rule);
     });

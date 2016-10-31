@@ -16,10 +16,11 @@ function getById(element) {
             return DomUtils.getElementById(element, document);
         }
         return element;
-    } else
+    } else {
         return Array.prototype.map.call(arguments, function(elem) {
             return getById(elem);
         });
+    }
 }
 
 //NWMatcher methods
@@ -86,7 +87,7 @@ var RUN_BENCHMARKS = false;
             var results = [],
                 index = 0,
                 nodes = document.getElementsByTagName("li");
-            while ((results[index] = nodes[index++])) {}
+            while ((results[index] = nodes[index++]));
             results.length--;
             //  this.assertEquivalent(select("li"), results); //TODO
             this.assertEqual(select("strong", getById("fixtures"))[0], getById("strong"));

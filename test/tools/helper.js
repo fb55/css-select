@@ -24,7 +24,7 @@ module.exports = {
         var document = getDOMFromPath(path);
 
         document.getElementsByTagName = function(name) {
-            return DomUtils.getElementsByTagName("*", document);
+            return DomUtils.getElementsByTagName(name || "*", document);
         };
         document.getElementById = function(id) {
             return DomUtils.getElementById(id, document);
@@ -32,7 +32,7 @@ module.exports = {
         document.createTextNode = function(content) {
             return {
                 type: "text",
-                data: "content"
+                data: content
             };
         };
         document.createElement = function(name) {

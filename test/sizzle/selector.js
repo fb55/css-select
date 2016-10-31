@@ -61,10 +61,6 @@ function jQuery(dom) {
     return ret;
 }
 
-function asyncTest(name, _, func) {
-    it(name, func);
-}
-
 beforeEach(function() {
     document = testInit.loadDoc();
 });
@@ -117,7 +113,7 @@ beforeEach(function() {
 test("element", function() {
     expect(38);
 
-    var form, all, good, i, obj1, lengthtest, siblingTest, iframe, iframeDoc, html;
+    var form, all, good, i, obj1, lengthtest, siblingTest, iframe, html;
 
     equal(Sizzle("").length, 0, "Empty selector returns an empty array");
     deepEqual(Sizzle("div", document.createTextNode("")), [], "Text element as context fails silently");
@@ -275,20 +271,19 @@ test("XML Document Selectors", function() {
 test("broken", function() {
     expect(26);
 
-    var attrbad,
-        broken = function(name, selector) {
-            raises(
-                function() {
-                    // Setting context to null here somehow avoids QUnit's window.error handling
-                    // making the e & e.message correct
-                    // For whatever reason, without this,
-                    // Sizzle.error will be called but no error will be seen in oldIE
-                    Sizzle.call(null, selector);
-                },
-                Error,
-                name + ": " + selector
-            );
-        };
+    var broken = function(name, selector) {
+        raises(
+            function() {
+                // Setting context to null here somehow avoids QUnit's window.error handling
+                // making the e & e.message correct
+                // For whatever reason, without this,
+                // Sizzle.error will be called but no error will be seen in oldIE
+                Sizzle.call(null, selector);
+            },
+            Error,
+            name + ": " + selector
+        );
+    };
 
     broken("Broken Selector", "[");
     broken("Broken Selector", "(");
@@ -324,7 +319,7 @@ test("broken", function() {
     broken("Only-last-child", ":only-last-child");
 
     // Make sure attribute value quoting works correctly. See: #6093
-    attrbad = jQuery(
+    jQuery(
         "<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>"
     ).appendTo("#qunit-fixture");
 
@@ -336,7 +331,7 @@ test("broken", function() {
 test("id", function() {
     expect(34);
 
-    var fiddle, a;
+    var fiddle;
 
     t("ID Selector", "#body", ["body"]);
     t("ID Selector w/ Element", "body#body", ["body"]);
@@ -377,7 +372,7 @@ test("id", function() {
         "Ending with ID"
     );
 
-    a = jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
+    jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
     t("ID Selector contains backslash", "#backslash\\\\foo", ["backslash\\foo"]);
 
     t("ID Selector on Form with an input that has a name of 'id'", "#lengthtest", ["lengthtest"]);
@@ -564,7 +559,7 @@ test("multiple", function() {
 test("child and adjacent", function() {
     expect(42);
 
-    var siblingFirst, en, nothiddendiv;
+    var siblingFirst, en;
 
     t("Child", "p > a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
     t("Child", "p> a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
@@ -667,7 +662,6 @@ test("child and adjacent", function() {
 
     t("No element deep selector", "div.foo > span > a", []);
 
-    nothiddendiv = document.getElementById("nothiddendiv");
     //deepEqual( Sizzle("> :first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
     //deepEqual( Sizzle("> :eq(0)", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
     //deepEqual( Sizzle("> *:first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
