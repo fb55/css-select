@@ -4,10 +4,15 @@
     "node": true
   },
   "globals": {
+    "beforeEach": true,
     "describe": true,
     "it": true
   },
   "rules": {
+  	"no-console": 0,
+  	"new-cap": 0,
+  	"space-before-blocks": [2, "never"],
+  	"space-in-parens": [2, "never"],
     "eqeqeq": [2, "allow-null"],
     "no-extend-native": 2,
     "no-use-before-define": [
@@ -54,7 +59,6 @@
         }
       }
     ],
-    "new-cap": 2,
     "comma-style": [
       2,
       "last"
@@ -76,8 +80,7 @@
       2,
       "tab",
       {
-        "SwitchCase": 1,
-        "VariableDeclarator": 0
+        "SwitchCase": 1
       }
     ],
     "linebreak-style": [

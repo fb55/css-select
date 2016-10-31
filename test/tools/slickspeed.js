@@ -7,27 +7,27 @@ var helper = require("./helper.js"),
 var engines = [function(a,b){return CSSselect(b,a);}, soupselect.select];
 
 //returns true when an error occurs
-function testResult(rule, index){
+function testResult(rule){
 	var results = engines
 		.map(function(func){ return func(doc, rule); });
 
 	//check if both had the same result
 	for(var i = 1; i < results.length; i++){
 		//TODO: might be hard to debug with more engines
-		if(results[i-1].length !== results[i].length){
+		if(results[i - 1].length !== results[i].length){
 			//console.log(rule, results[i-1].length, results[i].length);
 			return true;
 		}
 		for(var j = 0; j < results[i].length; j++){
-			if(results[i-1][j] !== results[i][j]){
-				if(results[i-1].indexOf(results[i][j]) === -1){
+			if(results[i - 1][j] !== results[i][j]){
+				if(results[i - 1].indexOf(results[i][j]) === -1){
 					return true;
 				}
 			}
 		}
 		//require("assert").deepEqual(results[i-1], results[i], rule + ": not the same elements");
 	}
-	
+
 	return false;
 }
 
@@ -41,29 +41,29 @@ print("-----\n\nChecking performance\n\n");
 var ben = require("ben");
 
 function testSpeed(rule){
-	print(rule, Array(28-rule.length).join(" "));
+	print(rule, Array(28 - rule.length).join(" "));
 
 	var results = engines
 		.map(function(func){ return function(){ return func(doc, rule); }});
-	
+
 	//also add a precompiled CSSselect test
 	var compiled = CSSselect(rule);
 	results.unshift(function(){ return CSSselect.iterate(compiled, doc); });
-	
+
 	results = results.map(ben);
-	
+
 	var min = Math.min.apply(null, results);
 	var max = Math.max.apply(null, results);
 
 	results.forEach(function(result){
 		if(result === min) return print(" +", result, "+");
 		if(result === max) return print(" !", result, "!");
-		if(Math.abs(result-min) > Math.abs(result-max)){
+		if(Math.abs(result - min) > Math.abs(result - max)){
 			return print(" =", result, "=");
 		}
 		print(" ~", result, "~");
 	});
-	
+
 	print("\n");
 }
 
