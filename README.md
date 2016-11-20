@@ -95,15 +95,17 @@ A custom adapter must implement the following functions:
 
 ```
 isTag, existsOne, getAttributeValue, getChildren, getName, getParent,
-getSiblings, getText, hasAttrib, removeSubsets, findAll
+getSiblings, getText, hasAttrib, removeSubsets, findAll, findOne
 ```
 
 The method signature notation used below should be fairly intuitive - if not,
 see the [`rtype`](https://github.com/ericelliott/rtype) or
 [`TypeScript`](https://www.typescriptlang.org/) docs, as it is very similar to
 both of those. You may also want to look at
-[`domutils`](https://github.com/fb55/domutils) to see the default
-implementation.
+-[`domutils`](https://github.com/fb55/domutils) to see the default 
+-implementation, or at 
+-[`css-select-browser-adapter`](https://github.com/nrkn/css-select-browser-adapter/blob/master/index.js) 
+-for an implementation backed by the DOM.
 
 ```ts
 {
@@ -144,6 +146,10 @@ implementation.
   // finds all of the element nodes in the array that match the test predicate,
   // as well as any of their children that match it
   findAll: ( test:Predicate, nodes:[Node] ) => elems:[ElementNode],
+
+  // finds the first node in the array that matches the test predicate, or one
+  // of its children 
+  findOne: ( test:Predicate, elems:[ElementNode] ) => findOne:ElementNode,
 
   /*
     The adapter can also optionally include an equals method, if your DOM
