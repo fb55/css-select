@@ -57,8 +57,10 @@ _//TODO: More in-depth description. Implementation details. Build a spaceship._
 ## API
 
 ```js
-var CSSselect = require("css-select");
+const CSSselect = require("css-select");
 ```
+
+__Note:__ css-select throws errors when invalid selectors are passed to it, contrary to the behavior in browsers, which swallow them. This is done to aid with writing css selectors, but can be unexpected when processing arbitrary strings.
 
 #### `CSSselect(query, elems, options)`
 
