@@ -26,7 +26,7 @@
   "devDependencies": {
     "cheerio-soupselect": "*",
     "coveralls": "*",
-    "eslint": "^3.0.0",
+    "eslint": "^4.1.0",
     "expect.js": "*",
     "htmlparser2": "*",
     "istanbul": "*",
