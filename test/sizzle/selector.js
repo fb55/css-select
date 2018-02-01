@@ -4,7 +4,6 @@ var DomUtils = require("domutils"),
 	assert = require("assert"),
 	raises = assert.throws,
 	equal = assert.equal,
-	deepEqual = assert.deepEqual,
 	ok = assert.ok,
 	testInit = require("./data/testinit.js"),
 	q = testInit.q,
@@ -12,7 +11,12 @@ var DomUtils = require("domutils"),
 	document = testInit.loadDoc(),
 	createWithFriesXML = testInit.createWithFriesXML,
 	expect = function(){},
-	test = it;
+	test = it,
+	decircularize = require("../decircularize");
+
+function deepEqual(e, a, m) {
+	return assert.deepEqual(decircularize(e), decircularize(a), m);
+}
 
 function Sizzle(str, doc){
 	return CSSselect(str, doc || document);
