@@ -14,12 +14,13 @@
   },
   "files": [
     "index.js",
+    "index.d.ts",
     "lib"
   ],
   "dependencies": {
     "boolbase": "^1.0.0",
     "css-what": "2.1",
-    "domutils": "1.7.0",
+    "domutils": "^1.7.0",
     "es6-set": "^0.1.5",
     "nth-check": "^1.0.1"
   },
