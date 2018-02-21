@@ -1,4 +1,5 @@
 var assert = require("assert"),
+  decircularize = require("../../decircularize"),
 	helper = require("../../tools/helper.js"),
 	CSSselect = helper.CSSselect,
 	path = require("path"),
@@ -9,7 +10,7 @@ var assert = require("assert"),
 //in this module, the only use-case is to compare arrays of
 function deepEqual(a, b, msg){
 	try {
-		assert.deepEqual(a, b, msg);
+		assert.deepEqual(decircularize(a), decircularize(b), msg);
 	} catch(e){
 		e.actual = JSON.stringify(a.map(getId), 0, 2);
 		e.expected = JSON.stringify(b.map(getId), 0, 2);

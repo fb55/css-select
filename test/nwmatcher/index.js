@@ -6,6 +6,7 @@ var DomUtils = require("htmlparser2").DomUtils,
 	helper = require("../tools/helper.js"),
 	assert = require("assert"),
 	path = require("path"),
+	decircularize = require("../decircularize"),
 	document = helper.getDocument(path.join(__dirname, "test.html")),
 	CSSselect = helper.CSSselect;
 
@@ -32,7 +33,9 @@ var select = function(query, doc){
 var validators = {
 	assert: assert,
 	assertEqual: assert.equal,
-	assertEquivalent: assert.deepEqual,
+	assertEquivalent: function(v1, v2, message) {
+		return assert.deepEqual(decircularize(v1), decircularize(v2), message)
+	},
 	refute: function refute(a, msg){
 		assert(!a, msg);
 	},
