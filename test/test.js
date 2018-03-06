@@ -18,7 +18,6 @@ function exportsRun(mod){
 			describe(name, function(){
 				exportsRun(mod[name]);
 			});
-		}
-		else it(name, mod[name]);
+		} else it(name, mod[name]);
 	});
 }

@@ -1,11 +1,10 @@
 var assert = require("assert"),
-  decircularize = require("../../decircularize"),
+	decircularize = require("../../decircularize"),
 	helper = require("../../tools/helper.js"),
 	CSSselect = helper.CSSselect,
 	path = require("path"),
 	docPath = path.join(__dirname, "index.html"),
 	document = null;
-
 
 //in this module, the only use-case is to compare arrays of
 function deepEqual(a, b, msg){
@@ -17,11 +16,13 @@ function deepEqual(a, b, msg){
 		throw e;
 	}
 
-	function getId(n){ return n && n.attribs.id; }
+	function getId(n){
+		return n && n.attribs.id;
+	}
 }
 
 function loadDoc(){
-	return document = helper.getDocument(docPath);
+	return (document = helper.getDocument(docPath));
 }
 
 module.exports = {
@@ -60,14 +61,18 @@ function t(a, b, c){
 		i = 0;
 
 	for(; i < f.length; i++){
-		s += (s && ",") + "\"" + f[ i ].id + "\"";
+		s += (s && ",") + "\"" + f[i].id + "\"";
 	}
 
 	deepEqual(f, q.apply(q, c), a + " (" + b + ")");
 }
 
-var xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), { xmlMode: true });
-var filtered = xmlDoc.filter(function(t){return t.type === "tag"});
+var xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), {
+	xmlMode: true
+});
+var filtered = xmlDoc.filter(function(t){
+	return t.type === "tag";
+});
 xmlDoc.lastChild = filtered[filtered.length - 1];
 
 function createWithFriesXML(){
