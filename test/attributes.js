@@ -3,15 +3,23 @@ var CSSselect = require("../"),
 	falseFunc = require("boolbase").falseFunc,
 	assert = require("assert");
 
-var dom = makeDom("<div><div data-foo=\"In the end, it doesn't really matter.\"></div><div data-foo=\"Indeed-that's a delicate matter.\">");
+var dom = makeDom(
+	"<div><div data-foo=\"In the end, it doesn't really matter.\"></div><div data-foo=\"Indeed-that's a delicate matter.\">"
+);
 
 describe("Attributes", function(){
 	describe("ignore case", function(){
 		it("should for =", function(){
-			var matches = CSSselect.selectAll("[data-foo=\"indeed-that's a delicate matter.\" i]", dom);
+			var matches = CSSselect.selectAll(
+				"[data-foo=\"indeed-that's a delicate matter.\" i]",
+				dom
+			);
 			assert.equal(matches.length, 1);
 			assert.deepEqual(matches, [dom[0].children[1]]);
-			matches = CSSselect.selectAll("[data-foo=\"inDeeD-THAT's a DELICATE matteR.\" i]", dom);
+			matches = CSSselect.selectAll(
+				"[data-foo=\"inDeeD-THAT's a DELICATE matteR.\" i]",
+				dom
+			);
 			assert.deepEqual(matches, [dom[0].children[1]]);
 		});
 
@@ -36,10 +44,16 @@ describe("Attributes", function(){
 		});
 
 		it("should for !=", function(){
-			var matches = CSSselect.selectAll("[data-foo!=\"indeed-that's a delicate matter.\" i]", dom);
+			var matches = CSSselect.selectAll(
+				"[data-foo!=\"indeed-that's a delicate matter.\" i]",
+				dom
+			);
 			assert.equal(matches.length, 1);
 			assert.deepEqual(matches, [dom[0].children[0]]);
-			matches = CSSselect.selectAll("[data-foo!=\"inDeeD-THAT's a DELICATE matteR.\" i]", dom);
+			matches = CSSselect.selectAll(
+				"[data-foo!=\"inDeeD-THAT's a DELICATE matteR.\" i]",
+				dom
+			);
 			assert.deepEqual(matches, [dom[0].children[0]]);
 		});
 

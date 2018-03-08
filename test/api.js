@@ -1,10 +1,10 @@
-var CSSselect = require(".."),
-	makeDom = require("htmlparser2").parseDOM,
-	bools = require("boolbase"),
-	assert = require("assert");
+var CSSselect = require("..");
+var makeDom = require("htmlparser2").parseDOM;
+var bools = require("boolbase");
+var assert = require("assert");
 
-var dom = makeDom("<div id=foo><p>foo</p></div>")[0],
-	xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", {xmlMode: true})[0];
+var dom = makeDom("<div id=foo><p>foo</p></div>")[0];
+var xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true })[0];
 
 describe("API", function(){
 	describe("removes duplicates", function(){
@@ -24,9 +24,11 @@ describe("API", function(){
 
 	describe("can be queried by function", function(){
 		it("in `is`", function(){
-			assert(CSSselect.is(dom, function(elem){
-				return elem.attribs.id === "foo";
-			}));
+			assert(
+				CSSselect.is(dom, function(elem){
+					return elem.attribs.id === "foo";
+				})
+			);
 		});
 		//probably more cases should be added here
 	});
@@ -77,7 +79,10 @@ describe("API", function(){
 			assert.equal(matches.length, 2);
 			matches = CSSselect.selectAll(":matches(div, :not(div))", [dom]);
 			assert.equal(matches.length, 2);
-			matches = CSSselect.selectAll(":matches(boo, baa, tag, div, foo, bar, baz)", [dom]);
+			matches = CSSselect.selectAll(
+				":matches(boo, baa, tag, div, foo, bar, baz)",
+				[dom]
+			);
 			assert.equal(matches.length, 1);
 			assert.equal(matches[0], dom);
 		});
@@ -119,15 +124,15 @@ describe("API", function(){
 	});
 
 	describe("options", function(){
-		var opts = {xmlMode: true};
+		var opts = { xmlMode: true };
 		it("should recognize xmlMode in :has and :not", function(){
-			assert(CSSselect.is(xmlDom, "DiV:has(P)",   opts));
+			assert(CSSselect.is(xmlDom, "DiV:has(P)", opts));
 			assert(CSSselect.is(xmlDom, "DiV:not(div)", opts));
 			assert(CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", opts));
 		});
 
 		it("should be strict", function(){
-			var opts = {strict: true};
+			var opts = { strict: true };
 			assert.throws(CSSselect.compile.bind(null, ":checkbox", opts), Error);
 			assert.throws(CSSselect.compile.bind(null, "[attr=val i]", opts), Error);
 			assert.throws(CSSselect.compile.bind(null, "[attr!=val]", opts), Error);
@@ -135,16 +140,16 @@ describe("API", function(){
 			assert.throws(CSSselect.compile.bind(null, "foo < bar", opts), Error);
 			assert.throws(CSSselect.compile.bind(null, ":not(:parent)", opts), Error);
 			assert.throws(CSSselect.compile.bind(null, ":not(a > b)", opts), Error);
-			assert.throws(CSSselect.compile.bind(null, ":not(a, b)",  opts), Error);
+			assert.throws(CSSselect.compile.bind(null, ":not(a, b)", opts), Error);
 		});
 
 		it("should recognize contexts", function(){
 			var div = CSSselect.selectAll("div", [dom]),
-			    p = CSSselect.selectAll("p", [dom]);
+				p = CSSselect.selectAll("p", [dom]);
 
-			assert.equal(CSSselect.selectOne("div", div, {context: div}), div[0]);
-			assert.equal(CSSselect.selectOne("div", div, {context: p}), null);
-			assert.deepEqual(CSSselect.selectAll("p", div, {context: div}), p);
+			assert.equal(CSSselect.selectOne("div", div, { context: div }), div[0]);
+			assert.equal(CSSselect.selectOne("div", div, { context: p }), null);
+			assert.deepEqual(CSSselect.selectAll("p", div, { context: div }), p);
 		});
 	});
 });
