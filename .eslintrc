@@ -3,11 +3,6 @@
   "env": {
     "node": true
   },
-  "globals": {
-    "beforeEach": true,
-    "describe": true,
-    "it": true
-  },
   "rules": {
   	"no-console": 0,
   	"new-cap": 0,
