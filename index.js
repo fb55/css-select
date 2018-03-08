@@ -2,24 +2,33 @@
 
 module.exports = CSSselect;
 
-var DomUtils = require("domutils"),
-    falseFunc = require("boolbase").falseFunc,
-    compileFactory = require("./lib/compile.js"),
-    defaultCompile = compileFactory(DomUtils);
+var DomUtils = require("domutils");
+var falseFunc = require("boolbase").falseFunc;
+var compileRaw = require("./lib/compile.js");
 
-function adapterCompile(adapter) {
-    return adapter === DomUtils ? defaultCompile : compileFactory(adapter);
+function wrapCompile(func) {
+    return function addAdapter(selector, options, context) {
+        options = options || {};
+        options.adapter = options.adapter || DomUtils;
+
+        return func(selector, options, context);
+    };
 }
+
+var compile = wrapCompile(compileRaw);
+var compileUnsafe = wrapCompile(compileRaw.compileUnsafe);
 
 function getSelectorFunc(searchFunc) {
     return function select(query, elems, options) {
         options = options || {};
         options.adapter = options.adapter || DomUtils;
-        var compile = adapterCompile(options.adapter);
 
-        if (typeof query !== "function") query = compile.compileUnsafe(query, options, elems);
-        if (query.shouldTestNextSiblings)
+        if (typeof query !== "function") {
+            query = compileUnsafe(query, options, elems);
+        }
+        if (query.shouldTestNextSiblings) {
             elems = appendNextSiblings((options && options.context) || elems, options.adapter);
+        }
         if (!Array.isArray(elems)) elems = options.adapter.getChildren(elems);
         else elems = options.adapter.removeSubsets(elems);
         return searchFunc(query, elems, options);
@@ -57,7 +66,6 @@ var selectOne = getSelectorFunc(function selectOne(query, elems, options) {
 function is(elem, query, options) {
     options = options || {};
     options.adapter = options.adapter || DomUtils;
-    var compile = adapterCompile(options.adapter);
     return (typeof query === "function" ? query : compile(query, options))(elem);
 }
 
@@ -68,9 +76,9 @@ function CSSselect(query, elems, options) {
     return selectAll(query, elems, options);
 }
 
-CSSselect.compile = defaultCompile;
-CSSselect.filters = defaultCompile.Pseudos.filters;
-CSSselect.pseudos = defaultCompile.Pseudos.pseudos;
+CSSselect.compile = compile;
+CSSselect.filters = compileRaw.Pseudos.filters;
+CSSselect.pseudos = compileRaw.Pseudos.pseudos;
 
 CSSselect.selectAll = selectAll;
 CSSselect.selectOne = selectOne;
@@ -78,9 +86,9 @@ CSSselect.selectOne = selectOne;
 CSSselect.is = is;
 
 //legacy methods (might be removed)
-CSSselect.parse = defaultCompile;
+CSSselect.parse = compile;
 CSSselect.iterate = selectAll;
 
 //hooks
-CSSselect._compileUnsafe = defaultCompile.compileUnsafe;
-CSSselect._compileToken = defaultCompile.compileToken;
+CSSselect._compileUnsafe = compileUnsafe;
+CSSselect._compileToken = compileRaw.compileToken;

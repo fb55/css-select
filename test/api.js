@@ -1,10 +1,10 @@
-var CSSselect = require(".."),
-    makeDom = require("htmlparser2").parseDOM,
-    bools = require("boolbase"),
-    assert = require("assert");
+var CSSselect = require("..");
+var makeDom = require("htmlparser2").parseDOM;
+var bools = require("boolbase");
+var assert = require("assert");
 
-var dom = makeDom("<div id=foo><p>foo</p></div>")[0],
-    xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true })[0];
+var dom = makeDom("<div id=foo><p>foo</p></div>")[0];
+var xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true })[0];
 
 describe("API", function() {
     describe("removes duplicates", function() {

@@ -191,8 +191,7 @@ var RUN_BENCHMARKS = false;
                 getById("link_3"),
                 'a[class~=external][href="#"]'
             );
-        } /*
-		'E[foo|="en"]': function(){
+        } /*		'E[foo|="en"]': function(){
 			this.assertEqual(select('*[xml:lang|="es"]')[0], getById('item_3'));
 			this.assertEqual(select('*[xml:lang|="ES"]')[0], getById('item_3'));
 		},*/,

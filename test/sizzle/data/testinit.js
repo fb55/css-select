@@ -67,7 +67,9 @@ function t(a, b, c) {
     deepEqual(f, q.apply(q, c), a + " (" + b + ")");
 }
 
-var xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), { xmlMode: true });
+var xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), {
+    xmlMode: true
+});
 var filtered = xmlDoc.filter(function(t) {
     return t.type === "tag";
 });
