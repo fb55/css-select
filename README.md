@@ -206,4 +206,4 @@ __*__: Not part of CSS3
 
 ---
 
-License: BSD-like
+License: BSD-2-Clause
