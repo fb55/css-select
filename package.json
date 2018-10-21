@@ -40,5 +40,8 @@
     "coveralls": "npm run lint && npm run lcov && (cat coverage/lcov.info | coveralls || exit 0)"
   },
   "license": "BSD-2-Clause",
-  "types": "index.d.ts"
+  "types": "index.d.ts",
+  "prettier": {
+    "tabWidth": 4
+  }
 }
