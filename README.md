@@ -207,3 +207,5 @@ __*__: Not part of CSS3
 ---
 
 License: BSD-2-Clause
+
+[Get supported css-select with the Tidelift Subscription](https://tidelift.com/subscription/pkg/npm-css-select?utm_source=npm-css-select&utm_medium=referral&utm_campaign=readme)
