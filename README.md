@@ -195,7 +195,8 @@ _As defined by CSS 4 and / or jQuery._
   * `:[first|last]-child[-of-type]`
   * `:only-of-type`, `:only-child`
   * `:nth-[last-]child[-of-type]`
-  * `:link`, `:visited` (the latter doesn't match any elements)
+  * `:link`
+  * `:visited`, `:hover`, `:active` * (these depend on optional Adapter methods, so these will work only if implemented in Adapter)
   * `:selected` *, `:checked`
   * `:enabled`, `:disabled`
   * `:required`, `:optional`
