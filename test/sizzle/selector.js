@@ -671,6 +671,11 @@ test("child and adjacent", function() {
     //deepEqual( Sizzle("> *:first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
 
     t("Non-existant ancestors", ".fototab > .thumbnails > a", []);
+    deepEqual(
+        CSSselect.selectOne(':scope > label', CSSselect.selectOne('#scopeTest', document)),
+        CSSselect.selectOne('#scopeTest--child', document),
+        "Child of scope"
+    );
 });
 
 test("attributes", function() {
