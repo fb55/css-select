@@ -19,7 +19,7 @@
   ],
   "dependencies": {
     "boolbase": "^1.0.0",
-    "css-what": "^2.1.2",
+    "css-what": "^3.2.1",
     "domutils": "^1.7.0",
     "nth-check": "^1.0.2"
   },
