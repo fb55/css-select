@@ -442,6 +442,18 @@ module.exports = {
             location.hash = "";
         },
 
+        ":hover": function() {
+            expect(CSSselect("#pseudos div:hover", document)).to.be.empty();
+        },
+
+        ":active": function() {
+            expect(CSSselect("#pseudos div:active", document)).to.be.empty();
+        },
+
+        ":visited": function() {
+            expect(CSSselect("#pseudos div:visited", document)).to.be.empty();
+        },
+
         "custom pseudos": function() {
             // :humanoid implemented just for testing purposes
             expect(CSSselect(":humanoid", document)).to.have.length(2); //selected using custom pseudo
