@@ -20,7 +20,7 @@
     "dependencies": {
         "boolbase": "^1.0.0",
         "css-what": "^3.2.1",
-        "domutils": "^1.7.0",
+        "domutils": "^2.1.0",
         "nth-check": "^1.0.2"
     },
     "devDependencies": {
