@@ -21,6 +21,7 @@
         "object-shorthand": 2,
         "prefer-template": 2,
         "one-var": [2, "never"],
+        "prefer-destructuring": [2, { "object": true }],
 
         "@typescript-eslint/explicit-function-return-type": 0,
         "@typescript-eslint/explicit-member-accessibility": 0

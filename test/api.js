@@ -3,8 +3,8 @@ const makeDom = require("htmlparser2").parseDOM;
 const bools = require("boolbase");
 const assert = require("assert");
 
-const dom = makeDom("<div id=foo><p>foo</p></div>")[0];
-const xmlDom = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true })[0];
+const [dom] = makeDom("<div id=foo><p>foo</p></div>");
+const [xmlDom] = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true });
 
 describe("API", () => {
     describe("removes duplicates", () => {
@@ -24,9 +24,7 @@ describe("API", () => {
 
     describe("can be queried by function", () => {
         it("in `is`", () => {
-            assert(
-                CSSselect.is(dom, (elem) => elem.attribs.id === "foo")
-            );
+            assert(CSSselect.is(dom, (elem) => elem.attribs.id === "foo"));
         });
         //probably more cases should be added here
     });
@@ -169,7 +167,7 @@ describe("API", () => {
 
         it("should recognize contexts", () => {
             const div = CSSselect.selectAll("div", [dom]);
-                const p = CSSselect.selectAll("p", [dom]);
+            const p = CSSselect.selectAll("p", [dom]);
 
             assert.equal(
                 CSSselect.selectOne("div", div, { context: div }),

@@ -1,7 +1,7 @@
 const CSSselect = require("../");
-    const makeDom = require("htmlparser2").parseDOM;
-    const falseFunc = require("boolbase").falseFunc;
-    const assert = require("assert");
+const makeDom = require("htmlparser2").parseDOM;
+const { falseFunc } = require("boolbase");
+const assert = require("assert");
 
 const dom = makeDom(
     '<div><div data-foo="In the end, it doesn\'t really matter."></div><div data-foo="Indeed-that\'s a delicate matter.">'

@@ -23,33 +23,26 @@ module.exports = {
     getDocument(path) {
         const document = getDOMFromPath(path);
 
-        document.getElementsByTagName = function (name) {
-            return DomUtils.getElementsByTagName(name || "*", document);
-        };
-        document.getElementById = function (id) {
-            return DomUtils.getElementById(id, document);
-        };
-        document.createTextNode = function (content) {
-            return {
-                type: "text",
-                data: content,
-            };
-        };
-        document.createElement = function (name) {
-            return {
-                type: "tag",
-                name,
-                children: [],
-                attribs: {},
-            };
-        };
-        document.body = DomUtils.getElementsByTagName(
+        document.getElementsByTagName = (name = "*") =>
+            DomUtils.getElementsByTagName(name, document);
+        document.getElementById = (id) => DomUtils.getElementById(id, document);
+        document.createTextNode = (content) => ({
+            type: "text",
+            data: content,
+        });
+        document.createElement = (name) => ({
+            type: "tag",
+            name,
+            children: [],
+            attribs: {},
+        });
+        [document.body] = DomUtils.getElementsByTagName(
             "body",
             document,
             true,
             1
-        )[0];
-        document.documentElement = document.filter(DomUtils.isTag)[0];
+        );
+        [document.documentElement] = document.filter(DomUtils.isTag);
 
         return document;
     },

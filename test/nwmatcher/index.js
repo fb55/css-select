@@ -2,13 +2,13 @@
 	taken from https://github.com/dperini/nwmatcher/blob/master/test/scotch/test.js
 */
 
-const DomUtils = require("htmlparser2").DomUtils,
-    helper = require("../tools/helper.js"),
-    assert = require("assert"),
-    path = require("path"),
-    decircularize = require("../decircularize"),
-    document = helper.getDocument(path.join(__dirname, "test.html")),
-    CSSselect = helper.CSSselect;
+const { DomUtils } = require("htmlparser2");
+const helper = require("../tools/helper.js");
+const assert = require("assert");
+const path = require("path");
+const decircularize = require("../decircularize");
+const document = helper.getDocument(path.join(__dirname, "test.html"));
+const { CSSselect } = helper;
 
 //Prototype's `$` function
 function getById(element) {
@@ -23,11 +23,8 @@ function getById(element) {
 }
 
 //NWMatcher methods
-const select = function (query, doc) {
-    if (arguments.length === 1 || typeof doc === "undefined") doc = document;
-    else if (typeof doc === "string") doc = select(doc);
-    return CSSselect(query, doc);
-};
+const select = (query, doc = document) =>
+    CSSselect(query, typeof doc === "string" ? select(doc) : doc);
 const match = CSSselect.is;
 
 const validators = {
@@ -73,7 +70,7 @@ const RUN_BENCHMARKS = false;
             const results = [];
             const nodes = document.getElementsByTagName("*");
             let index = 0;
-            const length = nodes.length;
+            const { length } = nodes;
             let node;
             //Collect all element nodes, excluding comments (IE)
             for (; index < length; index++) {

@@ -1,9 +1,9 @@
-const assert = require("assert"),
-    decircularize = require("../../decircularize"),
-    helper = require("../../tools/helper.js"),
-    CSSselect = helper.CSSselect,
-    path = require("path"),
-    docPath = path.join(__dirname, "index.html");
+const assert = require("assert");
+const decircularize = require("../../decircularize");
+const helper = require("../../tools/helper.js");
+const { CSSselect } = helper;
+const path = require("path");
+const docPath = path.join(__dirname, "index.html");
 let document = null;
 
 //in this module, the only use-case is to compare arrays of

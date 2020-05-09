@@ -3,12 +3,11 @@
 module.exports = CSSselect;
 
 const DomUtils = require("domutils");
-const falseFunc = require("boolbase").falseFunc;
+const { falseFunc } = require("boolbase");
 const compileRaw = require("./lib/compile.js");
 
 function wrapCompile(func) {
-    return function addAdapter(selector, options, context) {
-        options = options || {};
+    return function addAdapter(selector, options = {}, context) {
         options.adapter = options.adapter || DomUtils;
 
         return func(selector, options, context);
@@ -19,8 +18,7 @@ const compile = wrapCompile(compileRaw);
 const compileUnsafe = wrapCompile(compileRaw.compileUnsafe);
 
 function getSelectorFunc(searchFunc) {
-    return function select(query, elems, options) {
-        options = options || {};
+    return function select(query, elems, options = {}) {
         options.adapter = options.adapter || DomUtils;
 
         if (typeof query !== "function") {
@@ -28,7 +26,7 @@ function getSelectorFunc(searchFunc) {
         }
         if (query.shouldTestNextSiblings) {
             elems = appendNextSiblings(
-                (options && options.context) || elems,
+                options.context || elems,
                 options.adapter
             );
         }
@@ -58,16 +56,19 @@ function appendNextSiblings(elems, adapter) {
     return newElems;
 }
 
-const selectAll = getSelectorFunc((query, elems, options) => query === falseFunc || !elems || elems.length === 0
+const selectAll = getSelectorFunc((query, elems, options) =>
+    query === falseFunc || !elems || elems.length === 0
         ? []
-        : options.adapter.findAll(query, elems));
+        : options.adapter.findAll(query, elems)
+);
 
-const selectOne = getSelectorFunc((query, elems, options) => query === falseFunc || !elems || elems.length === 0
+const selectOne = getSelectorFunc((query, elems, options) =>
+    query === falseFunc || !elems || elems.length === 0
         ? null
-        : options.adapter.findOne(query, elems));
+        : options.adapter.findOne(query, elems)
+);
 
-function is(elem, query, options) {
-    options = options || {};
+function is(elem, query, options = {}) {
     options.adapter = options.adapter || DomUtils;
     return (typeof query === "function" ? query : compile(query, options))(
         elem

@@ -38,7 +38,7 @@
     },
     "scripts": {
         "test": "mocha && npm run lint",
-        "lint": "eslint index.js lib/*.js test/*.js",
+        "lint": "eslint .",
         "lcov": "istanbul cover _mocha --report lcovonly -- -R spec",
         "coveralls": "npm run lint && npm run lcov && (cat coverage/lcov.info | coveralls || exit 0)"
     },

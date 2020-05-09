@@ -1,6 +1,6 @@
 const CSSselect = require("../");
-    const makeDom = require("htmlparser2").parseDOM;
-    const assert = require("assert");
+const makeDom = require("htmlparser2").parseDOM;
+const assert = require("assert");
 
 const dom = makeDom(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"

@@ -1,16 +1,12 @@
 const DomUtils = require("domutils");
 const helper = require("../tools/helper.js");
-const CSSselect = helper.CSSselect;
+const { CSSselect } = helper;
 const assert = require("assert");
-const raises = assert.throws;
-const equal = assert.equal;
-const ok = assert.ok;
+const { throws: raises, equal, ok } = assert;
 const testInit = require("./data/testinit.js");
-const q = testInit.q;
-const t = testInit.t;
+const { q, t, createWithFriesXML } = testInit;
 let document = testInit.loadDoc();
-const createWithFriesXML = testInit.createWithFriesXML;
-const expect = function () {};
+const expect = () => {};
 const test = it;
 const decircularize = require("../decircularize");
 
@@ -18,13 +14,12 @@ function deepEqual(e, a, m) {
     return assert.deepEqual(decircularize(e), decircularize(a), m);
 }
 
-function Sizzle(str, doc) {
-    return CSSselect(str, doc || document);
+function Sizzle(str, doc = document) {
+    return CSSselect(str, doc);
 }
 
-Sizzle.matches = function (selector, elements) {
-    return elements.filter(CSSselect.compile(selector));
-};
+Sizzle.matches = (selector, elements) =>
+    elements.filter(CSSselect.compile(selector));
 
 Sizzle.matchesSelector = CSSselect.is;
 
@@ -32,7 +27,7 @@ function jQuery(dom) {
     if (typeof dom === "string") dom = helper.getDOM(dom);
     const ret = {
         appendTo(elem) {
-            if (typeof elem === "string") elem = Sizzle(elem)[0];
+            if (typeof elem === "string") [elem] = Sizzle(elem);
             dom.forEach((child) => {
                 DomUtils.appendChild(elem, child);
             });
@@ -409,7 +404,7 @@ test("XML Document Selectors", () => {
 test("broken", () => {
     expect(26);
 
-    const broken = function (name, selector) {
+    const broken = (name, selector) => {
         raises(
             () => {
                 // Setting context to null here somehow avoids QUnit's window.error handling
@@ -1095,45 +1090,41 @@ test("attributes", () => {
     t("Underscores don't need escaping", "input[id=types_all]", ["types_all"]);
 
     deepEqual(
-        Sizzle("input[name=foo\\ bar]", null, null, attrbad),
+        Sizzle("input[name=foo\\ bar]"),
         q("attrbad_space"),
         "Escaped space"
     );
+    deepEqual(Sizzle("input[name=foo\\.baz]"), q("attrbad_dot"), "Escaped dot");
     deepEqual(
-        Sizzle("input[name=foo\\.baz]", null, null, attrbad),
-        q("attrbad_dot"),
-        "Escaped dot"
-    );
-    deepEqual(
-        Sizzle("input[name=foo\\[baz\\]]", null, null, attrbad),
+        Sizzle("input[name=foo\\[baz\\]]"),
         q("attrbad_brackets"),
         "Escaped brackets"
     );
-    //  deepEqual( Sizzle( "input[data-attr='foo_baz\\']']", null, null, attrbad ), q("attrbad_injection"),
+    //  deepEqual( Sizzle( "input[data-attr='foo_baz\\']']"), q("attrbad_injection"),
     //	"Escaped quote + right bracket" );
 
-    //  deepEqual( Sizzle( "input[data-attr='\\'']", null, null, attrbad ), q("attrbad_quote"),
+    //  deepEqual( Sizzle( "input[data-attr='\\'']"), q("attrbad_quote"),
     //	"Quoted quote" );
-    //  deepEqual( Sizzle( "input[data-attr='\\\\']", null, null, attrbad ), q("attrbad_backslash"),
+    //  deepEqual( Sizzle( "input[data-attr='\\\\']"), q("attrbad_backslash"),
     //	"Quoted backslash" );
-    //  deepEqual( Sizzle( "input[data-attr='\\\\\\'']", null, null, attrbad ), q("attrbad_backslash_quote"),
+    //  deepEqual( Sizzle( "input[data-attr='\\\\\\'']"), q("attrbad_backslash_quote"),
     //	"Quoted backslash quote" );
-    //  deepEqual( Sizzle( "input[data-attr='\\\\\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+    //  deepEqual( Sizzle( "input[data-attr='\\\\\\\\']"), q("attrbad_backslash_backslash"),
     //	"Quoted backslash backslash" );
 
-    //  deepEqual( Sizzle( "input[data-attr='\\5C\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+    //  deepEqual( Sizzle( "input[data-attr='\\5C\\\\']"), q("attrbad_backslash_backslash"),
     //	"Quoted backslash backslash (numeric escape)" );
-    //  deepEqual( Sizzle( "input[data-attr='\\5C \\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+    //  deepEqual( Sizzle( "input[data-attr='\\5C \\\\']"), q("attrbad_backslash_backslash"),
     //	"Quoted backslash backslash (numeric escape with trailing space)" );
-    //  deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']", null, null, attrbad ), q("attrbad_backslash_backslash"),
+    //  deepEqual( Sizzle( "input[data-attr='\\5C\t\\\\']"), q("attrbad_backslash_backslash"),
     //	"Quoted backslash backslash (numeric escape with trailing tab)" );
-    //  deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
+    //  deepEqual( Sizzle( "input[data-attr='\\04e00']"), q("attrbad_unicode"),
     //	"Long numeric escape (BMP)" );*/
     document.getElementById("attrbad_unicode").attribs["data-attr"] =
         "\uD834\uDF06A";
     // It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
     deepEqual(
-        Sizzle("input[data-attr='\\01D306A']", null, null, attrbad),
+        Sizzle("input[data-attr='\\01D306A']"),
         q("attrbad_unicode"),
         "Long numeric escape (non-BMP)"
     );
