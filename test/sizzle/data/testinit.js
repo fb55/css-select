@@ -1,10 +1,10 @@
-var assert = require("assert"),
+const assert = require("assert"),
     decircularize = require("../../decircularize"),
     helper = require("../../tools/helper.js"),
     CSSselect = helper.CSSselect,
     path = require("path"),
-    docPath = path.join(__dirname, "index.html"),
-    document = null;
+    docPath = path.join(__dirname, "index.html");
+let document = null;
 
 //in this module, the only use-case is to compare arrays of
 function deepEqual(a, b, msg) {
@@ -26,10 +26,10 @@ function loadDoc() {
 }
 
 module.exports = {
-    q: q,
-    t: t,
-    loadDoc: loadDoc,
-    createWithFriesXML: createWithFriesXML
+    q,
+    t,
+    loadDoc,
+    createWithFriesXML,
 };
 
 /**
@@ -37,12 +37,11 @@ module.exports = {
  * @example q("main", "foo", "bar")
  * @result [<div id="main">, <span id="foo">, <input id="bar">]
  */
-function q() {
-    var r = [],
-        i = 0;
+function q(...args) {
+    const r = [];
 
-    for (; i < arguments.length; i++) {
-        r.push(document.getElementById(arguments[i]));
+    for (let i = 0; i < args.length; i++) {
+        r.push(document.getElementById(args[i]));
     }
     return r;
 }
@@ -56,23 +55,20 @@ function q() {
  * @result returns true if "//[a]" return two elements with the IDs 'foo' and 'baar'
  */
 function t(a, b, c) {
-    var f = CSSselect(b, document),
-        s = "",
-        i = 0;
+    const f = CSSselect(b, document);
+    let s = "";
 
-    for (; i < f.length; i++) {
-        s += (s && ",") + '"' + f[i].id + '"';
+    for (let i = 0; i < f.length; i++) {
+        s += `${s && ","}"${f[i].id}"`;
     }
 
-    deepEqual(f, q.apply(q, c), a + " (" + b + ")");
+    deepEqual(f, q.apply(q, c), `${a} (${b})`);
 }
 
-var xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), {
-    xmlMode: true
+const xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), {
+    xmlMode: true,
 });
-var filtered = xmlDoc.filter(function(t) {
-    return t.type === "tag";
-});
+const filtered = xmlDoc.filter((t) => t.type === "tag");
 xmlDoc.lastChild = filtered[filtered.length - 1];
 
 function createWithFriesXML() {

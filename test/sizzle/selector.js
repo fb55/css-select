@@ -1,18 +1,18 @@
-var DomUtils = require("domutils"),
-    helper = require("../tools/helper.js"),
-    CSSselect = helper.CSSselect,
-    assert = require("assert"),
-    raises = assert.throws,
-    equal = assert.equal,
-    ok = assert.ok,
-    testInit = require("./data/testinit.js"),
-    q = testInit.q,
-    t = testInit.t,
-    document = testInit.loadDoc(),
-    createWithFriesXML = testInit.createWithFriesXML,
-    expect = function() {},
-    test = it,
-    decircularize = require("../decircularize");
+const DomUtils = require("domutils");
+const helper = require("../tools/helper.js");
+const CSSselect = helper.CSSselect;
+const assert = require("assert");
+const raises = assert.throws;
+const equal = assert.equal;
+const ok = assert.ok;
+const testInit = require("./data/testinit.js");
+const q = testInit.q;
+const t = testInit.t;
+let document = testInit.loadDoc();
+const createWithFriesXML = testInit.createWithFriesXML;
+const expect = function () {};
+const test = it;
+const decircularize = require("../decircularize");
 
 function deepEqual(e, a, m) {
     return assert.deepEqual(decircularize(e), decircularize(a), m);
@@ -22,7 +22,7 @@ function Sizzle(str, doc) {
     return CSSselect(str, doc || document);
 }
 
-Sizzle.matches = function(selector, elements) {
+Sizzle.matches = function (selector, elements) {
     return elements.filter(CSSselect.compile(selector));
 };
 
@@ -30,42 +30,40 @@ Sizzle.matchesSelector = CSSselect.is;
 
 function jQuery(dom) {
     if (typeof dom === "string") dom = helper.getDOM(dom);
-    var ret = {
-        appendTo: function(elem) {
+    const ret = {
+        appendTo(elem) {
             if (typeof elem === "string") elem = Sizzle(elem)[0];
-            dom.forEach(function(child) {
+            dom.forEach((child) => {
                 DomUtils.appendChild(elem, child);
             });
             return this;
         },
-        remove: function() {
+        remove() {
             dom.forEach(DomUtils.removeElement);
             return this;
         },
-        prev: function() {
-            dom = dom.map(function(elem) {
-                return elem.prev;
-            });
+        prev() {
+            dom = dom.map((elem) => elem.prev);
             return this;
         },
-        before: function(str) {
-            dom.forEach(function(elem) {
-                helper.getDOM(str).forEach(function(child) {
+        before(str) {
+            dom.forEach((elem) => {
+                helper.getDOM(str).forEach((child) => {
                     DomUtils.prepend(elem, child);
                 });
             });
             return this;
-        }
+        },
     };
 
-    dom.forEach(function(elem, i) {
+    dom.forEach((elem, i) => {
         ret[i] = elem;
     });
 
     return ret;
 }
 
-beforeEach(function() {
+beforeEach(() => {
     document = testInit.loadDoc();
 });
 
@@ -114,22 +112,27 @@ beforeEach(function() {
 		@example url("data/test.php?foo=bar") => "data/test.php?foo=bar&10538358345554"
 */
 
-test("element", function() {
+test("element", () => {
     expect(38);
 
-    var form, all, good, i, obj1, lengthtest, siblingTest, iframe, html;
-
     equal(Sizzle("").length, 0, "Empty selector returns an empty array");
-    deepEqual(Sizzle("div", document.createTextNode("")), [], "Text element as context fails silently");
-    form = document.getElementById("form");
-    ok(!Sizzle.matchesSelector(form, ""), "Empty string passed to matchesSelector does not match");
+    deepEqual(
+        Sizzle("div", document.createTextNode("")),
+        [],
+        "Text element as context fails silently"
+    );
+    const form = document.getElementById("form");
+    ok(
+        !Sizzle.matchesSelector(form, ""),
+        "Empty string passed to matchesSelector does not match"
+    );
     equal(Sizzle(" ").length, 0, "Empty selector returns an empty array");
     equal(Sizzle("\t").length, 0, "Empty selector returns an empty array");
 
     ok(Sizzle("*").length >= 30, "Select all");
-    all = Sizzle("*");
-    good = true;
-    for (i = 0; i < all.length; i++) {
+    const all = Sizzle("*");
+    let good = true;
+    for (let i = 0; i < all.length; i++) {
         if (all[i].nodeType === 8) {
             good = false;
         }
@@ -137,22 +140,102 @@ test("element", function() {
     ok(good, "Select all elements, no comment nodes");
     t("Element Selector", "html", ["html"]);
     t("Element Selector", "body", ["body"]);
-    t("Element Selector", "#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
+    t("Element Selector", "#qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
 
-    t("Leading space", " #qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Leading tab", "\t#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Leading carriage return", "\r#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Leading line feed", "\n#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Leading form feed", "\f#qunit-fixture p", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Trailing space", "#qunit-fixture p ", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Trailing tab", "#qunit-fixture p\t", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Trailing carriage return", "#qunit-fixture p\r", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Trailing line feed", "#qunit-fixture p\n", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t("Trailing form feed", "#qunit-fixture p\f", ["firstp", "ap", "sndp", "en", "sap", "first"]);
+    t("Leading space", " #qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Leading tab", "\t#qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Leading carriage return", "\r#qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Leading line feed", "\n#qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Leading form feed", "\f#qunit-fixture p", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Trailing space", "#qunit-fixture p ", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Trailing tab", "#qunit-fixture p\t", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Trailing carriage return", "#qunit-fixture p\r", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Trailing line feed", "#qunit-fixture p\n", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t("Trailing form feed", "#qunit-fixture p\f", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
 
     t("Parent Element", "dl ol", ["empty", "listWithTabIndex"]);
-    t("Parent Element (non-space descendant combinator)", "dl\tol", ["empty", "listWithTabIndex"]);
-    obj1 = document.getElementById("object1");
+    t("Parent Element (non-space descendant combinator)", "dl\tol", [
+        "empty",
+        "listWithTabIndex",
+    ]);
+    const obj1 = document.getElementById("object1");
     equal(Sizzle("param", obj1).length, 2, "Object/param as context");
 
     deepEqual(
@@ -162,9 +245,17 @@ test("element", function() {
     );
 
     // Check for unique-ness and sort order
-    deepEqual(Sizzle("p, div p"), Sizzle("p"), "Check for duplicates: p, div p");
+    deepEqual(
+        Sizzle("p, div p"),
+        Sizzle("p"),
+        "Check for duplicates: p, div p"
+    );
 
-    t("Checking sort order", "h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
+    t("Checking sort order", "h2, h1", [
+        "qunit-header",
+        "qunit-banner",
+        "qunit-userAgent",
+    ]);
     //  t( "Checking sort order", "h2:first, h1:first", ["qunit-header", "qunit-banner"] );
     t("Checking sort order", "#qunit-fixture p, #qunit-fixture p a", [
         "firstp",
@@ -180,16 +271,28 @@ test("element", function() {
         "sap",
         "anchor2",
         "simon",
-        "first"
+        "first",
     ]);
 
     // Test Conflict ID
-    lengthtest = document.getElementById("lengthtest");
-    deepEqual(Sizzle("#idTest", lengthtest), q("idTest"), "Finding element with id of ID.");
-    deepEqual(Sizzle("[name='id']", lengthtest), q("idTest"), "Finding element with id of ID.");
-    deepEqual(Sizzle("input[id='idTest']", lengthtest), q("idTest"), "Finding elements with id of ID.");
+    const lengthtest = document.getElementById("lengthtest");
+    deepEqual(
+        Sizzle("#idTest", lengthtest),
+        q("idTest"),
+        "Finding element with id of ID."
+    );
+    deepEqual(
+        Sizzle("[name='id']", lengthtest),
+        q("idTest"),
+        "Finding element with id of ID."
+    );
+    deepEqual(
+        Sizzle("input[id='idTest']", lengthtest),
+        q("idTest"),
+        "Finding elements with id of ID."
+    );
 
-    siblingTest = document.getElementById("siblingTest"); // TODO
+    const siblingTest = document.getElementById("siblingTest"); // TODO
     deepEqual(
         Sizzle("div em", siblingTest),
         [],
@@ -206,10 +309,10 @@ test("element", function() {
         "Escaped commas do not get treated with an id in element-rooted QSA"
     );
 
-    iframe = document.getElementById("iframe");
+    const iframe = document.getElementById("iframe");
     //iframeDoc.open();
     iframe.children = helper.getDOM("<body><p id='foo'>bar</p></body>");
-    iframe.children.forEach(function(e) {
+    iframe.children.forEach((e) => {
         e.parent = iframe;
     });
     //iframeDoc.close();
@@ -220,9 +323,9 @@ test("element", function() {
     );
     iframe.children = [];
 
-    html = "";
-    for (i = 0; i < 100; i++) {
-        html = "<div>" + html + "</div>";
+    let html = "";
+    for (let i = 0; i < 100; i++) {
+        html = `<div>${html}</div>`;
     }
     html = jQuery(html).appendTo(document.body);
     ok(
@@ -236,35 +339,66 @@ test("element", function() {
     html.remove();
 
     // Real use case would be using .watch in browsers with window.watch (see Issue #157)
-    var elem = document.createElement("tostring");
+    const elem = document.createElement("tostring");
     elem.attribs.id = "toString";
-    var siblings = q("qunit-fixture")[0].children;
+    const siblings = q("qunit-fixture")[0].children;
     siblings.push(elem);
-    t("Element name matches Object.prototype property", "tostring#toString", ["toString"]);
+    t("Element name matches Object.prototype property", "tostring#toString", [
+        "toString",
+    ]);
     siblings.pop();
 });
 
-test("XML Document Selectors", function() {
-    var xml = createWithFriesXML();
+test("XML Document Selectors", () => {
+    let xml = createWithFriesXML();
     expect(11);
 
     equal(Sizzle("foo_bar", xml).length, 1, "Element Selector with underscore");
     equal(Sizzle(".component", xml).length, 1, "Class selector");
-    equal(Sizzle("[class*=component]", xml).length, 1, "Attribute selector for class");
-    equal(Sizzle("property[name=prop2]", xml).length, 1, "Attribute selector with name");
-    equal(Sizzle("[name=prop2]", xml).length, 1, "Attribute selector with name");
+    equal(
+        Sizzle("[class*=component]", xml).length,
+        1,
+        "Attribute selector for class"
+    );
+    equal(
+        Sizzle("property[name=prop2]", xml).length,
+        1,
+        "Attribute selector with name"
+    );
+    equal(
+        Sizzle("[name=prop2]", xml).length,
+        1,
+        "Attribute selector with name"
+    );
     equal(Sizzle("#seite1", xml).length, 1, "Attribute selector with ID");
-    equal(Sizzle("component#seite1", xml).length, 1, "Attribute selector with ID");
-    equal(Sizzle.matches("#seite1", Sizzle("component", xml)).length, 1, "Attribute selector filter with ID");
-    equal(Sizzle("meta property thing", xml).length, 2, "Descendent selector and dir caching");
+    equal(
+        Sizzle("component#seite1", xml).length,
+        1,
+        "Attribute selector with ID"
+    );
+    equal(
+        Sizzle.matches("#seite1", Sizzle("component", xml)).length,
+        1,
+        "Attribute selector filter with ID"
+    );
+    equal(
+        Sizzle("meta property thing", xml).length,
+        2,
+        "Descendent selector and dir caching"
+    );
     ok(
-        Sizzle.matchesSelector(xml.lastChild, "soap\\:Envelope", { xmlMode: true }),
+        Sizzle.matchesSelector(xml.lastChild, "soap\\:Envelope", {
+            xmlMode: true,
+        }),
         "Check for namespaced element"
     );
 
-    xml = helper.getDOM("<?xml version='1.0' encoding='UTF-8'?><root><elem id='1'/></root>", {
-        xmlMode: true
-    });
+    xml = helper.getDOM(
+        "<?xml version='1.0' encoding='UTF-8'?><root><elem id='1'/></root>",
+        {
+            xmlMode: true,
+        }
+    );
     equal(
         Sizzle("elem:not(:has(*))", xml).length,
         1,
@@ -272,12 +406,12 @@ test("XML Document Selectors", function() {
     );
 });
 
-test("broken", function() {
+test("broken", () => {
     expect(26);
 
-    var broken = function(name, selector) {
+    const broken = function (name, selector) {
         raises(
-            function() {
+            () => {
                 // Setting context to null here somehow avoids QUnit's window.error handling
                 // making the e & e.message correct
                 // For whatever reason, without this,
@@ -285,7 +419,7 @@ test("broken", function() {
                 Sizzle.call(null, selector);
             },
             Error,
-            name + ": " + selector
+            `${name}: ${selector}`
         );
     };
 
@@ -332,10 +466,8 @@ test("broken", function() {
     broken("Attribute not escaped", "input[name=foo[baz]]", []);
 });
 
-test("id", function() {
+test("id", () => {
     expect(34);
-
-    var fiddle;
 
     t("ID Selector", "#body", ["body"]);
     t("ID Selector w/ Element", "body#body", ["body"]);
@@ -343,19 +475,26 @@ test("id", function() {
     t("ID selector with existing ID descendant", "#firstp #simon1", ["simon1"]);
     t("ID selector with non-existant descendant", "#firstp #foobar", []);
     t("ID selector using UTF8", "#台北Táiběi", ["台北Táiběi"]);
-    t("Multiple ID selectors using UTF8", "#台北Táiběi, #台北", ["台北Táiběi", "台北"]);
+    t("Multiple ID selectors using UTF8", "#台北Táiběi, #台北", [
+        "台北Táiběi",
+        "台北",
+    ]);
     t("Descendant ID selector using UTF8", "div #台北", ["台北"]);
     t("Child ID selector using UTF8", "form > #台北", ["台北"]);
 
     t("Escaped ID", "#foo\\:bar", ["foo:bar"]);
-    t("Escaped ID with descendent", "#foo\\:bar span:not(:input)", ["foo_descendent"]);
+    t("Escaped ID with descendent", "#foo\\:bar span:not(:input)", [
+        "foo_descendent",
+    ]);
     t("Escaped ID", "#test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
     t("Descendant escaped ID", "div #foo\\:bar", ["foo:bar"]);
     t("Descendant escaped ID", "div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
     t("Child escaped ID", "form > #foo\\:bar", ["foo:bar"]);
     t("Child escaped ID", "form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
 
-    fiddle = jQuery("<div id='fiddle\\Foo'><span id='fiddleSpan'></span></div>").appendTo("#qunit-fixture");
+    const fiddle = jQuery(
+        "<div id='fiddle\\Foo'><span id='fiddleSpan'></span></div>"
+    ).appendTo("#qunit-fixture");
     //  deepEqual( Sizzle( "> span", Sizzle("#fiddle\\\\Foo")[0] ), q([ "fiddleSpan" ]), "Escaped ID as context" );
     fiddle.remove();
 
@@ -366,10 +505,20 @@ test("id", function() {
     t("All Children of ID", "#foo > *", ["sndp", "en", "sap"]);
     t("All Children of ID with no children", "#firstUL > *", []);
 
-    equal(Sizzle("#tName1")[0].attribs.id, "tName1", "ID selector with same value for a name attribute");
+    equal(
+        Sizzle("#tName1")[0].attribs.id,
+        "tName1",
+        "ID selector with same value for a name attribute"
+    );
     t("ID selector non-existing but name attribute on an A tag", "#tName2", []);
-    t("Leading ID selector non-existing but name attribute on an A tag", "#tName2 span", []);
-    t("Leading ID selector existing, retrieving the child", "#tName1 span", ["tName1-span"]);
+    t(
+        "Leading ID selector non-existing but name attribute on an A tag",
+        "#tName2 span",
+        []
+    );
+    t("Leading ID selector existing, retrieving the child", "#tName1 span", [
+        "tName1-span",
+    ]);
     equal(
         Sizzle("div > div #tName1")[0].attribs.id,
         Sizzle("#tName1-span")[0].parent.attribs.id,
@@ -377,13 +526,23 @@ test("id", function() {
     );
 
     jQuery("<a id='backslash\\foo'></a>").appendTo("#qunit-fixture");
-    t("ID Selector contains backslash", "#backslash\\\\foo", ["backslash\\foo"]);
+    t("ID Selector contains backslash", "#backslash\\\\foo", [
+        "backslash\\foo",
+    ]);
 
-    t("ID Selector on Form with an input that has a name of 'id'", "#lengthtest", ["lengthtest"]);
+    t(
+        "ID Selector on Form with an input that has a name of 'id'",
+        "#lengthtest",
+        ["lengthtest"]
+    );
 
     t("ID selector with non-existant ancestor", "#asdfasdf #foobar", []); // bug #986
 
-    deepEqual(Sizzle("div#form", document.body), [], "ID selector within the context of another element");
+    deepEqual(
+        Sizzle("div#form", document.body),
+        [],
+        "ID selector within the context of another element"
+    );
 
     t("Underscore ID", "#types_all", ["types_all"]);
     t("Dash ID", "#qunit-fixture", ["qunit-fixture"]);
@@ -391,7 +550,7 @@ test("id", function() {
     t("ID with weird characters in it", "#name\\+value", ["name+value"]);
 });
 
-test("class", function() {
+test("class", () => {
     expect(26);
 
     t("Class Selector", ".blog", ["mark", "simon"]);
@@ -403,38 +562,65 @@ test("class", function() {
     t("Class selector using UTF8", ".台北Táiběi", ["utf8class1"]);
     t("Class selector using UTF8", ".台北", ["utf8class1", "utf8class2"]);
     t("Class selector using UTF8", ".台北Táiběi.台北", ["utf8class1"]);
-    t("Class selector using UTF8", ".台北Táiběi, .台北", ["utf8class1", "utf8class2"]);
-    t("Descendant class selector using UTF8", "div .台北Táiběi", ["utf8class1"]);
+    t("Class selector using UTF8", ".台北Táiběi, .台北", [
+        "utf8class1",
+        "utf8class2",
+    ]);
+    t("Descendant class selector using UTF8", "div .台北Táiběi", [
+        "utf8class1",
+    ]);
     t("Child class selector using UTF8", "form > .台北Táiběi", ["utf8class1"]);
 
     t("Escaped Class", ".foo\\:bar", ["foo:bar"]);
     t("Escaped Class", ".test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
     t("Descendant escaped Class", "div .foo\\:bar", ["foo:bar"]);
-    t("Descendant escaped Class", "div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+    t("Descendant escaped Class", "div .test\\.foo\\[5\\]bar", [
+        "test.foo[5]bar",
+    ]);
     t("Child escaped Class", "form > .foo\\:bar", ["foo:bar"]);
-    t("Child escaped Class", "form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+    t("Child escaped Class", "form > .test\\.foo\\[5\\]bar", [
+        "test.foo[5]bar",
+    ]);
 
-    var div = document.createElement("div");
-    div.children = helper.getDOM("<div class='test e'></div><div class='test'></div>");
-    div.children.forEach(function(e) {
+    let div = document.createElement("div");
+    div.children = helper.getDOM(
+        "<div class='test e'></div><div class='test'></div>"
+    );
+    div.children.forEach((e) => {
         e.parent = div;
     });
     deepEqual(Sizzle(".e", div), [div.children[0]], "Finding a second class.");
 
-    var lastChild = div.children[div.children.length - 1];
+    const lastChild = div.children[div.children.length - 1];
     lastChild.attribs.class = "e";
 
-    deepEqual(Sizzle(".e", div), [div.children[0], lastChild], "Finding a modified class.");
+    deepEqual(
+        Sizzle(".e", div),
+        [div.children[0], lastChild],
+        "Finding a modified class."
+    );
 
-    ok(!Sizzle.matchesSelector(div, ".null"), ".null does not match an element with no class");
+    ok(
+        !Sizzle.matchesSelector(div, ".null"),
+        ".null does not match an element with no class"
+    );
     ok(
         !Sizzle.matchesSelector(div.children[0], ".null div"),
         ".null does not match an element with no class"
     );
     div.attribs.class = "null";
-    ok(Sizzle.matchesSelector(div, ".null"), ".null matches element with class 'null'");
-    ok(Sizzle.matchesSelector(div.children[0], ".null div"), "caching system respects DOM changes");
-    ok(!Sizzle.matchesSelector(document, ".foo"), "testing class on document doesn't error");
+    ok(
+        Sizzle.matchesSelector(div, ".null"),
+        ".null matches element with class 'null'"
+    );
+    ok(
+        Sizzle.matchesSelector(div.children[0], ".null div"),
+        "caching system respects DOM changes"
+    );
+    ok(
+        !Sizzle.matchesSelector(document, ".foo"),
+        "testing class on document doesn't error"
+    );
     //ok( !Sizzle.matchesSelector( window, ".foo" ), "testing class on window doesn't error" );
 
     lastChild.attribs.class += " hasOwnProperty toString";
@@ -450,10 +636,10 @@ test("class", function() {
     equal(Sizzle(".foo", div).length, 1, "Class selector against SVG");
 });
 
-test("name", function() {
+test("name", () => {
     expect(13);
 
-    var form;
+    let form;
 
     t("Name selector", "input[name=action]", ["text1"]);
     t("Name selector with single quotes", "input[name='action']", ["text1"]);
@@ -466,7 +652,7 @@ test("name", function() {
     t("Name selector for grouped input", "input[name='types[]']", [
         "types_all",
         "types_anime",
-        "types_movie"
+        "types_movie",
     ]);
 
     form = document.getElementById("form");
@@ -495,7 +681,7 @@ test("name", function() {
     t("Find elements that have similar IDs", "#tName2ID", ["tName2ID"]);
 });
 
-test("multiple", function() {
+test("multiple", () => {
     expect(6);
 
     t("Comma Support", "h2, #qunit-fixture p", [
@@ -506,7 +692,7 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t("Comma Support", "h2 , #qunit-fixture p", [
         "qunit-banner",
@@ -516,7 +702,7 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t("Comma Support", "h2 , #qunit-fixture p", [
         "qunit-banner",
@@ -526,7 +712,7 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t("Comma Support", "h2,#qunit-fixture p", [
         "qunit-banner",
@@ -536,7 +722,7 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t("Comma Support", "h2,#qunit-fixture p ", [
         "qunit-banner",
@@ -546,7 +732,7 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t("Comma Support", "h2\t,\r#qunit-fixture p\n", [
         "qunit-banner",
@@ -556,18 +742,37 @@ test("multiple", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
 });
 
-test("child and adjacent", function() {
+test("child and adjacent", () => {
     expect(42);
 
-    var siblingFirst, en;
-
-    t("Child", "p > a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
-    t("Child", "p> a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
-    t("Child", "p >a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
+    t("Child", "p > a", [
+        "simon1",
+        "google",
+        "groups",
+        "mark",
+        "yahoo",
+        "simon",
+    ]);
+    t("Child", "p> a", [
+        "simon1",
+        "google",
+        "groups",
+        "mark",
+        "yahoo",
+        "simon",
+    ]);
+    t("Child", "p >a", [
+        "simon1",
+        "google",
+        "groups",
+        "mark",
+        "yahoo",
+        "simon",
+    ]);
     t("Child", "p>a", ["simon1", "google", "groups", "mark", "yahoo", "simon"]);
     t("Child w/ Class", "p > a.blog", ["mark", "simon"]);
     t("All Children", "code > *", ["anchor1", "anchor2"]);
@@ -584,7 +789,7 @@ test("child and adjacent", function() {
         "groups",
         "anchor1",
         "anchor2",
-        "tName2ID"
+        "tName2ID",
     ]);
     t("Element Preceded By", "#qunit-fixture p ~ div", [
         "foo",
@@ -592,31 +797,44 @@ test("child and adjacent", function() {
         "moretests",
         "tabindex-tests",
         "liveHandlerOrder",
-        "siblingTest"
+        "siblingTest",
     ]);
     t("Element Preceded By", "#first ~ div", [
         "moretests",
         "tabindex-tests",
         "liveHandlerOrder",
-        "siblingTest"
+        "siblingTest",
     ]);
     t("Element Preceded By", "#groups ~ a", ["mark"]);
     t("Element Preceded By", "#length ~ input", ["idTest"]);
-    t("Element Preceded By", "#siblingfirst ~ em", ["siblingnext", "siblingthird"]);
-    t("Element Preceded By (multiple)", "#siblingTest em ~ em ~ em ~ span", ["siblingspan"]);
-    t("Element Preceded By, Containing", "#liveHandlerOrder ~ div em:contains('1')", ["siblingfirst"]);
+    t("Element Preceded By", "#siblingfirst ~ em", [
+        "siblingnext",
+        "siblingthird",
+    ]);
+    t("Element Preceded By (multiple)", "#siblingTest em ~ em ~ em ~ span", [
+        "siblingspan",
+    ]);
+    t(
+        "Element Preceded By, Containing",
+        "#liveHandlerOrder ~ div em:contains('1')",
+        ["siblingfirst"]
+    );
 
-    siblingFirst = document.getElementById("siblingfirst");
+    const siblingFirst = document.getElementById("siblingfirst");
 
     deepEqual(
         Sizzle("~ em", siblingFirst),
         q("siblingnext", "siblingthird"),
         "Element Preceded By with a context."
     );
-    deepEqual(Sizzle("+ em", siblingFirst), q("siblingnext"), "Element Directly Preceded By with a context.");
+    deepEqual(
+        Sizzle("+ em", siblingFirst),
+        q("siblingnext"),
+        "Element Directly Preceded By with a context."
+    );
     //deepEqual( Sizzle("~ em:first", siblingFirst), q("siblingnext"), "Element Preceded By positional with a context." );
 
-    en = document.getElementById("en");
+    const en = document.getElementById("en");
     deepEqual(
         Sizzle("+ p, a", en),
         q("yahoo", "sap"),
@@ -631,12 +849,12 @@ test("child and adjacent", function() {
     t("Multiple combinators selects all levels", "#siblingTest em *", [
         "siblingchild",
         "siblinggrandchild",
-        "siblinggreatgrandchild"
+        "siblinggreatgrandchild",
     ]);
     t("Multiple combinators selects all levels", "#siblingTest > em *", [
         "siblingchild",
         "siblinggrandchild",
-        "siblinggreatgrandchild"
+        "siblinggreatgrandchild",
     ]);
     t(
         "Multiple sibling combinators doesn't miss general siblings",
@@ -649,7 +867,11 @@ test("child and adjacent", function() {
         []
     );
 
-    equal(Sizzle("#listWithTabIndex").length, 1, "Parent div for next test is found via ID (#8310)");
+    equal(
+        Sizzle("#listWithTabIndex").length,
+        1,
+        "Parent div for next test is found via ID (#8310)"
+    );
     //equal( Sizzle("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
     equal(
         Sizzle("#__sizzle__").length,
@@ -672,39 +894,48 @@ test("child and adjacent", function() {
 
     t("Non-existant ancestors", ".fototab > .thumbnails > a", []);
     deepEqual(
-        CSSselect.selectOne(':scope > label', CSSselect.selectOne('#scopeTest', document)),
-        CSSselect.selectOne('#scopeTest--child', document),
+        CSSselect.selectOne(
+            ":scope > label",
+            CSSselect.selectOne("#scopeTest", document)
+        ),
+        CSSselect.selectOne("#scopeTest--child", document),
         "Child of scope"
     );
 });
 
-test("attributes", function() {
+test("attributes", () => {
     expect(76);
 
-    var opt, input, attrbad, div;
-
     t("Attribute Exists", "#qunit-fixture a[title]", ["google"]);
-    t("Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", ["google"]);
+    t("Attribute Exists (case-insensitive)", "#qunit-fixture a[TITLE]", [
+        "google",
+    ]);
     t("Attribute Exists", "#qunit-fixture *[title]", ["google"]);
     t("Attribute Exists", "#qunit-fixture [title]", ["google"]);
     t("Attribute Exists", "#qunit-fixture a[ title ]", ["google"]);
 
     t("Boolean attribute exists", "#select2 option[selected]", ["option2d"]);
-    t("Boolean attribute equals", "#select2 option[selected='selected']", ["option2d"]);
+    t("Boolean attribute equals", "#select2 option[selected='selected']", [
+        "option2d",
+    ]);
 
     t("Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"]);
     t("Attribute Equals", "#qunit-fixture a[rel='bookmark']", ["simon1"]);
     t("Attribute Equals", "#qunit-fixture a[rel=bookmark]", ["simon1"]);
-    t("Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", ["google"]);
+    t("Attribute Equals", "#qunit-fixture a[href='http://www.google.com/']", [
+        "google",
+    ]);
     t("Attribute Equals", "#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"]);
     t("Attribute Equals Number", "#qunit-fixture option[value=1]", [
         "option1b",
         "option2b",
         "option3b",
         "option4b",
-        "option5c"
+        "option5c",
     ]);
-    t("Attribute Equals Number", "#qunit-fixture li[tabIndex=-1]", ["foodWithNegativeTabIndex"]);
+    t("Attribute Equals Number", "#qunit-fixture li[tabIndex=-1]", [
+        "foodWithNegativeTabIndex",
+    ]);
 
     document.getElementById("anchor2").href = "#2";
     t("href Attribute", "p a[href^=#]", ["anchor2"]);
@@ -742,56 +973,83 @@ test("attributes", function() {
         "With context, double-quoted attribute containing ','"
     );
 
-    t("Multiple Attribute Equals", "#form input[type='radio'], #form input[type='hidden']", [
-        "radio1",
-        "radio2",
-        "hidden1"
-    ]);
-    t("Multiple Attribute Equals", "#form input[type='radio'], #form input[type=\"hidden\"]", [
-        "radio1",
-        "radio2",
-        "hidden1"
-    ]);
-    t("Multiple Attribute Equals", "#form input[type='radio'], #form input[type=hidden]", [
-        "radio1",
-        "radio2",
-        "hidden1"
-    ]);
+    t(
+        "Multiple Attribute Equals",
+        "#form input[type='radio'], #form input[type='hidden']",
+        ["radio1", "radio2", "hidden1"]
+    );
+    t(
+        "Multiple Attribute Equals",
+        "#form input[type='radio'], #form input[type=\"hidden\"]",
+        ["radio1", "radio2", "hidden1"]
+    );
+    t(
+        "Multiple Attribute Equals",
+        "#form input[type='radio'], #form input[type=hidden]",
+        ["radio1", "radio2", "hidden1"]
+    );
 
     t("Attribute selector using UTF8", "span[lang=中文]", ["台北"]);
 
     t("Attribute Begins With", "a[href ^= 'http://www']", ["google", "yahoo"]);
     t("Attribute Ends With", "a[href $= 'org/']", ["mark"]);
     t("Attribute Contains", "a[href *= 'google']", ["google", "groups"]);
-    t("Attribute Is Not Equal", "#ap a[hreflang!='en']", ["google", "groups", "anchor1"]);
+    t("Attribute Is Not Equal", "#ap a[hreflang!='en']", [
+        "google",
+        "groups",
+        "anchor1",
+    ]);
 
-    opt = document.getElementById("option1a");
+    const opt = document.getElementById("option1a");
     opt.attribs.test = "";
 
-    ok(Sizzle.matchesSelector(opt, "[id*=option1][type!=checkbox]"), "Attribute Is Not Equal Matches");
-    ok(Sizzle.matchesSelector(opt, "[id*=option1]"), "Attribute With No Quotes Contains Matches");
-    ok(Sizzle.matchesSelector(opt, "[test=]"), "Attribute With No Quotes No Content Matches");
+    ok(
+        Sizzle.matchesSelector(opt, "[id*=option1][type!=checkbox]"),
+        "Attribute Is Not Equal Matches"
+    );
+    ok(
+        Sizzle.matchesSelector(opt, "[id*=option1]"),
+        "Attribute With No Quotes Contains Matches"
+    );
+    ok(
+        Sizzle.matchesSelector(opt, "[test=]"),
+        "Attribute With No Quotes No Content Matches"
+    );
     ok(
         !Sizzle.matchesSelector(opt, "[test^='']"),
         "Attribute with empty string value does not match startsWith selector (^=)"
     );
-    ok(Sizzle.matchesSelector(opt, "[id=option1a]"), "Attribute With No Quotes Equals Matches");
+    ok(
+        Sizzle.matchesSelector(opt, "[id=option1a]"),
+        "Attribute With No Quotes Equals Matches"
+    );
     ok(
         Sizzle.matchesSelector(document.getElementById("simon1"), "a[href*=#]"),
         "Attribute With No Quotes Href Contains Matches"
     );
 
     t("Empty values", "#select1 option[value='']", ["option1a"]);
-    t("Empty values", "#select1 option[value!='']", ["option1b", "option1c", "option1d"]);
+    t("Empty values", "#select1 option[value!='']", [
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
 
     t("Select options via :selected", "#select1 option:selected", ["option1a"]);
     t("Select options via :selected", "#select2 option:selected", ["option2d"]);
-    t("Select options via :selected", "#select3 option:selected", ["option3b", "option3c"]);
-    t("Select options via :selected", "select[name='select2'] option:selected", ["option2d"]);
+    t("Select options via :selected", "#select3 option:selected", [
+        "option3b",
+        "option3c",
+    ]);
+    t(
+        "Select options via :selected",
+        "select[name='select2'] option:selected",
+        ["option2d"]
+    );
 
     t("Grouped Form Elements", "input[name='foo[bar]']", ["hidden2"]);
 
-    input = document.getElementById("text1");
+    const input = document.getElementById("text1");
     input.attribs.title = "Don't click me";
 
     ok(
@@ -822,7 +1080,7 @@ test("attributes", function() {
 
     // Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
     // Use seeded results to bypass querySelectorAll optimizations
-    attrbad = jQuery(
+    const attrbad = jQuery(
         "<input type='hidden' id='attrbad_space' name='foo bar'/>" +
             "<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
             "<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
@@ -836,8 +1094,16 @@ test("attributes", function() {
 
     t("Underscores don't need escaping", "input[id=types_all]", ["types_all"]);
 
-    deepEqual(Sizzle("input[name=foo\\ bar]", null, null, attrbad), q("attrbad_space"), "Escaped space");
-    deepEqual(Sizzle("input[name=foo\\.baz]", null, null, attrbad), q("attrbad_dot"), "Escaped dot");
+    deepEqual(
+        Sizzle("input[name=foo\\ bar]", null, null, attrbad),
+        q("attrbad_space"),
+        "Escaped space"
+    );
+    deepEqual(
+        Sizzle("input[name=foo\\.baz]", null, null, attrbad),
+        q("attrbad_dot"),
+        "Escaped dot"
+    );
     deepEqual(
         Sizzle("input[name=foo\\[baz\\]]", null, null, attrbad),
         q("attrbad_brackets"),
@@ -863,7 +1129,8 @@ test("attributes", function() {
     //	"Quoted backslash backslash (numeric escape with trailing tab)" );
     //  deepEqual( Sizzle( "input[data-attr='\\04e00']", null, null, attrbad ), q("attrbad_unicode"),
     //	"Long numeric escape (BMP)" );*/
-    document.getElementById("attrbad_unicode").attribs["data-attr"] = "\uD834\uDF06A";
+    document.getElementById("attrbad_unicode").attribs["data-attr"] =
+        "\uD834\uDF06A";
     // It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
     deepEqual(
         Sizzle("input[data-attr='\\01D306A']", null, null, attrbad),
@@ -873,12 +1140,17 @@ test("attributes", function() {
 
     attrbad.remove();
 
-    t("input[type=text]", "#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
+    t("input[type=text]", "#form input[type=text]", [
+        "text1",
+        "text2",
+        "hidden2",
+        "name",
+    ]);
     t("input[type=search]", "#form input[type=search]", ["search"]);
     t("script[src] (jQuery #13777)", "#moretests script[src]", ["script-src"]);
 
     // #3279
-    div = document.createElement("div");
+    let div = document.createElement("div");
     div.children = helper.getDOM("<div id='foo' xml:test='something'></div>");
 
     deepEqual(
@@ -888,30 +1160,54 @@ test("attributes", function() {
     );
 
     div = document.getElementById("foo");
-    t('Object.prototype property "constructor" (negative)', "[constructor]", []);
+    t(
+        'Object.prototype property "constructor" (negative)',
+        "[constructor]",
+        []
+    );
     t('Gecko Object.prototype property "watch" (negative)', "[watch]", []);
     div.attribs.constructor = "foo";
     div.attribs.watch = "bar";
-    t('Object.prototype property "constructor"', "[constructor='foo']", ["foo"]);
+    t('Object.prototype property "constructor"', "[constructor='foo']", [
+        "foo",
+    ]);
     t('Gecko Object.prototype property "watch"', "[watch='bar']", ["foo"]);
 
-    t("Value attribute is retrieved correctly", "input[value=Test]", ["text1", "text2"]);
+    t("Value attribute is retrieved correctly", "input[value=Test]", [
+        "text1",
+        "text2",
+    ]);
 });
 
-test("pseudo - (parent|empty)", function() {
+test("pseudo - (parent|empty)", () => {
     expect(3);
     t("Empty", "ul:empty", ["firstUL"]);
     t("Empty with comment node", "ol:empty", ["empty"]);
-    t("Is A Parent", "#qunit-fixture p:parent", ["firstp", "ap", "sndp", "en", "sap", "first"]);
+    t("Is A Parent", "#qunit-fixture p:parent", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
 });
 
-test("pseudo - (first|last|only)-(child|of-type)", function() {
+test("pseudo - (first|last|only)-(child|of-type)", () => {
     expect(12);
 
     t("First Child", "p:first-child", ["firstp", "sndp"]);
-    t("First Child (leading id)", "#qunit-fixture p:first-child", ["firstp", "sndp"]);
-    t("First Child (leading class)", ".nothiddendiv div:first-child", ["nothiddendivchild"]);
-    t("First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", ["firstp", "sndp"]);
+    t("First Child (leading id)", "#qunit-fixture p:first-child", [
+        "firstp",
+        "sndp",
+    ]);
+    t("First Child (leading class)", ".nothiddendiv div:first-child", [
+        "nothiddendivchild",
+    ]);
+    t("First Child (case-insensitive)", "#qunit-fixture p:FIRST-CHILD", [
+        "firstp",
+        "sndp",
+    ]);
 
     t("Last Child", "p:last-child", ["sap"]);
     t("Last Child (leading id)", "#qunit-fixture a:last-child", [
@@ -922,7 +1218,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
         "anchor2",
         "simon",
         "liveLink1",
-        "liveLink2"
+        "liveLink2",
     ]);
 
     t("Only Child", "#qunit-fixture a:only-child", [
@@ -931,7 +1227,7 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
         "yahoo",
         "anchor2",
         "liveLink1",
-        "liveLink2"
+        "liveLink2",
     ]);
 
     t("First-of-type", "#qunit-fixture > p:first-of-type", ["firstp"]);
@@ -942,24 +1238,33 @@ test("pseudo - (first|last|only)-(child|of-type)", function() {
         "empty",
         "floatTest",
         "iframe",
-        "table"
+        "table",
     ]);
 
     // Verify that the child position isn't being cached improperly
-    var secondChildren = jQuery(Sizzle("p:nth-child(2)")).before("<div></div>");
+    const secondChildren = jQuery(Sizzle("p:nth-child(2)")).before(
+        "<div></div>"
+    );
 
     t("No longer second child", "p:nth-child(2)", []);
     secondChildren.prev().remove();
     t("Restored second child", "p:nth-child(2)", ["ap", "en"]);
 });
 
-test("pseudo - nth-child", function() {
+test("pseudo - nth-child", () => {
     expect(30);
 
     t("Nth-child", "p:nth-child(1)", ["firstp", "sndp"]);
     t("Nth-child (with whitespace)", "p:nth-child( 1 )", ["firstp", "sndp"]);
-    t("Nth-child (case-insensitive)", "#select1 option:NTH-child(3)", ["option1c"]);
-    t("Not nth-child", "#qunit-fixture p:not(:nth-child(1))", ["ap", "en", "sap", "first"]);
+    t("Nth-child (case-insensitive)", "#select1 option:NTH-child(3)", [
+        "option1c",
+    ]);
+    t("Not nth-child", "#qunit-fixture p:not(:nth-child(1))", [
+        "ap",
+        "en",
+        "sap",
+        "first",
+    ]);
 
     t("Nth-child(2)", "#qunit-fixture form#form > *:nth-child(2)", ["text1"]);
     t("Nth-child(2)", "#qunit-fixture form#form > :nth-child(2)", ["text1"]);
@@ -967,42 +1272,99 @@ test("pseudo - nth-child", function() {
     t("Nth-child(-1)", "#select1 option:nth-child(-1)", []);
     t("Nth-child(3)", "#select1 option:nth-child(3)", ["option1c"]);
     //  t( "Nth-child(0n+3)", "#select1 option:nth-child(0n+3)", ["option1c"] );
-    t("Nth-child(1n+0)", "#select1 option:nth-child(1n+0)", ["option1a", "option1b", "option1c", "option1d"]);
-    t("Nth-child(1n)", "#select1 option:nth-child(1n)", ["option1a", "option1b", "option1c", "option1d"]);
-    t("Nth-child(n)", "#select1 option:nth-child(n)", ["option1a", "option1b", "option1c", "option1d"]);
-    t("Nth-child(even)", "#select1 option:nth-child(even)", ["option1b", "option1d"]);
-    t("Nth-child(odd)", "#select1 option:nth-child(odd)", ["option1a", "option1c"]);
-    t("Nth-child(2n)", "#select1 option:nth-child(2n)", ["option1b", "option1d"]);
-    t("Nth-child(2n+1)", "#select1 option:nth-child(2n+1)", ["option1a", "option1c"]);
-    t("Nth-child(2n + 1)", "#select1 option:nth-child(2n + 1)", ["option1a", "option1c"]);
-    t("Nth-child(+2n + 1)", "#select1 option:nth-child(+2n + 1)", ["option1a", "option1c"]);
+    t("Nth-child(1n+0)", "#select1 option:nth-child(1n+0)", [
+        "option1a",
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
+    t("Nth-child(1n)", "#select1 option:nth-child(1n)", [
+        "option1a",
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
+    t("Nth-child(n)", "#select1 option:nth-child(n)", [
+        "option1a",
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
+    t("Nth-child(even)", "#select1 option:nth-child(even)", [
+        "option1b",
+        "option1d",
+    ]);
+    t("Nth-child(odd)", "#select1 option:nth-child(odd)", [
+        "option1a",
+        "option1c",
+    ]);
+    t("Nth-child(2n)", "#select1 option:nth-child(2n)", [
+        "option1b",
+        "option1d",
+    ]);
+    t("Nth-child(2n+1)", "#select1 option:nth-child(2n+1)", [
+        "option1a",
+        "option1c",
+    ]);
+    t("Nth-child(2n + 1)", "#select1 option:nth-child(2n + 1)", [
+        "option1a",
+        "option1c",
+    ]);
+    t("Nth-child(+2n + 1)", "#select1 option:nth-child(+2n + 1)", [
+        "option1a",
+        "option1c",
+    ]);
     t("Nth-child(3n)", "#select1 option:nth-child(3n)", ["option1c"]);
-    t("Nth-child(3n+1)", "#select1 option:nth-child(3n+1)", ["option1a", "option1d"]);
+    t("Nth-child(3n+1)", "#select1 option:nth-child(3n+1)", [
+        "option1a",
+        "option1d",
+    ]);
     t("Nth-child(3n+2)", "#select1 option:nth-child(3n+2)", ["option1b"]);
     t("Nth-child(3n+3)", "#select1 option:nth-child(3n+3)", ["option1c"]);
     t("Nth-child(3n-1)", "#select1 option:nth-child(3n-1)", ["option1b"]);
-    t("Nth-child(3n-2)", "#select1 option:nth-child(3n-2)", ["option1a", "option1d"]);
+    t("Nth-child(3n-2)", "#select1 option:nth-child(3n-2)", [
+        "option1a",
+        "option1d",
+    ]);
     t("Nth-child(3n-3)", "#select1 option:nth-child(3n-3)", ["option1c"]);
     t("Nth-child(3n+0)", "#select1 option:nth-child(3n+0)", ["option1c"]);
-    t("Nth-child(-1n+3)", "#select1 option:nth-child(-1n+3)", ["option1a", "option1b", "option1c"]);
-    t("Nth-child(-n+3)", "#select1 option:nth-child(-n+3)", ["option1a", "option1b", "option1c"]);
-    t("Nth-child(-1n + 3)", "#select1 option:nth-child(-1n + 3)", ["option1a", "option1b", "option1c"]);
+    t("Nth-child(-1n+3)", "#select1 option:nth-child(-1n+3)", [
+        "option1a",
+        "option1b",
+        "option1c",
+    ]);
+    t("Nth-child(-n+3)", "#select1 option:nth-child(-n+3)", [
+        "option1a",
+        "option1b",
+        "option1c",
+    ]);
+    t("Nth-child(-1n + 3)", "#select1 option:nth-child(-1n + 3)", [
+        "option1a",
+        "option1b",
+        "option1c",
+    ]);
 
     //  deepEqual( Sizzle( ":nth-child(n)", null, null, [ document.createElement("a") ].concat( q("ap") ) ), q("ap"), "Seeded nth-child" );
 });
 
-test("pseudo - nth-last-child", function() {
+test("pseudo - nth-last-child", () => {
     expect(30);
 
     t("Nth-last-child", "form:nth-last-child(5)", ["testForm"]);
-    t("Nth-last-child (with whitespace)", "form:nth-last-child( 5 )", ["testForm"]);
-    t("Nth-last-child (case-insensitive)", "#select1 option:NTH-last-child(3)", ["option1b"]);
+    t("Nth-last-child (with whitespace)", "form:nth-last-child( 5 )", [
+        "testForm",
+    ]);
+    t(
+        "Nth-last-child (case-insensitive)",
+        "#select1 option:NTH-last-child(3)",
+        ["option1b"]
+    );
     t("Not nth-last-child", "#qunit-fixture p:not(:nth-last-child(1))", [
         "firstp",
         "ap",
         "sndp",
         "en",
-        "first"
+        "first",
     ]);
 
     t("Nth-last-child(-1)", "#select1 option:nth-last-child(-1)", []);
@@ -1014,55 +1376,113 @@ test("pseudo - nth-last-child", function() {
         "option1a",
         "option1b",
         "option1c",
-        "option1d"
+        "option1d",
     ]);
     t("Nth-last-child(1n)", "#select1 option:nth-last-child(1n)", [
         "option1a",
         "option1b",
         "option1c",
-        "option1d"
+        "option1d",
     ]);
     t("Nth-last-child(n)", "#select1 option:nth-last-child(n)", [
         "option1a",
         "option1b",
         "option1c",
-        "option1d"
+        "option1d",
     ]);
-    t("Nth-last-child(even)", "#select1 option:nth-last-child(even)", ["option1a", "option1c"]);
-    t("Nth-last-child(odd)", "#select1 option:nth-last-child(odd)", ["option1b", "option1d"]);
-    t("Nth-last-child(2n)", "#select1 option:nth-last-child(2n)", ["option1a", "option1c"]);
-    t("Nth-last-child(2n+1)", "#select1 option:nth-last-child(2n+1)", ["option1b", "option1d"]);
-    t("Nth-last-child(2n + 1)", "#select1 option:nth-last-child(2n + 1)", ["option1b", "option1d"]);
-    t("Nth-last-child(+2n + 1)", "#select1 option:nth-last-child(+2n + 1)", ["option1b", "option1d"]);
+    t("Nth-last-child(even)", "#select1 option:nth-last-child(even)", [
+        "option1a",
+        "option1c",
+    ]);
+    t("Nth-last-child(odd)", "#select1 option:nth-last-child(odd)", [
+        "option1b",
+        "option1d",
+    ]);
+    t("Nth-last-child(2n)", "#select1 option:nth-last-child(2n)", [
+        "option1a",
+        "option1c",
+    ]);
+    t("Nth-last-child(2n+1)", "#select1 option:nth-last-child(2n+1)", [
+        "option1b",
+        "option1d",
+    ]);
+    t("Nth-last-child(2n + 1)", "#select1 option:nth-last-child(2n + 1)", [
+        "option1b",
+        "option1d",
+    ]);
+    t("Nth-last-child(+2n + 1)", "#select1 option:nth-last-child(+2n + 1)", [
+        "option1b",
+        "option1d",
+    ]);
     t("Nth-last-child(3n)", "#select1 option:nth-last-child(3n)", ["option1b"]);
-    t("Nth-last-child(3n+1)", "#select1 option:nth-last-child(3n+1)", ["option1a", "option1d"]);
-    t("Nth-last-child(3n+2)", "#select1 option:nth-last-child(3n+2)", ["option1c"]);
-    t("Nth-last-child(3n+3)", "#select1 option:nth-last-child(3n+3)", ["option1b"]);
-    t("Nth-last-child(3n-1)", "#select1 option:nth-last-child(3n-1)", ["option1c"]);
-    t("Nth-last-child(3n-2)", "#select1 option:nth-last-child(3n-2)", ["option1a", "option1d"]);
-    t("Nth-last-child(3n-3)", "#select1 option:nth-last-child(3n-3)", ["option1b"]);
-    t("Nth-last-child(3n+0)", "#select1 option:nth-last-child(3n+0)", ["option1b"]);
-    t("Nth-last-child(-1n+3)", "#select1 option:nth-last-child(-1n+3)", ["option1b", "option1c", "option1d"]);
-    t("Nth-last-child(-n+3)", "#select1 option:nth-last-child(-n+3)", ["option1b", "option1c", "option1d"]);
+    t("Nth-last-child(3n+1)", "#select1 option:nth-last-child(3n+1)", [
+        "option1a",
+        "option1d",
+    ]);
+    t("Nth-last-child(3n+2)", "#select1 option:nth-last-child(3n+2)", [
+        "option1c",
+    ]);
+    t("Nth-last-child(3n+3)", "#select1 option:nth-last-child(3n+3)", [
+        "option1b",
+    ]);
+    t("Nth-last-child(3n-1)", "#select1 option:nth-last-child(3n-1)", [
+        "option1c",
+    ]);
+    t("Nth-last-child(3n-2)", "#select1 option:nth-last-child(3n-2)", [
+        "option1a",
+        "option1d",
+    ]);
+    t("Nth-last-child(3n-3)", "#select1 option:nth-last-child(3n-3)", [
+        "option1b",
+    ]);
+    t("Nth-last-child(3n+0)", "#select1 option:nth-last-child(3n+0)", [
+        "option1b",
+    ]);
+    t("Nth-last-child(-1n+3)", "#select1 option:nth-last-child(-1n+3)", [
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
+    t("Nth-last-child(-n+3)", "#select1 option:nth-last-child(-n+3)", [
+        "option1b",
+        "option1c",
+        "option1d",
+    ]);
     t("Nth-last-child(-1n + 3)", "#select1 option:nth-last-child(-1n + 3)", [
         "option1b",
         "option1c",
-        "option1d"
+        "option1d",
     ]);
 
     //  deepEqual( Sizzle( ":nth-last-child(n)", null, null, [ document.createElement("a") ].concat( q("ap") ) ), q("ap"), "Seeded nth-last-child" );
 });
 
-test("pseudo - nth-of-type", function() {
+test("pseudo - nth-of-type", () => {
     expect(9);
     t("Nth-of-type(-1)", ":nth-of-type(-1)", []);
     t("Nth-of-type(3)", "#ap :nth-of-type(3)", ["mark"]);
-    t("Nth-of-type(n)", "#ap :nth-of-type(n)", ["google", "groups", "code1", "anchor1", "mark"]);
+    t("Nth-of-type(n)", "#ap :nth-of-type(n)", [
+        "google",
+        "groups",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
     t("Nth-of-type(0n+3)", "#ap :nth-of-type(0n+3)", ["mark"]);
     t("Nth-of-type(2n)", "#ap :nth-of-type(2n)", ["groups"]);
     t("Nth-of-type(even)", "#ap :nth-of-type(even)", ["groups"]);
-    t("Nth-of-type(2n+1)", "#ap :nth-of-type(2n+1)", ["google", "code1", "anchor1", "mark"]);
-    t("Nth-of-type(odd)", "#ap :nth-of-type(odd)", ["google", "code1", "anchor1", "mark"]);
+    t("Nth-of-type(2n+1)", "#ap :nth-of-type(2n+1)", [
+        "google",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
+    t("Nth-of-type(odd)", "#ap :nth-of-type(odd)", [
+        "google",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
     t("Nth-of-type(-n+2)", "#qunit-fixture > :nth-of-type(-n+2)", [
         "firstp",
         "ap",
@@ -1075,20 +1495,36 @@ test("pseudo - nth-of-type", function() {
         "floatTest",
         "iframe",
         "lengthtest",
-        "table"
+        "table",
     ]);
 });
 
-test("pseudo - nth-last-of-type", function() {
+test("pseudo - nth-last-of-type", () => {
     expect(9);
     t("Nth-last-of-type(-1)", ":nth-last-of-type(-1)", []);
     t("Nth-last-of-type(3)", "#ap :nth-last-of-type(3)", ["google"]);
-    t("Nth-last-of-type(n)", "#ap :nth-last-of-type(n)", ["google", "groups", "code1", "anchor1", "mark"]);
+    t("Nth-last-of-type(n)", "#ap :nth-last-of-type(n)", [
+        "google",
+        "groups",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
     t("Nth-last-of-type(0n+3)", "#ap :nth-last-of-type(0n+3)", ["google"]);
     t("Nth-last-of-type(2n)", "#ap :nth-last-of-type(2n)", ["groups"]);
     t("Nth-last-of-type(even)", "#ap :nth-last-of-type(even)", ["groups"]);
-    t("Nth-last-of-type(2n+1)", "#ap :nth-last-of-type(2n+1)", ["google", "code1", "anchor1", "mark"]);
-    t("Nth-last-of-type(odd)", "#ap :nth-last-of-type(odd)", ["google", "code1", "anchor1", "mark"]);
+    t("Nth-last-of-type(2n+1)", "#ap :nth-last-of-type(2n+1)", [
+        "google",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
+    t("Nth-last-of-type(odd)", "#ap :nth-last-of-type(odd)", [
+        "google",
+        "code1",
+        "anchor1",
+        "mark",
+    ]);
     t("Nth-last-of-type(-n+2)", "#qunit-fixture > :nth-last-of-type(-n+2)", [
         "ap",
         "name+value",
@@ -1101,37 +1537,52 @@ test("pseudo - nth-last-of-type", function() {
         "name-tests",
         "testForm",
         "liveHandlerOrder",
-        "siblingTest"
+        "siblingTest",
     ]);
 });
 
-test("pseudo - has", function() {
+test("pseudo - has", () => {
     expect(3);
 
     t("Basic test", "p:has(a)", ["firstp", "ap", "en", "sap"]);
-    t("Basic test (irrelevant whitespace)", "p:has( a )", ["firstp", "ap", "en", "sap"]);
-    t("Nested with overlapping candidates", "#qunit-fixture div:has(div:has(div:not([id])))", [
-        "moretests",
-        "t2037"
+    t("Basic test (irrelevant whitespace)", "p:has( a )", [
+        "firstp",
+        "ap",
+        "en",
+        "sap",
     ]);
+    t(
+        "Nested with overlapping candidates",
+        "#qunit-fixture div:has(div:has(div:not([id])))",
+        ["moretests", "t2037"]
+    );
 });
 
-test("pseudo - misc", function() {
+test("pseudo - misc", () => {
     expect(39);
 
-    var select, tmp, input;
-
-    t("Headers", ":header", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
-    t("Headers(case-insensitive)", ":Header", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
+    t("Headers", ":header", [
+        "qunit-header",
+        "qunit-banner",
+        "qunit-userAgent",
+    ]);
+    t("Headers(case-insensitive)", ":Header", [
+        "qunit-header",
+        "qunit-banner",
+        "qunit-userAgent",
+    ]);
     t(
         "Multiple matches with the same context (cache check)",
         "#form select:has(option:first-child:contains('o'))",
         ["select1", "select2", "select3", "select4"]
     );
 
-    ok(Sizzle("#qunit-fixture :not(:has(:has(*)))").length, "All not grandparents");
+    ok(
+        Sizzle("#qunit-fixture :not(:has(:has(*)))").length,
+        "All not grandparents"
+    );
 
-    select = document.getElementById("select1");
+    const select = document.getElementById("select1");
     ok(Sizzle.matchesSelector(select, ":has(option)"), "Has Option Matches");
 
     ok(Sizzle("a:contains('')").length, "Empty string contains");
@@ -1143,19 +1594,31 @@ test("pseudo - misc", function() {
     t("Text Contains", "a:contains(Google Groups (Link))", ["groups"]);
     t("Text Contains", "a:contains((Link))", ["groups"]);
 
-    tmp = document.createElement("div");
+    let tmp = document.createElement("div");
     tmp.attribs.id = "tmp_input";
     document.body.children.push(tmp);
 
-    ["button", "submit", "reset"].forEach(function(type) {
-        var els = jQuery(
-            "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(/%/g, type)
+    ["button", "submit", "reset"].forEach((type) => {
+        const els = jQuery(
+            "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
+                /%/g,
+                type
+            )
         ).appendTo(tmp);
 
-        t("Input Buttons :" + type, "#tmp_input :" + type, ["input_" + type, "button_" + type]);
+        t(`Input Buttons :${type}`, `#tmp_input :${type}`, [
+            `input_${type}`,
+            `button_${type}`,
+        ]);
 
-        ok(Sizzle.matchesSelector(els[0], ":" + type), "Input Matches :" + type);
-        ok(Sizzle.matchesSelector(els[1], ":" + type), "Button Matches :" + type);
+        ok(
+            Sizzle.matchesSelector(els[0], `:${type}`),
+            `Input Matches :${type}`
+        );
+        ok(
+            Sizzle.matchesSelector(els[1], `:${type}`),
+            `Button Matches :${type}`
+        );
     });
 
     document.body.children.pop();
@@ -1172,13 +1635,17 @@ test("pseudo - misc", function() {
     if (
         document.activeElement !== tmp ||
         (document.hasFocus && !document.hasFocus()) ||
-        (document.querySelectorAll && !document.querySelectorAll("div:focus").length)
+        (document.querySelectorAll &&
+            !document.querySelectorAll("div:focus").length)
     ) {
         ok(true, "The div was not focused. Skip checking the :focus match.");
         ok(true, "The div was not focused. Skip checking the :focus match.");
     } else {
         t("tabIndex element focused", ":focus", ["tmp_input"]);
-        ok(Sizzle.matchesSelector(tmp, ":focus"), ":focus matches tabIndex div");
+        ok(
+            Sizzle.matchesSelector(tmp, ":focus"),
+            ":focus matches tabIndex div"
+        );
     }
 
     // Blur tmp
@@ -1188,7 +1655,7 @@ test("pseudo - misc", function() {
     document.body.children.pop();
 
     // Input focus/active
-    input = document.createElement("input");
+    const input = document.createElement("input");
     input.attribs.type = "text";
     input.attribs.id = "focus-input";
 
@@ -1199,7 +1666,8 @@ test("pseudo - misc", function() {
     if (
         document.activeElement !== input ||
         (document.hasFocus && !document.hasFocus()) ||
-        (document.querySelectorAll && !document.querySelectorAll("input:focus").length)
+        (document.querySelectorAll &&
+            !document.querySelectorAll("input:focus").length)
     ) {
         ok(true, "The input was not focused. Skip checking the :focus match.");
         ok(true, "The input was not focused. Skip checking the :focus match.");
@@ -1219,23 +1687,51 @@ test("pseudo - misc", function() {
     document.body.children.pop();
 
     deepEqual(
-        Sizzle("[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)", q("qunit-fixture")[0]),
-        q("option1a", "option1b", "option1c", "option2a", "option2b", "option2c"),
+        Sizzle(
+            "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)",
+            q("qunit-fixture")[0]
+        ),
+        q(
+            "option1a",
+            "option1b",
+            "option1c",
+            "option2a",
+            "option2b",
+            "option2c"
+        ),
         "caching system tolerates recursive selection"
     );
 
     // Tokenization edge cases
-    t("Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", ["ap"]);
-    t("Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)", ["ap"]);
+    t("Sequential pseudos", "#qunit-fixture p:has(:contains(mark)):has(code)", [
+        "ap",
+    ]);
+    t(
+        "Sequential pseudos",
+        "#qunit-fixture p:has(:contains(mark)):has(code):contains(This link)",
+        ["ap"]
+    );
 
     t("Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"]);
     t("Pseudo argument containing ')'", "p:has(>a.GROUPS[src!=')'])", ["ap"]);
-    t("Pseudo followed by token containing ')'", 'p:contains(id="foo")[id!=\\)]', ["sndp"]);
-    t("Pseudo followed by token containing ')'", "p:contains(id=\"foo\")[id!=')']", ["sndp"]);
+    t(
+        "Pseudo followed by token containing ')'",
+        'p:contains(id="foo")[id!=\\)]',
+        ["sndp"]
+    );
+    t(
+        "Pseudo followed by token containing ')'",
+        "p:contains(id=\"foo\")[id!=')']",
+        ["sndp"]
+    );
 
     t("Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"]);
     //t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
-    t("Multi-pseudo with leading nonexistent id", "#nonexistent:has(*), #ap:has(*)", ["ap"]);
+    t(
+        "Multi-pseudo with leading nonexistent id",
+        "#nonexistent:has(*), #ap:has(*)",
+        ["ap"]
+    );
     //t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
     t(
@@ -1245,24 +1741,31 @@ test("pseudo - misc", function() {
     );
 });
 
-test("pseudo - :not", function() {
+test("pseudo - :not", () => {
     expect(43);
 
     t("Not", "a.blog:not(.link)", ["mark"]);
     //t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
 
-    t("Not - multiple", "#form option:not(:contains(Nothing),#option1b,:selected)", [
-        "option1c",
-        "option1d",
-        "option2b",
-        "option2c",
-        "option3d",
-        "option3e",
-        "option4e",
-        "option5b",
-        "option5c"
+    t(
+        "Not - multiple",
+        "#form option:not(:contains(Nothing),#option1b,:selected)",
+        [
+            "option1c",
+            "option1d",
+            "option2b",
+            "option2c",
+            "option3d",
+            "option3e",
+            "option4e",
+            "option5b",
+            "option5c",
+        ]
+    );
+    t("Not - recursive", "#form option:not(:not(:selected))[id^='option3']", [
+        "option3b",
+        "option3c",
     ]);
-    t("Not - recursive", "#form option:not(:not(:selected))[id^='option3']", ["option3b", "option3c"]);
 
     t(":not() failing interior", "#qunit-fixture p:not(.foo)", [
         "firstp",
@@ -1270,7 +1773,7 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t(":not() failing interior", "#qunit-fixture p:not(div.foo)", [
         "firstp",
@@ -1278,7 +1781,7 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t(":not() failing interior", "#qunit-fixture p:not(p.foo)", [
         "firstp",
@@ -1286,7 +1789,7 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t(":not() failing interior", "#qunit-fixture p:not(#blargh)", [
         "firstp",
@@ -1294,7 +1797,7 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t(":not() failing interior", "#qunit-fixture p:not(div#blargh)", [
         "firstp",
@@ -1302,7 +1805,7 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
     t(":not() failing interior", "#qunit-fixture p:not(p#blargh)", [
         "firstp",
@@ -1310,50 +1813,85 @@ test("pseudo - :not", function() {
         "sndp",
         "en",
         "sap",
-        "first"
+        "first",
     ]);
 
-    t(":not Multiple", "#qunit-fixture p:not(a)", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t(":not Multiple", "#qunit-fixture p:not( a )", ["firstp", "ap", "sndp", "en", "sap", "first"]);
+    t(":not Multiple", "#qunit-fixture p:not(a)", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t(":not Multiple", "#qunit-fixture p:not( a )", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
     t(":not Multiple", "#qunit-fixture p:not( p )", []);
-    t(":not Multiple", "#qunit-fixture p:not(a, b)", ["firstp", "ap", "sndp", "en", "sap", "first"]);
-    t(":not Multiple", "#qunit-fixture p:not(a, b, div)", ["firstp", "ap", "sndp", "en", "sap", "first"]);
+    t(":not Multiple", "#qunit-fixture p:not(a, b)", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
+    t(":not Multiple", "#qunit-fixture p:not(a, b, div)", [
+        "firstp",
+        "ap",
+        "sndp",
+        "en",
+        "sap",
+        "first",
+    ]);
     t(":not Multiple", "p:not(p)", []);
     t(":not Multiple", "p:not(a,p)", []);
     t(":not Multiple", "p:not(p,a)", []);
     t(":not Multiple", "p:not(a,p,b)", []);
     t(":not Multiple", ":input:not(:image,:input,:submit)", []);
-    t(":not Multiple", "#qunit-fixture p:not(:has(a), :nth-child(1))", ["first"]);
+    t(":not Multiple", "#qunit-fixture p:not(:has(a), :nth-child(1))", [
+        "first",
+    ]);
 
     t("No element not selector", ".container div:not(.excluded) div", []);
 
-    t(":not() Existing attribute", "#form select:not([multiple])", ["select1", "select2", "select5"]);
+    t(":not() Existing attribute", "#form select:not([multiple])", [
+        "select1",
+        "select2",
+        "select5",
+    ]);
     t(":not() Equals attribute", "#form select:not([name=select1])", [
         "select2",
         "select3",
         "select4",
-        "select5"
+        "select5",
     ]);
     t(":not() Equals quoted attribute", "#form select:not([name='select1'])", [
         "select2",
         "select3",
         "select4",
-        "select5"
+        "select5",
     ]);
 
     t(":not() Multiple Class", "#foo a:not(.blog)", ["yahoo", "anchor2"]);
     t(":not() Multiple Class", "#foo a:not(.link)", ["yahoo", "anchor2"]);
     t(":not() Multiple Class", "#foo a:not(.blog.link)", ["yahoo", "anchor2"]);
 
-    t(":not chaining (compound)", "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))", [
-        "nothiddendivchild",
-        "divWithNoTabIndex"
-    ]);
-    t(":not chaining (with attribute)", "#qunit-fixture form[id]:not([action$='formaction']):not(:button)", [
-        "lengthtest",
-        "name-tests",
-        "testForm"
-    ]);
+    t(
+        ":not chaining (compound)",
+        "#qunit-fixture div[id]:not(:has(div, span)):not(:has(*))",
+        ["nothiddendivchild", "divWithNoTabIndex"]
+    );
+    t(
+        ":not chaining (with attribute)",
+        "#qunit-fixture form[id]:not([action$='formaction']):not(:button)",
+        ["lengthtest", "name-tests", "testForm"]
+    );
     t(
         ":not chaining (colon in attribute)",
         "#qunit-fixture form[id]:not([action='form:action']):not(:button)",
@@ -1364,7 +1902,11 @@ test("pseudo - :not", function() {
         "#qunit-fixture form[id]:not([action='form:action']:button):not(:input)",
         ["form", "lengthtest", "name-tests", "testForm"]
     );
-    t(":not chaining", "#form select:not(.select1):contains(Nothing) > option:not(option)", []);
+    t(
+        ":not chaining",
+        "#form select:not(.select1):contains(Nothing) > option:not(option)",
+        []
+    );
 
     /*
 	t( "positional :not()", "#foo p:not(:last)", ["sndp", "en"] );
@@ -1429,12 +1971,12 @@ test("pseudo - position", function() {
 });
 */
 
-test("pseudo - form", function() {
+test("pseudo - form", () => {
     expect(10);
 
-    var extraTexts = jQuery('<input id="impliedText"/><input id="capitalText" type="TEXT">').appendTo(
-        "#form"
-    );
+    const extraTexts = jQuery(
+        '<input id="impliedText"/><input id="capitalText" type="TEXT">'
+    ).appendTo("#form");
 
     t("Form element :input", "#form :input", [
         "text1",
@@ -1455,7 +1997,7 @@ test("pseudo - form", function() {
         "select4",
         "select5",
         "impliedText",
-        "capitalText"
+        "capitalText",
     ]);
     t("Form element :radio", "#form :radio", ["radio1", "radio2"]);
     t("Form element :checkbox", "#form :checkbox", ["check1", "check2"]);
@@ -1465,14 +2007,15 @@ test("pseudo - form", function() {
         "hidden2",
         "name",
         "impliedText",
-        "capitalText"
+        "capitalText",
     ]);
     t("Form element :radio:checked", "#form :radio:checked", ["radio2"]);
     t("Form element :checkbox:checked", "#form :checkbox:checked", ["check1"]);
-    t("Form element :radio:checked, :checkbox:checked", "#form :radio:checked, #form :checkbox:checked", [
-        "radio2",
-        "check1"
-    ]);
+    t(
+        "Form element :radio:checked, :checkbox:checked",
+        "#form :radio:checked, #form :checkbox:checked",
+        ["radio2", "check1"]
+    );
 
     t("Selected Option Element", "#form option:selected", [
         "option1a",
@@ -1482,7 +2025,7 @@ test("pseudo - form", function() {
         "option4b",
         "option4c",
         "option4d",
-        "option5a"
+        "option5a",
     ]);
     t("Selected Option Element are also :checked", "#form option:checked", [
         "option1a",
@@ -1492,14 +2035,18 @@ test("pseudo - form", function() {
         "option4b",
         "option4c",
         "option4d",
-        "option5a"
+        "option5a",
     ]);
-    t("Hidden inputs should be treated as enabled. See QSA test.", "#hidden1:enabled", ["hidden1"]);
+    t(
+        "Hidden inputs should be treated as enabled. See QSA test.",
+        "#hidden1:enabled",
+        ["hidden1"]
+    );
 
     extraTexts.remove();
 });
 
-test("pseudo - :target and :root", function() {
+test("pseudo - :target and :root", () => {
     expect(2);
     /* // TODO add shim from qwery tests
 	// Target
@@ -1623,7 +2170,7 @@ test("pseudo - :lang", function() {
 });
 */
 
-test("caching", function() {
+test("caching", () => {
     expect(1);
     Sizzle(":not(code)", document.getElementById("ap"));
     deepEqual(

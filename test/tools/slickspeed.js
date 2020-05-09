@@ -1,4 +1,4 @@
-var helper = require("./helper.js"),
+const helper = require("./helper.js"),
     doc = helper.getFile("W3C_Selectors.html"),
     CSSselect = helper.CSSselect,
     soupselect = require("cheerio-soupselect"),
@@ -32,30 +32,28 @@ var helper = require("./helper.js"),
         "div[class*=e]",
         "div[class|=dialog]",
         "div[class!=made_up]",
-        "div[class~=example]" /*, "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/
+        "div[class~=example]" /*, "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/,
     ];
 
-var engines = [
-    function(a, b) {
+const engines = [
+    function (a, b) {
         return CSSselect(b, a);
     },
-    soupselect.select
+    soupselect.select,
 ];
 
 //returns true when an error occurs
 function testResult(rule) {
-    var results = engines.map(function(func) {
-        return func(doc, rule);
-    });
+    const results = engines.map((func) => func(doc, rule));
 
     //check if both had the same result
-    for (var i = 1; i < results.length; i++) {
+    for (let i = 1; i < results.length; i++) {
         //TODO: might be hard to debug with more engines
         if (results[i - 1].length !== results[i].length) {
             //console.log(rule, results[i-1].length, results[i].length);
             return true;
         }
-        for (var j = 0; j < results[i].length; j++) {
+        for (let j = 0; j < results[i].length; j++) {
             if (results[i - 1][j] !== results[i][j]) {
                 if (results[i - 1].indexOf(results[i][j]) === -1) {
                     return true;
@@ -68,7 +66,7 @@ function testResult(rule) {
     return false;
 }
 
-selectors.filter(testResult).forEach(function(rule) {
+selectors.filter(testResult).forEach((rule) => {
     print(rule, "failed!\n");
 });
 
@@ -77,29 +75,25 @@ process.exit(0); //don't run speed tests
 print("-----\n\nChecking performance\n\n");
 
 //test the speed
-var ben = require("ben");
+const ben = require("ben");
 
 function testSpeed(rule) {
     print(rule, Array(28 - rule.length).join(" "));
 
-    var results = engines.map(function(func) {
-        return function() {
+    let results = engines.map((func) => function () {
             return func(doc, rule);
-        };
-    });
+        });
 
     //also add a precompiled CSSselect test
-    var compiled = CSSselect(rule);
-    results.unshift(function() {
-        return CSSselect.iterate(compiled, doc);
-    });
+    const compiled = CSSselect(rule);
+    results.unshift(() => CSSselect.iterate(compiled, doc));
 
     results = results.map(ben);
 
-    var min = Math.min.apply(null, results);
-    var max = Math.max.apply(null, results);
+    const min = Math.min.apply(null, results);
+    const max = Math.max.apply(null, results);
 
-    results.forEach(function(result) {
+    results.forEach((result) => {
         if (result === min) return print(" +", result, "+");
         if (result === max) return print(" !", result, "!");
         if (Math.abs(result - min) > Math.abs(result - max)) {
@@ -111,7 +105,12 @@ function testSpeed(rule) {
     print("\n");
 }
 
-print("RULE                    ", "CSSselect (pc)", "CSSselect", "soupselect\n");
+print(
+    "RULE                    ",
+    "CSSselect (pc)",
+    "CSSselect",
+    "soupselect\n"
+);
 
 selectors.forEach(testSpeed);
 

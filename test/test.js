@@ -1,21 +1,21 @@
-describe("nwmatcher", function() {
+describe("nwmatcher", () => {
     require("./nwmatcher/");
 });
 
-describe("sizzle", function() {
-    describe("selector", function() {
+describe("sizzle", () => {
+    describe("selector", () => {
         require("./sizzle/selector");
     });
 });
 
-describe("qwery", function() {
+describe("qwery", () => {
     exportsRun(require("./qwery/"));
 });
 
 function exportsRun(mod) {
-    Object.keys(mod).forEach(function(name) {
+    Object.keys(mod).forEach((name) => {
         if (typeof mod[name] === "object") {
-            describe(name, function() {
+            describe(name, () => {
                 exportsRun(mod[name]);
             });
         } else it(name, mod[name]);

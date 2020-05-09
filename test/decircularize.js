@@ -7,7 +7,7 @@ function isNodeArray(v) {
     }
 }
 function NodeWithoutCircularReferences(node) {
-    var newNode = {};
+    const newNode = {};
     Object.assign(newNode, node);
     delete newNode.next;
     delete newNode.prev;

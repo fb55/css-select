@@ -1,51 +1,56 @@
-var fs = require("fs"),
-    path = require("path"),
-    htmlparser2 = require("htmlparser2"),
-    DomUtils = htmlparser2.DomUtils,
-    CSSselect = require("../../");
+const fs = require("fs");
+const path = require("path");
+const htmlparser2 = require("htmlparser2");
+const { DomUtils } = htmlparser2;
+const CSSselect = require("../../");
 
 function getDOMFromPath(path, options) {
     return htmlparser2.parseDOM(fs.readFileSync(path).toString(), options);
 }
 
 module.exports = {
-    CSSselect: CSSselect,
-    getFile: function(name, options) {
+    CSSselect,
+    getFile(name, options) {
         return getDOMFromPath(path.join(__dirname, "docs", name), options);
     },
-    getDOMFromPath: getDOMFromPath,
+    getDOMFromPath,
     getDOM: htmlparser2.parseDOM,
-    getDefaultDom: function() {
+    getDefaultDom() {
         return htmlparser2.parseDOM(
             "<elem id=foo><elem class='bar baz'><tag class='boom'> This is some simple text </tag></elem></elem>"
         );
     },
-    getDocument: function(path) {
-        var document = getDOMFromPath(path);
+    getDocument(path) {
+        const document = getDOMFromPath(path);
 
-        document.getElementsByTagName = function(name) {
+        document.getElementsByTagName = function (name) {
             return DomUtils.getElementsByTagName(name || "*", document);
         };
-        document.getElementById = function(id) {
+        document.getElementById = function (id) {
             return DomUtils.getElementById(id, document);
         };
-        document.createTextNode = function(content) {
+        document.createTextNode = function (content) {
             return {
                 type: "text",
-                data: content
+                data: content,
             };
         };
-        document.createElement = function(name) {
+        document.createElement = function (name) {
             return {
                 type: "tag",
-                name: name,
+                name,
                 children: [],
-                attribs: {}
+                attribs: {},
             };
         };
-        document.body = DomUtils.getElementsByTagName("body", document, true, 1)[0];
+        document.body = DomUtils.getElementsByTagName(
+            "body",
+            document,
+            true,
+            1
+        )[0];
         document.documentElement = document.filter(DomUtils.isTag)[0];
 
         return document;
-    }
+    },
 };
