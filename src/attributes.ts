@@ -1,4 +1,6 @@
-const { falseFunc } = require("boolbase");
+import { falseFunc } from "boolbase";
+import { CompiledQuery, InternalOptions } from "./types";
+import { AttributeSelector } from "css-what";
 
 //https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
@@ -8,9 +10,14 @@ const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
 */
 const attributeRules = {
     __proto__: null,
-    equals(next, data, { adapter }) {
+    equals(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
+        const { adapter } = options;
 
         if (data.ignoreCase) {
             value = value.toLowerCase();
@@ -23,13 +30,21 @@ const attributeRules = {
             };
         }
 
-        return (elem) =>
-            adapter.getAttributeValue(elem, name) === value && next(elem);
+        return function equals(elem) {
+            return (
+                adapter.getAttributeValue(elem, name) === value && next(elem)
+            );
+        };
     },
-    hyphen(next, data, { adapter }) {
+    hyphen(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
         const len = value.length;
+        const { adapter } = options;
 
         if (data.ignoreCase) {
             value = value.toLowerCase();
@@ -55,9 +70,14 @@ const attributeRules = {
             );
         };
     },
-    element(next, data, { adapter }) {
+    element(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
+        const { adapter } = options;
 
         if (/\s/.test(value)) {
             return falseFunc;
@@ -74,13 +94,27 @@ const attributeRules = {
             return attr != null && regex.test(attr) && next(elem);
         };
     },
-    exists(next, { name }, { adapter }) {
-        return (elem) => adapter.hasAttrib(elem, name) && next(elem);
+    exists(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
+        const { name } = data;
+        const { adapter } = options;
+
+        return function exists(elem) {
+            return adapter.hasAttrib(elem, name) && next(elem);
+        };
     },
-    start(next, data, { adapter }) {
+    start(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
         const len = value.length;
+        const { adapter } = options;
 
         if (len === 0) {
             return falseFunc;
@@ -101,13 +135,18 @@ const attributeRules = {
 
         return function start(elem) {
             const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.startsWith(value) && next(elem);
+            return attr != null && attr.substr(0, len) === value && next(elem);
         };
     },
-    end(next, data, { adapter }) {
+    end(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
         const len = -value.length;
+        const { adapter } = options;
 
         if (len === 0) {
             return falseFunc;
@@ -128,11 +167,17 @@ const attributeRules = {
 
         return function end(elem) {
             const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.endsWith(value) && next(elem);
+            return attr != null && attr.substr(len) === value && next(elem);
         };
     },
-    any(next, data, { adapter }) {
-        const { name, value } = data;
+    any(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
+        const { name } = data;
+        const { value } = data;
+        const { adapter } = options;
 
         if (value === "") {
             return falseFunc;
@@ -149,16 +194,22 @@ const attributeRules = {
 
         return function any(elem) {
             const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.includes(value) && next(elem);
+            return attr?.includes(value) && next(elem);
         };
     },
-    not(next, data, { adapter }) {
+    not(
+        next: CompiledQuery,
+        data: AttributeSelector,
+        options: InternalOptions
+    ): CompiledQuery {
         const { name } = data;
         let { value } = data;
+        const { adapter } = options;
 
         if (value === "") {
-            return (elem) =>
-                !!adapter.getAttributeValue(elem, name) && next(elem);
+            return function notEmpty(elem) {
+                return !!adapter.getAttributeValue(elem, name) && next(elem);
+            };
         } else if (data.ignoreCase) {
             value = value.toLowerCase();
 
@@ -170,17 +221,23 @@ const attributeRules = {
             };
         }
 
-        return (elem) =>
-            adapter.getAttributeValue(elem, name) !== value && next(elem);
+        return function not(elem) {
+            return (
+                adapter.getAttributeValue(elem, name) !== value && next(elem)
+            );
+        };
     },
 };
 
-module.exports = {
-    compile(next, data, options) {
-        if (options.strict && (data.ignoreCase || data.action === "not")) {
-            throw new Error("Unsupported attribute selector");
-        }
-        return attributeRules[data.action](next, data, options);
-    },
-    rules: attributeRules,
-};
+export function compile(
+    next: CompiledQuery,
+    data: AttributeSelector,
+    options: InternalOptions
+): CompiledQuery {
+    if (options?.strict && (data.ignoreCase || data.action === "not")) {
+        throw new Error("Unsupported attribute selector");
+    }
+    return attributeRules[data.action](next, data, options);
+}
+
+export { attributeRules as rules };

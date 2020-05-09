@@ -62,7 +62,7 @@ const CSSselect = require("css-select");
 
 **Note:** css-select throws errors when invalid selectors are passed to it, contrary to the behavior in browsers, which swallow them. This is done to aid with writing css selectors, but can be unexpected when processing arbitrary strings.
 
-#### `CSSselect(query, elems, options)`
+#### `CSSselect.selectAll(query, elems, options)`
 
 Queries `elems`, returns an array containing all matches.
 
@@ -70,7 +70,7 @@ Queries `elems`, returns an array containing all matches.
 -   `elems` can be either an array of elements, or a single element. If it is an element, its children will be queried.
 -   `options` is described below.
 
-Aliases: `CSSselect.selectAll(query, elems)`, `CSSselect.iterate(query, elems)`.
+Aliases: `default` export, `CSSselect.iterate(query, elems)`.
 
 #### `CSSselect.compile(query)`
 
@@ -82,7 +82,8 @@ Tests whether or not an element is matched by `query`. `query` can be either a C
 
 #### `CSSselect.selectOne(query, elems, options)`
 
-Arguments are the same as for `CSSselect(query, elems)`. Only returns the first match, or `null` if there was no match.
+Arguments are the same as for `CSSselect.selectAll(query, elems)`.
+Only returns the first match, or `null` if there was no match.
 
 ### Options
 

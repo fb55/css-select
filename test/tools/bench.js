@@ -10,7 +10,5 @@ const dom = helper.getDefaultDom();
 const compiled = compile(testString);
 console.log(
     "Executing took:",
-    ben(1e6, () => {
-        CSSselect(compiled, dom);
-    }) * 1e3
+    ben(1e6, () => CSSselect.selectAll(compiled, dom)) * 1e3
 );

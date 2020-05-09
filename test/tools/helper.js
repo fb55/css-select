@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const htmlparser2 = require("htmlparser2");
-const { DomUtils } = htmlparser2;
-const CSSselect = require("../../");
+const DomUtils = require("domutils");
+const CSSselect = require("../..");
 
 function getDOMFromPath(path, options) {
     return htmlparser2.parseDOM(fs.readFileSync(path).toString(), options);
@@ -23,26 +23,33 @@ module.exports = {
     getDocument(path) {
         const document = getDOMFromPath(path);
 
-        document.getElementsByTagName = (name = "*") =>
-            DomUtils.getElementsByTagName(name, document);
-        document.getElementById = (id) => DomUtils.getElementById(id, document);
-        document.createTextNode = (content) => ({
-            type: "text",
-            data: content,
-        });
-        document.createElement = (name) => ({
-            type: "tag",
-            name,
-            children: [],
-            attribs: {},
-        });
-        [document.body] = DomUtils.getElementsByTagName(
+        document.getElementsByTagName = function (name) {
+            return DomUtils.getElementsByTagName(name || "*", document);
+        };
+        document.getElementById = function (id) {
+            return DomUtils.getElementById(id, document);
+        };
+        document.createTextNode = function (content) {
+            return {
+                type: "text",
+                data: content,
+            };
+        };
+        document.createElement = function (name) {
+            return {
+                type: "tag",
+                name,
+                children: [],
+                attribs: {},
+            };
+        };
+        document.body = DomUtils.getElementsByTagName(
             "body",
             document,
             true,
             1
-        );
-        [document.documentElement] = document.filter(DomUtils.isTag);
+        )[0];
+        document.documentElement = document.filter(DomUtils.isTag)[0];
 
         return document;
     },
