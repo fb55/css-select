@@ -8,43 +8,33 @@ const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
 /*
 	attribute selectors
 */
-const attributeRules = {
-    __proto__: null,
-    equals(
+const attributeRules: Record<
+    string,
+    (
         next: CompiledQuery,
         data: AttributeSelector,
         options: InternalOptions
-    ): CompiledQuery {
+    ) => CompiledQuery
+> = {
+    equals(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
-        const { adapter } = options;
 
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function equalsIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null && attr.toLowerCase() === value && next(elem)
-                );
-            };
+            return (elem) =>
+                adapter.getAttributeValue(elem, name)?.toLowerCase() ===
+                    value && next(elem);
         }
 
-        return function equals(elem) {
-            return (
-                adapter.getAttributeValue(elem, name) === value && next(elem)
-            );
-        };
+        return (elem) =>
+            adapter.getAttributeValue(elem, name) === value && next(elem);
     },
-    hyphen(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
+    hyphen(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
         const len = value.length;
-        const { adapter } = options;
 
         if (data.ignoreCase) {
             value = value.toLowerCase();
@@ -70,14 +60,9 @@ const attributeRules = {
             );
         };
     },
-    element(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
+    element(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
-        const { adapter } = options;
 
         if (/\s/.test(value)) {
             return falseFunc;
@@ -94,27 +79,13 @@ const attributeRules = {
             return attr != null && regex.test(attr) && next(elem);
         };
     },
-    exists(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { name } = data;
-        const { adapter } = options;
-
-        return function exists(elem) {
-            return adapter.hasAttrib(elem, name) && next(elem);
-        };
+    exists(next, { name }, { adapter }) {
+        return (elem) => adapter.hasAttrib(elem, name) && next(elem);
     },
-    start(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
+    start(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
         const len = value.length;
-        const { adapter } = options;
 
         if (len === 0) {
             return falseFunc;
@@ -123,30 +94,21 @@ const attributeRules = {
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function startIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null &&
-                    attr.substr(0, len).toLowerCase() === value &&
-                    next(elem)
-                );
-            };
+            return (elem) =>
+                adapter
+                    .getAttributeValue(elem, name)
+                    ?.substr(0, len)
+                    .toLowerCase() === value && next(elem);
         }
 
-        return function start(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.substr(0, len) === value && next(elem);
-        };
+        return (elem) =>
+            adapter.getAttributeValue(elem, name)?.startsWith(value) &&
+            next(elem);
     },
-    end(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
+    end(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
         const len = -value.length;
-        const { adapter } = options;
 
         if (len === 0) {
             return falseFunc;
@@ -155,29 +117,19 @@ const attributeRules = {
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function endIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null &&
-                    attr.substr(len).toLowerCase() === value &&
-                    next(elem)
-                );
-            };
+            return (elem) =>
+                adapter
+                    .getAttributeValue(elem, name)
+                    ?.substr(len)
+                    .toLowerCase() === value && next(elem);
         }
 
-        return function end(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.substr(len) === value && next(elem);
-        };
+        return (elem) =>
+            adapter.getAttributeValue(elem, name)?.endsWith(value) &&
+            next(elem);
     },
-    any(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { name } = data;
-        const { value } = data;
-        const { adapter } = options;
+    any(next, data, { adapter }) {
+        const { name, value } = data;
 
         if (value === "") {
             return falseFunc;
@@ -192,40 +144,27 @@ const attributeRules = {
             };
         }
 
-        return function any(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr?.includes(value) && next(elem);
-        };
+        return (elem) =>
+            adapter.getAttributeValue(elem, name)?.includes(value) &&
+            next(elem);
     },
-    not(
-        next: CompiledQuery,
-        data: AttributeSelector,
-        options: InternalOptions
-    ): CompiledQuery {
+    not(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
-        const { adapter } = options;
 
         if (value === "") {
-            return function notEmpty(elem) {
-                return !!adapter.getAttributeValue(elem, name) && next(elem);
-            };
+            return (elem) =>
+                !!adapter.getAttributeValue(elem, name) && next(elem);
         } else if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function notIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null && attr.toLowerCase() !== value && next(elem)
-                );
-            };
+            return (elem) =>
+                adapter.getAttributeValue(elem, name)?.toLowerCase() !==
+                    value && next(elem);
         }
 
-        return function not(elem) {
-            return (
-                adapter.getAttributeValue(elem, name) !== value && next(elem)
-            );
-        };
+        return (elem) =>
+            adapter.getAttributeValue(elem, name) !== value && next(elem);
     },
 };
 
@@ -234,7 +173,7 @@ export function compile(
     data: AttributeSelector,
     options: InternalOptions
 ): CompiledQuery {
-    if (options?.strict && (data.ignoreCase || data.action === "not")) {
+    if (options.strict && (data.ignoreCase || data.action === "not")) {
         throw new Error("Unsupported attribute selector");
     }
     return attributeRules[data.action](next, data, options);

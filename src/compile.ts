@@ -22,12 +22,11 @@ export function compile(
 
 export const Pseudos = { filters, pseudos };
 
-function wrap(next: CompiledQuery, options: InternalOptions): CompiledQuery {
-    const { adapter } = options;
-
-    return function base(elem) {
-        return adapter.isTag(elem) && next(elem);
-    };
+function wrap(
+    next: CompiledQuery,
+    { adapter }: InternalOptions
+): CompiledQuery {
+    return (elem) => adapter.isTag(elem) && next(elem);
 }
 
 export function compileUnsafe(
@@ -58,30 +57,25 @@ const PLACEHOLDER_ELEMENT = {};
 //http://www.w3.org/TR/selectors4/#absolutizing
 function absolutize(
     token: Selector[][],
-    options: InternalOptions,
+    { adapter }: InternalOptions,
     context?: Array<Record<string, unknown>>
 ) {
-    const { adapter } = options;
-
     //TODO better check if context is document
-    const hasContext =
-        !!context &&
-        !!context.length &&
-        context.every(
-            (e) => e === PLACEHOLDER_ELEMENT || !!adapter.getParent(e)
-        );
+    const hasContext = !!context?.every(
+        (e) => e === PLACEHOLDER_ELEMENT || !!adapter.getParent(e)
+    );
 
-    token.forEach((t) => {
+    for (const t of token) {
         if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
-            //don't return in else branch
+            //don't continue in else branch
         } else if (hasContext && !t.some(includesScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
-            return;
+            continue;
         }
 
         t.unshift(SCOPE_TOKEN);
-    });
+    }
 }
 
 export function compileToken(
@@ -95,7 +89,7 @@ export function compileToken(
 
     const isArrayContext = Array.isArray(context);
 
-    context = options?.context ?? context;
+    context = options.context ?? context;
 
     if (context && !isArrayContext) context = [context];
 
@@ -143,14 +137,8 @@ function compileRules(
         (previous, rule) =>
             previous === falseFunc
                 ? falseFunc
-                : Rules[rule.type](
-                      previous,
-                      // @ts-ignore
-                      rule,
-                      options,
-                      context
-                  ),
-        options?.rootFunc ?? trueFunc
+                : Rules[rule.type](previous, rule, options, context),
+        options.rootFunc ?? trueFunc
     );
 }
 
@@ -211,8 +199,8 @@ filters.has = function (
 ): CompiledQuery {
     const { adapter } = options;
     const opts = {
-        xmlMode: !!options?.xmlMode,
-        strict: !!options?.strict,
+        xmlMode: options.xmlMode,
+        strict: options.strict,
         adapter,
     };
 
@@ -225,26 +213,21 @@ filters.has = function (
 
     if (func === falseFunc) return falseFunc;
     if (func === trueFunc) {
-        return function hasChild(elem) {
-            return adapter.getChildren(elem).some(adapter.isTag) && next(elem);
-        };
+        return (elem) =>
+            adapter.getChildren(elem).some(adapter.isTag) && next(elem);
     }
 
     func = wrap(func, options);
 
     if (context) {
-        return function has(elem) {
-            return (
-                next(elem) &&
-                ((context[0] = elem),
-                adapter.existsOne(func, adapter.getChildren(elem)))
-            );
-        };
+        return (elem) =>
+            next(elem) &&
+            ((context[0] = elem),
+            adapter.existsOne(func, adapter.getChildren(elem)));
     }
 
-    return function has(elem) {
-        return next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
-    };
+    return (elem) =>
+        next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
 };
 
 filters.matches = function (
@@ -254,10 +237,10 @@ filters.matches = function (
     context?: Array<Record<string, unknown>>
 ): CompiledQuery {
     const opts = {
-        xmlMode: !!options.xmlMode,
-        strict: !!options.strict,
-        rootFunc: next,
+        xmlMode: options.xmlMode,
+        strict: options.strict,
         adapter: options.adapter,
+        rootFunc: next,
     };
 
     return compileToken(token, opts, context);

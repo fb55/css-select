@@ -31,7 +31,7 @@ function getAttribFunc(name: string, value: string) {
 
     return function attribFunc(
         next: CompiledQuery,
-        _rule: PseudoSelector,
+        _rule: string,
         options: InternalOptions
     ): CompiledQuery {
         return checkAttrib(next, data, options);
@@ -49,10 +49,8 @@ export const filters = {
     contains(
         next: CompiledQuery,
         text: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
-        const { adapter } = options;
-
         return function contains(elem) {
             return next(elem) && adapter.getText(elem).includes(text);
         };
@@ -60,10 +58,9 @@ export const filters = {
     icontains(
         next: CompiledQuery,
         text: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
         const itext = text.toLowerCase();
-        const { adapter } = options;
 
         return function icontains(elem) {
             return (
@@ -77,10 +74,9 @@ export const filters = {
     "nth-child"(
         next: CompiledQuery,
         rule: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
         const func = getNCheck(rule);
-        const { adapter } = options;
 
         if (func === falseFunc) return falseFunc;
         if (func === trueFunc) return getChildFunc(next, adapter);
@@ -102,10 +98,9 @@ export const filters = {
     "nth-last-child"(
         next: CompiledQuery,
         rule: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
         const func = getNCheck(rule);
-        const { adapter } = options;
 
         if (func === falseFunc) return falseFunc;
         if (func === trueFunc) return getChildFunc(next, adapter);
@@ -127,10 +122,9 @@ export const filters = {
     "nth-of-type"(
         next: CompiledQuery,
         rule: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
         const func = getNCheck(rule);
-        const { adapter } = options;
 
         if (func === falseFunc) return falseFunc;
         if (func === trueFunc) return getChildFunc(next, adapter);
@@ -153,10 +147,9 @@ export const filters = {
     "nth-last-of-type"(
         next: CompiledQuery,
         rule: string,
-        options: InternalOptions
+        { adapter }: InternalOptions
     ): CompiledQuery {
         const func = getNCheck(rule);
-        const { adapter } = options;
 
         if (func === falseFunc) return falseFunc;
         if (func === trueFunc) return getChildFunc(next, adapter);
@@ -265,8 +258,11 @@ function getFirstElement(
 }
 
 //while filters are precompiled, pseudos get called when they are needed
-export const pseudos = {
-    empty(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+export const pseudos: Record<
+    string,
+    (elem: Record<string, unknown>, adapter: InternalAdapter) => boolean
+> = {
+    empty(elem, adapter) {
         return !adapter.getChildren(elem).some(
             (elem: Record<string, unknown>) =>
                 // FIXME: `getText` call is potentially expensive.
@@ -351,15 +347,16 @@ export const pseudos = {
         const siblings = adapter.getSiblings(elem);
 
         for (let i = 0; i < siblings.length; i++) {
-            if (adapter.isTag(siblings[i]) && siblings[i] !== elem)
+            if (adapter.isTag(siblings[i]) && siblings[i] !== elem) {
                 return false;
+            }
         }
 
         return true;
     },
 
     //:matches(a, area, link)[href]
-    link(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    link(elem, adapter) {
         return adapter.hasAttrib(elem, "href");
     },
     visited: falseFunc, // Valid implementation
@@ -369,7 +366,7 @@ export const pseudos = {
     //to consider: :target
 
     //:matches([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
-    selected(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    selected(elem, adapter) {
         if (adapter.hasAttrib(elem, "selected")) return true;
         else if (adapter.getName(elem) !== "option") return false;
 
@@ -407,39 +404,39 @@ export const pseudos = {
     //  optgroup[disabled] > option),
     // fieldset[disabled] * //TODO not child of first <legend>
     //)
-    disabled(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    disabled(elem, adapter) {
         return adapter.hasAttrib(elem, "disabled");
     },
-    enabled(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    enabled(elem, adapter) {
         return !adapter.hasAttrib(elem, "disabled");
     },
     //:matches(:matches(:radio, :checkbox)[checked], :selected) (TODO menuitem)
-    checked(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    checked(elem, adapter) {
         return (
             adapter.hasAttrib(elem, "checked") ||
             pseudos.selected(elem, adapter)
         );
     },
     //:matches(input, select, textarea)[required]
-    required(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    required(elem, adapter) {
         return adapter.hasAttrib(elem, "required");
     },
     //:matches(input, select, textarea):not([required])
-    optional(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    optional(elem, adapter) {
         return !adapter.hasAttrib(elem, "required");
     },
 
     //jQuery extensions
 
     //:not(:empty)
-    parent(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    parent(elem, adapter) {
         return !pseudos.empty(elem, adapter);
     },
     //:matches(h1, h2, h3, h4, h5, h6)
     header: namePseudo(["h1", "h2", "h3", "h4", "h5", "h6"]),
 
     //:matches(button, input[type=button])
-    button(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
+    button(elem, adapter) {
         const name = adapter.getName(elem);
         return (
             name === "button" ||
@@ -450,12 +447,10 @@ export const pseudos = {
     //:matches(input, textarea, select, button)
     input: namePseudo(["input", "textarea", "select", "button"]),
     //input:matches(:not([type!='']), [type='text' i])
-    text(elem: Record<string, unknown>, adapter: InternalAdapter): boolean {
-        let attr;
+    text(elem, adapter) {
         return (
             adapter.getName(elem) === "input" &&
-            (!(attr = adapter.getAttributeValue(elem, "type")) ||
-                attr.toLowerCase() === "text")
+            adapter.getAttributeValue(elem, "type")?.toLowerCase() === "text"
         );
     },
 };
@@ -504,10 +499,10 @@ export function compile(
     context?: Array<Record<string, unknown>>
 ): CompiledQuery {
     const { name } = data;
-    const subselect = data.data;
+    const subselect = data.data as string;
     const { adapter } = options;
 
-    if (options?.strict && !reCSS3.test(name)) {
+    if (options.strict && !reCSS3.test(name)) {
         throw new Error(`:${name} isn't part of CSS3`);
     }
 

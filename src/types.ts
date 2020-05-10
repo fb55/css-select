@@ -80,7 +80,7 @@ import * as DomUtils from "domutils";
 import { Node, Element } from "domhandler";
 
 // Ensure that DomUtils (the default adapter) matches the given specification
-// DomUtils as Adapter<Node, Element>;
+DomUtils as Adapter<Node, Element>;
 
 // TODO default types to the domutil/htmlparser2 types
 export interface Options<Node, ElementNode extends Node> {

@@ -1,4 +1,4 @@
-const procedure: { [key: string]: number } = {
+const procedure: Record<string, number> = {
     universal: 50,
     tag: 30,
     attribute: 1,

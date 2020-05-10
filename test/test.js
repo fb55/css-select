@@ -13,11 +13,13 @@ describe("qwery", () => {
 });
 
 function exportsRun(mod) {
-    Object.keys(mod).forEach((name) => {
+    for (const name of Object.keys(mod)) {
         if (typeof mod[name] === "object") {
             describe(name, () => {
                 exportsRun(mod[name]);
             });
-        } else it(name, mod[name]);
-    });
+        } else {
+            it(name, mod[name]);
+        }
+    }
 }
