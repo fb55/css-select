@@ -37,7 +37,7 @@
         "prettier": "^2.0.5"
     },
     "scripts": {
-        "test": "mocha && npm run lint",
+        "test": "mocha --parallel && npm run lint",
         "lint": "eslint .",
         "lcov": "istanbul cover _mocha --report lcovonly -- -R spec",
         "coveralls": "npm run lint && npm run lcov && (cat coverage/lcov.info | coveralls || exit 0)"
