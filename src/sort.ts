@@ -1,8 +1,8 @@
 /*
-	sort the parts of the passed selector,
-	as there is potential for optimization
-	(some types of selectors are faster than others)
-*/
+ *Sort the parts of the passed selector,
+ *as there is potential for optimization
+ *(some types of selectors are faster than others)
+ */
 
 import { Selector } from "css-what";
 import procedure from "./procedure";
@@ -18,7 +18,7 @@ const attributes: { [key: string]: number } = {
     element: 4,
 };
 
-export default function sortByProcedure(arr: Selector[]) {
+export default function sortByProcedure(arr: Selector[]): void {
     const procs = arr.map(getProcedure);
     for (let i = 1; i < arr.length; i++) {
         const procNew = procs[i];
@@ -35,36 +35,38 @@ export default function sortByProcedure(arr: Selector[]) {
     }
 }
 
-function getProcedure(token: Selector) {
+function getProcedure(token: Selector): number {
     let proc = procedure[token.type];
 
     if (token.type === "attribute") {
         proc = attributes[token.action];
 
         if (proc === attributes.equals && token.name === "id") {
-            //prefer ID selectors (eg. #ID)
+            // Prefer ID selectors (eg. #ID)
             proc = 9;
         }
 
         if (token.ignoreCase) {
-            //ignoreCase adds some overhead, prefer "normal" token
-            //this is a binary operation, to ensure it's still an int
+            /*
+             * IgnoreCase adds some overhead, prefer "normal" token
+             * this is a binary operation, to ensure it's still an int
+             */
             proc >>= 1;
         }
     } else if (token.type === "pseudo") {
         if (!token.data) {
             proc = 3;
         } else if (token.name === "has" || token.name === "contains") {
-            proc = 0; //expensive in any case
+            proc = 0; // Expensive in any case
         } else if (Array.isArray(token.data)) {
             // "matches" and "not"
             proc = 0;
 
             for (let i = 0; i < token.data.length; i++) {
-                //TODO better handling of complex selectors
+                // TODO better handling of complex selectors
                 if (token.data[i].length !== 1) continue;
                 const cur = getProcedure(token.data[i][0]);
-                //avoid executing :has or :contains
+                // Avoid executing :has or :contains
                 if (cur === 0) {
                     proc = 0;
                     break;

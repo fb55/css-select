@@ -4,17 +4,17 @@ import { CompiledQuery, InternalOptions } from "./types";
 import { TagSelector, Traversal } from "css-what";
 
 /*
-	All available rules
-*/
+ *All available rules
+ */
 export default {
-    "pseudo-element"() {
+    "pseudo-element"(): void {
         throw new Error("Pseudo-elements are not supported by css-select");
     },
 
     attribute,
     pseudo,
 
-    //tags
+    // Tags
     tag(
         next: CompiledQuery,
         data: TagSelector,
@@ -28,7 +28,7 @@ export default {
         };
     },
 
-    //traversal
+    // Traversal
     descendant(
         next: CompiledQuery,
         _data: Traversal,
@@ -41,8 +41,9 @@ export default {
 
         return function descendant(elem: Record<string, unknown>): boolean {
             let found = false;
+            let current: Record<string, unknown> | null = elem;
 
-            while (!found && (elem = adapter.getParent(elem))) {
+            while (!found && (current = adapter.getParent(current))) {
                 if (!isFalseCache || !isFalseCache.has(elem)) {
                     found = next(elem);
                     if (!found && isFalseCache) {
@@ -64,8 +65,9 @@ export default {
         // Include element itself, only used while querying an array
         return function descendant(elem: Record<string, unknown>): boolean {
             let found = next(elem);
+            let current: Record<string, unknown> | null = elem;
 
-            while (!found && (elem = adapter.getParent(elem))) {
+            while (!found && (current = adapter.getParent(current))) {
                 found = next(elem);
             }
 
@@ -77,7 +79,7 @@ export default {
         _data: Traversal,
         options: InternalOptions
     ): CompiledQuery {
-        if (options?.strict) {
+        if (options.strict) {
             throw new Error("Parent selector isn't part of CSS3");
         }
 

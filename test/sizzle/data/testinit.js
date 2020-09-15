@@ -6,7 +6,7 @@ const path = require("path");
 const docPath = path.join(__dirname, "index.html");
 let document = null;
 
-//in this module, the only use-case is to compare arrays of
+// In this module, the only use-case is to compare arrays of
 function deepEqual(a, b, msg) {
     try {
         assert.deepEqual(decircularize(a), decircularize(b), msg);

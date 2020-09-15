@@ -1,6 +1,6 @@
 /*
-	Compiles a selector to an executable function
-*/
+ *Compiles a selector to an executable function
+ */
 
 import { parse, Selector } from "css-what";
 import { trueFunc, falseFunc } from "boolbase";
@@ -15,7 +15,7 @@ export function compile(
     selector: string,
     options: InternalOptions,
     context?: Array<Record<string, unknown>>
-) {
+): CompiledQuery {
     const next = compileUnsafe(selector, options, context);
     return wrap(next, options);
 }
@@ -33,7 +33,7 @@ export function compileUnsafe(
     selector: string,
     options: InternalOptions,
     context?: Array<Record<string, unknown>>
-) {
+): CompiledQuery {
     const token = parse(selector, options);
     return compileToken(token, options, context);
 }
@@ -53,21 +53,23 @@ const FLEXIBLE_DESCENDANT_TOKEN: Selector = { type: "_flexibleDescendant" };
 const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
 const PLACEHOLDER_ELEMENT = {};
 
-//CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector
-//http://www.w3.org/TR/selectors4/#absolutizing
+/*
+ * CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector
+ * http://www.w3.org/TR/selectors4/#absolutizing
+ */
 function absolutize(
     token: Selector[][],
     { adapter }: InternalOptions,
     context?: Array<Record<string, unknown>>
 ) {
-    //TODO better check if context is document
+    // TODO better check if context is document
     const hasContext = !!context?.every(
         (e) => e === PLACEHOLDER_ELEMENT || !!adapter.getParent(e)
     );
 
     for (const t of token) {
         if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
-            //don't continue in else branch
+            // Don't continue in else branch
         } else if (hasContext && !t.some(includesScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
@@ -103,7 +105,7 @@ export function compileToken(
                 const [first, second] = rules;
 
                 if (first.type !== "pseudo" || first.name !== "scope") {
-                    // ignore
+                    // Ignore
                 } else if (isArrayContext && second.type === "descendant") {
                     rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
                 } else if (
@@ -159,9 +161,11 @@ function containsTraversal(t: Selector[]): boolean {
     return t.some(isTraversal);
 }
 
-//:not, :has and :matches have to compile selectors
-//doing this in src/pseudos.ts would lead to circular dependencies,
-//so we add them here
+/*
+ * :not, :has and :matches have to compile selectors
+ * doing this in src/pseudos.ts would lead to circular dependencies,
+ * so we add them here
+ */
 filters.not = function (
     next: CompiledQuery,
     token: Selector[][],
@@ -204,7 +208,7 @@ filters.has = function (
         adapter,
     };
 
-    //FIXME: Uses an array as a pointer to the current element (side effects)
+    // FIXME: Uses an array as a pointer to the current element (side effects)
     const context = token.some(containsTraversal)
         ? [PLACEHOLDER_ELEMENT]
         : undefined;

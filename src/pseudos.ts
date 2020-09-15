@@ -1,15 +1,15 @@
 /*
-	pseudo selectors
-
-	---
-
-	they are available in two forms:
-	* filters called when the selector
-	  is compiled and return a function
-	  that needs to return next()
-	* pseudos get called on execution
-	  they need to return a boolean
-*/
+ *Pseudo selectors
+ *
+ *---
+ *
+ *they are available in two forms:
+ * filters called when the selector
+ *  is compiled and return a function
+ *  that needs to return next()
+ * pseudos get called on execution
+ *  they need to return a boolean
+ */
 
 import getNCheck from "nth-check";
 import { trueFunc, falseFunc } from "boolbase";
@@ -70,7 +70,7 @@ export const filters = {
         };
     },
 
-    //location specific methods
+    // Location specific methods
     "nth-child"(
         next: CompiledQuery,
         rule: string,
@@ -136,8 +136,11 @@ export const filters = {
             for (let i = 0; i < siblings.length; i++) {
                 if (adapter.isTag(siblings[i])) {
                     if (siblings[i] === elem) break;
-                    if (adapter.getName(siblings[i]) === adapter.getName(elem))
+                    if (
+                        adapter.getName(siblings[i]) === adapter.getName(elem)
+                    ) {
                         pos++;
+                    }
                 }
             }
 
@@ -161,8 +164,11 @@ export const filters = {
             for (let i = siblings.length - 1; i >= 0; i--) {
                 if (adapter.isTag(siblings[i])) {
                     if (siblings[i] === elem) break;
-                    if (adapter.getName(siblings[i]) === adapter.getName(elem))
+                    if (
+                        adapter.getName(siblings[i]) === adapter.getName(elem)
+                    ) {
                         pos++;
+                    }
                 }
             }
 
@@ -170,7 +176,7 @@ export const filters = {
         };
     },
 
-    //TODO determine the actual root element
+    // TODO determine the actual root element
     root(
         next: CompiledQuery,
         _rule: string,
@@ -188,7 +194,7 @@ export const filters = {
         const { adapter } = options;
 
         if (!context || context.length === 0) {
-            //equivalent to :root
+            // Equivalent to :root
             return filters.root(next, rule, options);
         }
 
@@ -196,21 +202,22 @@ export const filters = {
             a: Record<string, unknown>,
             b: Record<string, unknown>
         ) {
-            if (typeof adapter.equals === "function")
+            if (typeof adapter.equals === "function") {
                 return adapter.equals(a, b);
+            }
 
             return a === b;
         }
 
         if (context.length === 1) {
-            //NOTE: can't be unpacked, as :has uses this for side-effects
+            // NOTE: can't be unpacked, as :has uses this for side-effects
             return (elem) => equals(context[0], elem) && next(elem);
         }
 
         return (elem) => context.includes(elem) && next(elem);
     },
 
-    //jQuery extensions (others follow as pseudos)
+    // JQuery extensions (others follow as pseudos)
     checkbox: getAttribFunc("type", "checkbox"),
     file: getAttribFunc("type", "file"),
     password: getAttribFunc("type", "password"),
@@ -245,19 +252,7 @@ export const filters = {
     },
 };
 
-//helper methods
-function getFirstElement(
-    elems: Array<Record<string, unknown>>,
-    adapter: InternalAdapter
-): Record<string, unknown> | null {
-    for (let i = 0; elems && i < elems.length; i++) {
-        if (adapter.isTag(elems[i])) return elems[i];
-    }
-
-    return null;
-}
-
-//while filters are precompiled, pseudos get called when they are needed
+// While filters are precompiled, pseudos get called when they are needed
 export const pseudos: Record<
     string,
     (elem: Record<string, unknown>, adapter: InternalAdapter) => boolean
@@ -274,7 +269,10 @@ export const pseudos: Record<
         elem: Record<string, unknown>,
         adapter: InternalAdapter
     ): boolean {
-        return getFirstElement(adapter.getSiblings(elem), adapter) === elem;
+        return (
+            adapter.getSiblings(elem).find((elem) => adapter.isTag(elem)) ===
+            elem
+        );
     },
     "last-child"(
         elem: Record<string, unknown>,
@@ -355,22 +353,24 @@ export const pseudos: Record<
         return true;
     },
 
-    //:matches(a, area, link)[href]
+    // :matches(a, area, link)[href]
     link(elem, adapter) {
         return adapter.hasAttrib(elem, "href");
     },
     visited: falseFunc, // Valid implementation
-    //TODO: :any-link once the name is finalized (as an alias of :link)
+    // TODO: :any-link once the name is finalized (as an alias of :link)
 
-    //forms
-    //to consider: :target
+    /*
+     * Forms
+     * to consider: :target
+     */
 
-    //:matches([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
+    // :matches([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
     selected(elem, adapter) {
         if (adapter.hasAttrib(elem, "selected")) return true;
         else if (adapter.getName(elem) !== "option") return false;
 
-        //the first <option> in a <select> is also selected
+        // The first <option> in a <select> is also selected
         const parent = adapter.getParent(elem);
 
         if (
@@ -398,44 +398,46 @@ export const pseudos: Record<
 
         return sawElem;
     },
-    //https://html.spec.whatwg.org/multipage/scripting.html#disabled-elements
-    //:matches(
-    //  :matches(button, input, select, textarea, menuitem, optgroup, option)[disabled],
-    //  optgroup[disabled] > option),
-    // fieldset[disabled] * //TODO not child of first <legend>
-    //)
+    /*
+     * https://html.spec.whatwg.org/multipage/scripting.html#disabled-elements
+     * :matches(
+     *   :matches(button, input, select, textarea, menuitem, optgroup, option)[disabled],
+     *   optgroup[disabled] > option),
+     *  fieldset[disabled] * //TODO not child of first <legend>
+     * )
+     */
     disabled(elem, adapter) {
         return adapter.hasAttrib(elem, "disabled");
     },
     enabled(elem, adapter) {
         return !adapter.hasAttrib(elem, "disabled");
     },
-    //:matches(:matches(:radio, :checkbox)[checked], :selected) (TODO menuitem)
+    // :matches(:matches(:radio, :checkbox)[checked], :selected) (TODO menuitem)
     checked(elem, adapter) {
         return (
             adapter.hasAttrib(elem, "checked") ||
             pseudos.selected(elem, adapter)
         );
     },
-    //:matches(input, select, textarea)[required]
+    // :matches(input, select, textarea)[required]
     required(elem, adapter) {
         return adapter.hasAttrib(elem, "required");
     },
-    //:matches(input, select, textarea):not([required])
+    // :matches(input, select, textarea):not([required])
     optional(elem, adapter) {
         return !adapter.hasAttrib(elem, "required");
     },
 
-    //jQuery extensions
+    // JQuery extensions
 
-    //:not(:empty)
+    // :not(:empty)
     parent(elem, adapter) {
         return !pseudos.empty(elem, adapter);
     },
-    //:matches(h1, h2, h3, h4, h5, h6)
+    // :matches(h1, h2, h3, h4, h5, h6)
     header: namePseudo(["h1", "h2", "h3", "h4", "h5", "h6"]),
 
-    //:matches(button, input[type=button])
+    // :matches(button, input[type=button])
     button(elem, adapter) {
         const name = adapter.getName(elem);
         return (
@@ -444,9 +446,9 @@ export const pseudos: Record<
                 adapter.getAttributeValue(elem, "type") === "button")
         );
     },
-    //:matches(input, textarea, select, button)
+    // :matches(input, textarea, select, button)
     input: namePseudo(["input", "textarea", "select", "button"]),
-    //input:matches(:not([type!='']), [type='text' i])
+    // Input:matches(:not([type!='']), [type='text' i])
     text(elem, adapter) {
         return (
             adapter.getName(elem) === "input" &&
@@ -489,7 +491,7 @@ function verifyArgs(
     }
 }
 
-//FIXME this feels hacky
+// FIXME this feels hacky
 const reCSS3 = /^(?:(?:nth|last|first|only)-(?:child|of-type)|root|empty|(?:en|dis)abled|checked|not)$/;
 
 export function compile(
@@ -520,7 +522,6 @@ export function compile(
             : next === trueFunc
             ? (elem) => pseudo(elem, adapter, subselect)
             : (elem) => pseudo(elem, adapter, subselect) && next(elem);
-    } else {
-        throw new Error(`unmatched pseudo-class :${name}`);
     }
+    throw new Error(`unmatched pseudo-class :${name}`);
 }

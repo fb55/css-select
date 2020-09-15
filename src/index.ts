@@ -11,13 +11,17 @@ import {
     Predicate,
 } from "./types";
 
+export type { Options };
+
 const defaultOptions = { adapter: DomUtils };
 
 function convertOptionFormats<Node, ElementNode extends Node>(
     options?: Options<Node, ElementNode>
 ): InternalOptions {
-    // We force one format of options to the other one.
-    // @ts-ignore
+    /*
+     * We force one format of options to the other one.
+     * @ts-ignore
+     */
     const opts: InternalOptions = options ?? defaultOptions;
     opts.adapter = opts.adapter || DomUtils;
 
@@ -114,11 +118,13 @@ function getSelectorFunc<T>(
                 Array.isArray(elems) ? elems : []
             );
         }
-        // Add siblings if the query requires them.
-        // See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
-        // @ts-ignore
+        /*
+         * Add siblings if the query requires them.
+         * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
+         * @ts-ignore
+         */
         if (query.shouldTestNextSiblings) {
-            elems = appendNextSiblings(opts?.context ?? elems, opts.adapter);
+            elems = appendNextSiblings(opts.context ?? elems, opts.adapter);
         }
 
         const filteredElements = Array.isArray(elems)
@@ -161,7 +167,8 @@ function appendNextSiblings(
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
  * @returns All matching elements.
- **/
+ *
+ */
 export const selectAll = getSelectorFunc(
     (query, elems: Array<Record<string, unknown>>, options: InternalOptions) =>
         query === falseFunc || !elems || elems.length === 0

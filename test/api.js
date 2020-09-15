@@ -26,7 +26,7 @@ describe("API", () => {
         it("in `is`", () => {
             assert(CSSselect.is(dom, (elem) => elem.attribs.id === "foo"));
         });
-        //probably more cases should be added here
+        // Probably more cases should be added here
     });
 
     describe("selectAll", () => {
@@ -111,7 +111,7 @@ describe("API", () => {
             assert.equal(match, dom);
         });
         it("should take shortcuts when applicable", () => {
-            //TODO this is currently only visible in coverage reports
+            // TODO this is currently only visible in coverage reports
             let match = CSSselect.selectOne(bools.falseFunc, [dom]);
             assert.equal(match, null);
             match = CSSselect.selectOne("*", []);

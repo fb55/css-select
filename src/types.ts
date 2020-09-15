@@ -1,7 +1,7 @@
 export type Predicate<Value> = (v: Value) => boolean;
 export interface Adapter<Node, ElementNode extends Node> {
     /**
-     *  is the node a tag?
+     *  Is the node a tag?
      */
     isTag: (node: Node) => node is ElementNode;
 
@@ -11,29 +11,29 @@ export interface Adapter<Node, ElementNode extends Node> {
     existsOne: (test: Predicate<Node>, elems: Node[]) => boolean;
 
     /**
-     * get the attribute value.
+     * Get the attribute value.
      */
-    getAttributeValue: (elem: ElementNode, name: string) => string;
+    getAttributeValue: (elem: ElementNode, name: string) => string | undefined;
 
     /**
-     * get the node's children
+     * Get the node's children
      */
     getChildren: (node: Node) => Node[];
 
     /**
-     * get the name of the tag
+     * Get the name of the tag
      */
     getName: (elem: ElementNode) => string;
 
     /**
-     * get the parent of the node
+     * Get the parent of the node
      */
-    getParent: (node: Node) => Node;
+    getParent: (node: Node) => Node | null;
 
     /*
-    Get the siblings of the node. Note that unlike jQuery's `siblings` method,
-    this is expected to include the current node as well
-    */
+     *Get the siblings of the node. Note that unlike jQuery's `siblings` method,
+     *this is expected to include the current node as well
+     */
     getSiblings: (node: Node) => Node[];
 
     /*
@@ -47,19 +47,19 @@ export interface Adapter<Node, ElementNode extends Node> {
     hasAttrib: (elem: ElementNode, name: string) => boolean;
 
     /**
-     * takes an array of nodes, and removes any duplicates, as well as any
+     * Takes an array of nodes, and removes any duplicates, as well as any
      * nodes whose ancestors are also in the array.
      */
     removeSubsets: (nodes: Node[]) => Node[];
 
     /**
-     * finds all of the element nodes in the array that match the test predicate,
+     * Finds all of the element nodes in the array that match the test predicate,
      * as well as any of their children that match it.
      */
     findAll: (test: Predicate<ElementNode>, nodes: Node[]) => ElementNode[];
 
     /**
-     * finds the first node in the array that matches the test predicate, or one
+     * Finds the first node in the array that matches the test predicate, or one
      * of its children.
      */
     findOne: (
@@ -68,11 +68,11 @@ export interface Adapter<Node, ElementNode extends Node> {
     ) => ElementNode | null;
 
     /**
-     The adapter can also optionally include an equals method, if your DOM
-    structure needs a custom equality test to compare two objects which refer
-    to the same underlying node. If not provided, `css-select` will fall back to
-    `a === b`.
-    */
+     *The adapter can also optionally include an equals method, if your DOM
+     *structure needs a custom equality test to compare two objects which refer
+     *to the same underlying node. If not provided, `css-select` will fall back to
+     *`a === b`.
+     */
     equals?: (a: Node, b: Node) => boolean;
 }
 

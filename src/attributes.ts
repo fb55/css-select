@@ -2,12 +2,12 @@ import { falseFunc } from "boolbase";
 import { CompiledQuery, InternalOptions } from "./types";
 import { AttributeSelector } from "css-what";
 
-//https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
+// https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
 /*
-	attribute selectors
-*/
+ *Attribute selectors
+ */
 const attributeRules: Record<
     string,
     (
