@@ -7,7 +7,7 @@ import {
     Options,
     InternalOptions,
     Query,
-    InternalAdapter,
+    Adapter,
     Predicate,
 } from "./types";
 
@@ -17,12 +17,12 @@ const defaultOptions = { adapter: DomUtils };
 
 function convertOptionFormats<Node, ElementNode extends Node>(
     options?: Options<Node, ElementNode>
-): InternalOptions {
+): InternalOptions<Node, ElementNode> {
     /*
      * We force one format of options to the other one.
-     * @ts-ignore
      */
-    const opts: InternalOptions = options ?? defaultOptions;
+    // @ts-ignore
+    const opts: InternalOptions<Node, ElementNode> = options ?? defaultOptions;
     opts.adapter = opts.adapter || DomUtils;
 
     return opts;
@@ -31,7 +31,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
 function wrapCompile<Selector, Node, ElementNode extends Node>(
     func: (
         selector: Selector,
-        options: InternalOptions,
+        options: InternalOptions<Node, ElementNode>,
         context?: Node[]
     ) => CompiledQuery
 ) {
@@ -94,22 +94,22 @@ export const compile = wrapCompile(compileRaw);
 export const _compileUnsafe = wrapCompile(compileUnsafe);
 export const _compileToken = wrapCompile(compileToken);
 
-function getSelectorFunc<T>(
+function getSelectorFunc<Node, ElementNode extends Node, T>(
     searchFunc: (
-        query: Predicate<Record<string, unknown>>,
-        elems: Array<Record<string, unknown>>,
-        options: InternalOptions
+        query: Predicate<Node>,
+        elems: Array<Node>,
+        options: InternalOptions<Node, ElementNode>
     ) => T
 ) {
-    return function select<Node, ElementNode extends Node>(
+    return function select(
         query: Query,
         elements: Node[] | Node,
         options?: Options<Node, ElementNode>
     ): T {
         const opts = convertOptionFormats(options);
         let elems:
-            | Array<Record<string, unknown>>
-            | Record<string, unknown> = elements;
+            | Array<Node>
+            | Node = elements;
 
         if (typeof query !== "function") {
             query = _compileUnsafe(
@@ -134,10 +134,10 @@ function getSelectorFunc<T>(
     };
 }
 
-function getNextSiblings(
-    elem: Record<string, unknown>,
-    adapter: InternalAdapter
-) {
+function getNextSiblings<Node, ElementNode extends Node>(
+    elem: Node,
+    adapter: Adapter<Node, ElementNode>
+): Node[] {
     let siblings = adapter.getSiblings(elem);
     if (!Array.isArray(siblings)) return [];
     siblings = siblings.slice(0);
@@ -145,10 +145,10 @@ function getNextSiblings(
     return siblings;
 }
 
-function appendNextSiblings(
-    elem: Array<Record<string, unknown>> | Record<string, unknown>,
-    adapter: InternalAdapter
-) {
+function appendNextSiblings<Node, ElementNode extends Node>(
+    elem: Node | Node[],
+    adapter: Adapter<Node, ElementNode>
+): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
     const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
 

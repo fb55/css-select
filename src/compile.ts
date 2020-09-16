@@ -11,29 +11,29 @@ import { filters, pseudos } from "./pseudos";
 import { CompiledQuery, InternalOptions } from "./types";
 import { Traversal } from "css-what";
 
-export function compile(
+export function compile<Node, ElementNode extends Node>(
     selector: string,
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
+): CompiledQuery<Node> {
     const next = compileUnsafe(selector, options, context);
     return wrap(next, options);
 }
 
 export const Pseudos = { filters, pseudos };
 
-function wrap(
-    next: CompiledQuery,
-    { adapter }: InternalOptions
-): CompiledQuery {
-    return (elem) => adapter.isTag(elem) && next(elem);
+function wrap<Node, ElementNode extends Node>(
+    next: CompiledQuery<Node>,
+    { adapter }: InternalOptions<Node, ElementNode>
+): CompiledQuery<Node> {
+    return (elem: Node) => adapter.isTag(elem) && next(elem);
 }
 
-export function compileUnsafe(
+export function compileUnsafe<Node, ElementNode extends Node>(
     selector: string,
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
+): CompiledQuery<Node> {
     const token = parse(selector, options);
     return compileToken(token, options, context);
 }
@@ -57,10 +57,10 @@ const PLACEHOLDER_ELEMENT = {};
  * CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector
  * http://www.w3.org/TR/selectors4/#absolutizing
  */
-function absolutize(
+function absolutize<Node, ElementNode extends Node>(
     token: Selector[][],
-    { adapter }: InternalOptions,
-    context?: Array<Record<string, unknown>>
+    { adapter }: InternalOptions<Node, ElementNode>,
+    context?: Node[]
 ) {
     // TODO better check if context is document
     const hasContext = !!context?.every(
@@ -80,10 +80,10 @@ function absolutize(
     }
 }
 
-export function compileToken(
+export function compileToken<Node, ElementNode extends Node>(
     token: Selector[][],
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
 ) {
     token = token.filter((t) => t.length > 0);
 
@@ -130,11 +130,11 @@ function isTraversal(t: Selector): t is Traversal {
     return procedure[t.type] < 0;
 }
 
-function compileRules(
+function compileRules<Node, ElementNode extends Node>(
     rules: Selector[],
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
+): CompiledQuery<Node> {
     return rules.reduce(
         (previous, rule) =>
             previous === falseFunc
@@ -144,7 +144,7 @@ function compileRules(
     );
 }
 
-function reduceRules(a: CompiledQuery, b: CompiledQuery): CompiledQuery {
+function reduceRules(a: CompiledQuery, b: CompiledQuery): CompiledQuery<Node> {
     if (b === falseFunc || a === trueFunc) {
         return a;
     }
@@ -166,12 +166,12 @@ function containsTraversal(t: Selector[]): boolean {
  * doing this in src/pseudos.ts would lead to circular dependencies,
  * so we add them here
  */
-filters.not = function (
-    next: CompiledQuery,
+filters.not = function not<Node, ElementNode extends Node>(
+    next: CompiledQuery<Node>,
     token: Selector[][],
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
+): CompiledQuery<Node> {
     const opts = {
         xmlMode: !!options.xmlMode,
         strict: !!options.strict,
@@ -196,11 +196,11 @@ filters.not = function (
     };
 };
 
-filters.has = function (
-    next: CompiledQuery,
+filters.has = function has <Node, ElementNode extends Node>(
+    next: CompiledQuery<Node>,
     token: Selector[][],
-    options: InternalOptions
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>
+): CompiledQuery<Node> {
     const { adapter } = options;
     const opts = {
         xmlMode: options.xmlMode,
@@ -234,12 +234,12 @@ filters.has = function (
         next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
 };
 
-filters.matches = function (
-    next: CompiledQuery,
+filters.matches = function matches <Node, ElementNode extends Node>(
+    next: CompiledQuery<Node>,
     token: Selector[][],
-    options: InternalOptions,
-    context?: Array<Record<string, unknown>>
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[]
+): CompiledQuery<Node> {
     const opts = {
         xmlMode: options.xmlMode,
         strict: options.strict,
@@ -247,5 +247,5 @@ filters.matches = function (
         rootFunc: next,
     };
 
-    return compileToken(token, opts, context);
+    return compileToken<Node, ElementNode>(token, opts, context);
 };

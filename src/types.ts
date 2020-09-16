@@ -109,14 +109,10 @@ export interface Options<Node, ElementNode extends Node> {
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects
-export type InternalAdapter = Adapter<
-    Record<string, unknown>,
-    Record<string, unknown>
->;
-export type InternalOptions = Options<
-    Record<string, unknown>,
-    Record<string, unknown>
-> & { adapter: InternalAdapter };
+export type InternalOptions<Node, ElementNode extends Node> = Options<
+    Node,
+    ElementNode
+> & { adapter: Adapter<Node, ElementNode> };
 
-export type CompiledQuery = (node: Record<string, unknown>) => boolean;
-export type Query = string | CompiledQuery;
+export type CompiledQuery<Node> = (node: Node) => boolean;
+export type Query<Node> = string | CompiledQuery<Node>;
