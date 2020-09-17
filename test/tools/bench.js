@@ -6,7 +6,7 @@ const { CSSselect } = helper;
 const { compile } = CSSselect;
 const dom = helper.getDefaultDom();
 
-//console.log("Parsing took:", ben(1e5, function(){compile(testString);}));
+// console.log("Parsing took:", ben(1e5, function(){compile(testString);}));
 const compiled = compile(testString);
 console.log(
     "Executing took:",

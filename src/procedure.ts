@@ -1,4 +1,6 @@
-const procedure: Record<string, number> = {
+import type { Selector } from "css-what";
+
+const procedure: Record<Selector["type"], number> = {
     universal: 50,
     tag: 30,
     attribute: 1,
@@ -8,6 +10,7 @@ const procedure: Record<string, number> = {
     parent: -1,
     sibling: -1,
     adjacent: -1,
+    "pseudo-element": -100, // Here to make TS happy
 };
 
 export default procedure;

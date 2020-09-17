@@ -1,152 +1,127 @@
 import { compile as attribute } from "./attributes";
 import { compile as pseudo } from "./pseudos";
 import { CompiledQuery, InternalOptions } from "./types";
-import { TagSelector, Traversal } from "css-what";
+import type { Selector } from "css-what";
 
 /*
- *All available rules
+ * All available rules
  */
-export default {
-    "pseudo-element"(): void {
-        throw new Error("Pseudo-elements are not supported by css-select");
-    },
 
-    attribute,
-    pseudo,
+export function compileGeneralSelector<Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
+    selector: Selector,
+    options: InternalOptions<Node, ElementNode>,
+    context: ElementNode[] | undefined
+): CompiledQuery<ElementNode> {
+    const { adapter } = options;
 
-    // Tags
-    tag(
-        next: CompiledQuery,
-        data: TagSelector,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { name } = data;
-        const { adapter } = options;
+    switch (selector.type) {
+        case "pseudo-element":
+            throw new Error("Pseudo-elements are not supported by css-select");
 
-        return function tag(elem: Record<string, unknown>): boolean {
-            return adapter.getName(elem) === name && next(elem);
-        };
-    },
+        case "attribute":
+            return attribute(next, selector, options);
+        case "pseudo":
+            return pseudo(next, selector, options, context);
 
-    // Traversal
-    descendant(
-        next: CompiledQuery,
-        _data: Traversal,
-        options: InternalOptions
-    ): CompiledQuery {
-        const isFalseCache =
-            // eslint-disable-next-line no-undef
-            typeof WeakSet !== "undefined" ? new WeakSet() : null;
-        const { adapter } = options;
+        // Tags
+        case "tag":
+            return function tag(elem: ElementNode): boolean {
+                return adapter.getName(elem) === selector.name && next(elem);
+            };
 
-        return function descendant(elem: Record<string, unknown>): boolean {
-            let found = false;
-            let current: Record<string, unknown> | null = elem;
+        // Traversal
+        case "descendant":
+            if (typeof WeakSet === "undefined") {
+                return function descendant(elem: ElementNode): boolean {
+                    let current: ElementNode | null = elem;
 
-            while (!found && (current = adapter.getParent(current))) {
-                if (!isFalseCache || !isFalseCache.has(elem)) {
-                    found = next(elem);
-                    if (!found && isFalseCache) {
+                    while ((current = adapter.getParent(current))) {
+                        if (next(elem)) return true;
+                    }
+
+                    return false;
+                };
+            }
+
+            // @ts-expect-error `ElementNode` is not extending object
+            // eslint-disable-next-line no-case-declarations
+            const isFalseCache = new WeakSet<ElementNode>();
+            return function descendant(elem: ElementNode): boolean {
+                let current: ElementNode | null = elem;
+
+                while ((current = adapter.getParent(current))) {
+                    if (!isFalseCache.has(elem)) {
+                        if (next(elem)) return true;
                         isFalseCache.add(elem);
                     }
                 }
-            }
 
-            return found;
-        };
-    },
-    _flexibleDescendant(
-        next: CompiledQuery,
-        _data: Record<string, unknown>,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { adapter } = options;
+                return false;
+            };
+        // @ts-ignore
+        case "_flexibleDescendant":
+            // Include element itself, only used while querying an array
+            return function descendant(elem: ElementNode): boolean {
+                let found = next(elem);
+                let current: ElementNode | null = elem;
 
-        // Include element itself, only used while querying an array
-        return function descendant(elem: Record<string, unknown>): boolean {
-            let found = next(elem);
-            let current: Record<string, unknown> | null = elem;
-
-            while (!found && (current = adapter.getParent(current))) {
-                found = next(elem);
-            }
-
-            return found;
-        };
-    },
-    parent(
-        next: CompiledQuery,
-        _data: Traversal,
-        options: InternalOptions
-    ): CompiledQuery {
-        if (options.strict) {
-            throw new Error("Parent selector isn't part of CSS3");
-        }
-
-        const { adapter } = options;
-
-        return function parent(elem: Record<string, unknown>): boolean {
-            return adapter.getChildren(elem).some(test);
-        };
-
-        function test(elem: Record<string, unknown>): boolean {
-            return adapter.isTag(elem) && next(elem);
-        }
-    },
-    child(
-        next: CompiledQuery,
-        _data: Traversal,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { adapter } = options;
-
-        return function child(elem: Record<string, unknown>): boolean {
-            const parent = adapter.getParent(elem);
-            return !!parent && next(parent);
-        };
-    },
-    sibling(
-        next: CompiledQuery,
-        _data: Traversal,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { adapter } = options;
-
-        return function sibling(elem: Record<string, unknown>): boolean {
-            const siblings = adapter.getSiblings(elem);
-
-            for (let i = 0; i < siblings.length; i++) {
-                if (adapter.isTag(siblings[i])) {
-                    if (siblings[i] === elem) break;
-                    if (next(siblings[i])) return true;
+                while (!found && (current = adapter.getParent(current))) {
+                    found = next(elem);
                 }
+
+                return found;
+            };
+
+        case "parent":
+            if (options.strict) {
+                throw new Error("Parent selector isn't part of CSS3");
             }
 
-            return false;
-        };
-    },
-    adjacent(
-        next: CompiledQuery,
-        _data: Traversal,
-        options: InternalOptions
-    ): CompiledQuery {
-        const { adapter } = options;
+            return function parent(elem: ElementNode): boolean {
+                return adapter
+                    .getChildren(elem)
+                    .some((elem) => adapter.isTag(elem) && next(elem));
+            };
 
-        return function adjacent(elem: Record<string, unknown>): boolean {
-            const siblings = adapter.getSiblings(elem);
-            let lastElement;
+        case "child":
+            return function child(elem: ElementNode): boolean {
+                const parent = adapter.getParent(elem);
+                return !!parent && next(parent);
+            };
 
-            for (let i = 0; i < siblings.length; i++) {
-                if (adapter.isTag(siblings[i])) {
-                    if (siblings[i] === elem) break;
-                    lastElement = siblings[i];
+        case "sibling":
+            return function sibling(elem: ElementNode): boolean {
+                const siblings = adapter.getSiblings(elem);
+
+                for (let i = 0; i < siblings.length; i++) {
+                    const currentSibling = siblings[i];
+                    if (adapter.isTag(currentSibling)) {
+                        if (currentSibling === elem) break;
+                        if (next(currentSibling)) return true;
+                    }
                 }
-            }
 
-            return !!lastElement && next(lastElement);
-        };
-    },
-    universal(next: CompiledQuery): CompiledQuery {
-        return next;
-    },
-};
+                return false;
+            };
+
+        case "adjacent":
+            return function adjacent(elem: ElementNode): boolean {
+                const siblings = adapter.getSiblings(elem);
+                let lastElement;
+
+                for (let i = 0; i < siblings.length; i++) {
+                    const currentSibling = siblings[i];
+                    if (adapter.isTag(currentSibling)) {
+                        if (currentSibling === elem) break;
+                        lastElement = currentSibling;
+                    }
+                }
+
+                return !!lastElement && next(lastElement);
+            };
+
+        case "universal":
+            return next;
+    }
+}

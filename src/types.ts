@@ -8,7 +8,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Does at least one of passed element nodes pass the test predicate?
      */
-    existsOne: (test: Predicate<Node>, elems: Node[]) => boolean;
+    existsOne: (test: Predicate<ElementNode>, elems: Node[]) => boolean;
 
     /**
      * Get the attribute value.
@@ -28,7 +28,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the parent of the node
      */
-    getParent: (node: Node) => Node | null;
+    getParent: (node: ElementNode) => ElementNode | null;
 
     /*
      *Get the siblings of the node. Note that unlike jQuery's `siblings` method,
@@ -105,14 +105,17 @@ export interface Options<Node, ElementNode extends Node> {
     /**
      * The context of the current query. Used to
      */
-    context?: Node[];
+    context?: ElementNode[];
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects
-export type InternalOptions<Node, ElementNode extends Node> = Options<
-    Node,
-    ElementNode
-> & { adapter: Adapter<Node, ElementNode> };
+export interface InternalOptions<Node, ElementNode extends Node>
+    extends Options<Node, ElementNode> {
+    adapter: Adapter<Node, ElementNode>;
+}
 
-export type CompiledQuery<Node> = (node: Node) => boolean;
-export type Query<Node> = string | CompiledQuery<Node>;
+export interface CompiledQuery<ElementNode> {
+    (node: ElementNode): boolean;
+    shouldTestNextSiblings?: boolean;
+}
+export type Query<ElementNode> = string | CompiledQuery<ElementNode>;

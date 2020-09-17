@@ -32,7 +32,7 @@ const selectors = [
     "div[class*=e]",
     "div[class|=dialog]",
     "div[class!=made_up]",
-    "div[class~=example]" /*, "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/,
+    "div[class~=example]" /* , "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/,
 ];
 
 const engines = [
@@ -42,15 +42,15 @@ const engines = [
     soupselect.select,
 ];
 
-//returns true when an error occurs
+// returns true when an error occurs
 function testResult(rule) {
     const results = engines.map((func) => func(doc, rule));
 
-    //check if both had the same result
+    // check if both had the same result
     for (let i = 1; i < results.length; i++) {
-        //TODO: might be hard to debug with more engines
+        // TODO: might be hard to debug with more engines
         if (results[i - 1].length !== results[i].length) {
-            //console.log(rule, results[i-1].length, results[i].length);
+            // console.log(rule, results[i-1].length, results[i].length);
             return true;
         }
         for (let j = 0; j < results[i].length; j++) {
@@ -60,7 +60,7 @@ function testResult(rule) {
                 }
             }
         }
-        //require("assert").deepEqual(results[i-1], results[i], rule + ": not the same elements");
+        // require("assert").deepEqual(results[i-1], results[i], rule + ": not the same elements");
     }
 
     return false;
@@ -70,11 +70,11 @@ selectors.filter(testResult).forEach((rule) => {
     print(rule, "failed!\n");
 });
 
-process.exit(0); //don't run speed tests
+process.exit(0); // don't run speed tests
 
 print("-----\n\nChecking performance\n\n");
 
-//test the speed
+// test the speed
 const ben = require("ben");
 
 function testSpeed(rule) {
@@ -87,7 +87,7 @@ function testSpeed(rule) {
             }
     );
 
-    //also add a precompiled CSSselect test
+    // also add a precompiled CSSselect test
     const compiled = CSSselect.selectAll(rule);
     results.unshift(() => CSSselect.iterate(compiled, doc));
 

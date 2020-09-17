@@ -21,11 +21,12 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     /*
      * We force one format of options to the other one.
      */
-    // @ts-ignore
-    const opts: InternalOptions<Node, ElementNode> = options ?? defaultOptions;
-    opts.adapter = opts.adapter || DomUtils;
+    // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
+    const opts: Options<Node, ElementNode> = options ?? defaultOptions;
+    // @ts-expect-error Same as above.
+    opts.adapter = opts.adapter ?? DomUtils;
 
-    return opts;
+    return opts as InternalOptions<Node, ElementNode>;
 }
 
 function wrapCompile<Selector, Node, ElementNode extends Node>(
@@ -33,7 +34,7 @@ function wrapCompile<Selector, Node, ElementNode extends Node>(
         selector: Selector,
         options: InternalOptions<Node, ElementNode>,
         context?: Node[]
-    ) => CompiledQuery
+    ) => CompiledQuery<ElementNode>
 ) {
     return function addAdapter(
         selector: Selector,
@@ -96,23 +97,21 @@ export const _compileToken = wrapCompile(compileToken);
 
 function getSelectorFunc<Node, ElementNode extends Node, T>(
     searchFunc: (
-        query: Predicate<Node>,
+        query: Predicate<ElementNode>,
         elems: Array<Node>,
         options: InternalOptions<Node, ElementNode>
     ) => T
 ) {
     return function select(
-        query: Query,
-        elements: Node[] | Node,
+        query: Query<ElementNode>,
+        elements: ElementNode[] | ElementNode,
         options?: Options<Node, ElementNode>
     ): T {
         const opts = convertOptionFormats(options);
-        let elems:
-            | Array<Node>
-            | Node = elements;
+        let elems: ElementNode[] | ElementNode = elements;
 
         if (typeof query !== "function") {
-            query = _compileUnsafe(
+            query = compileUnsafe<Node, ElementNode>(
                 query,
                 opts,
                 Array.isArray(elems) ? elems : []
@@ -121,9 +120,9 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         /*
          * Add siblings if the query requires them.
          * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
-         * @ts-ignore
          */
         if (query.shouldTestNextSiblings) {
+            // @ts-ignore
             elems = appendNextSiblings(opts.context ?? elems, opts.adapter);
         }
 
@@ -170,7 +169,11 @@ function appendNextSiblings<Node, ElementNode extends Node>(
  *
  */
 export const selectAll = getSelectorFunc(
-    (query, elems: Array<Record<string, unknown>>, options: InternalOptions) =>
+    <Node, ElementNode extends Node>(
+        query: Predicate<ElementNode>,
+        elems: Node[] | null,
+        options: InternalOptions<Node, ElementNode>
+    ) =>
         query === falseFunc || !elems || elems.length === 0
             ? []
             : options.adapter.findAll(query, elems)
@@ -185,10 +188,15 @@ export const selectAll = getSelectorFunc(
  * @see compile for supported selector queries.
  * @returns the first match, or null if there was no match.
  */
-export const selectOne = getSelectorFunc((query, elems, options) =>
-    query === falseFunc || !elems || elems.length === 0
-        ? null
-        : options.adapter.findOne(query, elems)
+export const selectOne = getSelectorFunc(
+    <Node, ElementNode extends Node>(
+        query: Predicate<ElementNode>,
+        elems: Node[] | null,
+        options: InternalOptions<Node, ElementNode>
+    ) =>
+        query === falseFunc || !elems || elems.length === 0
+            ? null
+            : options.adapter.findOne(query, elems)
 );
 
 /**
@@ -204,11 +212,13 @@ export const selectOne = getSelectorFunc((query, elems, options) =>
  */
 export function is<Node, ElementNode extends Node>(
     elem: ElementNode,
-    query: Query,
+    query: Query<ElementNode>,
     options?: Options<Node, ElementNode>
 ): boolean {
     const opts = convertOptionFormats(options);
-    return (typeof query === "function" ? query : compile(query, opts))(elem);
+    return (typeof query === "function" ? query : compileRaw(query, opts))(
+        elem
+    );
 }
 
 /**

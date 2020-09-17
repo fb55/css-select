@@ -10,19 +10,19 @@ const decircularize = require("../decircularize");
 const document = helper.getDocument(path.join(__dirname, "test.html"));
 const { CSSselect } = helper;
 
-//Prototype's `$` function
+// Prototype's `$` function
 function getById(element) {
     if (arguments.length === 1) {
         if (typeof element === "string") {
             return DomUtils.getElementById(element, document);
         }
         return element;
-    } else {
+    } 
         return Array.prototype.map.call(arguments, (elem) => getById(elem));
-    }
+    
 }
 
-//NWMatcher methods
+// NWMatcher methods
 const select = (query, doc = document) =>
     CSSselect(query, typeof doc === "string" ? select(doc) : doc);
 const match = CSSselect.is;
@@ -36,7 +36,7 @@ const validators = {
     refute: function refute(a, msg) {
         assert(!a, msg);
     },
-    assertThrowsException() {}, //not implemented
+    assertThrowsException() {}, // not implemented
 };
 
 const runner = {
@@ -62,17 +62,17 @@ const runner = {
 };
 
 const RUN_BENCHMARKS = false;
-//The tests...
+// The tests...
 (function (runner) {
     runner.addGroup("Basic Selectors").addTests(null, {
         "*"() {
-            //Universal selector
+            // Universal selector
             const results = [];
             const nodes = document.getElementsByTagName("*");
             let index = 0;
             const { length } = nodes;
             let node;
-            //Collect all element nodes, excluding comments (IE)
+            // Collect all element nodes, excluding comments (IE)
             for (; index < length; index++) {
                 if ((node = nodes[index]).tagName !== "!") {
                     results[results.length] = node;
@@ -85,7 +85,7 @@ const RUN_BENCHMARKS = false;
             );
         },
         E() {
-            //Type selector
+            // Type selector
             const results = [];
             let index = 0;
             const nodes = document.getElementsByTagName("li");
@@ -99,13 +99,13 @@ const RUN_BENCHMARKS = false;
             this.assertEquivalent(select("nonexistent"), []);
         },
         "#id"() {
-            //ID selector
+            // ID selector
             this.assertEqual(select("#fixtures")[0], getById("fixtures"));
             this.assertEquivalent(select("nonexistent"), []);
             this.assertEqual(select("#troubleForm")[0], getById("troubleForm"));
         },
         ".class"() {
-            //Class selector
+            // Class selector
             this.assertEquivalent(
                 select(".first"),
                 getById("p", "link_1", "item_1")
@@ -201,17 +201,17 @@ const RUN_BENCHMARKS = false;
                 select('#troubleForm2 input[name="brackets[5][]"]'),
                 getById("chk_1", "chk_2")
             );
-            //Brackets in attribute value
+            // Brackets in attribute value
             this.assertEqual(
                 select('#troubleForm2 input[name="brackets[5][]"]:checked')[0],
                 getById("chk_1")
             );
-            //Space in attribute value
+            // Space in attribute value
             this.assertEqual(
                 select('cite[title="hello world!"]')[0],
                 getById("with_title")
             );
-            //Namespaced attributes
+            // Namespaced attributes
             //  this.assertEquivalent(select('[xml:lang]'), [document.documentElement, getById("item_3")]);
             //  this.assertEquivalent(select('*[xml:lang]'), [document.documentElement, getById("item_3")]);
         },
@@ -460,7 +460,7 @@ const RUN_BENCHMARKS = false;
                 select("#level1 *:only-child")[0],
                 getById("level_only_child")
             );
-            //Shouldn't return anything
+            // Shouldn't return anything
             this.assertEquivalent(select("#level1>*:only-child"), []);
             this.assertEquivalent(select("#level1:only-child"), []);
             this.assertEquivalent(
@@ -498,16 +498,16 @@ const RUN_BENCHMARKS = false;
                     getById("level3_1"),
                     "IE forced empty content!"
                 );
-                //this.skip("IE forced empty content!");
+                // this.skip("IE forced empty content!");
             }
-            //Shouldn't return anything
+            // Shouldn't return anything
             this.assertEquivalent(select("span:empty > *"), []);
         },
     });
 
     runner.addTests(null, {
         "E:not(s)"() {
-            //Negation pseudo-class
+            // Negation pseudo-class
             this.assertEquivalent(select('a:not([href="#"])'), []);
             this.assertEquivalent(select("div.brothers:not(.brothers)"), []);
             this.assertEquivalent(
@@ -594,7 +594,7 @@ const RUN_BENCHMARKS = false;
 
     runner.addGroup("Combinators").addTests(null, {
         "E F"() {
-            //Descendant
+            // Descendant
             this.assertEquivalent(
                 select("#fixtures a *"),
                 getById("em2", "em", "span")
@@ -602,7 +602,7 @@ const RUN_BENCHMARKS = false;
             this.assertEqual(select("div#fixtures p")[0], getById("p"));
         },
         "E + F"() {
-            //Adjacent sibling
+            // Adjacent sibling
             this.assertEqual(
                 select("div.brothers + div.brothers")[0],
                 getById("uncle")
@@ -664,7 +664,7 @@ const RUN_BENCHMARKS = false;
             }
         },
         "E > F"() {
-            //Child
+            // Child
             this.assertEquivalent(
                 select("p.first > a"),
                 getById("link_1", "link_2")
@@ -718,7 +718,7 @@ const RUN_BENCHMARKS = false;
             }
         },
         "E ~ F"() {
-            //General sibling
+            // General sibling
             this.assertEqual(select("h1 ~ ul")[0], getById("list"));
             this.assertEquivalent(select("#level2_2 ~ span"), []);
             this.assertEquivalent(select("#level3_2 ~ *"), []);
@@ -778,7 +778,7 @@ const RUN_BENCHMARKS = false;
     runner.addTests(null, {
         "NW.Dom.match"() {
             const element = getById("dupL1");
-            //Assertions
+            // Assertions
             this.assert(match(element, "span"));
             this.assert(match(element, "span#dupL1"));
             this.assert(match(element, "div > span"), "child combinator");
@@ -793,7 +793,7 @@ const RUN_BENCHMARKS = false;
                 match(element, "span:first-child"),
                 "first-child pseudoclass"
             );
-            //Refutations
+            // Refutations
             this.refute(match(element, "span.span_wtf"), "bogus class name");
             this.refute(match(element, "#dupL2"), "different ID");
             this.refute(match(element, "div"), "different tag name");
@@ -803,7 +803,7 @@ const RUN_BENCHMARKS = false;
                 match(element, "span:nth-child(5)"),
                 "different pseudoclass"
             );
-            //Misc.
+            // Misc.
             this.refute(match(getById("link_2"), "a[rel^=external]"));
             this.assert(match(getById("link_1"), "a[rel^=external]"));
             this.assert(match(getById("link_1"), 'a[rel^="external"]'));
@@ -859,7 +859,7 @@ const RUN_BENCHMARKS = false;
             );
         },
         "Multiple Selectors"() {
-            //The next two assertions should return document-ordered lists of matching elements --Diego Perini
+            // The next two assertions should return document-ordered lists of matching elements --Diego Perini
             //  this.assertEquivalent(select('#list, .first,*[xml:lang="es-us"] , #troubleForm'), getById('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'));
             //  this.assertEquivalent(select('#list, .first, *[xml:lang="es-us"], #troubleForm'), getById('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'));
             this.assertEquivalent(

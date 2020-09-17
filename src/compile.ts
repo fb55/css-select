@@ -6,16 +6,17 @@ import { parse, Selector } from "css-what";
 import { trueFunc, falseFunc } from "boolbase";
 import sortRules from "./sort";
 import procedure from "./procedure";
-import Rules from "./general";
-import { filters, pseudos } from "./pseudos";
+import { compileGeneralSelector } from "./general";
+import { filters } from "./pseudos/filters";
+import { pseudos } from "./pseudos/pseudos";
 import { CompiledQuery, InternalOptions } from "./types";
 import { Traversal } from "css-what";
 
 export function compile<Node, ElementNode extends Node>(
     selector: string,
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-): CompiledQuery<Node> {
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
     const next = compileUnsafe(selector, options, context);
     return wrap(next, options);
 }
@@ -23,19 +24,19 @@ export function compile<Node, ElementNode extends Node>(
 export const Pseudos = { filters, pseudos };
 
 function wrap<Node, ElementNode extends Node>(
-    next: CompiledQuery<Node>,
+    next: CompiledQuery<ElementNode>,
     { adapter }: InternalOptions<Node, ElementNode>
-): CompiledQuery<Node> {
+): CompiledQuery<ElementNode> {
     return (elem: Node) => adapter.isTag(elem) && next(elem);
 }
 
 export function compileUnsafe<Node, ElementNode extends Node>(
     selector: string,
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-): CompiledQuery<Node> {
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
     const token = parse(selector, options);
-    return compileToken(token, options, context);
+    return compileToken<Node, ElementNode>(token, options, context);
 }
 
 function includesScopePseudo(t: Selector): boolean {
@@ -48,7 +49,6 @@ function includesScopePseudo(t: Selector): boolean {
 }
 
 const DESCENDANT_TOKEN: Selector = { type: "descendant" };
-// @ts-ignore
 const FLEXIBLE_DESCENDANT_TOKEN: Selector = { type: "_flexibleDescendant" };
 const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
 const PLACEHOLDER_ELEMENT = {};
@@ -60,7 +60,7 @@ const PLACEHOLDER_ELEMENT = {};
 function absolutize<Node, ElementNode extends Node>(
     token: Selector[][],
     { adapter }: InternalOptions<Node, ElementNode>,
-    context?: Node[]
+    context?: ElementNode[]
 ) {
     // TODO better check if context is document
     const hasContext = !!context?.every(
@@ -83,8 +83,8 @@ function absolutize<Node, ElementNode extends Node>(
 export function compileToken<Node, ElementNode extends Node>(
     token: Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-) {
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
     token = token.filter((t) => t.length > 0);
 
     token.forEach(sortRules);
@@ -116,7 +116,7 @@ export function compileToken<Node, ElementNode extends Node>(
                 }
             }
 
-            return compileRules(rules, options, context);
+            return compileRules<Node, ElementNode>(rules, options, context);
         })
         .reduce(reduceRules, falseFunc);
 
@@ -133,18 +133,21 @@ function isTraversal(t: Selector): t is Traversal {
 function compileRules<Node, ElementNode extends Node>(
     rules: Selector[],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-): CompiledQuery<Node> {
-    return rules.reduce(
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
+    return rules.reduce<CompiledQuery<ElementNode>>(
         (previous, rule) =>
             previous === falseFunc
                 ? falseFunc
-                : Rules[rule.type](previous, rule, options, context),
+                : compileGeneralSelector(previous, rule, options, context),
         options.rootFunc ?? trueFunc
     );
 }
 
-function reduceRules(a: CompiledQuery, b: CompiledQuery): CompiledQuery<Node> {
+function reduceRules<Node, ElementNode extends Node>(
+    a: CompiledQuery<ElementNode>,
+    b: CompiledQuery<ElementNode>
+): CompiledQuery<ElementNode> {
     if (b === falseFunc || a === trueFunc) {
         return a;
     }
@@ -167,11 +170,11 @@ function containsTraversal(t: Selector[]): boolean {
  * so we add them here
  */
 filters.not = function not<Node, ElementNode extends Node>(
-    next: CompiledQuery<Node>,
+    next: CompiledQuery<ElementNode>,
     token: Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-): CompiledQuery<Node> {
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
     const opts = {
         xmlMode: !!options.xmlMode,
         strict: !!options.strict,
@@ -196,11 +199,11 @@ filters.not = function not<Node, ElementNode extends Node>(
     };
 };
 
-filters.has = function has <Node, ElementNode extends Node>(
-    next: CompiledQuery<Node>,
+filters.has = function has<Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
     token: Selector[][],
     options: InternalOptions<Node, ElementNode>
-): CompiledQuery<Node> {
+): CompiledQuery<ElementNode> {
     const { adapter } = options;
     const opts = {
         xmlMode: options.xmlMode,
@@ -213,7 +216,7 @@ filters.has = function has <Node, ElementNode extends Node>(
         ? [PLACEHOLDER_ELEMENT]
         : undefined;
 
-    let func = compileToken(token, opts, context);
+    let func = compileToken<Node, ElementNode>(token, opts, context);
 
     if (func === falseFunc) return falseFunc;
     if (func === trueFunc) {
@@ -234,12 +237,12 @@ filters.has = function has <Node, ElementNode extends Node>(
         next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
 };
 
-filters.matches = function matches <Node, ElementNode extends Node>(
-    next: CompiledQuery<Node>,
+filters.matches = function matches<Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
     token: Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
-): CompiledQuery<Node> {
+    context?: ElementNode[]
+): CompiledQuery<ElementNode> {
     const opts = {
         xmlMode: options.xmlMode,
         strict: options.strict,

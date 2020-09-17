@@ -2,7 +2,12 @@ import { falseFunc } from "boolbase";
 import { CompiledQuery, InternalOptions } from "./types";
 import { AttributeSelector } from "css-what";
 
-// https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
+/*
+ * All allowed characters in a regex, used for escaping.
+ *
+ * Taken from XRegExp, (c) 2007-2020 Steven Levithan under the MIT license
+ * https://github.com/slevithan/xregexp/blob/95eeebeb8fac8754d54eafe2b4743661ac1cf028/src/xregexp.js#L794
+ */
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
 /*
@@ -10,11 +15,11 @@ const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
  */
 const attributeRules: Record<
     string,
-    (
-        next: CompiledQuery,
+    <Node, ElementNode extends Node>(
+        next: CompiledQuery<ElementNode>,
         data: AttributeSelector,
-        options: InternalOptions
-    ) => CompiledQuery
+        options: InternalOptions<Node, ElementNode>
+    ) => CompiledQuery<ElementNode>
 > = {
     equals(next, data, { adapter }) {
         const { name } = data;
@@ -102,7 +107,7 @@ const attributeRules: Record<
         }
 
         return (elem) =>
-            adapter.getAttributeValue(elem, name)?.startsWith(value) &&
+            !!adapter.getAttributeValue(elem, name)?.startsWith(value) &&
             next(elem);
     },
     end(next, data, { adapter }) {
@@ -125,7 +130,7 @@ const attributeRules: Record<
         }
 
         return (elem) =>
-            adapter.getAttributeValue(elem, name)?.endsWith(value) &&
+            !!adapter.getAttributeValue(elem, name)?.endsWith(value) &&
             next(elem);
     },
     any(next, data, { adapter }) {
@@ -145,7 +150,7 @@ const attributeRules: Record<
         }
 
         return (elem) =>
-            adapter.getAttributeValue(elem, name)?.includes(value) &&
+            !!adapter.getAttributeValue(elem, name)?.includes(value) &&
             next(elem);
     },
     not(next, data, { adapter }) {
@@ -168,11 +173,11 @@ const attributeRules: Record<
     },
 };
 
-export function compile(
-    next: CompiledQuery,
+export function compile<Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
     data: AttributeSelector,
-    options: InternalOptions
-): CompiledQuery {
+    options: InternalOptions<Node, ElementNode>
+): CompiledQuery<ElementNode> {
     if (options.strict && (data.ignoreCase || data.action === "not")) {
         throw new Error("Unsupported attribute selector");
     }
