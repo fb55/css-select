@@ -1,6 +1,6 @@
 const DomUtils = require("domutils");
-const helper = require("../tools/helper.js");
-const { CSSselect } = helper;
+const helper = require("../tools/helper");
+const CSSselect = require("../../src");
 const assert = require("assert");
 const { throws: raises, equal, ok } = assert;
 const testInit = require("./data/testinit.js");
@@ -15,7 +15,7 @@ function deepEqual(e, a, m) {
 }
 
 function Sizzle(str, doc = document) {
-    return CSSselect(str, doc);
+    return CSSselect.selectAll(str, doc);
 }
 
 Sizzle.matches = (selector, elements) =>

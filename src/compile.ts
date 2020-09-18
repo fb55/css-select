@@ -237,7 +237,7 @@ filters.has = function has<Node, ElementNode extends Node>(
         next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
 };
 
-filters.matches = function matches<Node, ElementNode extends Node>(
+filters.is = filters.matches = function matches<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     token: Selector[][],
     options: InternalOptions<Node, ElementNode>,

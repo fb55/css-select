@@ -5,7 +5,7 @@ const { DomUtils } = require("htmlparser2");
 const helper = require("../tools/helper.js");
 const path = require("path");
 const document = helper.getDocument(path.join(__dirname, "index.html"));
-const { CSSselect } = helper;
+const CSSselect = require("../../src");
 
 const location = { hash: "" };
 CSSselect.pseudos.target = (elem) =>
@@ -18,8 +18,7 @@ CSSselect.pseudos.target = (elem) =>
 */
 
 CSSselect.pseudos.humanoid = (e) =>
-    CSSselect.is(e, "li:contains(human)") ||
-    CSSselect.is(e, "ol:contains(human)");
+    CSSselect.is(e, ":is(li,ol):contains(human)");
 
 const frag = helper.getDOM(
     '<root><div class="d i v">' +

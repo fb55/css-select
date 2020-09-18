@@ -1,6 +1,6 @@
-const helper = require("./helper.js");
+const helper = require("./helper");
 const doc = helper.getFile("W3C_Selectors.html");
-const { CSSselect } = helper;
+const CSSselect = require("../../src");
 const soupselect = require("cheerio-soupselect");
 const selectors = [
     "body",

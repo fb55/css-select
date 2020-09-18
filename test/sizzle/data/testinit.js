@@ -1,7 +1,7 @@
 const assert = require("assert");
 const decircularize = require("../../decircularize");
-const helper = require("../../tools/helper.js");
-const { CSSselect } = helper;
+const helper = require("../../tools/helper");
+const CSSselect = require("../../../src").default;
 const path = require("path");
 const docPath = path.join(__dirname, "index.html");
 let document = null;

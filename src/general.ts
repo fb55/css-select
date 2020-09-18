@@ -37,7 +37,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                     let current: ElementNode | null = elem;
 
                     while ((current = adapter.getParent(current))) {
-                        if (next(elem)) return true;
+                        if (next(current)) return true;
                     }
 
                     return false;
@@ -47,13 +47,13 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             // @ts-expect-error `ElementNode` is not extending object
             // eslint-disable-next-line no-case-declarations
             const isFalseCache = new WeakSet<ElementNode>();
-            return function descendant(elem: ElementNode): boolean {
+            return function cachedDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
 
                 while ((current = adapter.getParent(current))) {
                     if (!isFalseCache.has(elem)) {
-                        if (next(elem)) return true;
-                        isFalseCache.add(elem);
+                        if (next(current)) return true;
+                        isFalseCache.add(current);
                     }
                 }
 

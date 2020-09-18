@@ -8,7 +8,7 @@ const assert = require("assert");
 const path = require("path");
 const decircularize = require("../decircularize");
 const document = helper.getDocument(path.join(__dirname, "test.html"));
-const { CSSselect } = helper;
+const CSSselect = require("../../src");
 
 // Prototype's `$` function
 function getById(element) {
@@ -24,14 +24,14 @@ function getById(element) {
 
 // NWMatcher methods
 const select = (query, doc = document) =>
-    CSSselect(query, typeof doc === "string" ? select(doc) : doc);
+    CSSselect.selectAll(query, typeof doc === "string" ? select(doc) : doc);
 const match = CSSselect.is;
 
 const validators = {
     assert,
-    assertEqual: assert.equal,
+    assertEqual: assert.strictEqual,
     assertEquivalent(v1, v2, message) {
-        return assert.deepEqual(decircularize(v1), decircularize(v2), message);
+        return assert.deepStrictEqual(decircularize(v1), decircularize(v2), message);
     },
     refute: function refute(a, msg) {
         assert(!a, msg);
@@ -52,11 +52,11 @@ const runner = {
         } else run();
 
         function run() {
-            Object.keys(tests).forEach((name) => {
+            for (const name of Object.keys(tests)){
                 it(name, () => {
                     tests[name].call(validators);
                 });
-            });
+            };
         }
     },
 };

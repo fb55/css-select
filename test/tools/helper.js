@@ -2,14 +2,12 @@ const fs = require("fs");
 const path = require("path");
 const htmlparser2 = require("htmlparser2");
 const DomUtils = require("domutils");
-const CSSselect = require("../../src");
 
 function getDOMFromPath(path, options) {
     return htmlparser2.parseDOM(fs.readFileSync(path).toString(), options);
 }
 
 module.exports = {
-    CSSselect,
     getFile(name, options) {
         return getDOMFromPath(path.join(__dirname, "docs", name), options);
     },

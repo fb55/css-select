@@ -121,9 +121,9 @@ describe("API", () => {
 
     describe("options", () => {
         const opts = { xmlMode: true };
-        it.only("should recognize xmlMode in :has and :not", () => {
-            // assert(CSSselect.is(xmlDom, "DiV:has(P)", opts));
-            // assert(CSSselect.is(xmlDom, "DiV:not(div)", opts));
+        it("should recognize xmlMode in :has and :not", () => {
+            assert(CSSselect.is(xmlDom, "DiV:has(P)", opts));
+            assert(CSSselect.is(xmlDom, "DiV:not(div)", opts));
             assert(
                 CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", opts)
             );

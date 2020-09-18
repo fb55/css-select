@@ -122,7 +122,6 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
          * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
          */
         if (query.shouldTestNextSiblings) {
-            // @ts-ignore
             elems = appendNextSiblings(opts.context ?? elems, opts.adapter);
         }
 
@@ -137,23 +136,27 @@ function getNextSiblings<Node, ElementNode extends Node>(
     elem: Node,
     adapter: Adapter<Node, ElementNode>
 ): Node[] {
-    let siblings = adapter.getSiblings(elem);
-    if (!Array.isArray(siblings)) return [];
-    siblings = siblings.slice(0);
-    while (siblings.shift() !== elem);
-    return siblings;
+    const siblings = adapter.getSiblings(elem);
+    if (siblings.length <= 1) return [];
+    const elemIndex = siblings.indexOf(elem);
+    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
+    return siblings.slice(elemIndex + 1);
 }
 
 function appendNextSiblings<Node, ElementNode extends Node>(
-    elem: Node | Node[],
+    elem: ElementNode | ElementNode[],
     adapter: Adapter<Node, ElementNode>
-): Node[] {
+): ElementNode[] {
     // Order matters because jQuery seems to check the children before the siblings
     const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
 
     for (let i = 0; i < elems.length; i++) {
         const nextSiblings = getNextSiblings(elems[i], adapter);
-        elems.push(...nextSiblings);
+        elems.push(
+            ...nextSiblings.filter((sibling): sibling is ElementNode =>
+                adapter.isTag(sibling)
+            )
+        );
     }
     return elems;
 }
