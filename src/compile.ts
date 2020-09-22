@@ -2,7 +2,7 @@
  *Compiles a selector to an executable function
  */
 
-import { parse, Selector } from "css-what";
+import { parse, Selector, Traversal } from "css-what";
 import { trueFunc, falseFunc } from "boolbase";
 import sortRules from "./sort";
 import procedure from "./procedure";
@@ -10,7 +10,6 @@ import { compileGeneralSelector } from "./general";
 import { filters } from "./pseudos/filters";
 import { pseudos } from "./pseudos/pseudos";
 import { CompiledQuery, InternalOptions } from "./types";
-import { Traversal } from "css-what";
 
 export function compile<Node, ElementNode extends Node>(
     selector: string,
