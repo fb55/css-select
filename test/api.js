@@ -99,7 +99,10 @@ describe("API", () => {
         });
         it("should not select nodes without children", () => {
             const matches = CSSselect.selectAll("p < div", [dom]);
-            assert.deepStrictEqual(matches, CSSselect.selectAll("* < *", [dom]));
+            assert.deepStrictEqual(
+                matches,
+                CSSselect.selectAll("* < *", [dom])
+            );
         });
     });
 
@@ -131,38 +134,20 @@ describe("API", () => {
 
         it("should be strict", () => {
             const opts = { strict: true };
-            assert.throws(
-                () => CSSselect.compile(":checkbox", opts),
-                Error
-            );
-            assert.throws(
-                () => CSSselect.compile("[attr=val i]", opts),
-                Error
-            );
-            assert.throws(
-                () => CSSselect.compile("[attr!=val]", opts),
-                Error
-            );
+            assert.throws(() => CSSselect.compile(":checkbox", opts), Error);
+            assert.throws(() => CSSselect.compile("[attr=val i]", opts), Error);
+            assert.throws(() => CSSselect.compile("[attr!=val]", opts), Error);
             assert.throws(
                 () => CSSselect.compile("[attr!=val i]", opts),
                 Error
             );
-            assert.throws(
-                () => CSSselect.compile("foo < bar", opts),
-                Error
-            );
+            assert.throws(() => CSSselect.compile("foo < bar", opts), Error);
             assert.throws(
                 () => CSSselect.compile(":not(:parent)", opts),
                 Error
             );
-            assert.throws(
-                () => CSSselect.compile(":not(a > b)", opts),
-                Error
-            );
-            assert.throws(
-                () => CSSselect.compile(":not(a, b)", opts),
-                Error
-            );
+            assert.throws(() => CSSselect.compile(":not(a > b)", opts), Error);
+            assert.throws(() => CSSselect.compile(":not(a, b)", opts), Error);
         });
 
         it("should recognize contexts", () => {
@@ -173,7 +158,10 @@ describe("API", () => {
                 CSSselect.selectOne("div", div, { context: div }),
                 div[0]
             );
-            assert.strictEqual(CSSselect.selectOne("div", div, { context: p }), null);
+            assert.strictEqual(
+                CSSselect.selectOne("div", div, { context: p }),
+                null
+            );
             assert.deepEqual(
                 CSSselect.selectAll("p", div, { context: div }),
                 p

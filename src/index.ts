@@ -114,7 +114,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
             query = compileUnsafe<Node, ElementNode>(
                 query,
                 opts,
-                Array.isArray(elems) ? elems : []
+                Array.isArray(elems) ? elems : undefined
             );
         }
         /*

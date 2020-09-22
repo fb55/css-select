@@ -11,15 +11,10 @@ const document = helper.getDocument(path.join(__dirname, "test.html"));
 const CSSselect = require("../../src");
 
 // Prototype's `$` function
-function getById(element) {
-    if (arguments.length === 1) {
-        if (typeof element === "string") {
-            return DomUtils.getElementById(element, document);
-        }
-        return element;
-    } 
-        return Array.prototype.map.call(arguments, (elem) => getById(elem));
-    
+function getById(...args) {
+    if (args.some(arg => typeof arg !== 'string')) throw new Error()
+    const elements = args.map(id => DomUtils.getElementById(id, document))
+    return elements.length === 1 ? elements[0] : elements
 }
 
 // NWMatcher methods
@@ -31,7 +26,11 @@ const validators = {
     assert,
     assertEqual: assert.strictEqual,
     assertEquivalent(v1, v2, message) {
-        return assert.deepStrictEqual(decircularize(v1), decircularize(v2), message);
+        return assert.deepStrictEqual(
+            decircularize(v1),
+            decircularize(v2),
+            message
+        );
     },
     refute: function refute(a, msg) {
         assert(!a, msg);
@@ -52,11 +51,11 @@ const runner = {
         } else run();
 
         function run() {
-            for (const name of Object.keys(tests)){
+            for (const name of Object.keys(tests)) {
                 it(name, () => {
                     tests[name].call(validators);
                 });
-            };
+            }
         }
     },
 };
@@ -86,12 +85,8 @@ const RUN_BENCHMARKS = false;
         },
         E() {
             // Type selector
-            const results = [];
-            let index = 0;
             const nodes = document.getElementsByTagName("li");
-            while ((results[index] = nodes[index++]));
-            results.length--;
-            //  this.assertEquivalent(select("li"), results); //TODO
+            this.assertEquivalent(select("li"), nodes);
             this.assertEqual(
                 select("strong", getById("fixtures"))[0],
                 getById("strong")

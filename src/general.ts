@@ -62,7 +62,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         // @ts-ignore
         case "_flexibleDescendant":
             // Include element itself, only used while querying an array
-            return function descendant(elem: ElementNode): boolean {
+            return function flexibleDescendant(elem: ElementNode): boolean {
                 let found = next(elem);
                 let current: ElementNode | null = elem;
 

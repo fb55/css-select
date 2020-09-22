@@ -4,12 +4,16 @@ import { rules } from "../attributes";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types";
 import type { AttributeSelector } from "css-what";
 
+export type Filter = <Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
+    text: string,
+    options: InternalOptions<Node, ElementNode>,
+    context?: ElementNode[]
+) => CompiledQuery<ElementNode>;
+
 const checkAttrib = rules.equals;
 
-function getAttribFunc<Node, ElementNode extends Node>(
-    name: string,
-    value: string
-) {
+function getAttribFunc(name: string, value: string): Filter {
     const data: AttributeSelector = {
         type: "attribute",
         action: "equals",
@@ -18,11 +22,7 @@ function getAttribFunc<Node, ElementNode extends Node>(
         value,
     };
 
-    return function attribFunc(
-        next: CompiledQuery<ElementNode>,
-        _rule: string,
-        options: InternalOptions<Node, ElementNode>
-    ): CompiledQuery<ElementNode> {
+    return function attribFunc(next, _rule, options) {
         return checkAttrib(next, data, options);
     };
 }
@@ -33,13 +33,6 @@ function getChildFunc<Node, ElementNode extends Node>(
 ): CompiledQuery<ElementNode> {
     return (elem) => !!adapter.getParent(elem) && next(elem);
 }
-
-export type Filter = <Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    text: string,
-    options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
-) => CompiledQuery<ElementNode>;
 
 export const filters: Record<string, Filter> = {
     contains(next, text, { adapter }) {
@@ -170,13 +163,10 @@ export const filters: Record<string, Filter> = {
             return filters.root(next, rule, options);
         }
 
-        function equals(a: ElementNode, b: ElementNode) {
-            if (typeof adapter.equals === "function") {
-                return adapter.equals(a, b);
-            }
-
-            return a === b;
-        }
+        const equals: (a: ElementNode, b: ElementNode) => boolean =
+            typeof adapter.equals === "function"
+                ? adapter.equals
+                : (a, b) => a === b;
 
         if (context.length === 1) {
             // NOTE: can't be unpacked, as :has uses this for side-effects

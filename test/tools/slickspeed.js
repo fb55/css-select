@@ -78,7 +78,7 @@ print("-----\n\nChecking performance\n\n");
 const ben = require("ben");
 
 function testSpeed(rule) {
-    print(rule, Array(28 - rule.length).join(" "));
+    print(rule.padEnd(28));
 
     let results = engines.map(
         (func) =>

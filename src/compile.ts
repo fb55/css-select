@@ -62,7 +62,7 @@ function absolutize<Node, ElementNode extends Node>(
     { adapter }: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ) {
-    // TODO better check if context is document
+    // TODO Use better check if the context is a document
     const hasContext = !!context?.every(
         (e) => e === PLACEHOLDER_ELEMENT || !!adapter.getParent(e)
     );
@@ -70,7 +70,11 @@ function absolutize<Node, ElementNode extends Node>(
     for (const t of token) {
         if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
             // Don't continue in else branch
-        } else if (hasContext && !t.some(includesScopePseudo)) {
+        } else if (
+            hasContext &&
+            t.some(isTraversal) &&
+            !t.some(includesScopePseudo)
+        ) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
             continue;
