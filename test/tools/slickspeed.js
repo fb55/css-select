@@ -35,12 +35,7 @@ const selectors = [
     "div[class~=example]" /* , "div:not(.example)", "p:contains(selectors)", "p:nth-child(even)", "p:nth-child(2n)", "p:nth-child(odd)", "p:nth-child(2n+1)", "p:nth-child(n)", "p:only-child", "p:last-child", "p:first-child"*/,
 ];
 
-const engines = [
-    function (a, b) {
-        return CSSselect.selectAll(b, a);
-    },
-    soupselect.select,
-];
+const engines = [(a, b) => CSSselect(b, a), soupselect.select];
 
 // returns true when an error occurs
 function testResult(rule) {
@@ -80,12 +75,7 @@ const ben = require("ben");
 function testSpeed(rule) {
     print(rule.padEnd(28));
 
-    let results = engines.map(
-        (func) =>
-            function () {
-                return func(doc, rule);
-            }
-    );
+    let results = engines.map((func) => () => func(doc, rule));
 
     // also add a precompiled CSSselect test
     const compiled = CSSselect.selectAll(rule);
