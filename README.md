@@ -102,63 +102,87 @@ getSiblings, getText, hasAttrib, removeSubsets, findAll, findOne
 ```
 
 The method signature notation used below should be fairly intuitive - if not,
-see the [`rtype`](https://github.com/ericelliott/rtype) or
-[`TypeScript`](https://www.typescriptlang.org/) docs, as it is very similar to
-both of those. You may also want to look at -[`domutils`](https://github.com/fb55/domutils) to see the default
--implementation, or at -[`css-select-browser-adapter`](https://github.com/nrkn/css-select-browser-adapter/blob/master/index.js)
--for an implementation backed by the DOM.
+see the [`TypeScript`](https://www.typescriptlang.org/) docs, as it is very similar to both of those.
+You may also want to look at [`domutils`](https://github.com/fb55/domutils) to see the default
+implementation, or at [`css-select-browser-adapter`](https://github.com/nrkn/css-select-browser-adapter/blob/master/index.js)
+for an implementation backed by the DOM.
 
 ```ts
-{
-  // is the node a tag?
-  isTag: ( node:Node ) => isTag:Boolean,
+interface Adapter<Node, ElementNode extends Node> {
+    /**
+     *  Is the node a tag?
+     */
+    isTag: (node: Node) => node is ElementNode;
 
-  // does at least one of passed element nodes pass the test predicate?
-  existsOne: ( test:Predicate, elems:[ElementNode] ) => existsOne:Boolean,
+    /**
+     * Does at least one of passed element nodes pass the test predicate?
+     */
+    existsOne: (test: Predicate<ElementNode>, elems: Node[]) => boolean;
 
-  // get the attribute value
-  getAttributeValue: ( elem:ElementNode, name:String ) => value:String,
+    /**
+     * Get the attribute value.
+     */
+    getAttributeValue: (elem: ElementNode, name: string) => string | undefined;
 
-  // get the node's children
-  getChildren: ( node:Node ) => children:[Node],
+    /**
+     * Get the node's children
+     */
+    getChildren: (node: Node) => Node[];
 
-  // get the name of the tag
-  getName: ( elem:ElementNode ) => tagName:String,
+    /**
+     * Get the name of the tag
+     */
+    getName: (elem: ElementNode) => string;
 
-  // get the parent of the node
-  getParent: ( node:Node ) => parentNode:Node,
+    /**
+     * Get the parent of the node
+     */
+    getParent: (node: ElementNode) => ElementNode | null;
 
-  /*
-    get the siblings of the node. Note that unlike jQuery's `siblings` method,
-    this is expected to include the current node as well
-  */
-  getSiblings: ( node:Node ) => siblings:[Node],
+    /*
+     *Get the siblings of the node. Note that unlike jQuery's `siblings` method,
+     *this is expected to include the current node as well
+     */
+    getSiblings: (node: Node) => Node[];
 
-  // get the text content of the node, and its children if it has any
-  getText: ( node:Node ) => text:String,
+    /*
+     * Get the text content of the node, and its children if it has any.
+     */
+    getText: (node: Node) => string;
 
-  // does the element have the named attribute?
-  hasAttrib: ( elem:ElementNode, name:String ) => hasAttrib:Boolean,
+    /**
+     * Does the element have the named attribute?
+     */
+    hasAttrib: (elem: ElementNode, name: string) => boolean;
 
-  // takes an array of nodes, and removes any duplicates, as well as any nodes
-  // whose ancestors are also in the array
-  removeSubsets: ( nodes:[Node] ) => unique:[Node],
+    /**
+     * Takes an array of nodes, and removes any duplicates, as well as any
+     * nodes whose ancestors are also in the array.
+     */
+    removeSubsets: (nodes: Node[]) => Node[];
 
-  // finds all of the element nodes in the array that match the test predicate,
-  // as well as any of their children that match it
-  findAll: ( test:Predicate, nodes:[Node] ) => elems:[ElementNode],
+    /**
+     * Finds all of the element nodes in the array that match the test predicate,
+     * as well as any of their children that match it.
+     */
+    findAll: (test: Predicate<ElementNode>, nodes: Node[]) => ElementNode[];
 
-  // finds the first node in the array that matches the test predicate, or one
-  // of its children
-  findOne: ( test:Predicate, elems:[ElementNode] ) => findOne:ElementNode,
+    /**
+     * Finds the first node in the array that matches the test predicate, or one
+     * of its children.
+     */
+    findOne: (
+        test: Predicate<ElementNode>,
+        elems: Node[]
+    ) => ElementNode | null;
 
-  /*
-    The adapter can also optionally include an equals method, if your DOM
-    structure needs a custom equality test to compare two objects which refer
-    to the same underlying node. If not provided, `css-select` will fall back to
-    `a === b`.
-  */
-  equals: ( a:Node, b:Node ) => Boolean
+    /**
+     * The adapter can also optionally include an equals method, if your DOM
+     * structure needs a custom equality test to compare two objects which refer
+     * to the same underlying node. If not provided, `css-select` will fall back to
+     * `a === b`.
+     */
+    equals?: (a: Node, b: Node) => boolean;
 }
 ```
 
@@ -200,7 +224,7 @@ _As defined by CSS 4 and / or jQuery._
     -   `:enabled`, `:disabled`
     -   `:required`, `:optional`
     -   `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`, `:password`, `:reset`, `:radio` etc. \*
-    -   `:matches` \*
+    -   `:matches`, `:is` \*
 
 **\***: Not part of CSS3
 
