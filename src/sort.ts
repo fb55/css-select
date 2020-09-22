@@ -1,13 +1,7 @@
-/*
- *Sort the parts of the passed selector,
- *as there is potential for optimization
- *(some types of selectors are faster than others)
- */
-
-import { Selector } from "css-what";
+import type { Selector, AttributeAction } from "css-what";
 import procedure from "./procedure";
 
-const attributes: { [key: string]: number } = {
+const attributes: Record<AttributeAction, number> = {
     exists: 10,
     equals: 8,
     not: 7,
@@ -18,6 +12,13 @@ const attributes: { [key: string]: number } = {
     element: 4,
 };
 
+/**
+ * Sort the parts of the passed selector,
+ * as there is potential for optimization
+ * (some types of selectors are faster than others)
+ *
+ * @param arr Selector to sort
+ */
 export default function sortByProcedure(arr: Selector[]): void {
     const procs = arr.map(getProcedure);
     for (let i = 1; i < arr.length; i++) {

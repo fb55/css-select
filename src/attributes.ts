@@ -1,6 +1,6 @@
 import { falseFunc } from "boolbase";
 import { CompiledQuery, InternalOptions } from "./types";
-import { AttributeSelector } from "css-what";
+import type { AttributeSelector, AttributeAction } from "css-what";
 
 /**
  * All reserved characters in a regex, used for escaping.
@@ -17,7 +17,7 @@ function escapeRegex(value: string): string {
  * Attribute selectors
  */
 const attributeRules: Record<
-    string,
+    AttributeAction,
     <Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
         data: AttributeSelector,
