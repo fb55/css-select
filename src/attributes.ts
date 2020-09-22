@@ -16,7 +16,7 @@ function escapeRegex(value: string): string {
 /**
  * Attribute selectors
  */
-const attributeRules: Record<
+export const attributeRules: Record<
     AttributeAction,
     <Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
@@ -177,16 +177,3 @@ const attributeRules: Record<
             adapter.getAttributeValue(elem, name) !== value && next(elem);
     },
 };
-
-export function compile<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    data: AttributeSelector,
-    options: InternalOptions<Node, ElementNode>
-): CompiledQuery<ElementNode> {
-    if (options.strict && (data.ignoreCase || data.action === "not")) {
-        throw new Error("Unsupported attribute selector");
-    }
-    return attributeRules[data.action](next, data, options);
-}
-
-export { attributeRules as rules };

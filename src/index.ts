@@ -230,4 +230,4 @@ export function is<Node, ElementNode extends Node>(
  */
 export default selectAll;
 
-export { Pseudos as pseudos } from "./compile";
+export { pseudos, filters } from "./compile";

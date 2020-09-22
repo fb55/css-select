@@ -1,4 +1,4 @@
-import { compile as attribute } from "./attributes";
+import { attributeRules } from "./attributes";
 import { compile as pseudo } from "./pseudos";
 import { CompiledQuery, InternalOptions } from "./types";
 import type { Selector } from "css-what";
@@ -20,7 +20,14 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             throw new Error("Pseudo-elements are not supported by css-select");
 
         case "attribute":
-            return attribute(next, selector, options);
+            if (
+                options.strict &&
+                (selector.ignoreCase || selector.action === "not")
+            ) {
+                throw new Error("Unsupported attribute selector");
+            }
+
+            return attributeRules[selector.action](next, selector, options);
         case "pseudo":
             return pseudo(next, selector, options, context);
 

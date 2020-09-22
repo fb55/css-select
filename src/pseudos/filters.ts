@@ -1,6 +1,6 @@
 import getNCheck from "nth-check";
 import { trueFunc, falseFunc } from "boolbase";
-import { rules } from "../attributes";
+import { attributeRules } from "../attributes";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types";
 import type { AttributeSelector } from "css-what";
 
@@ -11,7 +11,7 @@ export type Filter = <Node, ElementNode extends Node>(
     context?: ElementNode[]
 ) => CompiledQuery<ElementNode>;
 
-const checkAttrib = rules.equals;
+const checkAttrib = attributeRules.equals;
 
 function getAttribFunc(name: string, value: string): Filter {
     const data: AttributeSelector = {

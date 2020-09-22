@@ -21,7 +21,7 @@ export function compile<Node, ElementNode extends Node>(
     return wrap(next, options);
 }
 
-export const Pseudos = { filters, pseudos };
+export { filters, pseudos };
 
 function wrap<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -124,7 +124,6 @@ export function compileToken<Node, ElementNode extends Node>(
         })
         .reduce(reduceRules, falseFunc);
 
-    // @ts-ignore
     query.shouldTestNextSiblings = shouldTestNextSiblings;
 
     return query;
