@@ -1,6 +1,6 @@
-import type { Selector } from "css-what";
+import type { InternalSelector } from "./types";
 
-const procedure: Record<Selector["type"], number> = {
+const procedure: Record<InternalSelector["type"], number> = {
     universal: 50,
     tag: 30,
     attribute: 1,
@@ -10,6 +10,7 @@ const procedure: Record<Selector["type"], number> = {
     parent: -1,
     sibling: -1,
     adjacent: -1,
+    _flexibleDescendant: -1,
     "pseudo-element": -100, // Here to make TS happy
 };
 

@@ -1,3 +1,7 @@
+import type { Selector } from "css-what";
+
+export type InternalSelector = Selector | { type: "_flexibleDescendant" };
+
 export type Predicate<Value> = (v: Value) => boolean;
 export interface Adapter<Node, ElementNode extends Node> {
     /**
@@ -68,10 +72,10 @@ export interface Adapter<Node, ElementNode extends Node> {
     ) => ElementNode | null;
 
     /**
-     *The adapter can also optionally include an equals method, if your DOM
-     *structure needs a custom equality test to compare two objects which refer
-     *to the same underlying node. If not provided, `css-select` will fall back to
-     *`a === b`.
+     * The adapter can also optionally include an equals method, if your DOM
+     * structure needs a custom equality test to compare two objects which refer
+     * to the same underlying node. If not provided, `css-select` will fall back to
+     * `a === b`.
      */
     equals?: (a: Node, b: Node) => boolean;
 }

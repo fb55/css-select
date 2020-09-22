@@ -1,3 +1,4 @@
+import { InternalSelector } from "./types";
 /*
  *Compiles a selector to an executable function
  */
@@ -38,7 +39,7 @@ export function compileUnsafe<Node, ElementNode extends Node>(
     return compileToken<Node, ElementNode>(token, options, context);
 }
 
-function includesScopePseudo(t: Selector): boolean {
+function includesScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === "pseudo" &&
         (t.name === "scope" ||
@@ -48,7 +49,9 @@ function includesScopePseudo(t: Selector): boolean {
 }
 
 const DESCENDANT_TOKEN: Selector = { type: "descendant" };
-const FLEXIBLE_DESCENDANT_TOKEN: Selector = { type: "_flexibleDescendant" };
+const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
+    type: "_flexibleDescendant",
+};
 const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
 const PLACEHOLDER_ELEMENT = {};
 
@@ -57,7 +60,7 @@ const PLACEHOLDER_ELEMENT = {};
  * http://www.w3.org/TR/selectors4/#absolutizing
  */
 function absolutize<Node, ElementNode extends Node>(
-    token: Selector[][],
+    token: InternalSelector[][],
     { adapter }: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ) {
@@ -69,11 +72,7 @@ function absolutize<Node, ElementNode extends Node>(
     for (const t of token) {
         if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
             // Don't continue in else branch
-        } else if (
-            hasContext &&
-            t.some(isTraversal) &&
-            !t.some(includesScopePseudo)
-        ) {
+        } else if (hasContext && !t.some(includesScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
             continue;
@@ -84,7 +83,7 @@ function absolutize<Node, ElementNode extends Node>(
 }
 
 export function compileToken<Node, ElementNode extends Node>(
-    token: Selector[][],
+    token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ): CompiledQuery<ElementNode> {
@@ -92,11 +91,10 @@ export function compileToken<Node, ElementNode extends Node>(
 
     token.forEach(sortRules);
 
+    context = options.context ?? context;
     const isArrayContext = Array.isArray(context);
 
-    context = options.context ?? context;
-
-    if (context && !isArrayContext) context = [context];
+    if (context && !Array.isArray(context)) context = [context];
 
     absolutize(token, options, context);
 
@@ -128,12 +126,12 @@ export function compileToken<Node, ElementNode extends Node>(
     return query;
 }
 
-function isTraversal(t: Selector): t is Traversal {
+function isTraversal(t: InternalSelector): t is Traversal {
     return procedure[t.type] < 0;
 }
 
 function compileRules<Node, ElementNode extends Node>(
-    rules: Selector[],
+    rules: InternalSelector[],
     options: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ): CompiledQuery<ElementNode> {

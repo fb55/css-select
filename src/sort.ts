@@ -1,4 +1,5 @@
-import type { Selector, AttributeAction } from "css-what";
+import type { InternalSelector } from "./types";
+import type { AttributeAction } from "css-what";
 import procedure from "./procedure";
 
 const attributes: Record<AttributeAction, number> = {
@@ -19,7 +20,7 @@ const attributes: Record<AttributeAction, number> = {
  *
  * @param arr Selector to sort
  */
-export default function sortByProcedure(arr: Selector[]): void {
+export default function sortByProcedure(arr: InternalSelector[]): void {
     const procs = arr.map(getProcedure);
     for (let i = 1; i < arr.length; i++) {
         const procNew = procs[i];
@@ -36,7 +37,7 @@ export default function sortByProcedure(arr: Selector[]): void {
     }
 }
 
-function getProcedure(token: Selector): number {
+function getProcedure(token: InternalSelector): number {
     let proc = procedure[token.type];
 
     if (token.type === "attribute") {

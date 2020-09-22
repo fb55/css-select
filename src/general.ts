@@ -1,7 +1,6 @@
 import { attributeRules } from "./attributes";
 import { compile as pseudo } from "./pseudos";
-import { CompiledQuery, InternalOptions } from "./types";
-import type { Selector } from "css-what";
+import type { CompiledQuery, InternalOptions, InternalSelector } from "./types";
 
 /*
  * All available rules
@@ -9,7 +8,7 @@ import type { Selector } from "css-what";
 
 export function compileGeneralSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
-    selector: Selector,
+    selector: InternalSelector,
     options: InternalOptions<Node, ElementNode>,
     context: ElementNode[] | undefined
 ): CompiledQuery<ElementNode> {
@@ -66,7 +65,6 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 return false;
             };
-        // @ts-ignore
         case "_flexibleDescendant":
             // Include element itself, only used while querying an array
             return function flexibleDescendant(elem: ElementNode): boolean {
