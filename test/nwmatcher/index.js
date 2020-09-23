@@ -12,9 +12,9 @@ const CSSselect = require("../../src");
 
 // Prototype's `$` function
 function getById(...args) {
-    if (args.some(arg => typeof arg !== 'string')) throw new Error()
-    const elements = args.map(id => DomUtils.getElementById(id, document))
-    return elements.length === 1 ? elements[0] : elements
+    if (args.some((arg) => typeof arg !== "string")) throw new Error();
+    const elements = args.map((id) => DomUtils.getElementById(id, document));
+    return elements.length === 1 ? elements[0] : elements;
 }
 
 // NWMatcher methods

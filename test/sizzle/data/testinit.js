@@ -5,7 +5,6 @@ const path = require("path");
 const docPath = path.join(__dirname, "index.html");
 let document = null;
 
-
 function loadDoc() {
     return (document = helper.getDocument(docPath));
 }
@@ -23,7 +22,7 @@ module.exports = {
  * @result [<div id="main">, <span id="foo">, <input id="bar">]
  */
 function q(...ids) {
-    return ids.map(id => document.getElementById(id))
+    return ids.map((id) => document.getElementById(id));
 }
 
 /**
@@ -36,9 +35,13 @@ function q(...ids) {
  */
 function t(assertionName, sizzleSelector, expectedIds) {
     const actual = CSSselect(sizzleSelector, document);
-    const actualIds = actual.map(e => e.attribs.id);
+    const actualIds = actual.map((e) => e.attribs.id);
 
-    assert.deepStrictEqual(actualIds, expectedIds, `${assertionName} (${sizzleSelector})`);
+    assert.deepStrictEqual(
+        actualIds,
+        expectedIds,
+        `${assertionName} (${sizzleSelector})`
+    );
 }
 
 const xmlDoc = helper.getDOMFromPath(path.join(__dirname, "fries.xml"), {

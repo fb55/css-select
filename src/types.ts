@@ -101,7 +101,7 @@ import { Node, Element } from "domhandler";
 // Ensure that DomUtils (the default adapter) matches the given specification
 DomUtils as Adapter<Node, Element>;
 
-// TODO default types to the domutil/htmlparser2 types
+// TODO default types to the domutils/htmlparser2 types
 export interface Options<Node, ElementNode extends Node> {
     /**
      * When enabled, tag names will be case-sensitive. Default: false.

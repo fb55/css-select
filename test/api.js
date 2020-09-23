@@ -1,6 +1,6 @@
 const CSSselect = require("../src");
 const makeDom = require("htmlparser2").parseDOM;
-const bools = require("boolbase");
+const { trueFunc, falseFunc } = require("boolbase");
 const assert = require("assert");
 
 const [dom] = makeDom("<div id=foo><p>foo</p></div>");
@@ -51,11 +51,11 @@ describe("API", () => {
     describe("unsatisfiable and universally valid selectors", () => {
         it("in :not", () => {
             let func = CSSselect._compileUnsafe(":not(*)");
-            assert.strictEqual(func, bools.falseFunc);
+            assert.strictEqual(func, falseFunc);
             func = CSSselect._compileUnsafe(":not(:nth-child(-1n-1))");
-            assert.strictEqual(func, bools.trueFunc);
+            assert.strictEqual(func, trueFunc);
             func = CSSselect._compileUnsafe(":not(:not(:not(*)))");
-            assert.strictEqual(func, bools.falseFunc);
+            assert.strictEqual(func, falseFunc);
         });
 
         it("in :has", () => {
@@ -63,17 +63,17 @@ describe("API", () => {
             assert.strictEqual(matches.length, 1);
             assert.strictEqual(matches[0], dom);
             const func = CSSselect._compileUnsafe(":has(:nth-child(-1n-1))");
-            assert.strictEqual(func, bools.falseFunc);
+            assert.strictEqual(func, falseFunc);
         });
 
         it("should skip unsatisfiable", () => {
             const func = CSSselect._compileUnsafe("* :not(*) foo");
-            assert.strictEqual(func, bools.falseFunc);
+            assert.strictEqual(func, falseFunc);
         });
 
         it("should promote universally valid", () => {
             const func = CSSselect._compileUnsafe("*, foo");
-            assert.strictEqual(func, bools.trueFunc);
+            assert.strictEqual(func, trueFunc);
         });
     });
 
@@ -122,8 +122,11 @@ describe("API", () => {
             assert.strictEqual(match, dom);
         });
         it("should take shortcuts when applicable", () => {
-            // TODO this is currently only visible in coverage reports
-            let match = CSSselect.selectOne(bools.falseFunc, [dom]);
+            let match = CSSselect.selectOne(falseFunc, {
+                get length() {
+                    throw new Error("Did not take shortcut");
+                },
+            });
             assert.strictEqual(match, null);
             match = CSSselect.selectOne("*", []);
             assert.strictEqual(match, null);
