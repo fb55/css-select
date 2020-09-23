@@ -1,4 +1,4 @@
-import * as DomUtils from "../../domutils/src";
+import * as DomUtils from "domutils";
 import { falseFunc } from "boolbase";
 import type {
     Node as DomHandlerNode,
