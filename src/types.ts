@@ -123,3 +123,8 @@ export interface CompiledQuery<ElementNode> {
     shouldTestNextSiblings?: boolean;
 }
 export type Query<ElementNode> = string | CompiledQuery<ElementNode>;
+export type CompileToken<Node, ElementNode extends Node> = (
+    token: InternalSelector[][],
+    options: InternalOptions<Node, ElementNode>,
+    context?: ElementNode[]
+) => CompiledQuery<ElementNode>;

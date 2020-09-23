@@ -1,33 +1,29 @@
 import { InternalSelector } from "./types";
-/*
- *Compiles a selector to an executable function
- */
-
-import { parse, Selector, Traversal } from "css-what";
+import { parse, Selector } from "css-what";
 import { trueFunc, falseFunc } from "boolbase";
 import sortRules from "./sort";
-import procedure from "./procedure";
+import { isTraversal } from "./procedure";
 import { compileGeneralSelector } from "./general";
-import { filters } from "./pseudos/filters";
-import { pseudos } from "./pseudos/pseudos";
-import { CompiledQuery, InternalOptions } from "./types";
+import {
+    ensureIsTag,
+    PLACEHOLDER_ELEMENT,
+} from "./pseudo-selectors/subselects";
+import type { CompiledQuery, InternalOptions } from "./types";
 
+/**
+ * Compiles a selector to an executable function.
+ *
+ * @param selector Selector to compile.
+ * @param options Compilation options.
+ * @param context Optional context for the selector.
+ */
 export function compile<Node, ElementNode extends Node>(
     selector: string,
     options: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ): CompiledQuery<ElementNode> {
     const next = compileUnsafe(selector, options, context);
-    return wrap(next, options);
-}
-
-export { filters, pseudos };
-
-function wrap<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    { adapter }: InternalOptions<Node, ElementNode>
-): CompiledQuery<ElementNode> {
-    return (elem: Node) => adapter.isTag(elem) && next(elem);
+    return ensureIsTag(next, options.adapter);
 }
 
 export function compileUnsafe<Node, ElementNode extends Node>(
@@ -53,7 +49,6 @@ const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
     type: "_flexibleDescendant",
 };
 const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
-const PLACEHOLDER_ELEMENT = {};
 
 /*
  * CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector
@@ -126,10 +121,6 @@ export function compileToken<Node, ElementNode extends Node>(
     return query;
 }
 
-function isTraversal(t: InternalSelector): t is Traversal {
-    return procedure[t.type] < 0;
-}
-
 function compileRules<Node, ElementNode extends Node>(
     rules: InternalSelector[],
     options: InternalOptions<Node, ElementNode>,
@@ -139,7 +130,13 @@ function compileRules<Node, ElementNode extends Node>(
         (previous, rule) =>
             previous === falseFunc
                 ? falseFunc
-                : compileGeneralSelector(previous, rule, options, context),
+                : compileGeneralSelector(
+                      previous,
+                      rule,
+                      options,
+                      context,
+                      compileToken
+                  ),
         options.rootFunc ?? trueFunc
     );
 }
@@ -159,96 +156,3 @@ function reduceRules<Node, ElementNode extends Node>(
         return a(elem) || b(elem);
     };
 }
-
-function containsTraversal(t: Selector[]): boolean {
-    return t.some(isTraversal);
-}
-
-/*
- * :not, :has and :matches have to compile selectors
- * doing this in src/pseudos.ts would lead to circular dependencies,
- * so we add them here
- */
-filters.not = function not<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    token: Selector[][],
-    options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
-): CompiledQuery<ElementNode> {
-    const opts = {
-        xmlMode: !!options.xmlMode,
-        strict: !!options.strict,
-        adapter: options.adapter,
-    };
-
-    if (opts.strict) {
-        if (token.length > 1 || token.some(containsTraversal)) {
-            throw new Error(
-                "complex selectors in :not aren't allowed in strict mode"
-            );
-        }
-    }
-
-    const func = compileToken(token, opts, context);
-
-    if (func === falseFunc) return next;
-    if (func === trueFunc) return falseFunc;
-
-    return function not(elem) {
-        return !func(elem) && next(elem);
-    };
-};
-
-filters.has = function has<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    token: Selector[][],
-    options: InternalOptions<Node, ElementNode>
-): CompiledQuery<ElementNode> {
-    const { adapter } = options;
-    const opts = {
-        xmlMode: options.xmlMode,
-        strict: options.strict,
-        adapter,
-    };
-
-    // FIXME: Uses an array as a pointer to the current element (side effects)
-    const context = token.some(containsTraversal)
-        ? [PLACEHOLDER_ELEMENT]
-        : undefined;
-
-    let func = compileToken<Node, ElementNode>(token, opts, context);
-
-    if (func === falseFunc) return falseFunc;
-    if (func === trueFunc) {
-        return (elem) =>
-            adapter.getChildren(elem).some(adapter.isTag) && next(elem);
-    }
-
-    func = wrap(func, options);
-
-    if (context) {
-        return (elem) =>
-            next(elem) &&
-            ((context[0] = elem),
-            adapter.existsOne(func, adapter.getChildren(elem)));
-    }
-
-    return (elem) =>
-        next(elem) && adapter.existsOne(func, adapter.getChildren(elem));
-};
-
-filters.is = filters.matches = function matches<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    token: Selector[][],
-    options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
-): CompiledQuery<ElementNode> {
-    const opts = {
-        xmlMode: options.xmlMode,
-        strict: options.strict,
-        adapter: options.adapter,
-        rootFunc: next,
-    };
-
-    return compileToken<Node, ElementNode>(token, opts, context);
-};

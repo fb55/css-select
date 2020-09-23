@@ -8,18 +8,16 @@ describe("sizzle", () => {
     });
 });
 
-describe("qwery", () => {
+describe.only("qwery", () => {
     exportsRun(require("./qwery/"));
 });
 
 function exportsRun(mod) {
-    for (const name of Object.keys(mod)) {
-        if (typeof mod[name] === "object") {
-            describe(name, () => {
-                exportsRun(mod[name]);
-            });
+    for (const [name, suite] of Object.entries(mod)) {
+        if (typeof suite === "object") {
+            describe(name, () => exportsRun(suite));
         } else {
-            it(name, mod[name]);
+            it(name, suite);
         }
     }
 }

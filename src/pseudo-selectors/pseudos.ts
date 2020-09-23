@@ -1,3 +1,4 @@
+import { PseudoSelector } from "css-what";
 import { falseFunc } from "boolbase";
 import type { Adapter } from "../types";
 
@@ -205,4 +206,22 @@ function namePseudo<Node, ElementNode extends Node>(names: string[]) {
 
     return (elem: ElementNode, adapter: Adapter<Node, ElementNode>) =>
         names.includes(adapter.getName(elem));
+}
+
+export function verifyPseudoArgs(
+    func: Pseudo,
+    name: string,
+    subselect: PseudoSelector["data"]
+): void {
+    if (subselect === null) {
+        if (func.length > 2 && name !== "scope") {
+            throw new Error(`pseudo-selector :${name} requires an argument`);
+        }
+    } else {
+        if (func.length === 2) {
+            throw new Error(
+                `pseudo-selector :${name} doesn't have any arguments`
+            );
+        }
+    }
 }

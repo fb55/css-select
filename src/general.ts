@@ -1,6 +1,11 @@
 import { attributeRules } from "./attributes";
-import { compile as pseudo } from "./pseudos";
-import type { CompiledQuery, InternalOptions, InternalSelector } from "./types";
+import { compilePseudoSelector } from "./pseudo-selectors";
+import type {
+    CompiledQuery,
+    InternalOptions,
+    InternalSelector,
+    CompileToken,
+} from "./types";
 
 /*
  * All available rules
@@ -10,7 +15,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     selector: InternalSelector,
     options: InternalOptions<Node, ElementNode>,
-    context: ElementNode[] | undefined
+    context: ElementNode[] | undefined,
+    compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
     const { adapter } = options;
 
@@ -27,8 +33,15 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             }
 
             return attributeRules[selector.action](next, selector, options);
+
         case "pseudo":
-            return pseudo(next, selector, options, context);
+            return compilePseudoSelector(
+                next,
+                selector,
+                options,
+                context,
+                compileToken
+            );
 
         // Tags
         case "tag":

@@ -184,15 +184,4 @@ export const filters: Record<string, Filter> = {
     reset: getAttribFunc("type", "reset"),
     image: getAttribFunc("type", "image"),
     submit: getAttribFunc("type", "submit"),
-
-    // Added later on
-    matches(_next, _token, _options, _context) {
-        throw new Error("Unexpected state");
-    },
-    not(_next, _token, _options, _context) {
-        throw new Error("Unexpected state");
-    },
-    has(_next, _token, _options) {
-        throw new Error("Unexpected state");
-    },
 };
