@@ -78,6 +78,21 @@ export interface Adapter<Node, ElementNode extends Node> {
      * `a === b`.
      */
     equals?: (a: Node, b: Node) => boolean;
+
+    /**
+     * Is the element in hovered state?
+     */
+    isHovered?: (elem: ElementNode) => boolean;
+
+    /**
+     * Is the element in visited state?
+     */
+    isVisited?: (elem: ElementNode) => boolean;
+
+    /**
+     * Is the element in active state?
+     */
+    isActive?: (elem: ElementNode) => boolean;
 }
 
 import * as DomUtils from "domutils";

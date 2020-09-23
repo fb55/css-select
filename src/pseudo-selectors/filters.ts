@@ -146,7 +146,7 @@ export const filters: Record<string, Filter> = {
     },
 
     // TODO determine the actual root element
-    root(next, _rule: string, { adapter }) {
+    root(next, _rule, { adapter }) {
         return (elem) => !adapter.getParent(elem) && next(elem);
     },
 
@@ -184,4 +184,33 @@ export const filters: Record<string, Filter> = {
     reset: getAttribFunc("type", "reset"),
     image: getAttribFunc("type", "image"),
     submit: getAttribFunc("type", "submit"),
+
+    // Dynamic state pseudos. These depend on optional Adapter methods.
+    hover(next, _rule, { adapter }) {
+        if (typeof adapter.isHovered === "function") {
+            return function hover(elem) {
+                return next(elem) && adapter.isHovered(elem);
+            };
+        }
+
+        return falseFunc;
+    },
+    visited(next, _rule, { adapter }) {
+        if (typeof adapter.isVisited === "function") {
+            return function visited(elem) {
+                return next(elem) && adapter.isVisited(elem);
+            };
+        }
+
+        return falseFunc;
+    },
+    active(next, _rule, { adapter }) {
+        if (typeof adapter.isActive === "function") {
+            return function active(elem) {
+                return next(elem) && adapter.isActive(elem);
+            };
+        }
+
+        return falseFunc;
+    },
 };

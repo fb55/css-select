@@ -95,7 +95,6 @@ export const pseudos: Record<string, Pseudo> = {
     link(elem, adapter) {
         return adapter.hasAttrib(elem, "href");
     },
-    visited: falseFunc, // Valid implementation
     // TODO: :any-link once the name is finalized (as an alias of :link)
 
     /*
