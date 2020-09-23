@@ -11,7 +11,7 @@ const test = it;
 const decircularize = require("../decircularize");
 
 function deepEqual(e, a, m) {
-    return assert.deepEqual(decircularize(e), decircularize(a), m);
+    return assert.deepStrictEqual(decircularize(e), decircularize(a), m);
 }
 
 function Sizzle(str, doc = document) {
@@ -287,7 +287,7 @@ test("element", () => {
         "Finding elements with id of ID."
     );
 
-    const siblingTest = document.getElementById("siblingTest"); // TODO
+    const siblingTest = document.getElementById("siblingTest");
     deepEqual(
         Sizzle("div em", siblingTest),
         [],

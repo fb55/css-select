@@ -37,7 +37,7 @@ export const subselects: Record<string, Subselect> = {
      * `:is` is an alias for `:matches`.
      */
     is(next, token, options, context, compileToken) {
-        return this.matches(next, token, options, context, compileToken);
+        return subselects.matches(next, token, options, context, compileToken);
     },
     matches(next, token, options, context, compileToken) {
         const opts = {

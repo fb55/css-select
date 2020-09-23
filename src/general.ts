@@ -81,14 +81,13 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         case "_flexibleDescendant":
             // Include element itself, only used while querying an array
             return function flexibleDescendant(elem: ElementNode): boolean {
-                let found = next(elem);
                 let current: ElementNode | null = elem;
 
-                while (!found && (current = adapter.getParent(current))) {
-                    found = next(elem);
-                }
+                do {
+                    if (next(current)) return true;
+                } while ((current = adapter.getParent(current)));
 
-                return found;
+                return false;
             };
 
         case "parent":

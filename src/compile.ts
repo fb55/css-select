@@ -29,7 +29,7 @@ export function compile<Node, ElementNode extends Node>(
 export function compileUnsafe<Node, ElementNode extends Node>(
     selector: string,
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: ElementNode[] | ElementNode
 ): CompiledQuery<ElementNode> {
     const token = parse(selector, options);
     return compileToken<Node, ElementNode>(token, options, context);
@@ -80,7 +80,7 @@ function absolutize<Node, ElementNode extends Node>(
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: ElementNode[] | ElementNode
 ): CompiledQuery<ElementNode> {
     token = token.filter((t) => t.length > 0);
 
@@ -89,9 +89,10 @@ export function compileToken<Node, ElementNode extends Node>(
     context = options.context ?? context;
     const isArrayContext = Array.isArray(context);
 
-    if (context && !Array.isArray(context)) context = [context];
+    const finalContext =
+        context && (Array.isArray(context) ? context : [context]);
 
-    absolutize(token, options, context);
+    absolutize(token, options, finalContext);
 
     let shouldTestNextSiblings = false;
 
@@ -112,7 +113,11 @@ export function compileToken<Node, ElementNode extends Node>(
                 }
             }
 
-            return compileRules<Node, ElementNode>(rules, options, context);
+            return compileRules<Node, ElementNode>(
+                rules,
+                options,
+                finalContext
+            );
         })
         .reduce(reduceRules, falseFunc);
 

@@ -111,11 +111,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         let elems: ElementNode[] | ElementNode = elements;
 
         if (typeof query !== "function") {
-            query = compileUnsafe<Node, ElementNode>(
-                query,
-                opts,
-                Array.isArray(elems) ? elems : undefined
-            );
+            query = compileUnsafe<Node, ElementNode>(query, opts, elems);
         }
         /*
          * Add siblings if the query requires them.

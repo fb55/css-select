@@ -187,7 +187,7 @@ export const pseudos: Record<string, Pseudo> = {
     },
     // :matches(input, textarea, select, button)
     input: namePseudo(["input", "textarea", "select", "button"]),
-    // Input:matches(:not([type!='']), [type='text' i])
+    // `input:matches(:not([type!='']), [type='text' i])`
     text(elem, adapter) {
         return (
             adapter.getName(elem) === "input" &&

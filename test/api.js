@@ -162,7 +162,7 @@ describe("API", () => {
                 CSSselect.selectOne("div", div, { context: p }),
                 null
             );
-            assert.deepEqual(
+            assert.deepStrictEqual(
                 CSSselect.selectAll("p", div, { context: div }),
                 p
             );

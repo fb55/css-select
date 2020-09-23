@@ -18,7 +18,7 @@ CSSselect.pseudos.target = (elem) =>
 */
 
 CSSselect.pseudos.humanoid = (e) =>
-    CSSselect.is(e, ":is(li,ol):contains(human)");
+    CSSselect.is(e, ":matches(li,ol):contains(human)");
 
 const frag = helper.getDOM(
     '<root><div class="d i v">' +
