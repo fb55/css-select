@@ -1,5 +1,4 @@
 import { PseudoSelector } from "css-what";
-import { falseFunc } from "boolbase";
 import type { Adapter } from "../types";
 
 export type Pseudo = <Node, ElementNode extends Node>(
