@@ -189,9 +189,10 @@ export const pseudos: Record<string, Pseudo> = {
     input: namePseudo(["input", "textarea", "select", "button"]),
     // `input:matches(:not([type!='']), [type='text' i])`
     text(elem, adapter) {
+        const type = adapter.getAttributeValue(elem, "type");
         return (
             adapter.getName(elem) === "input" &&
-            adapter.getAttributeValue(elem, "type")?.toLowerCase() === "text"
+            (!type || type.toLowerCase() === "text")
         );
     },
 };
