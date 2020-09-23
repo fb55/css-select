@@ -1,6 +1,4 @@
-describe("nwmatcher", () => {
-    require("./nwmatcher/");
-});
+describe("nwmatcher", () => require("./nwmatcher/"));
 
 describe("sizzle", () => {
     describe("selector", () => {
@@ -8,16 +6,14 @@ describe("sizzle", () => {
     });
 });
 
-describe("qwery", () => {
-    exportsRun(require("./qwery/"));
-});
+describe("qwery", () => exportsRun(require("./qwery/")));
 
 function exportsRun(mod) {
-    Object.keys(mod).forEach((name) => {
-        if (typeof mod[name] === "object") {
-            describe(name, () => {
-                exportsRun(mod[name]);
-            });
-        } else it(name, mod[name]);
-    });
+    for (const [name, suite] of Object.entries(mod)) {
+        if (typeof suite === "object") {
+            describe(name, () => exportsRun(suite));
+        } else {
+            it(name, suite);
+        }
+    }
 }

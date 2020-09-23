@@ -1,6 +1,6 @@
 {
     "name": "css-select",
-    "version": "2.1.0",
+    "version": "2.0.2",
     "description": "a CSS selector compiler/engine",
     "author": "Felix Boehm <me@feedic.com>",
     "keywords": [
@@ -12,35 +12,41 @@
         "type": "git",
         "url": "git://github.com/fb55/css-select.git"
     },
+    "main": "lib/index.js",
     "files": [
-        "index.js",
-        "index.d.ts",
         "lib"
     ],
     "dependencies": {
         "boolbase": "^1.0.0",
-        "css-what": "^3.2.1",
+        "css-what": "^3.3.0",
         "domutils": "^2.1.0",
         "nth-check": "^1.0.2"
     },
     "devDependencies": {
+        "@types/jest": "^26.0.14",
+        "@types/node": "^14.0.5",
         "@typescript-eslint/eslint-plugin": "^4.1.0",
+        "@typescript-eslint/parser": "^4.1.0",
         "cheerio-soupselect": "^0.1.1",
         "coveralls": "^3.0.2",
-        "eslint": "^7.0.0",
-        "eslint-config-prettier": "^6.11.0",
+        "eslint": "^7.9.0",
+        "eslint-config-prettier": "^6.0.0",
         "expect.js": "^0.3.1",
         "htmlparser2": "^4.0.0",
         "istanbul": "^0.4.5",
         "mocha": "^8.0.1",
         "mocha-lcov-reporter": "^1.3.0",
-        "prettier": "^2.0.5"
+        "prettier": "^2.1.2",
+        "ts-jest": "^26.0.0",
+        "ts-node": "^9.0.0",
+        "typescript": "^4.0.2"
     },
     "scripts": {
         "test": "mocha --parallel && npm run lint",
         "lint": "eslint .",
         "lcov": "istanbul cover _mocha --report lcovonly -- -R spec",
-        "coveralls": "npm run lint && npm run lcov && (cat coverage/lcov.info | coveralls || exit 0)"
+        "coveralls": "npm run lint && npm run lcov && (cat coverage/lcov.info | coveralls || exit 0)",
+        "build": "tsc"
     },
     "license": "BSD-2-Clause",
     "types": "index.d.ts",

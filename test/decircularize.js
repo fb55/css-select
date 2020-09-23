@@ -23,9 +23,8 @@ function removeCircularRefs(value) {
         return value.map(NodeWithoutCircularReferences);
     } else if (isNode(value)) {
         return NodeWithoutCircularReferences(value);
-    } else {
-        return value;
     }
+    return value;
 }
 
 module.exports = removeCircularRefs;

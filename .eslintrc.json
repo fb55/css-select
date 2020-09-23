@@ -1,11 +1,5 @@
 {
-    "extends": [
-        "eslint:recommended",
-        // "plugin:@typescript-eslint/eslint-recommended",
-        // "plugin:@typescript-eslint/recommended",
-        "prettier"
-        // "prettier/@typescript-eslint"
-    ],
+    "extends": ["eslint:recommended", "prettier"],
     "env": {
         "node": true,
         "es6": true
@@ -16,15 +10,53 @@
         "dot-notation": 2,
         "no-var": 2,
         "prefer-const": 2,
-        "prefer-arrow-callback": 2,
+        "prefer-arrow-callback": [2, { "allowNamedFunctions": true }],
         "arrow-body-style": [2, "as-needed"],
         "object-shorthand": 2,
         "prefer-template": 2,
         "one-var": [2, "never"],
         "prefer-destructuring": [2, { "object": true }],
-
-        "@typescript-eslint/explicit-function-return-type": 0,
-        "@typescript-eslint/explicit-member-accessibility": 0
-        // "@typescript-eslint/no-use-before-define": [2, { "functions": false }]
-    }
+        "capitalized-comments": 2,
+        "multiline-comment-style": [2, "starred-block"],
+        "spaced-comment": 2,
+        "yoda": [2, "never"],
+        "curly": [2, "multi-line"],
+        "no-else-return": 2
+    },
+    "overrides": [
+        {
+            "files": "*.ts",
+            "extends": [
+                "plugin:@typescript-eslint/eslint-recommended",
+                "plugin:@typescript-eslint/recommended",
+                "prettier/@typescript-eslint"
+            ],
+            "parserOptions": {
+                "sourceType": "module",
+                "project": "./tsconfig.eslint.json"
+            },
+            "rules": {
+                "@typescript-eslint/prefer-for-of": 0,
+                "@typescript-eslint/member-ordering": 0,
+                "@typescript-eslint/explicit-function-return-type": 0,
+                "@typescript-eslint/no-unused-vars": 0,
+                "@typescript-eslint/no-use-before-define": [
+                    2,
+                    { "functions": false }
+                ],
+                "@typescript-eslint/consistent-type-definitions": [
+                    2,
+                    "interface"
+                ],
+                "@typescript-eslint/prefer-function-type": 2,
+                "@typescript-eslint/no-unnecessary-type-arguments": 2,
+                "@typescript-eslint/prefer-string-starts-ends-with": 2,
+                "@typescript-eslint/prefer-readonly": 2,
+                "@typescript-eslint/prefer-includes": 2,
+                "@typescript-eslint/no-unnecessary-condition": 2,
+                "@typescript-eslint/switch-exhaustiveness-check": 2,
+                "@typescript-eslint/prefer-nullish-coalescing": 2
+            }
+        }
+    ]
 }

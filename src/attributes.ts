@@ -1,13 +1,29 @@
-const { falseFunc } = require("boolbase");
+import { falseFunc } from "boolbase";
+import { CompiledQuery, InternalOptions } from "./types";
+import type { AttributeSelector, AttributeAction } from "css-what";
 
-//https://github.com/slevithan/XRegExp/blob/master/src/xregexp.js#L469
+/**
+ * All reserved characters in a regex, used for escaping.
+ *
+ * Taken from XRegExp, (c) 2007-2020 Steven Levithan under the MIT license
+ * https://github.com/slevithan/xregexp/blob/95eeebeb8fac8754d54eafe2b4743661ac1cf028/src/xregexp.js#L794
+ */
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
+function escapeRegex(value: string): string {
+    return value.replace(reChars, "\\$&");
+}
 
-/*
-	attribute selectors
-*/
-const attributeRules = {
-    __proto__: null,
+/**
+ * Attribute selectors
+ */
+export const attributeRules: Record<
+    AttributeAction,
+    <Node, ElementNode extends Node>(
+        next: CompiledQuery<ElementNode>,
+        data: AttributeSelector,
+        options: InternalOptions<Node, ElementNode>
+    ) => CompiledQuery<ElementNode>
+> = {
     equals(next, data, { adapter }) {
         const { name } = data;
         let { value } = data;
@@ -15,12 +31,9 @@ const attributeRules = {
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function equalsIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null && attr.toLowerCase() === value && next(elem)
-                );
-            };
+            return (elem) =>
+                adapter.getAttributeValue(elem, name)?.toLowerCase() ===
+                    value && next(elem);
         }
 
         return (elem) =>
@@ -55,19 +68,15 @@ const attributeRules = {
             );
         };
     },
-    element(next, data, { adapter }) {
-        const { name } = data;
-        let { value } = data;
-
+    element(next, { name, value, ignoreCase }, { adapter }) {
         if (/\s/.test(value)) {
             return falseFunc;
         }
 
-        value = value.replace(reChars, "\\$&");
-
-        const pattern = `(?:^|\\s)${value}(?:$|\\s)`;
-        const flags = data.ignoreCase ? "i" : "";
-        const regex = new RegExp(pattern, flags);
+        const regex = new RegExp(
+            `(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`,
+            ignoreCase ? "i" : ""
+        );
 
         return function element(elem) {
             const attr = adapter.getAttributeValue(elem, name);
@@ -89,20 +98,16 @@ const attributeRules = {
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function startIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null &&
-                    attr.substr(0, len).toLowerCase() === value &&
-                    next(elem)
-                );
-            };
+            return (elem) =>
+                adapter
+                    .getAttributeValue(elem, name)
+                    ?.substr(0, len)
+                    .toLowerCase() === value && next(elem);
         }
 
-        return function start(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.startsWith(value) && next(elem);
-        };
+        return (elem) =>
+            !!adapter.getAttributeValue(elem, name)?.startsWith(value) &&
+            next(elem);
     },
     end(next, data, { adapter }) {
         const { name } = data;
@@ -116,20 +121,16 @@ const attributeRules = {
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function endIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
-                return (
-                    attr != null &&
-                    attr.substr(len).toLowerCase() === value &&
-                    next(elem)
-                );
-            };
+            return (elem) =>
+                adapter
+                    .getAttributeValue(elem, name)
+                    ?.substr(len)
+                    .toLowerCase() === value && next(elem);
         }
 
-        return function end(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.endsWith(value) && next(elem);
-        };
+        return (elem) =>
+            !!adapter.getAttributeValue(elem, name)?.endsWith(value) &&
+            next(elem);
     },
     any(next, data, { adapter }) {
         const { name, value } = data;
@@ -139,7 +140,7 @@ const attributeRules = {
         }
 
         if (data.ignoreCase) {
-            const regex = new RegExp(value.replace(reChars, "\\$&"), "i");
+            const regex = new RegExp(escapeRegex(value), "i");
 
             return function anyIC(elem) {
                 const attr = adapter.getAttributeValue(elem, name);
@@ -147,10 +148,9 @@ const attributeRules = {
             };
         }
 
-        return function any(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && attr.includes(value) && next(elem);
-        };
+        return (elem) =>
+            !!adapter.getAttributeValue(elem, name)?.includes(value) &&
+            next(elem);
     },
     not(next, data, { adapter }) {
         const { name } = data;
@@ -162,10 +162,13 @@ const attributeRules = {
         } else if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return function notIC(elem) {
+            return (elem) => {
                 const attr = adapter.getAttributeValue(elem, name);
+
                 return (
-                    attr != null && attr.toLowerCase() !== value && next(elem)
+                    attr != null &&
+                    attr.toLocaleLowerCase() !== value &&
+                    next(elem)
                 );
             };
         }
@@ -173,14 +176,4 @@ const attributeRules = {
         return (elem) =>
             adapter.getAttributeValue(elem, name) !== value && next(elem);
     },
-};
-
-module.exports = {
-    compile(next, data, options) {
-        if (options.strict && (data.ignoreCase || data.action === "not")) {
-            throw new Error("Unsupported attribute selector");
-        }
-        return attributeRules[data.action](next, data, options);
-    },
-    rules: attributeRules,
 };

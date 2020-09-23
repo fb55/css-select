@@ -1,4 +1,4 @@
-const CSSselect = require("../");
+const CSSselect = require("../src");
 const makeDom = require("htmlparser2").parseDOM;
 const assert = require("assert");
 

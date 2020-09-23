@@ -1,6 +1,6 @@
 const DomUtils = require("domutils");
-const helper = require("../tools/helper.js");
-const { CSSselect } = helper;
+const helper = require("../tools/helper");
+const CSSselect = require("../../src");
 const assert = require("assert");
 const { throws: raises, equal, ok } = assert;
 const testInit = require("./data/testinit.js");
@@ -11,11 +11,11 @@ const test = it;
 const decircularize = require("../decircularize");
 
 function deepEqual(e, a, m) {
-    return assert.deepEqual(decircularize(e), decircularize(a), m);
+    return assert.deepStrictEqual(decircularize(e), decircularize(a), m);
 }
 
 function Sizzle(str, doc = document) {
-    return CSSselect(str, doc);
+    return CSSselect.selectAll(str, doc);
 }
 
 Sizzle.matches = (selector, elements) =>
@@ -287,7 +287,7 @@ test("element", () => {
         "Finding elements with id of ID."
     );
 
-    const siblingTest = document.getElementById("siblingTest"); // TODO
+    const siblingTest = document.getElementById("siblingTest");
     deepEqual(
         Sizzle("div em", siblingTest),
         [],
@@ -305,12 +305,12 @@ test("element", () => {
     );
 
     const iframe = document.getElementById("iframe");
-    //iframeDoc.open();
+    // iframeDoc.open();
     iframe.children = helper.getDOM("<body><p id='foo'>bar</p></body>");
     iframe.children.forEach((e) => {
         e.parent = iframe;
     });
-    //iframeDoc.close();
+    // iframeDoc.close();
     deepEqual(
         Sizzle("p:contains(bar)", iframe),
         [DomUtils.getElementById("foo", iframe.children)],
@@ -616,7 +616,7 @@ test("class", () => {
         !Sizzle.matchesSelector(document, ".foo"),
         "testing class on document doesn't error"
     );
-    //ok( !Sizzle.matchesSelector( window, ".foo" ), "testing class on window doesn't error" );
+    // ok( !Sizzle.matchesSelector( window, ".foo" ), "testing class on window doesn't error" );
 
     lastChild.attribs.class += " hasOwnProperty toString";
     deepEqual(
@@ -827,7 +827,7 @@ test("child and adjacent", () => {
         q("siblingnext"),
         "Element Directly Preceded By with a context."
     );
-    //deepEqual( Sizzle("~ em:first", siblingFirst), q("siblingnext"), "Element Preceded By positional with a context." );
+    // deepEqual( Sizzle("~ em:first", siblingFirst), q("siblingnext"), "Element Preceded By positional with a context." );
 
     const en = document.getElementById("en");
     deepEqual(
@@ -867,7 +867,7 @@ test("child and adjacent", () => {
         1,
         "Parent div for next test is found via ID (#8310)"
     );
-    //equal( Sizzle("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
+    // equal( Sizzle("#listWithTabIndex li:eq(2) ~ li").length, 1, "Find by general sibling combinator (#8310)" );
     equal(
         Sizzle("#__sizzle__").length,
         0,
@@ -883,9 +883,9 @@ test("child and adjacent", () => {
 
     t("No element deep selector", "div.foo > span > a", []);
 
-    //deepEqual( Sizzle("> :first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
-    //deepEqual( Sizzle("> :eq(0)", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
-    //deepEqual( Sizzle("> *:first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
+    // deepEqual( Sizzle("> :first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
+    // deepEqual( Sizzle("> :eq(0)", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
+    // deepEqual( Sizzle("> *:first", nothiddendiv), q("nothiddendivchild"), "Verify child context positional selector" );
 
     t("Non-existant ancestors", ".fototab > .thumbnails > a", []);
     deepEqual(
@@ -1622,7 +1622,7 @@ test("pseudo - misc", () => {
     // http://dev.w3.org/html5/spec/single-page.html#focus-management
     document.body.children.push(tmp);
     tmp.tabIndex = 0;
-    //tmp.focus();
+    // tmp.focus();
     if (
         document.activeElement !== tmp ||
         (document.hasFocus && !document.hasFocus()) ||
@@ -1640,9 +1640,9 @@ test("pseudo - misc", () => {
     }
 
     // Blur tmp
-    //tmp.blur();
-    //document.body.focus();
-    //ok( !Sizzle.matchesSelector( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
+    // tmp.blur();
+    // document.body.focus();
+    // ok( !Sizzle.matchesSelector( tmp, ":focus" ), ":focus doesn't match tabIndex div" );
     document.body.children.pop();
 
     // Input focus/active
@@ -1651,7 +1651,7 @@ test("pseudo - misc", () => {
     input.attribs.id = "focus-input";
 
     document.body.children.push(input);
-    //input.focus();
+    // input.focus();
 
     // Inputs can't be focused unless the document has focus
     if (
@@ -1667,14 +1667,14 @@ test("pseudo - misc", () => {
         ok(Sizzle.matchesSelector(input, ":focus"), ":focus matches");
     }
 
-    //input.blur();
+    // input.blur();
 
     // When IE is out of focus, blur does not work. Force it here.
     if (document.activeElement === input) {
         document.body.focus();
     }
 
-    //ok( !Sizzle.matchesSelector( input, ":focus" ), ":focus doesn't match" );
+    // ok( !Sizzle.matchesSelector( input, ":focus" ), ":focus doesn't match" );
     document.body.children.pop();
 
     deepEqual(
@@ -1717,13 +1717,13 @@ test("pseudo - misc", () => {
     );
 
     t("Multi-pseudo", "#ap:has(*), #ap:has(*)", ["ap"]);
-    //t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
+    // t( "Multi-positional", "#ap:gt(0), #ap:lt(1)", ["ap"] );
     t(
         "Multi-pseudo with leading nonexistent id",
         "#nonexistent:has(*), #ap:has(*)",
         ["ap"]
     );
-    //t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
+    // t( "Multi-positional with leading nonexistent id", "#nonexistent:gt(0), #ap:lt(1)", ["ap"] );
 
     t(
         "Tokenization stressor",
@@ -1736,7 +1736,7 @@ test("pseudo - :not", () => {
     expect(43);
 
     t("Not", "a.blog:not(.link)", ["mark"]);
-    //t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
+    // t( ":not() with :first", "#foo p:not(:first) .link", ["simon"] );
 
     t(
         "Not - multiple",
