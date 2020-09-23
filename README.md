@@ -139,13 +139,13 @@ interface Adapter<Node, ElementNode extends Node> {
      */
     getParent: (node: ElementNode) => ElementNode | null;
 
-    /*
-     *Get the siblings of the node. Note that unlike jQuery's `siblings` method,
-     *this is expected to include the current node as well
+    /**
+     * Get the siblings of the node. Note that unlike jQuery's `siblings` method,
+     * this is expected to include the current node as well
      */
     getSiblings: (node: Node) => Node[];
 
-    /*
+    /**
      * Get the text content of the node, and its children if it has any.
      */
     getText: (node: Node) => string;
