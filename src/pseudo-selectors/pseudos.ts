@@ -7,6 +7,8 @@ export type Pseudo = <Node, ElementNode extends Node>(
     subselect?: ElementNode | string | null
 ) => boolean;
 
+const isLinkTag = namePseudo(["a", "area", "link"]);
+
 // While filters are precompiled, pseudos get called when they are needed
 export const pseudos: Record<string, Pseudo> = {
     empty(elem, adapter) {
@@ -91,10 +93,16 @@ export const pseudos: Record<string, Pseudo> = {
     },
 
     // :matches(a, area, link)[href]
-    link(elem, adapter) {
-        return adapter.hasAttrib(elem, "href");
+    "any-link"(elem, adapter) {
+        return isLinkTag(elem, adapter) && adapter.hasAttrib(elem, "href");
     },
-    // TODO: :any-link once the name is finalized (as an alias of :link)
+    // :any-link:not(:visited)
+    link(elem, adapter) {
+        return (
+            adapter.isVisited?.(elem) !== true &&
+            pseudos["any-link"](elem, adapter)
+        );
+    },
 
     /*
      * Forms
@@ -195,16 +203,14 @@ export const pseudos: Record<string, Pseudo> = {
     },
 };
 
-function namePseudo<Node, ElementNode extends Node>(names: string[]) {
+function namePseudo(names: string[]): Pseudo {
     if (typeof Set !== "undefined") {
         const nameSet = new Set(names);
 
-        return (elem: ElementNode, adapter: Adapter<Node, ElementNode>) =>
-            nameSet.has(adapter.getName(elem));
+        return (elem, adapter) => nameSet.has(adapter.getName(elem));
     }
 
-    return (elem: ElementNode, adapter: Adapter<Node, ElementNode>) =>
-        names.includes(adapter.getName(elem));
+    return (elem, adapter) => names.includes(adapter.getName(elem));
 }
 
 export function verifyPseudoArgs(
