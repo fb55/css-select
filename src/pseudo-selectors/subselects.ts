@@ -55,6 +55,7 @@ export const subselects: Record<string, Subselect> = {
             xmlMode: !!options.xmlMode,
             strict: !!options.strict,
             adapter: options.adapter,
+            equals: options.equals,
             rootFunc: next,
         };
 
@@ -65,6 +66,7 @@ export const subselects: Record<string, Subselect> = {
             xmlMode: !!options.xmlMode,
             strict: !!options.strict,
             adapter: options.adapter,
+            equals: options.equals,
         };
 
         if (opts.strict) {
@@ -93,9 +95,10 @@ export const subselects: Record<string, Subselect> = {
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;
         const opts = {
-            xmlMode: options.xmlMode,
-            strict: options.strict,
+            xmlMode: !!options.xmlMode,
+            strict: !!options.strict,
             adapter,
+            equals: options.equals,
         };
 
         // @ts-expect-error Uses an array as a pointer to the current element (side effects)

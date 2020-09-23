@@ -32,7 +32,6 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
-    const { adapter } = options;
 
     if (options.strict && !reCSS3.test(name)) {
         throw new Error(`:${name} isn't part of CSS3`);
@@ -51,8 +50,8 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return pseudo === falseFunc
             ? falseFunc
             : next === trueFunc
-            ? (elem) => pseudo(elem, adapter, data)
-            : (elem) => pseudo(elem, adapter, data) && next(elem);
+            ? (elem) => pseudo(elem, options, data)
+            : (elem) => pseudo(elem, options, data) && next(elem);
     }
     throw new Error(`unmatched pseudo-class :${name}`);
 }

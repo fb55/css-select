@@ -52,7 +52,7 @@ export const filters: Record<string, Filter> = {
     },
 
     // Location specific methods
-    "nth-child"(next, rule, { adapter }) {
+    "nth-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
         if (func === falseFunc) return falseFunc;
@@ -63,16 +63,16 @@ export const filters: Record<string, Filter> = {
             let pos = 0;
 
             for (let i = 0; i < siblings.length; i++) {
+                if (equals(elem, siblings[i])) break;
                 if (adapter.isTag(siblings[i])) {
-                    if (siblings[i] === elem) break;
-                    else pos++;
+                    pos++;
                 }
             }
 
             return func(pos) && next(elem);
         };
     },
-    "nth-last-child"(next, rule, { adapter }) {
+    "nth-last-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
         if (func === falseFunc) return falseFunc;
@@ -83,16 +83,16 @@ export const filters: Record<string, Filter> = {
             let pos = 0;
 
             for (let i = siblings.length - 1; i >= 0; i--) {
+                if (equals(elem, siblings[i])) break;
                 if (adapter.isTag(siblings[i])) {
-                    if (siblings[i] === elem) break;
-                    else pos++;
+                    pos++;
                 }
             }
 
             return func(pos) && next(elem);
         };
     },
-    "nth-of-type"(next, rule, { adapter }) {
+    "nth-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
         if (func === falseFunc) return falseFunc;
@@ -104,21 +104,19 @@ export const filters: Record<string, Filter> = {
 
             for (let i = 0; i < siblings.length; i++) {
                 const currentSibling = siblings[i];
-                if (adapter.isTag(currentSibling)) {
-                    if (currentSibling === elem) break;
-                    if (
-                        adapter.getName(currentSibling) ===
-                        adapter.getName(elem)
-                    ) {
-                        pos++;
-                    }
+                if (equals(elem, currentSibling)) break;
+                if (
+                    adapter.isTag(currentSibling) &&
+                    adapter.getName(currentSibling) === adapter.getName(elem)
+                ) {
+                    pos++;
                 }
             }
 
             return func(pos) && next(elem);
         };
     },
-    "nth-last-of-type"(next, rule, { adapter }) {
+    "nth-last-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
         if (func === falseFunc) return falseFunc;
@@ -130,14 +128,12 @@ export const filters: Record<string, Filter> = {
 
             for (let i = siblings.length - 1; i >= 0; i--) {
                 const currentSibling = siblings[i];
-                if (adapter.isTag(currentSibling)) {
-                    if (currentSibling === elem) break;
-                    if (
-                        adapter.getName(currentSibling) ===
-                        adapter.getName(elem)
-                    ) {
-                        pos++;
-                    }
+                if (equals(elem, currentSibling)) break;
+                if (
+                    adapter.isTag(currentSibling) &&
+                    adapter.getName(currentSibling) === adapter.getName(elem)
+                ) {
+                    pos++;
                 }
             }
 
@@ -156,17 +152,12 @@ export const filters: Record<string, Filter> = {
         options: InternalOptions<Node, ElementNode>,
         context?: ElementNode[]
     ): CompiledQuery<ElementNode> {
-        const { adapter } = options;
+        const { equals } = options;
 
         if (!context || context.length === 0) {
             // Equivalent to :root
             return filters.root(next, rule, options);
         }
-
-        const equals: (a: ElementNode, b: ElementNode) => boolean =
-            typeof adapter.equals === "function"
-                ? adapter.equals
-                : (a, b) => a === b;
 
         if (context.length === 1) {
             // NOTE: can't be unpacked, as :has uses this for side-effects

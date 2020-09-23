@@ -95,12 +95,6 @@ export interface Adapter<Node, ElementNode extends Node> {
     isActive?: (elem: ElementNode) => boolean;
 }
 
-import * as DomUtils from "domutils";
-import { Node, Element } from "domhandler";
-
-// Ensure that DomUtils (the default adapter) matches the given specification
-DomUtils as Adapter<Node, Element>;
-
 // TODO default types to the domutils/htmlparser2 types
 export interface Options<Node, ElementNode extends Node> {
     /**
@@ -131,6 +125,7 @@ export interface Options<Node, ElementNode extends Node> {
 export interface InternalOptions<Node, ElementNode extends Node>
     extends Options<Node, ElementNode> {
     adapter: Adapter<Node, ElementNode>;
+    equals: (a: Node, b: Node) => boolean;
 }
 
 export interface CompiledQuery<ElementNode> {

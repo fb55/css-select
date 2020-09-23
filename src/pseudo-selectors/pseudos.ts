@@ -1,9 +1,9 @@
 import { PseudoSelector } from "css-what";
-import type { Adapter } from "../types";
+import type { InternalOptions } from "../types";
 
 export type Pseudo = <Node, ElementNode extends Node>(
     elem: ElementNode,
-    adapter: Adapter<Node, ElementNode>,
+    options: InternalOptions<Node, ElementNode>,
     subselect?: ElementNode | string | null
 ) => boolean;
 
@@ -11,7 +11,7 @@ const isLinkTag = namePseudo(["a", "area", "link"]);
 
 // While filters are precompiled, pseudos get called when they are needed
 export const pseudos: Record<string, Pseudo> = {
-    empty(elem, adapter) {
+    empty(elem, { adapter }) {
         return !adapter.getChildren(elem).some(
             (elem) =>
                 // FIXME: `getText` call is potentially expensive.
@@ -19,29 +19,29 @@ export const pseudos: Record<string, Pseudo> = {
         );
     },
 
-    "first-child"(elem, adapter) {
-        return (
-            adapter.getSiblings(elem).find((elem) => adapter.isTag(elem)) ===
-            elem
-        );
+    "first-child"(elem, { adapter, equals }) {
+        const firstChild = adapter
+            .getSiblings(elem)
+            .find((elem) => adapter.isTag(elem));
+        return firstChild != null && equals(elem, firstChild);
     },
-    "last-child"(elem, adapter) {
+    "last-child"(elem, { adapter, equals }) {
         const siblings = adapter.getSiblings(elem);
 
         for (let i = siblings.length - 1; i >= 0; i--) {
-            if (siblings[i] === elem) return true;
+            if (equals(elem, siblings[i])) return true;
             if (adapter.isTag(siblings[i])) break;
         }
 
         return false;
     },
-    "first-of-type"(elem, adapter) {
+    "first-of-type"(elem, { adapter, equals }) {
         const siblings = adapter.getSiblings(elem);
         const elemName = adapter.getName(elem);
 
         for (let i = 0; i < siblings.length; i++) {
             const currentSibling = siblings[i];
-            if (currentSibling === elem) return true;
+            if (equals(elem, currentSibling)) return true;
             if (
                 adapter.isTag(currentSibling) &&
                 adapter.getName(currentSibling) === elemName
@@ -52,13 +52,13 @@ export const pseudos: Record<string, Pseudo> = {
 
         return false;
     },
-    "last-of-type"(elem, adapter) {
+    "last-of-type"(elem, { adapter, equals }) {
         const siblings = adapter.getSiblings(elem);
         const elemName = adapter.getName(elem);
 
         for (let i = siblings.length - 1; i >= 0; i--) {
             const currentSibling = siblings[i];
-            if (currentSibling === elem) return true;
+            if (equals(elem, currentSibling)) return true;
             if (
                 adapter.isTag(currentSibling) &&
                 adapter.getName(currentSibling) === elemName
@@ -69,33 +69,37 @@ export const pseudos: Record<string, Pseudo> = {
 
         return false;
     },
-    "only-of-type"(elem, adapter) {
+    "only-of-type"(elem, { adapter, equals }) {
         const elemName = adapter.getName(elem);
 
         return adapter
             .getSiblings(elem)
             .every(
                 (sibling) =>
-                    sibling === elem ||
+                    equals(elem, sibling) ||
                     !adapter.isTag(sibling) ||
                     adapter.getName(sibling) !== elemName
             );
     },
-    "only-child"(elem, adapter) {
+    "only-child"(elem, { adapter, equals }) {
         return adapter
             .getSiblings(elem)
-            .every((sibling) => sibling === elem || !adapter.isTag(sibling));
+            .every(
+                (sibling) => equals(elem, sibling) || !adapter.isTag(sibling)
+            );
     },
 
     // :matches(a, area, link)[href]
-    "any-link"(elem, adapter) {
-        return isLinkTag(elem, adapter) && adapter.hasAttrib(elem, "href");
+    "any-link"(elem, options) {
+        return (
+            isLinkTag(elem, options) && options.adapter.hasAttrib(elem, "href")
+        );
     },
     // :any-link:not(:visited)
-    link(elem, adapter) {
+    link(elem, options) {
         return (
-            adapter.isVisited?.(elem) !== true &&
-            pseudos["any-link"](elem, adapter)
+            options.adapter.isVisited?.(elem) !== true &&
+            pseudos["any-link"](elem, options)
         );
     },
 
@@ -105,7 +109,7 @@ export const pseudos: Record<string, Pseudo> = {
      */
 
     // :matches([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
-    selected(elem, adapter) {
+    selected(elem, { adapter, equals }) {
         if (adapter.hasAttrib(elem, "selected")) return true;
         else if (adapter.getName(elem) !== "option") return false;
 
@@ -126,7 +130,7 @@ export const pseudos: Record<string, Pseudo> = {
         for (let i = 0; i < siblings.length; i++) {
             const currentSibling = siblings[i];
             if (adapter.isTag(currentSibling)) {
-                if (currentSibling === elem) {
+                if (equals(elem, currentSibling)) {
                     sawElem = true;
                 } else if (!sawElem) {
                     return false;
@@ -146,39 +150,39 @@ export const pseudos: Record<string, Pseudo> = {
      *  fieldset[disabled] * //TODO not child of first <legend>
      * )
      */
-    disabled(elem, adapter) {
+    disabled(elem, { adapter }) {
         return adapter.hasAttrib(elem, "disabled");
     },
-    enabled(elem, adapter) {
+    enabled(elem, { adapter }) {
         return !adapter.hasAttrib(elem, "disabled");
     },
     // :matches(:matches(:radio, :checkbox)[checked], :selected) (TODO menuitem)
-    checked(elem, adapter) {
+    checked(elem, options) {
         return (
-            adapter.hasAttrib(elem, "checked") ||
-            pseudos.selected(elem, adapter)
+            options.adapter.hasAttrib(elem, "checked") ||
+            pseudos.selected(elem, options)
         );
     },
     // :matches(input, select, textarea)[required]
-    required(elem, adapter) {
+    required(elem, { adapter }) {
         return adapter.hasAttrib(elem, "required");
     },
     // :matches(input, select, textarea):not([required])
-    optional(elem, adapter) {
+    optional(elem, { adapter }) {
         return !adapter.hasAttrib(elem, "required");
     },
 
     // JQuery extensions
 
     // :not(:empty)
-    parent(elem, adapter) {
-        return !pseudos.empty(elem, adapter);
+    parent(elem, options) {
+        return !pseudos.empty(elem, options);
     },
     // :matches(h1, h2, h3, h4, h5, h6)
     header: namePseudo(["h1", "h2", "h3", "h4", "h5", "h6"]),
 
     // :matches(button, input[type=button])
-    button(elem, adapter) {
+    button(elem, { adapter }) {
         const name = adapter.getName(elem);
         return (
             name === "button" ||
@@ -189,7 +193,7 @@ export const pseudos: Record<string, Pseudo> = {
     // :matches(input, textarea, select, button)
     input: namePseudo(["input", "textarea", "select", "button"]),
     // `input:matches(:not([type!='']), [type='text' i])`
-    text(elem, adapter) {
+    text(elem, { adapter }) {
         const type = adapter.getAttributeValue(elem, "type");
         return (
             adapter.getName(elem) === "input" &&
@@ -202,10 +206,10 @@ function namePseudo(names: string[]): Pseudo {
     if (typeof Set !== "undefined") {
         const nameSet = new Set(names);
 
-        return (elem, adapter) => nameSet.has(adapter.getName(elem));
+        return (elem, { adapter }) => nameSet.has(adapter.getName(elem));
     }
 
-    return (elem, adapter) => names.includes(adapter.getName(elem));
+    return (elem, { adapter }) => names.includes(adapter.getName(elem));
 }
 
 export function verifyPseudoArgs(

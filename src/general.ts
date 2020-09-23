@@ -18,7 +18,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     context: ElementNode[] | undefined,
     compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
-    const { adapter } = options;
+    const { adapter, equals } = options;
 
     switch (selector.type) {
         case "pseudo-element":
@@ -113,9 +113,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 for (let i = 0; i < siblings.length; i++) {
                     const currentSibling = siblings[i];
-                    if (adapter.isTag(currentSibling)) {
-                        if (currentSibling === elem) break;
-                        if (next(currentSibling)) return true;
+                    if (equals(elem, currentSibling)) break;
+                    if (adapter.isTag(currentSibling) && next(currentSibling)) {
+                        return true;
                     }
                 }
 
@@ -129,8 +129,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 for (let i = 0; i < siblings.length; i++) {
                     const currentSibling = siblings[i];
+                    if (equals(elem, currentSibling)) break;
                     if (adapter.isTag(currentSibling)) {
-                        if (currentSibling === elem) break;
                         lastElement = currentSibling;
                     }
                 }

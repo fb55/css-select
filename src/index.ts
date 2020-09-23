@@ -1,5 +1,9 @@
-import * as DomUtils from "domutils";
+import * as DomUtils from "../../domutils/src";
 import { falseFunc } from "boolbase";
+import type {
+    Node as DomHandlerNode,
+    Element as DomHandlerElement,
+} from "domhandler";
 import { compile as compileRaw, compileUnsafe, compileToken } from "./compile";
 import type {
     CompiledQuery,
@@ -13,7 +17,11 @@ import { getNextSiblings } from "./pseudo-selectors/subselects";
 
 export type { Options };
 
-const defaultOptions = { adapter: DomUtils };
+const defaultEquals = <Node>(a: Node, b: Node) => a === b;
+const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
+    adapter: DomUtils,
+    equals: defaultEquals,
+};
 
 function convertOptionFormats<Node, ElementNode extends Node>(
     options?: Options<Node, ElementNode>
@@ -24,7 +32,9 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
     const opts: Options<Node, ElementNode> = options ?? defaultOptions;
     // @ts-expect-error Same as above.
-    opts.adapter = opts.adapter ?? DomUtils;
+    opts.adapter ??= DomUtils;
+    // @ts-expect-error `equals` does not exist on `Options`
+    opts.equals ??= opts.adapter?.equals ?? defaultEquals;
 
     return opts as InternalOptions<Node, ElementNode>;
 }
