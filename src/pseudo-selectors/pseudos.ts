@@ -37,14 +37,16 @@ export const pseudos: Record<string, Pseudo> = {
     },
     "first-of-type"(elem, adapter) {
         const siblings = adapter.getSiblings(elem);
+        const elemName = adapter.getName(elem);
 
         for (let i = 0; i < siblings.length; i++) {
             const currentSibling = siblings[i];
-            if (adapter.isTag(currentSibling)) {
-                if (siblings[i] === elem) return true;
-                if (adapter.getName(currentSibling) === adapter.getName(elem)) {
-                    break;
-                }
+            if (currentSibling === elem) return true;
+            if (
+                adapter.isTag(currentSibling) &&
+                adapter.getName(currentSibling) === elemName
+            ) {
+                break;
             }
         }
 
@@ -52,44 +54,37 @@ export const pseudos: Record<string, Pseudo> = {
     },
     "last-of-type"(elem, adapter) {
         const siblings = adapter.getSiblings(elem);
+        const elemName = adapter.getName(elem);
 
         for (let i = siblings.length - 1; i >= 0; i--) {
             const currentSibling = siblings[i];
-            if (adapter.isTag(currentSibling)) {
-                if (siblings[i] === elem) return true;
-                if (adapter.getName(currentSibling) === adapter.getName(elem)) {
-                    break;
-                }
+            if (currentSibling === elem) return true;
+            if (
+                adapter.isTag(currentSibling) &&
+                adapter.getName(currentSibling) === elemName
+            ) {
+                break;
             }
         }
 
         return false;
     },
     "only-of-type"(elem, adapter) {
-        const siblings = adapter.getSiblings(elem);
+        const elemName = adapter.getName(elem);
 
-        for (let i = 0, j = siblings.length; i < j; i++) {
-            const currentSibling = siblings[i];
-            if (adapter.isTag(currentSibling)) {
-                if (currentSibling === elem) continue;
-                if (adapter.getName(currentSibling) === adapter.getName(elem)) {
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return adapter
+            .getSiblings(elem)
+            .every(
+                (sibling) =>
+                    sibling === elem ||
+                    !adapter.isTag(sibling) ||
+                    adapter.getName(sibling) !== elemName
+            );
     },
     "only-child"(elem, adapter) {
-        const siblings = adapter.getSiblings(elem);
-
-        for (let i = 0; i < siblings.length; i++) {
-            if (adapter.isTag(siblings[i]) && siblings[i] !== elem) {
-                return false;
-            }
-        }
-
-        return true;
+        return adapter
+            .getSiblings(elem)
+            .every((sibling) => sibling === elem || !adapter.isTag(sibling));
     },
 
     // :matches(a, area, link)[href]
