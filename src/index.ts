@@ -1,8 +1,7 @@
 import * as DomUtils from "domutils";
 import { falseFunc } from "boolbase";
 import { compile as compileRaw, compileUnsafe, compileToken } from "./compile";
-
-import {
+import type {
     CompiledQuery,
     Options,
     InternalOptions,
@@ -10,6 +9,7 @@ import {
     Adapter,
     Predicate,
 } from "./types";
+import { getNextSiblings } from "./pseudo-selectors/subselects";
 
 export type { Options };
 
@@ -87,17 +87,6 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
     };
 }
 
-function getNextSiblings<Node, ElementNode extends Node>(
-    elem: Node,
-    adapter: Adapter<Node, ElementNode>
-): Node[] {
-    const siblings = adapter.getSiblings(elem);
-    if (siblings.length <= 1) return [];
-    const elemIndex = siblings.indexOf(elem);
-    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
-    return siblings.slice(elemIndex + 1);
-}
-
 function appendNextSiblings<Node, ElementNode extends Node>(
     elem: ElementNode | ElementNode[],
     adapter: Adapter<Node, ElementNode>
@@ -107,11 +96,7 @@ function appendNextSiblings<Node, ElementNode extends Node>(
 
     for (let i = 0; i < elems.length; i++) {
         const nextSiblings = getNextSiblings(elems[i], adapter);
-        elems.push(
-            ...nextSiblings.filter((sibling): sibling is ElementNode =>
-                adapter.isTag(sibling)
-            )
-        );
+        elems.push(...nextSiblings);
     }
     return elems;
 }

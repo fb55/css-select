@@ -38,6 +38,14 @@ describe("API", () => {
             const ps = CSSselect.selectAll("p", [dom]);
             assert.deepEqual(CSSselect.selectAll("p", ps), ps);
         });
+        it("should support pseudos led by a traversal (#111)", () => {
+            const [dom] = makeDom(
+                '<div><div class="foo">a</div><div class="bar">b</div></div>'
+            );
+            const a = CSSselect.selectAll(".foo:has(+.bar)", dom);
+            assert.strictEqual(a.length, 1);
+            assert.strictEqual(a[0], dom.children[0]);
+        });
     });
 
     describe("unsatisfiable and universally valid selectors", () => {

@@ -27,6 +27,17 @@ export type Subselect = <Node, ElementNode extends Node>(
     compileToken: CompileToken<Node, ElementNode>
 ) => CompiledQuery<ElementNode>;
 
+export function getNextSiblings<Node, ElementNode extends Node>(
+    elem: Node,
+    adapter: Adapter<Node, ElementNode>
+): ElementNode[] {
+    const siblings = adapter.getSiblings(elem);
+    if (siblings.length <= 1) return [];
+    const elemIndex = siblings.indexOf(elem);
+    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
+    return siblings.slice(elemIndex + 1).filter(adapter.isTag);
+}
+
 /*
  * :not, :has and :matches have to compile selectors
  * doing this in src/pseudos.ts would lead to circular dependencies,
@@ -104,11 +115,23 @@ export const subselects: Record<string, Subselect> = {
 
         const hasElement = ensureIsTag(compiled, adapter);
 
+        const { shouldTestNextSiblings = false } = compiled;
+
+        /*
+         * `shouldTestNextSiblings` will only be true if the query starts with
+         * a traversal (sibling or adjacent). That means we will always have a context.
+         */
         if (context) {
-            return (elem) =>
-                next(elem) &&
-                ((context[0] = elem),
-                adapter.existsOne(hasElement, adapter.getChildren(elem)));
+            return (elem) => {
+                context[0] = elem;
+                const childs = adapter.getChildren(elem);
+                const nextElements = shouldTestNextSiblings
+                    ? [...childs, ...getNextSiblings(elem, adapter)]
+                    : childs;
+                return (
+                    next(elem) && adapter.existsOne(hasElement, nextElements)
+                );
+            };
         }
 
         return (elem) =>
