@@ -42,7 +42,7 @@
         "test": "mocha --parallel && npm run lint",
         "lint": "eslint .",
         "lcov": "nyc mocha",
-        "coveralls": "(cat coverage/lcov.info | coveralls || exit 0)",
+        "coveralls": "(nyc report --reporter=text-lcov | coveralls)",
         "build": "tsc"
     },
     "license": "BSD-2-Clause",
