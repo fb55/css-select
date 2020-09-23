@@ -187,30 +187,33 @@ export const filters: Record<string, Filter> = {
 
     // Dynamic state pseudos. These depend on optional Adapter methods.
     hover(next, _rule, { adapter }) {
-        if (typeof adapter.isHovered === "function") {
-            return function hover(elem) {
-                return next(elem) && adapter.isHovered(elem);
-            };
+        const { isHovered } = adapter;
+        if (typeof isHovered !== "function") {
+            return falseFunc;
         }
 
-        return falseFunc;
+        return function hover(elem) {
+            return isHovered(elem) && next(elem);
+        };
     },
     visited(next, _rule, { adapter }) {
-        if (typeof adapter.isVisited === "function") {
-            return function visited(elem) {
-                return next(elem) && adapter.isVisited(elem);
-            };
+        const { isVisited } = adapter;
+        if (typeof isVisited !== "function") {
+            return falseFunc;
         }
 
-        return falseFunc;
+        return function visited(elem) {
+            return isVisited(elem) && next(elem);
+        };
     },
     active(next, _rule, { adapter }) {
-        if (typeof adapter.isActive === "function") {
-            return function active(elem) {
-                return next(elem) && adapter.isActive(elem);
-            };
+        const { isActive } = adapter;
+        if (typeof isActive !== "function") {
+            return falseFunc;
         }
 
-        return falseFunc;
+        return function active(elem) {
+            return isActive(elem) && next(elem);
+        };
     },
 };
