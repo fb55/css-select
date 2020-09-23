@@ -49,47 +49,6 @@ function wrapCompile<Selector, Node, ElementNode extends Node>(
 
 /**
  * Compiles the query, returns a function.
- *
- * Supported simple selectors:
- *   * Universal (*)
- *   * Tag (<tagname>)
- *   * Attribute ([attr=foo]), with supported comparisons:
- *     * [attr] (existential)
- *     * =
- *     * ~=
- *     * |=
- *     * *=
- *     * ^=
- *     * $=
- *     * !=
- *     * Can be case insensitive (E.g. [attr=foo i])
- *   * Pseudos:
- *     * :not
- *     * :root
- *     * :empty
- *     * :[first|last]-child[-of-type]
- *     * :only-of-type, :only-child
- *     * :nth-[last-]child[-of-type]
- *     * :link, :visited (the latter doesn't match any elements)
- *     * :checked
- *     * :enabled, :disabled
- *     * :required, :optional
- *   * Nonstandard Pseudos (available when strict mode is not enabled):
- *     * `:contains`
- *     * `:icontains` (case-insensitive version of :contains)
- *     * `:has`
- *     * `:parent`
- *     * `:selected`
- *     * `:header, :button, :input, :text, :checkbox, :file, :password, :reset, :radio etc.
- *     * :matches
- *
- * Supported Combinators:
- *
- *   * Descendant (` `)
- *   * Child (`>`)
- *   * Parent (`<`) (when strict mode is not enabled)
- *   * Sibling (`~`)
- *   * Adjacent (`+`)
  */
 export const compile = wrapCompile(compileRaw);
 export const _compileUnsafe = wrapCompile(compileUnsafe);
