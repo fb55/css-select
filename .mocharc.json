@@ -1,6 +1,0 @@
-{
-    "extension": ["js", "ts"],
-    "require": "ts-node/register",
-    "check-leaks": true,
-    "reporter": "spec"
-}

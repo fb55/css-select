@@ -8,15 +8,13 @@
 
 import * as DomUtils from "domutils";
 import * as helper from "./tools/helper";
-import assert from "assert";
-import decircularize from "./decircularize";
-const document = helper.getDocument("nwmatcher.html");
 import * as CSSselect from "../src";
 import type { Node, Element } from "domhandler";
 
+const document = helper.getDocument("nwmatcher.html");
+
 // Prototype's `$` function
 function getById(...args: string[]): Element | Element[] {
-    if (args.some((arg) => typeof arg !== "string")) throw new Error();
     const elements = args.map((id) =>
         DomUtils.getElementById(id, document)
     ) as Element[];
@@ -25,475 +23,337 @@ function getById(...args: string[]): Element | Element[] {
 
 // NWMatcher methods
 const select = (query: string, doc: Node[] | Node = document): Node[] =>
-    CSSselect.selectAll(query, typeof doc === "string" ? select(doc) : doc);
-const match = CSSselect.is;
+    CSSselect.selectAll(query, doc);
 
-function assertEquivalent(
-    v1: Node | Node[],
-    v2: Node | Node[],
-    message?: string
-) {
-    return assert.deepStrictEqual(
-        decircularize(v1),
-        decircularize(v2),
-        message
-    );
-}
-
-// The tests...
 describe("NWMatcher", () => {
     describe("Basic Selectors", () => {
         it("*", () => {
             // Universal selector
-            const results = [];
-            const nodes = document.getElementsByTagName("*");
-            let index = 0;
-            const { length } = nodes;
-            let node;
-            // Collect all element nodes, excluding comments (IE)
-            for (; index < length; index++) {
-                if ((node = nodes[index]).tagName !== "!") {
-                    results[results.length] = node;
-                }
-            }
-            assertEquivalent(
-                select("*"),
-                results,
-                "Comment nodes should be ignored."
-            );
+            const results = document.getElementsByTagName("*");
+            // Comment nodes should be ignored.
+            expect(select("*")).toStrictEqual(results);
         });
 
         it("E", () => {
             // Type selector
             const nodes = document.getElementsByTagName("li");
-            assertEquivalent(select("li"), nodes);
-            assert.strictEqual(
-                select("strong", getById("fixtures"))[0],
+            expect(select("li")).toStrictEqual(nodes);
+            expect(select("strong", getById("fixtures"))[0]).toBe(
                 getById("strong")
             );
-            assertEquivalent(select("nonexistent"), []);
+            expect(select("nonexistent")).toHaveLength(0);
         });
 
         it("#id", () => {
             // ID selector
-            assert.strictEqual(select("#fixtures")[0], getById("fixtures"));
-            assertEquivalent(select("nonexistent"), []);
-            assert.strictEqual(
-                select("#troubleForm")[0],
-                getById("troubleForm")
-            );
+            expect(select("#fixtures")[0]).toBe(getById("fixtures"));
+            expect(select("nonexistent")).toHaveLength(0);
+            expect(select("#troubleForm")[0]).toBe(getById("troubleForm"));
         });
 
         it(".class", () => {
             // Class selector
-            assertEquivalent(
-                select(".first"),
+            expect(select(".first")).toStrictEqual(
                 getById("p", "link_1", "item_1")
             );
-            assertEquivalent(select(".second"), []);
+            expect(select(".second")).toHaveLength(0);
         });
 
         it("E#id", () => {
-            assert.strictEqual(select("strong#strong")[0], getById("strong"));
-            assertEquivalent(select("p#strong"), []);
+            expect(select("strong#strong")[0]).toBe(getById("strong"));
+            expect(select("p#strong")).toHaveLength(0);
         });
 
         it("E.class", () => {
             const secondLink = getById("link_2");
-            assertEquivalent(select("a.internal"), getById("link_1", "link_2"));
-            assert.strictEqual(select("a.internal.highlight")[0], secondLink);
-            assert.strictEqual(select("a.highlight.internal")[0], secondLink);
-            assertEquivalent(select("a.highlight.internal.nonexistent"), []);
+            expect(select("a.internal")).toStrictEqual(
+                getById("link_1", "link_2")
+            );
+            expect(select("a.internal.highlight")[0]).toBe(secondLink);
+            expect(select("a.highlight.internal")[0]).toBe(secondLink);
+            expect(select("a.highlight.internal.nonexistent")).toStrictEqual(
+                []
+            );
         });
 
         it("#id.class", () => {
             const secondLink = getById("link_2");
-            assert.strictEqual(select("#link_2.internal")[0], secondLink);
-            assert.strictEqual(select(".internal#link_2")[0], secondLink);
-            assert.strictEqual(
-                select("#link_2.internal.highlight")[0],
-                secondLink
-            );
-            assertEquivalent(select("#link_2.internal.nonexistent"), []);
+            expect(select("#link_2.internal")[0]).toBe(secondLink);
+            expect(select(".internal#link_2")[0]).toBe(secondLink);
+            expect(select("#link_2.internal.highlight")[0]).toBe(secondLink);
+            expect(select("#link_2.internal.nonexistent")).toHaveLength(0);
         });
 
         it("E#id.class", () => {
             const secondLink = getById("link_2");
-            assert.strictEqual(select("a#link_2.internal")[0], secondLink);
-            assert.strictEqual(select("a.internal#link_2")[0], secondLink);
-            assert.strictEqual(select("li#item_1.first")[0], getById("item_1"));
-            assertEquivalent(select("li#item_1.nonexistent"), []);
-            assertEquivalent(select("li#item_1.first.nonexistent"), []);
+            expect(select("a#link_2.internal")[0]).toBe(secondLink);
+            expect(select("a.internal#link_2")[0]).toBe(secondLink);
+            expect(select("li#item_1.first")[0]).toBe(getById("item_1"));
+            expect(select("li#item_1.nonexistent")).toHaveLength(0);
+            expect(select("li#item_1.first.nonexistent")).toHaveLength(0);
         });
     });
 
     describe("Attribute Selectors", () => {
         it("[foo]", () => {
-            assertEquivalent(
-                select("[href]", document.body),
+            expect(select("[href]", document.body)).toStrictEqual(
                 select("a[href]", document.body)
             );
-            assertEquivalent(
-                select("[class~=internal]"),
+            expect(select("[class~=internal]")).toStrictEqual(
                 select('a[class~="internal"]')
             );
-            assertEquivalent(select("[id]"), select("*[id]"));
-            assertEquivalent(
-                select("[type=radio]"),
+            expect(select("[id]")).toStrictEqual(select("*[id]"));
+            expect(select("[type=radio]")).toStrictEqual(
                 getById("checked_radio", "unchecked_radio")
             );
-            assertEquivalent(
-                select("[type=checkbox]"),
+            expect(select("[type=checkbox]")).toStrictEqual(
                 select("*[type=checkbox]")
             );
-            assertEquivalent(
-                select("[title]"),
+            expect(select("[title]")).toStrictEqual(
                 getById("with_title", "commaParent")
             );
-            assertEquivalent(
-                select("#troubleForm [type=radio]"),
+            expect(select("#troubleForm [type=radio]")).toStrictEqual(
                 select("#troubleForm *[type=radio]")
             );
-            assertEquivalent(
-                select("#troubleForm [type]"),
+            expect(select("#troubleForm [type]")).toStrictEqual(
                 select("#troubleForm *[type]")
             );
         });
 
         it("E[foo]", () => {
-            assertEquivalent(
-                select("h1[class]"),
-                select("#fixtures h1"),
-                "h1[class]"
-            );
-            assertEquivalent(
-                select("h1[CLASS]"),
-                select("#fixtures h1"),
-                "h1[CLASS]"
-            );
-            assert.strictEqual(
-                select("li#item_3[class]")[0],
-                getById("item_3"),
-                "li#item_3[class]"
-            );
-            assertEquivalent(
-                select('#troubleForm2 input[name="brackets[5][]"]'),
-                getById("chk_1", "chk_2")
-            );
+            expect(select("h1[class]")).toStrictEqual(select("#fixtures h1"));
+            expect(select("h1[CLASS]")).toStrictEqual(select("#fixtures h1"));
+            expect(select("li#item_3[class]")[0]).toBe(getById("item_3"));
+            expect(
+                select('#troubleForm2 input[name="brackets[5][]"]')
+            ).toStrictEqual(getById("chk_1", "chk_2"));
             // Brackets in attribute value
-            assert.strictEqual(
-                select('#troubleForm2 input[name="brackets[5][]"]:checked')[0],
-                getById("chk_1")
-            );
+            expect(
+                select('#troubleForm2 input[name="brackets[5][]"]:checked')[0]
+            ).toBe(getById("chk_1"));
             // Space in attribute value
-            assert.strictEqual(
-                select('cite[title="hello world!"]')[0],
+            expect(select('cite[title="hello world!"]')[0]).toBe(
                 getById("with_title")
             );
-            // Namespaced attributes
-            //  assertEquivalent(select('[xml:lang]'), [document.documentElement, getById("item_3")]);
-            //  assertEquivalent(select('*[xml:lang]'), [document.documentElement, getById("item_3")]);
+        });
+
+        it.skip("E[foo] with namespaced attributes", () => {
+            expect(select("[xml:lang]")).toStrictEqual([
+                document.documentElement,
+                getById("item_3"),
+            ]);
+            expect(select("*[xml:lang]")).toStrictEqual([
+                document.documentElement,
+                getById("item_3"),
+            ]);
         });
 
         it('E[foo="bar"]', () => {
-            assertEquivalent(
-                select('a[href="#"]'),
+            expect(select('a[href="#"]')).toStrictEqual(
                 getById("link_1", "link_2", "link_3")
             );
-            // assert.throws(() => select("a[href=#]"));
-            assert.strictEqual(
+            expect(
                 select(
                     '#troubleForm2 input[name="brackets[5][]"][value="2"]'
-                )[0],
-                getById("chk_2")
-            );
+                )[0]
+            ).toBe(getById("chk_2"));
         });
 
         it('E[foo~="bar"]', () => {
-            assertEquivalent(
-                select('a[class~="internal"]'),
-                getById("link_1", "link_2"),
-                'a[class~="internal"]'
+            expect(select('a[class~="internal"]')).toStrictEqual(
+                getById("link_1", "link_2")
             );
-            assertEquivalent(
-                select("a[class~=internal]"),
-                getById("link_1", "link_2"),
-                "a[class~=internal]"
+            expect(select("a[class~=internal]")).toStrictEqual(
+                getById("link_1", "link_2")
             );
-            assert.strictEqual(
-                select('a[class~=external][href="#"]')[0],
-                getById("link_3"),
-                'a[class~=external][href="#"]'
+            expect(select('a[class~=external][href="#"]')[0]).toBe(
+                getById("link_3")
             );
         });
 
         it.skip('E[foo|="en"]', () => {
-            assert.strictEqual(
-                select('*[xml:lang|="es"]')[0],
-                getById("item_3")
-            );
-            assert.strictEqual(
-                select('*[xml:lang|="ES"]')[0],
-                getById("item_3")
-            );
+            expect(select('*[xml:lang|="es"]')[0]).toBe(getById("item_3"));
+            expect(select('*[xml:lang|="ES"]')[0]).toBe(getById("item_3"));
         });
 
         it('E[foo^="bar"]', () => {
-            assertEquivalent(
-                select("div[class^=bro]"),
-                getById("father", "uncle"),
-                "matching beginning of string"
+            // Matching beginning of string
+            expect(select("div[class^=bro]")).toStrictEqual(
+                getById("father", "uncle")
             );
-            assertEquivalent(
-                select('#level1 *[id^="level2_"]'),
+            expect(select('#level1 *[id^="level2_"]')).toStrictEqual(
                 getById("level2_1", "level2_2", "level2_3")
             );
-            assertEquivalent(
-                select("#level1 *[id^=level2_]"),
+            expect(select("#level1 *[id^=level2_]")).toStrictEqual(
                 getById("level2_1", "level2_2", "level2_3")
             );
         });
 
         it('E[foo$="bar"]', () => {
-            assertEquivalent(
-                select("div[class$=men]"),
-                getById("father", "uncle"),
-                "matching end of string"
+            // Matching end of string
+            expect(select("div[class$=men]")).toStrictEqual(
+                getById("father", "uncle")
             );
-            assertEquivalent(
-                select('#level1 *[id$="_1"]'),
+            expect(select('#level1 *[id$="_1"]')).toStrictEqual(
                 getById("level2_1", "level3_1")
             );
-            assertEquivalent(
-                select("#level1 *[id$=_1]"),
+            expect(select("#level1 *[id$=_1]")).toStrictEqual(
                 getById("level2_1", "level3_1")
             );
         });
 
         it('E[foo*="bar"]', () => {
-            assertEquivalent(
-                select('div[class*="ers m"]'),
-                getById("father", "uncle"),
-                "matching substring"
+            // Matching substring
+            expect(select('div[class*="ers m"]')).toStrictEqual(
+                getById("father", "uncle")
             );
-            assertEquivalent(
-                select('#level1 *[id*="2"]'),
+            expect(select('#level1 *[id*="2"]')).toStrictEqual(
                 getById("level2_1", "level3_2", "level2_2", "level2_3")
             );
-            // assert.throws(() => select("#level1 *[id*=2]"));
         });
     });
 
     describe("Structural pseudo-classes", () => {
         it("E:first-child", () => {
-            assert.strictEqual(
-                select("#level1>*:first-child")[0],
+            expect(select("#level1>*:first-child")[0]).toBe(
                 getById("level2_1")
             );
-            assertEquivalent(
-                select("#level1 *:first-child"),
+            expect(select("#level1 *:first-child")).toStrictEqual(
                 getById("level2_1", "level3_1", "level_only_child")
             );
-            assertEquivalent(select("#level1>div:first-child"), []);
-            assertEquivalent(
-                select("#level1 span:first-child"),
+            expect(select("#level1>div:first-child")).toHaveLength(0);
+            expect(select("#level1 span:first-child")).toStrictEqual(
                 getById("level2_1", "level3_1")
             );
-            assertEquivalent(select("#level1:first-child"), []);
+            expect(select("#level1:first-child")).toHaveLength(0);
         });
 
         it("E:last-child", () => {
-            assert.strictEqual(
-                select("#level1>*:last-child")[0],
-                getById("level2_3")
-            );
-            assertEquivalent(
-                select("#level1 *:last-child"),
+            expect(select("#level1>*:last-child")[0]).toBe(getById("level2_3"));
+            expect(select("#level1 *:last-child")).toStrictEqual(
                 getById("level3_2", "level_only_child", "level2_3")
             );
-            assert.strictEqual(
-                select("#level1>div:last-child")[0],
+            expect(select("#level1>div:last-child")[0]).toBe(
                 getById("level2_3")
             );
-            assert.strictEqual(
-                select("#level1 div:last-child")[0],
+            expect(select("#level1 div:last-child")[0]).toBe(
                 getById("level2_3")
             );
-            assertEquivalent(select("#level1>span:last-child"), []);
+            expect(select("#level1>span:last-child")).toHaveLength(0);
         });
 
         it("E:nth-child(n)", () => {
-            assert.strictEqual(
-                select("#p *:nth-child(3)")[0],
-                getById("link_2")
-            );
-            assert.strictEqual(
-                select("#p a:nth-child(3)")[0],
-                getById("link_2"),
-                "nth-child"
-            );
-            assertEquivalent(
-                select("#list > li:nth-child(n+2)"),
+            expect(select("#p *:nth-child(3)")[0]).toBe(getById("link_2"));
+            expect(select("#p a:nth-child(3)")[0]).toBe(getById("link_2"));
+            expect(select("#list > li:nth-child(n+2)")).toStrictEqual(
                 getById("item_2", "item_3")
             );
-            assertEquivalent(
-                select("#list > li:nth-child(-n+2)"),
+            expect(select("#list > li:nth-child(-n+2)")).toStrictEqual(
                 getById("item_1", "item_2")
             );
         });
 
         it("E:nth-of-type(n)", () => {
-            assert.strictEqual(
-                select("#p a:nth-of-type(2)")[0],
-                getById("link_2"),
-                "nth-of-type"
-            );
-            assert.strictEqual(
-                select("#p a:nth-of-type(1)")[0],
-                getById("link_1"),
-                "nth-of-type"
-            );
+            expect(select("#p a:nth-of-type(2)")[0]).toBe(getById("link_2"));
+            expect(select("#p a:nth-of-type(1)")[0]).toBe(getById("link_1"));
         });
 
         it("E:nth-last-of-type(n)", () => {
-            assert.strictEqual(
-                select("#p a:nth-last-of-type(1)")[0],
-                getById("link_2"),
-                "nth-last-of-type"
+            expect(select("#p a:nth-last-of-type(1)")[0]).toBe(
+                getById("link_2")
             );
         });
 
         it("E:first-of-type", () => {
-            assert.strictEqual(
-                select("#p a:first-of-type")[0],
-                getById("link_1"),
-                "first-of-type"
-            );
+            expect(select("#p a:first-of-type")[0]).toBe(getById("link_1"));
         });
 
         it("E:last-of-type", () => {
-            assert.strictEqual(
-                select("#p a:last-of-type")[0],
-                getById("link_2"),
-                "last-of-type"
-            );
+            expect(select("#p a:last-of-type")[0]).toBe(getById("link_2"));
         });
 
         it("E:only-child", () => {
-            assert.strictEqual(
-                select("#level1 *:only-child")[0],
+            expect(select("#level1 *:only-child")[0]).toBe(
                 getById("level_only_child")
             );
             // Shouldn't return anything
-            assertEquivalent(select("#level1>*:only-child"), []);
-            assertEquivalent(select("#level1:only-child"), []);
-            assertEquivalent(
-                select("#level2_2 :only-child:not(:last-child)"),
-                []
-            );
-            assertEquivalent(
-                select("#level2_2 :only-child:not(:first-child)"),
-                []
-            );
+            expect(select("#level1>*:only-child")).toHaveLength(0);
+            expect(select("#level1:only-child")).toHaveLength(0);
+            expect(
+                select("#level2_2 :only-child:not(:last-child)")
+            ).toHaveLength(0);
+            expect(
+                select("#level2_2 :only-child:not(:first-child)")
+            ).toHaveLength(0);
         });
 
         it("E:empty", () => {
             (getById("level3_1") as Element).children = [];
 
-            assert.strictEqual(
-                select("#level3_1:empty")[0],
-                getById("level3_1"),
-                "IE forced empty content!"
-            );
+            // IE forced empty content!
+            expect(select("#level3_1:empty")[0]).toBe(getById("level3_1"));
 
             // Shouldn't return anything
-            assertEquivalent(select("span:empty > *"), []);
+            expect(select("span:empty > *")).toHaveLength(0);
         });
     });
 
     describe(":not", () => {
         it("E:not(s)", () => {
             // Negation pseudo-class
-            assertEquivalent(select('a:not([href="#"])'), []);
-            assertEquivalent(select("div.brothers:not(.brothers)"), []);
-            assertEquivalent(
-                select('a[class~=external]:not([href="#"])'),
-                [],
-                'a[class~=external][href!="#"]'
+            expect(select('a:not([href="#"])')).toHaveLength(0);
+            expect(select("div.brothers:not(.brothers)")).toHaveLength(0);
+            expect(select('a[class~=external]:not([href="#"])')).toStrictEqual(
+                []
             );
-            assert.strictEqual(
-                select("#p a:not(:first-of-type)")[0],
-                getById("link_2"),
-                "first-of-type"
+            expect(select("#p a:not(:first-of-type)")[0]).toBe(
+                getById("link_2")
             );
-            assert.strictEqual(
-                select("#p a:not(:last-of-type)")[0],
-                getById("link_1"),
-                "last-of-type"
+            expect(select("#p a:not(:last-of-type)")[0]).toBe(
+                getById("link_1")
             );
-            assert.strictEqual(
-                select("#p a:not(:nth-of-type(1))")[0],
-                getById("link_2"),
-                "nth-of-type"
+            expect(select("#p a:not(:nth-of-type(1))")[0]).toBe(
+                getById("link_2")
             );
-            assert.strictEqual(
-                select("#p a:not(:nth-last-of-type(1))")[0],
-                getById("link_1"),
-                "nth-last-of-type"
+            expect(select("#p a:not(:nth-last-of-type(1))")[0]).toBe(
+                getById("link_1")
             );
-            assert.strictEqual(
-                select("#p a:not([rel~=nofollow])")[0],
-                getById("link_2"),
-                "attribute 1"
+            expect(select("#p a:not([rel~=nofollow])")[0]).toBe(
+                getById("link_2")
             );
-            assert.strictEqual(
-                select("#p a:not([rel^=external])")[0],
-                getById("link_2"),
-                "attribute 2"
+            expect(select("#p a:not([rel^=external])")[0]).toBe(
+                getById("link_2")
             );
-            assert.strictEqual(
-                select("#p a:not([rel$=nofollow])")[0],
-                getById("link_2"),
-                "attribute 3"
+            expect(select("#p a:not([rel$=nofollow])")[0]).toBe(
+                getById("link_2")
             );
-            assert.strictEqual(
-                select('#p a:not([rel$="nofollow"]) > em')[0],
-                getById("em"),
-                "attribute 4"
+            expect(select('#p a:not([rel$="nofollow"]) > em')[0]).toBe(
+                getById("em")
             );
-            assert.strictEqual(
-                select("#list li:not(#item_1):not(#item_3)")[0],
-                getById("item_2"),
-                "adjacent :not clauses"
+            expect(select("#list li:not(#item_1):not(#item_3)")[0]).toBe(
+                getById("item_2")
             );
-            assert.strictEqual(
-                select("#grandfather > div:not(#uncle) #son")[0],
+            expect(select("#grandfather > div:not(#uncle) #son")[0]).toBe(
                 getById("son")
             );
-            assert.strictEqual(
-                select('#p a:not([rel$="nofollow"]) em')[0],
-                getById("em"),
-                "attribute 4 + all descendants"
+            expect(select('#p a:not([rel$="nofollow"]) em')[0]).toBe(
+                getById("em")
             );
-            assert.strictEqual(
-                select('#p a:not([rel$="nofollow"])>em')[0],
-                getById("em"),
-                "attribute 4 (without whitespace)"
+            expect(select('#p a:not([rel$="nofollow"])>em')[0]).toBe(
+                getById("em")
             );
         });
     });
 
     describe("UI element states pseudo-classes", () => {
         it("E:disabled", () => {
-            assert.strictEqual(
-                select("#troubleForm > p > *:disabled")[0],
+            expect(select("#troubleForm > p > *:disabled")[0]).toBe(
                 getById("disabled_text_field")
             );
         });
 
         it("E:checked", () => {
-            assertEquivalent(
-                select("#troubleForm *:checked"),
+            expect(select("#troubleForm *:checked")).toStrictEqual(
                 getById("checked_box", "checked_radio")
             );
         });
@@ -502,169 +362,123 @@ describe("NWMatcher", () => {
     describe("Combinators", () => {
         it("E F", () => {
             // Descendant
-            assertEquivalent(
-                select("#fixtures a *"),
+            expect(select("#fixtures a *")).toStrictEqual(
                 getById("em2", "em", "span")
             );
-            assert.strictEqual(select("div#fixtures p")[0], getById("p"));
+            expect(select("div#fixtures p")[0]).toBe(getById("p"));
         });
 
         it("E + F", () => {
             // Adjacent sibling
-            assert.strictEqual(
-                select("div.brothers + div.brothers")[0],
+            expect(select("div.brothers + div.brothers")[0]).toBe(
                 getById("uncle")
             );
-            assert.strictEqual(
-                select("div.brothers + div")[0],
-                getById("uncle")
-            );
-            assert.strictEqual(
-                select("#level2_1+span")[0],
-                getById("level2_2")
-            );
-            assert.strictEqual(
-                select("#level2_1 + span")[0],
-                getById("level2_2")
-            );
-            assert.strictEqual(select("#level2_1 + *")[0], getById("level2_2"));
-            assertEquivalent(select("#level2_2 + span"), []);
-            assert.strictEqual(
-                select("#level3_1 + span")[0],
-                getById("level3_2")
-            );
-            assert.strictEqual(select("#level3_1 + *")[0], getById("level3_2"));
-            assertEquivalent(select("#level3_2 + *"), []);
-            assertEquivalent(select("#level3_1 + em"), []);
+            expect(select("div.brothers + div")[0]).toBe(getById("uncle"));
+            expect(select("#level2_1+span")[0]).toBe(getById("level2_2"));
+            expect(select("#level2_1 + span")[0]).toBe(getById("level2_2"));
+            expect(select("#level2_1 + *")[0]).toBe(getById("level2_2"));
+            expect(select("#level2_2 + span")).toHaveLength(0);
+            expect(select("#level3_1 + span")[0]).toBe(getById("level3_2"));
+            expect(select("#level3_1 + *")[0]).toBe(getById("level3_2"));
+            expect(select("#level3_2 + *")).toHaveLength(0);
+            expect(select("#level3_1 + em")).toHaveLength(0);
 
-            assert.strictEqual(
-                select("+ div.brothers", select("div.brothers"))[0],
+            expect(select("+ div.brothers", select("div.brothers"))[0]).toBe(
                 getById("uncle")
             );
-            assert.strictEqual(
-                select("+ div", select("div.brothers"))[0],
+            expect(select("+ div", select("div.brothers"))[0]).toBe(
                 getById("uncle")
             );
-            assert.strictEqual(
-                select("+span", select("#level2_1"))[0],
+            expect(select("+span", select("#level2_1"))[0]).toBe(
                 getById("level2_2")
             );
-            assert.strictEqual(
-                select("+ span", select("#level2_1"))[0],
+            expect(select("+ span", select("#level2_1"))[0]).toBe(
                 getById("level2_2")
             );
-            assert.strictEqual(
-                select("+ *", select("#level2_1"))[0],
+            expect(select("+ *", select("#level2_1"))[0]).toBe(
                 getById("level2_2")
             );
-            assertEquivalent(select("+ span", select("#level2_2")), []);
-            assert.strictEqual(
-                select("+ span", select("#level3_1"))[0],
+            expect(select("+ span", select("#level2_2"))).toHaveLength(0);
+            expect(select("+ span", select("#level3_1"))[0]).toBe(
                 getById("level3_2")
             );
-            assert.strictEqual(
-                select("+ *", select("#level3_1"))[0],
+            expect(select("+ *", select("#level3_1"))[0]).toBe(
                 getById("level3_2")
             );
-            assertEquivalent(select("+ *", select("#level3_2")), []);
-            assertEquivalent(select("+ em", select("#level3_1")), []);
+            expect(select("+ *", select("#level3_2"))).toHaveLength(0);
+            expect(select("+ em", select("#level3_1"))).toHaveLength(0);
         });
 
         it("E > F", () => {
             // Child
-            assertEquivalent(
-                select("p.first > a"),
+            expect(select("p.first > a")).toStrictEqual(
                 getById("link_1", "link_2")
             );
-            assertEquivalent(
-                select("div#grandfather > div"),
+            expect(select("div#grandfather > div")).toStrictEqual(
                 getById("father", "uncle")
             );
-            assertEquivalent(
-                select("#level1>span"),
+            expect(select("#level1>span")).toStrictEqual(
                 getById("level2_1", "level2_2")
             );
-            assertEquivalent(
-                select("#level1 > span"),
+            expect(select("#level1 > span")).toStrictEqual(
                 getById("level2_1", "level2_2")
             );
-            assertEquivalent(
-                select("#level2_1 > *"),
+            expect(select("#level2_1 > *")).toStrictEqual(
                 getById("level3_1", "level3_2")
             );
-            assertEquivalent(select("div > #nonexistent"), []);
+            expect(select("div > #nonexistent")).toHaveLength(0);
 
-            assertEquivalent(
-                select("> a", select("p.first")),
+            expect(select("> a", select("p.first"))).toStrictEqual(
                 getById("link_1", "link_2")
             );
-            assertEquivalent(
-                select("> div", select("div#grandfather")),
+            expect(select("> div", select("div#grandfather"))).toStrictEqual(
                 getById("father", "uncle")
             );
-            assertEquivalent(
-                select(">span", select("#level1")),
+            expect(select(">span", select("#level1"))).toStrictEqual(
                 getById("level2_1", "level2_2")
             );
-            assertEquivalent(
-                select("> span", select("#level1")),
+            expect(select("> span", select("#level1"))).toStrictEqual(
                 getById("level2_1", "level2_2")
             );
-            assertEquivalent(
-                select("> *", select("#level2_1")),
+            expect(select("> *", select("#level2_1"))).toStrictEqual(
                 getById("level3_1", "level3_2")
             );
-            assertEquivalent(select("> #nonexistent", select("div")), []);
+            expect(select("> #nonexistent", select("div"))).toHaveLength(0);
         });
 
         it("E ~ F", () => {
             // General sibling
-            assert.strictEqual(select("h1 ~ ul")[0], getById("list"));
-            assertEquivalent(select("#level2_2 ~ span"), []);
-            assertEquivalent(select("#level3_2 ~ *"), []);
-            assertEquivalent(select("#level3_1 ~ em"), []);
-            assertEquivalent(select("div ~ #level3_2"), []);
-            assertEquivalent(select("div ~ #level2_3"), []);
-            assert.strictEqual(
-                select("#level2_1 ~ span")[0],
-                getById("level2_2")
-            );
-            assertEquivalent(
-                select("#level2_1 ~ *"),
+            expect(select("h1 ~ ul")[0]).toBe(getById("list"));
+            expect(select("#level2_2 ~ span")).toHaveLength(0);
+            expect(select("#level3_2 ~ *")).toHaveLength(0);
+            expect(select("#level3_1 ~ em")).toHaveLength(0);
+            expect(select("div ~ #level3_2")).toHaveLength(0);
+            expect(select("div ~ #level2_3")).toHaveLength(0);
+            expect(select("#level2_1 ~ span")[0]).toBe(getById("level2_2"));
+            expect(select("#level2_1 ~ *")).toStrictEqual(
                 getById("level2_2", "level2_3")
             );
-            assert.strictEqual(
-                select("#level3_1 ~ #level3_2")[0],
+            expect(select("#level3_1 ~ #level3_2")[0]).toBe(
                 getById("level3_2")
             );
-            assert.strictEqual(
-                select("span ~ #level3_2")[0],
-                getById("level3_2")
-            );
+            expect(select("span ~ #level3_2")[0]).toBe(getById("level3_2"));
 
-            assert.strictEqual(
-                select("~ ul", select("h1"))[0],
-                getById("list")
-            );
-            assertEquivalent(select("~ span", select("#level2_2")), []);
-            assertEquivalent(select("~ *", select("#level3_2")), []);
-            assertEquivalent(select("~ em", select("#level3_1")), []);
-            assertEquivalent(select("~ #level3_2", select("div")), []);
-            assertEquivalent(select("~ #level2_3", select("div")), []);
-            assert.strictEqual(
-                select("~ span", select("#level2_1"))[0],
+            expect(select("~ ul", select("h1"))[0]).toBe(getById("list"));
+            expect(select("~ span", select("#level2_2"))).toHaveLength(0);
+            expect(select("~ *", select("#level3_2"))).toHaveLength(0);
+            expect(select("~ em", select("#level3_1"))).toHaveLength(0);
+            expect(select("~ #level3_2", select("div"))).toHaveLength(0);
+            expect(select("~ #level2_3", select("div"))).toHaveLength(0);
+            expect(select("~ span", select("#level2_1"))[0]).toBe(
                 getById("level2_2")
             );
-            assertEquivalent(
-                select("~ *", select("#level2_1")),
+            expect(select("~ *", select("#level2_1"))).toStrictEqual(
                 getById("level2_2", "level2_3")
             );
-            assert.strictEqual(
-                select("~ #level3_2", select("#level3_1"))[0],
+            expect(select("~ #level3_2", select("#level3_1"))[0]).toBe(
                 getById("level3_2")
             );
-            assert.strictEqual(
-                select("~ #level3_2", select("span"))[0],
+            expect(select("~ #level3_2", select("span"))[0]).toBe(
                 getById("level3_2")
             );
         });
@@ -674,97 +488,129 @@ describe("NWMatcher", () => {
         it("NW.Dom.match", () => {
             const element = getById("dupL1");
             // Assertions
-            assert.ok(match(element, "span"));
-            assert.ok(match(element, "span#dupL1"));
-            assert.ok(match(element, "div > span"), "child combinator");
-            assert.ok(
-                match(element, "#dupContainer span"),
-                "descendant combinator"
-            );
-            assert.ok(match(element, "#dupL1"), "ID only");
-            assert.ok(match(element, "span.span_foo"), "class name 1");
-            assert.ok(match(element, "span.span_bar"), "class name 2");
-            assert.ok(
-                match(element, "span:first-child"),
-                "first-child pseudoclass"
-            );
+            expect(CSSselect.is(element, "span")).toBe(true);
+            expect(CSSselect.is(element, "span#dupL1")).toBe(true);
+            // Child combinator
+            expect(CSSselect.is(element, "div > span")).toBe(true);
+            // Descendant combinator
+            expect(CSSselect.is(element, "#dupContainer span")).toBe(true);
+            // ID only
+            expect(CSSselect.is(element, "#dupL1")).toBe(true);
+            // Class name 1
+            expect(CSSselect.is(element, "span.span_foo")).toBe(true);
+            // Class name 2
+            expect(CSSselect.is(element, "span.span_bar")).toBe(true);
+            // First-child pseudoclass
+            expect(CSSselect.is(element, "span:first-child")).toBe(true);
             // Refutations
-            assert.ok(!match(element, "span.span_wtf"), "bogus class name");
-            assert.ok(!match(element, "#dupL2"), "different ID");
-            assert.ok(!match(element, "div"), "different tag name");
-            assert.ok(!match(element, "span span"), "different ancestry");
-            assert.ok(!match(element, "span > span"), "different parent");
-            assert.ok(
-                !match(element, "span:nth-child(5)"),
-                "different pseudoclass"
-            );
+
+            // Bogus class name
+            expect(CSSselect.is(element, "span.span_wtf")).toBe(false);
+            // Different ID
+            expect(CSSselect.is(element, "#dupL2")).toBe(false);
+            // Different tag name
+            expect(CSSselect.is(element, "div")).toBe(false);
+            // Different ancestry
+            expect(CSSselect.is(element, "span span")).toBe(false);
+            // Different parent
+            expect(CSSselect.is(element, "span > span")).toBe(false);
+            // Different pseudoclass
+            expect(CSSselect.is(element, "span:nth-child(5)")).toBe(false);
             // Misc.
-            assert.ok(!match(getById("link_2"), "a[rel^=external]"));
-            assert.ok(match(getById("link_1"), "a[rel^=external]"));
-            assert.ok(match(getById("link_1"), 'a[rel^="external"]'));
-            assert.ok(match(getById("link_1"), "a[rel^='external']"));
+            expect(CSSselect.is(getById("link_2"), "a[rel^=external]")).toBe(
+                false
+            );
+            expect(CSSselect.is(getById("link_1"), "a[rel^=external]")).toBe(
+                true
+            );
+            expect(CSSselect.is(getById("link_1"), 'a[rel^="external"]')).toBe(
+                true
+            );
+            expect(CSSselect.is(getById("link_1"), "a[rel^='external']")).toBe(
+                true
+            );
         });
 
         it("Equivalent Selectors", () => {
-            assertEquivalent(
-                select("div.brothers"),
+            expect(select("div.brothers")).toStrictEqual(
                 select("div[class~=brothers]")
             );
-            assertEquivalent(
-                select("div.brothers"),
+            expect(select("div.brothers")).toStrictEqual(
                 select("div[class~=brothers].brothers")
             );
-            assertEquivalent(
-                select("div:not(.brothers)"),
+            expect(select("div:not(.brothers)")).toStrictEqual(
                 select("div:not([class~=brothers])")
             );
-            assertEquivalent(select("li ~ li"), select("li:not(:first-child)"));
-            assertEquivalent(select("ul > li"), select("ul > li:nth-child(n)"));
-            assertEquivalent(
-                select("ul > li:nth-child(even)"),
+            expect(select("li ~ li")).toStrictEqual(
+                select("li:not(:first-child)")
+            );
+            expect(select("ul > li")).toStrictEqual(
+                select("ul > li:nth-child(n)")
+            );
+            expect(select("ul > li:nth-child(even)")).toStrictEqual(
                 select("ul > li:nth-child(2n)")
             );
-            assertEquivalent(
-                select("ul > li:nth-child(odd)"),
+            expect(select("ul > li:nth-child(odd)")).toStrictEqual(
                 select("ul > li:nth-child(2n+1)")
             );
-            assertEquivalent(
-                select("ul > li:first-child"),
+            expect(select("ul > li:first-child")).toStrictEqual(
                 select("ul > li:nth-child(1)")
             );
-            assertEquivalent(
-                select("ul > li:last-child"),
+            expect(select("ul > li:last-child")).toStrictEqual(
                 select("ul > li:nth-last-child(1)")
             );
-            /* Opera 10 does not accept values > 128 as a parameter to :nth-child
-			See <http://operawiki.info/ArtificialLimits> */
-            assertEquivalent(
-                select("ul > li:nth-child(n-128)"),
+            /*
+             * Opera 10 does not accept values > 128 as a parameter to :nth-child
+             * See <http://operawiki.info/ArtificialLimits>
+             */
+            expect(select("ul > li:nth-child(n-128)")).toStrictEqual(
                 select("ul > li")
             );
-            assertEquivalent(select("ul>li"), select("ul > li"));
-            assertEquivalent(
-                select('#p a:not([rel$="nofollow"])>em'),
+            expect(select("ul>li")).toStrictEqual(select("ul > li"));
+            expect(select('#p a:not([rel$="nofollow"])>em')).toStrictEqual(
                 select('#p a:not([rel$="nofollow"]) > em')
             );
         });
 
-        it("Multiple Selectors", () => {
+        it.skip("Multiple Selectors with lang", () => {
             // The next two assertions should return document-ordered lists of matching elements --Diego Perini
-            //  assertEquivalent(select('#list, .first,*[xml:lang="es-us"] , #troubleForm'), getById('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'));
-            //  assertEquivalent(select('#list, .first, *[xml:lang="es-us"], #troubleForm'), getById('p', 'link_1', 'list', 'item_1', 'item_3', 'troubleForm'));
-            assertEquivalent(
+            expect(
+                select('#list, .first,*[xml:lang="es-us"] , #troubleForm')
+            ).toStrictEqual(
+                getById(
+                    "p",
+                    "link_1",
+                    "list",
+                    "item_1",
+                    "item_3",
+                    "troubleForm"
+                )
+            );
+            expect(
+                select('#list, .first, *[xml:lang="es-us"], #troubleForm')
+            ).toStrictEqual(
+                getById(
+                    "p",
+                    "link_1",
+                    "list",
+                    "item_1",
+                    "item_3",
+                    "troubleForm"
+                )
+            );
+        });
+
+        it("Multiple Selectors", () => {
+            expect(
                 select(
                     'form[title*="commas,"], input[value="#commaOne,#commaTwo"]'
-                ),
-                getById("commaParent", "commaChild")
-            );
-            assertEquivalent(
+                )
+            ).toStrictEqual(getById("commaParent", "commaChild"));
+            expect(
                 select(
                     'form[title*="commas,"], input[value="#commaOne,#commaTwo"]'
-                ),
-                getById("commaParent", "commaChild")
-            );
+                )
+            ).toStrictEqual(getById("commaParent", "commaChild"));
         });
     });
 });

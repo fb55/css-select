@@ -1,4 +1,3 @@
-import * as assert from "assert";
 import * as helper from "./helper";
 import CSSselect from "../../src";
 import type { Element, Node } from "domhandler";
@@ -20,24 +19,17 @@ export function q(...ids: string[]): Element[] {
 /**
  * Asserts that a select matches the given IDs
  * @param assertionName - Assertion name
- * @param sizzleSelector - Sizzle selector
+ * @param selector - Selector
  * @param expectedIds - Array of ids to construct what is expected
  * @example t("Check for something", "//[a]", ["foo", "baar"]);
  * @returns `true` iff the selector produces the expected elements.
  */
-export function t(
-    assertionName: string,
-    sizzleSelector: string,
-    expectedIds: string[]
-): void {
-    const actual = CSSselect(sizzleSelector, document) as Element[];
+export function t(selector: string, expectedIds: string[]): void {
+    const actual = CSSselect(selector, document) as Element[];
     const actualIds = actual.map((e) => e.attribs.id);
 
-    assert.deepStrictEqual(
-        actualIds,
-        expectedIds,
-        `${assertionName} (${sizzleSelector})`
-    );
+    // Should not contain falsy values
+    expect(actualIds).toStrictEqual(expectedIds);
 }
 
 const xmlDoc = helper.getDOMFromPath("fries.xml", {

@@ -1,7 +1,4 @@
 language: node_js
 node_js:
     - lts/*
-script:
-    - npm run lcov
-    - npm run lint
-after_success: npm run coveralls
+after_success: npm run coverage
