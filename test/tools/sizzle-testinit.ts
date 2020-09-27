@@ -18,14 +18,18 @@ export function q(...ids: string[]): Element[] {
 
 /**
  * Asserts that a select matches the given IDs
- * @param assertionName - Assertion name
  * @param selector - Selector
  * @param expectedIds - Array of ids to construct what is expected
+ * @param context - Root of the current search.
  * @example t("Check for something", "//[a]", ["foo", "baar"]);
  * @returns `true` iff the selector produces the expected elements.
  */
-export function t(selector: string, expectedIds: string[]): void {
-    const actual = CSSselect(selector, document) as Element[];
+export function t(
+    selector: string,
+    expectedIds: string[],
+    context: Node[] | Node | null = document
+): void {
+    const actual = CSSselect(selector, context) as Element[];
     const actualIds = actual.map((e) => e.attribs.id);
 
     // Should not contain falsy values

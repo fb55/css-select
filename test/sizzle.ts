@@ -71,8 +71,10 @@ describe("Sizzle", () => {
         expect(CSSselect.selectAll("param", obj1)).toHaveLength(2);
 
         // Finding selects with a context.
-        expect(CSSselect.selectAll("select", form)).toStrictEqual(
-            q("select1", "select2", "select3", "select4", "select5")
+        t(
+            "select",
+            ["select1", "select2", "select3", "select4", "select5"],
+            form
         );
 
         /*
@@ -111,32 +113,19 @@ describe("Sizzle", () => {
         // Test Conflict ID
         const lengthtest = document.getElementById("lengthtest");
         // Finding element with id of ID.
-        expect(CSSselect.selectAll("#idTest", lengthtest)).toStrictEqual(
-            q("idTest")
-        );
+        t("#idTest", ["idTest"], lengthtest);
         // Finding element with id of ID.
-        expect(CSSselect.selectAll("[name='id']", lengthtest)).toStrictEqual(
-            q("idTest")
-        );
+        t("[name='id']", ["idTest"], lengthtest);
         // Finding elements with id of ID.
-        expect(
-            CSSselect.selectAll("input[id='idTest']", lengthtest)
-        ).toStrictEqual(q("idTest"));
+        t("input[id='idTest']", ["idTest"], lengthtest);
 
         const siblingTest = document.getElementById("siblingTest");
         // Element-rooted QSA does not select based on document context
-        expect(CSSselect.selectAll("div em", siblingTest)).toStrictEqual([]);
+        t("div em", [], siblingTest);
         // Element-rooted QSA does not select based on document context
-        expect(
-            CSSselect.selectAll(
-                "div em, div em, div em:not(div em)",
-                siblingTest
-            )
-        ).toStrictEqual([]);
+        t("div em, div em, div em:not(div em)", [], siblingTest);
         // Escaped commas do not get treated with an id in element-rooted QSA
-        expect(CSSselect.selectAll("div em, em\\,", siblingTest)).toStrictEqual(
-            []
-        );
+        t("div em, em\\,", [], siblingTest);
 
         const iframe = document.getElementById("iframe");
         iframe.children = helper.getDOM("<body><p id='foo'>bar</p></body>");
@@ -153,7 +142,7 @@ describe("Sizzle", () => {
         for (let i = 0; i < 100; i++) {
             markup = `<div>${markup}</div>`;
         }
-        const html = parseDOM(markup)[0];
+        const [html] = parseDOM(markup);
         DomUtils.appendChild(document.body, html);
         // No stack or performance problems with large amounts of descendents
         expect(
@@ -317,17 +306,17 @@ describe("Sizzle", () => {
         // Child escaped ID
         t("form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
 
-        const fiddle = parseDOM(
+        const [fiddle] = parseDOM(
             "<div id='fiddle\\Foo'><span id='fiddleSpan'></span></div>"
-        )[0];
+        );
         DomUtils.appendChild(document.getElementById("qunit-fixture"), fiddle);
         // Escaped ID as context
-        expect(
-            CSSselect.selectAll(
-                "> span",
-                CSSselect.selectAll("#fiddle\\\\Foo", document)[0]
-            )
-        ).toStrictEqual(q("fiddleSpan"));
+        t(
+            "> span",
+            ["fiddleSpan"],
+            CSSselect.selectOne("#fiddle\\\\Foo", document)
+        );
+
         DomUtils.removeElement(fiddle);
 
         // ID Selector, child ID present
@@ -344,7 +333,7 @@ describe("Sizzle", () => {
 
         // ID selector with same value for a name attribute
         expect(
-            (CSSselect.selectAll("#tName1", document)[0] as Element).attribs.id
+            (CSSselect.selectOne("#tName1", document) as Element).attribs.id
         ).toBe("tName1");
         // ID selector non-existing but name attribute on an A tag
         t("#tName2", []);
@@ -354,10 +343,10 @@ describe("Sizzle", () => {
         t("#tName1 span", ["tName1-span"]);
         // Ending with ID
         expect(
-            (CSSselect.selectAll("div > div #tName1", document)[0] as Element)
+            (CSSselect.selectOne("div > div #tName1", document) as Element)
                 .attribs.id
         ).toBe(
-            (CSSselect.selectAll("#tName1-span", document)[0].parent as Element)
+            (CSSselect.selectOne("#tName1-span", document)?.parent as Element)
                 .attribs.id
         );
 
@@ -374,9 +363,7 @@ describe("Sizzle", () => {
         t("#asdfasdf #foobar", []); // Bug #986
 
         // ID selector within the context of another element
-        expect(CSSselect.selectAll("div#form", document.body)).toStrictEqual(
-            []
-        );
+        t("div#form", [], document.body);
 
         // Underscore ID
         t("#types_all", ["types_all"]);
@@ -465,9 +452,9 @@ describe("Sizzle", () => {
             CSSselect.selectAll(".e.hasOwnProperty.toString", div)
         ).toStrictEqual([lastChild]);
 
-        const div2 = parseDOM(
+        const [div2] = parseDOM(
             "<div><svg width='200' height='250' version='1.1' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='30' height='30' class='foo'></rect></svg></div>"
-        )[0];
+        );
         // Class selector against SVG
         expect(CSSselect.selectAll(".foo", div2)).toHaveLength(1);
     });
@@ -494,15 +481,11 @@ describe("Sizzle", () => {
 
         const form1 = document.getElementById("form");
         // Name selector within the context of another element
-        expect(CSSselect.selectAll("input[name=action]", form1)).toStrictEqual(
-            q("text1")
-        );
+        t("input[name=action]", ["text1"], form1);
         // Name selector for grouped form element within the context of another element
-        expect(
-            CSSselect.selectAll("input[name='foo[bar]']", form1)
-        ).toStrictEqual(q("hidden2"));
+        t("input[name='foo[bar]']", ["hidden2"], form1);
 
-        const form2 = parseDOM("<form><input name='id'/></form>")[0];
+        const [form2] = parseDOM("<form><input name='id'/></form>");
         DomUtils.appendChild(document.body, form2);
 
         // Make sure that rooted queries on forms (with possible expandos) work.
@@ -659,23 +642,15 @@ describe("Sizzle", () => {
         const siblingFirst = document.getElementById("siblingfirst");
 
         // Element Preceded By with a context.
-        expect(CSSselect.selectAll("~ em", siblingFirst)).toStrictEqual(
-            q("siblingnext", "siblingthird")
-        );
+        t("~ em", ["siblingnext", "siblingthird"], siblingFirst);
         // Element Directly Preceded By with a context.
-        expect(CSSselect.selectAll("+ em", siblingFirst)).toStrictEqual(
-            q("siblingnext")
-        );
+        t("+ em", ["siblingnext"], siblingFirst);
 
         const en = document.getElementById("en");
         // Compound selector with context, beginning with sibling test.
-        expect(CSSselect.selectAll("+ p, a", en)).toStrictEqual(
-            q("yahoo", "sap")
-        );
+        t("+ p, a", ["yahoo", "sap"], en);
         // Compound selector with context, containing sibling test.
-        expect(CSSselect.selectAll("a, + p", en)).toStrictEqual(
-            q("yahoo", "sap")
-        );
+        t("a, + p", ["yahoo", "sap"], en);
 
         // Multiple combinators selects all levels
         t("#siblingTest em *", [
@@ -714,12 +689,11 @@ describe("Sizzle", () => {
         // Non-existant ancestors
         t(".fototab > .thumbnails > a", []);
         // Child of scope
-        expect(
-            CSSselect.selectOne(
-                ":scope > label",
-                CSSselect.selectOne("#scopeTest", document)
-            )
-        ).toStrictEqual(CSSselect.selectOne("#scopeTest--child", document));
+        t(
+            ":scope > label",
+            ["scopeTest--child"],
+            CSSselect.selectOne("#scopeTest", document)
+        );
     });
 
     it("attributes", () => {
@@ -788,27 +762,21 @@ describe("Sizzle", () => {
         t("input[name*='foo[bar]']", ["hidden2"]);
 
         // Without context, single-quoted attribute containing ','
-        expect(
-            CSSselect.selectAll("input[data-comma='0,1']", document)
-        ).toStrictEqual([document.getElementById("el12087")]);
+        t("input[data-comma='0,1']", ["el12087"], document);
         // Without context, double-quoted attribute containing ','
-        expect(
-            CSSselect.selectAll('input[data-comma="0,1"]', document)
-        ).toStrictEqual([document.getElementById("el12087")]);
+        t('input[data-comma="0,1"]', ["el12087"]);
         // With context, single-quoted attribute containing ','
-        expect(
-            CSSselect.selectAll(
-                "input[data-comma='0,1']",
-                document.getElementById("t12087")
-            )
-        ).toStrictEqual([document.getElementById("el12087")]);
+        t(
+            "input[data-comma='0,1']",
+            ["el12087"],
+            document.getElementById("t12087")
+        );
         // With context, double-quoted attribute containing ','
-        expect(
-            CSSselect.selectAll(
-                'input[data-comma="0,1"]',
-                document.getElementById("t12087")
-            )
-        ).toStrictEqual([document.getElementById("el12087")]);
+        t(
+            'input[data-comma="0,1"]',
+            ["el12087"],
+            document.getElementById("t12087")
+        );
 
         // Multiple Attribute Equals
         t("#form input[type='radio'], #form input[type='hidden']", [
@@ -917,58 +885,34 @@ describe("Sizzle", () => {
         t("input[id=types_all]", ["types_all"]);
 
         // Escaped space
-        expect(
-            CSSselect.selectAll("input[name=foo\\ bar]", document)
-        ).toStrictEqual(q("attrbad_space"));
+        t("input[name=foo\\ bar]", ["attrbad_space"]);
         // Escaped dot
-        expect(
-            CSSselect.selectAll("input[name=foo\\.baz]", document)
-        ).toStrictEqual(q("attrbad_dot"));
+        t("input[name=foo\\.baz]", ["attrbad_dot"]);
         // Escaped brackets
-        expect(
-            CSSselect.selectAll("input[name=foo\\[baz\\]]", document)
-        ).toStrictEqual(q("attrbad_brackets"));
+        t("input[name=foo\\[baz\\]]", ["attrbad_brackets"]);
 
         // TODO Fix attribute parsing
         /*
          * // Escaped quote + right bracket
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='foo_baz\\']']", document)
-         * ).toStrictEqual(q("attrbad_injection"));
+         * t("input[data-attr='foo_baz\\']']", ["attrbad_injection"]);
          *
          *  // Quoted quote
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\'']", document)
-         * ).toStrictEqual(q("attrbad_quote"));
+         * t("input[data-attr='\\'']", ["attrbad_quote"]);
          *  // Quoted backslash
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\\\']", document)
-         * ).toStrictEqual(q("attrbad_backslash"));
+         * t("input[data-attr='\\\\']", ["attrbad_backslash"]);
          *  // Quoted backslash quote
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\\\\\'']", document)
-         * ).toStrictEqual(q("attrbad_backslash_quote"));
+         * t("input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"]);
          *  // Quoted backslash backslash
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\\\\\\\']", document)
-         * ).toStrictEqual(q("attrbad_backslash_backslash"));
+         * t("input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"]);
          *
          *  // Quoted backslash backslash (numeric escape)
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\5C\\\\']", document)
-         * ).toStrictEqual(q("attrbad_backslash_backslash"));
+         * t("input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"]);
          *  // Quoted backslash backslash (numeric escape with trailing space)
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\5C \\\\']", document)
-         * ).toStrictEqual(q("attrbad_backslash_backslash"));
+         * t("input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"]);
          *  // Quoted backslash backslash (numeric escape with trailing tab)
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\5C\t\\\\']", document)
-         * ).toStrictEqual(q("attrbad_backslash_backslash"));
-         *  // Long numeric escape (BMP)
-         * expect(
-         *     CSSselect.selectAll("input[data-attr='\\04e00']", document)
-         * ).toStrictEqual(q("attrbad_unicode"));
+         * t("input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"]);
+         * // Long numeric escape (BMP)
+         * t("input[data-attr='\\04e00']", ["attrbad_unicode"]);
          */
 
         document.getElementById("attrbad_unicode").attribs["data-attr"] =
@@ -977,9 +921,7 @@ describe("Sizzle", () => {
          * It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
          * Long numeric escape (non-BMP)
          */
-        expect(
-            CSSselect.selectAll("input[data-attr='\\01D306A']", document)
-        ).toStrictEqual(q("attrbad_unicode"));
+        t("input[data-attr='\\01D306A']", ["attrbad_unicode"]);
 
         attrbad.forEach((attr) => DomUtils.removeElement(attr));
 
@@ -991,7 +933,7 @@ describe("Sizzle", () => {
         t("#moretests script[src]", ["script-src"]);
 
         // #3279
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.children = helper.getDOM(
             "<div id='foo' xml:test='something'></div>"
         );
@@ -1001,14 +943,14 @@ describe("Sizzle", () => {
             div.children[0],
         ]);
 
-        div = document.getElementById("foo");
+        const foo = document.getElementById("foo");
         // Object.prototype property "constructor" (negative)',
         t("[constructor]", []);
         // Gecko Object.prototype property "watch" (negative)',
         t("[watch]", []);
         // @ts-expect-error TS doesn't want us to override `constructor`
-        div.attribs.constructor = "foo";
-        div.attribs.watch = "bar";
+        foo.attribs.constructor = "foo";
+        foo.attribs.watch = "bar";
         // Object.prototype property "constructor"',
         t("[constructor='foo']", ["foo"]);
         // Gecko Object.prototype property "watch"',
@@ -1088,7 +1030,7 @@ describe("Sizzle", () => {
         // Verify that the child position isn't being cached improperly
         const secondChildren = CSSselect.selectAll("p:nth-child(2)", document);
         const newNodes = secondChildren.map((child) => {
-            const node = parseDOM("<div></div>")[0];
+            const [node] = parseDOM("<div></div>");
             DomUtils.prepend(child, node);
             return node;
         });
@@ -1468,20 +1410,17 @@ describe("Sizzle", () => {
         document.body.children.pop();
 
         // Caching system tolerates recursive selection
-        expect(
-            CSSselect.selectAll(
-                "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)",
-                q("qunit-fixture")[0]
-            )
-        ).toStrictEqual(
-            q(
+        t(
+            "[id='select1'] *:not(:last-child), [id='select2'] *:not(:last-child)",
+            [
                 "option1a",
                 "option1b",
                 "option1c",
                 "option2a",
                 "option2b",
-                "option2c"
-            )
+                "option2c",
+            ],
+            document.getElementById("qunit-fixture")
         );
 
         /*
@@ -1741,29 +1680,22 @@ describe("Sizzle", () => {
          * Moved over from 'child and adjacent'
          */
         // Element Preceded By positional with a context.
-        expect(
-            CSSselect.selectAll(
-                "~ em:first",
-                document.getElementById("siblingfirst")
-            )
-        ).toStrictEqual(q("siblingnext"));
+        t(
+            "~ em:first",
+            ["siblingnext"],
+            document.getElementById("siblingfirst")
+        );
         // Find by general sibling combinator (#8310)
         expect(
             CSSselect.selectAll("#listWithTabIndex li:eq(2) ~ li", document)
         ).toHaveLength(1);
         const nothiddendiv = document.getElementById("nothiddendiv");
         // Verify child context positional selector
-        expect(CSSselect.selectAll("> :first", nothiddendiv)).toStrictEqual(
-            q("nothiddendivchild")
-        );
+        t("> :first", ["nothiddendivchild"], nothiddendiv);
         // Verify child context positional selector
-        expect(CSSselect.selectAll("> :eq(0)", nothiddendiv)).toStrictEqual(
-            q("nothiddendivchild")
-        );
+        t("> :eq(0)", ["nothiddendivchild"], nothiddendiv);
         // Verify child context positional selector
-        expect(CSSselect.selectAll("> *:first", nothiddendiv)).toStrictEqual(
-            q("nothiddendivchild")
-        );
+        t("> *:first", ["nothiddendivchild"], nothiddendiv);
 
         // First element
         t("div:first", ["qunit"]);
@@ -1857,9 +1789,7 @@ describe("Sizzle", () => {
         );
 
         // Post-manipulation positional
-        expect(CSSselect.selectAll(":last", context)).toStrictEqual(
-            q("jquery12526")
-        );
+        t(":last", ["jquery12526"], context);
     });
 
     it("pseudo - form", () => {
@@ -1949,7 +1879,7 @@ describe("Sizzle", () => {
     it("pseudo - :root", () => {
         expect.assertions(1);
         // :root selector
-        expect(CSSselect.selectAll(":root", document)[0]).toBe(
+        expect(CSSselect.selectOne(":root", document)).toBe(
             document.documentElement
         );
     });
@@ -1958,8 +1888,10 @@ describe("Sizzle", () => {
         expect.assertions(1);
         CSSselect.selectAll(":not(code)", document.getElementById("ap"));
         // Reusing selector with new context
-        expect(
-            CSSselect.selectAll(":not(code)", document.getElementById("foo"))
-        ).toStrictEqual(q("sndp", "en", "yahoo", "sap", "anchor2", "simon"));
+        t(
+            ":not(code)",
+            ["sndp", "en", "yahoo", "sap", "anchor2", "simon"],
+            document.getElementById("foo")
+        );
     });
 });
