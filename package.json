@@ -45,7 +45,8 @@
         "lint": "eslint .",
         "lcov": "nyc mocha",
         "coveralls": "(nyc report --reporter=text-lcov | coveralls)",
-        "build": "tsc"
+        "build": "tsc",
+        "prepare": "npm run build"
     },
     "license": "BSD-2-Clause",
     "types": "index.d.ts",
