@@ -1,10 +1,11 @@
-const CSSselect = require("../src");
-const makeDom = require("htmlparser2").parseDOM;
-const assert = require("assert");
+import * as CSSselect from "../src";
+import { parseDOM as makeDom } from "htmlparser2";
+import * as assert from "assert";
+import type { Element } from "domhandler";
 
 const dom = makeDom(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"
-);
+) as Element[];
 
 describe("icontains", () => {
     describe("ignore case", () => {

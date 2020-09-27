@@ -1,10 +1,13 @@
-const CSSselect = require("../src");
-const makeDom = require("htmlparser2").parseDOM;
-const { trueFunc, falseFunc } = require("boolbase");
-const assert = require("assert");
+import * as CSSselect from "../src";
+import { parseDOM as makeDom } from "htmlparser2";
+import { trueFunc, falseFunc } from "boolbase";
+import assert from "assert";
+import type { Element } from "domhandler";
 
-const [dom] = makeDom("<div id=foo><p>foo</p></div>");
-const [xmlDom] = makeDom("<DiV id=foo><P>foo</P></DiV>", { xmlMode: true });
+const [dom] = makeDom("<div id=foo><p>foo</p></div>") as Element[];
+const [xmlDom] = makeDom("<DiV id=foo><P>foo</P></DiV>", {
+    xmlMode: true,
+}) as Element[];
 
 describe("API", () => {
     describe("removes duplicates", () => {
@@ -41,7 +44,7 @@ describe("API", () => {
         it("should support pseudos led by a traversal (#111)", () => {
             const [dom] = makeDom(
                 '<div><div class="foo">a</div><div class="bar">b</div></div>'
-            );
+            ) as Element[];
             const a = CSSselect.selectAll(".foo:has(+.bar)", dom);
             assert.strictEqual(a.length, 1);
             assert.strictEqual(a[0], dom.children[0]);

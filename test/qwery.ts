@@ -1,16 +1,16 @@
-"use strict";
-
-const expect = require("expect.js");
-const { DomUtils } = require("htmlparser2");
-const helper = require("../tools/helper.js");
-const path = require("path");
-const document = helper.getDocument(path.join(__dirname, "index.html"));
-const CSSselect = require("../../src");
+import expect from "expect.js";
+import { DomUtils } from "htmlparser2";
+import * as helper from "./tools/helper";
+const document = helper.getDocument("qwery.html");
+import * as CSSselect from "../src";
+import type { Node, Element } from "domhandler";
 
 const location = { hash: "" };
-CSSselect.pseudos.target = (elem) =>
-    elem.attribs && elem.attribs.id === location.hash.substr(1);
+CSSselect.pseudos.target = (elem, { adapter }) =>
+    adapter.getAttributeValue(elem, "id") === location.hash.substr(1);
 
+const getElementsByTagName = (id: string, document: Node | Node[]) =>
+    DomUtils.getElementsByTagName(id, document, true);
 // ---
 
 /*
@@ -43,13 +43,14 @@ const doc = helper.getDOM(
 
 const el = DomUtils.getElementById("attr-child-boosh", document);
 
-const pseudos = DomUtils.getElementById("pseudos", document).children.filter(
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+const pseudos = DomUtils.getElementById("pseudos", document)!.children.filter(
     DomUtils.isTag
 );
 
-module.exports = {
-    Contexts: {
-        "should be able to pass optional context"() {
+describe("qwery", () => {
+    describe("Contexts", () => {
+        it("should be able to pass optional context", () => {
             expect(CSSselect.selectAll(".a", document)).to.have.length(3); // no context found 3 elements (.a)
             expect(
                 CSSselect.selectAll(
@@ -57,36 +58,45 @@ module.exports = {
                     CSSselect.selectAll("#boosh", document)
                 )
             ).to.have.length(2); // context found 2 elements (#boosh .a)
-        },
+        });
 
-        /*
-	'should be able to pass string as context': function() {
-		expect(CSSselect.selectAll('.a', '#boosh')).to.have.length(2); //context found 2 elements(.a, #boosh)
-		expect(CSSselect.selectAll('.a', '.a')).to.be.empty(); //context found 0 elements(.a, .a)
-		expect(CSSselect.selectAll('.a', '.b')).to.have.length(1); //context found 1 elements(.a, .b)
-		expect(CSSselect.selectAll('.a', '#boosh .b')).to.have.length(1); //context found 1 elements(.a, #boosh .b)
-		expect(CSSselect.selectAll('.b', '#boosh .b')).to.be.empty(); //context found 0 elements(.b, #boosh .b)
-	},
-*/
-        /*
-	'should be able to pass qwery result as context': function() {
-		expect(CSSselect.selectAll('.a', CSSselect.selectAll('#boosh', document))).to.have.length(2); //context found 2 elements(.a, #boosh)
-		expect(CSSselect.selectAll('.a', CSSselect.selectAll('.a', document))).to.be.empty(); //context found 0 elements(.a, .a)
-		expect(CSSselect.selectAll('.a', CSSselect.selectAll('.b', document))).to.have.length(1); //context found 1 elements(.a, .b)
-		expect(CSSselect.selectAll('.a', CSSselect.selectAll('#boosh .b', document))).to.have.length(1); //context found 1 elements(.a, #boosh .b)
-		expect(CSSselect.selectAll('.b', CSSselect.selectAll('#boosh .b', document))).to.be.empty(); //context found 0 elements(.b, #boosh .b)
-	},
-*/
-        "should not return duplicates from combinators"() {
+        it.skip("should be able to pass qwery result as context", () => {
+            expect(
+                CSSselect.selectAll(
+                    ".a",
+                    CSSselect.selectAll("#boosh", document)
+                )
+            ).to.have.length(2); // context found 2 elements(.a, #boosh)
+            expect(
+                CSSselect.selectAll(".a", CSSselect.selectAll(".a", document))
+            ).to.be.empty(); // context found 0 elements(.a, .a)
+            expect(
+                CSSselect.selectAll(".a", CSSselect.selectAll(".b", document))
+            ).to.have.length(1); // context found 1 elements(.a, .b)
+            expect(
+                CSSselect.selectAll(
+                    ".a",
+                    CSSselect.selectAll("#boosh .b", document)
+                )
+            ).to.have.length(1); // context found 1 elements(.a, #boosh .b)
+            expect(
+                CSSselect.selectAll(
+                    ".b",
+                    CSSselect.selectAll("#boosh .b", document)
+                )
+            ).to.be.empty(); // context found 0 elements(.b, #boosh .b)
+        });
+
+        it("should not return duplicates from combinators", () => {
             expect(
                 CSSselect.selectAll("#boosh,#boosh", document)
             ).to.have.length(1); // two booshes dont make a thing go right
             expect(
                 CSSselect.selectAll("#boosh,.apples,#boosh", document)
             ).to.have.length(1); // two booshes and an apple dont make a thing go right
-        },
+        });
 
-        "byId sub-queries within context"() {
+        it("byId sub-queries within context", () => {
             expect(
                 CSSselect.selectAll(
                     "#booshTest",
@@ -123,17 +133,17 @@ module.exports = {
                     CSSselect.selectAll("#lonelyBoosh", document)
                 ).length
             ).to.not.be.ok(); // shouldn't find #boosh within #lonelyBoosh (unrelated)
-        },
-    },
+        });
+    });
 
-    "CSS 1": {
-        "get element by id"() {
+    describe("CSS 1", () => {
+        it("get element by id", () => {
             const result = CSSselect.selectAll("#boosh", document);
             expect(result[0]).to.be.ok(); // found element with id=boosh
             expect(CSSselect.selectAll("h1", document)[0]).to.be.ok(); // found 1 h1
-        },
+        });
 
-        "byId sub-queries"() {
+        it("byId sub-queries", () => {
             expect(
                 CSSselect.selectAll("#boosh #booshTest", document)
             ).to.have.length(1); // found "#id #id"
@@ -146,9 +156,9 @@ module.exports = {
             expect(
                 CSSselect.selectAll(".a>#booshTest", document)
             ).to.have.length(1); // found ".class>#id"
-        },
+        });
 
-        "get elements by class"() {
+        it("get elements by class", () => {
             expect(CSSselect.selectAll("#boosh .a", document)).to.have.length(
                 2
             ); // found two elements
@@ -161,25 +171,25 @@ module.exports = {
                 CSSselect.selectAll("#boosh div div", document)[0]
             ).to.be.ok(); // found a single div
             expect(CSSselect.selectAll("a.odd", document)).to.have.length(1); // found single a
-        },
+        });
 
-        combos() {
+        it("combos", () => {
             expect(
                 CSSselect.selectAll("#boosh div,#boosh span", document)
             ).to.have.length(3); // found 2 divs and 1 span
-        },
+        });
 
-        "class with dashes"() {
+        it("class with dashes", () => {
             expect(
                 CSSselect.selectAll(".class-with-dashes", document)
             ).to.have.length(1); // found something
-        },
+        });
 
-        "should ignore comment nodes"() {
+        it("should ignore comment nodes", () => {
             expect(CSSselect.selectAll("#boosh *", document)).to.have.length(4); // found only 4 elements under #boosh
-        },
+        });
 
-        "deep messy relationships"() {
+        it("deep messy relationships", () => {
             // these are mostly characterised by a combination of tight relationships and loose relationships
             // on the right side of the query it's easy to find matches but they tighten up quickly as you
             // go to the left
@@ -215,11 +225,11 @@ module.exports = {
                     document
                 )
             ).to.be.empty(); // found no results for another odd query
-        },
-    },
+        });
+    });
 
-    "CSS 2": {
-        "get elements by attribute"() {
+    describe("CSS 2", () => {
+        it("get elements by attribute", () => {
             const wanted = CSSselect.selectAll("#boosh div[test]", document)[0];
             const expected = DomUtils.getElementById("booshTest", document);
             expect(wanted).to.be(expected); // found attribute
@@ -232,15 +242,15 @@ module.exports = {
             expect(
                 CSSselect.selectAll('em[nopass~="copyright"]', document)
             ).to.be.empty(); // found em[nopass~="copyright"]
-        },
+        });
 
-        "should not throw error by attribute selector"() {
+        it("should not throw error by attribute selector", () => {
             expect(
                 CSSselect.selectAll('[foo^="bar"]', document)
             ).to.have.length(1); // found 1 element
-        },
+        });
 
-        "crazy town"() {
+        it("crazy town", () => {
             const el = DomUtils.getElementById("attr-test3", document);
             expect(
                 CSSselect.selectAll(
@@ -248,20 +258,20 @@ module.exports = {
                     document
                 )[0]
             ).to.be(el); // found the right element
-        },
-    },
+        });
+    });
 
-    "attribute selectors": {
+    describe("attribute selectors", () => {
         /* CSS 2 SPEC */
 
-        "[attr]"() {
+        it("[attr]", () => {
             const expected = DomUtils.getElementById("attr-test-1", document);
             expect(
                 CSSselect.selectAll("#attributes div[unique-test]", document)[0]
             ).to.be(expected); // found attribute with [attr]
-        },
+        });
 
-        "[attr=val]"() {
+        it("[attr=val]", () => {
             const expected = DomUtils.getElementById("attr-test-2", document);
             expect(
                 CSSselect.selectAll(
@@ -281,16 +291,16 @@ module.exports = {
                     document
                 )[0]
             ).to.be(expected); // found attribute with =
-        },
+        });
 
-        "[attr~=val]"() {
+        it("[attr~=val]", () => {
             const expected = DomUtils.getElementById("attr-test-3", document);
             expect(
                 CSSselect.selectAll("#attributes div[test~=three]", document)[0]
             ).to.be(expected); // found attribute with ~=
-        },
+        });
 
-        "[attr|=val]"() {
+        it("[attr|=val]", () => {
             const expected = DomUtils.getElementById("attr-test-2", document);
             expect(
                 CSSselect.selectAll(
@@ -301,39 +311,39 @@ module.exports = {
             expect(
                 CSSselect.selectAll("#attributes div[test|=two]", document)[0]
             ).to.be(expected); // found attribute with |=
-        },
+        });
 
-        "[href=#x] special case"() {
+        it("[href=#x] special case", () => {
             const expected = DomUtils.getElementById("attr-test-4", document);
             expect(
                 CSSselect.selectAll('#attributes a[href="#aname"]', document)[0]
             ).to.be(expected); // found attribute with href=#x
-        },
+        });
 
         /* CSS 3 SPEC */
 
-        "[attr^=val]"() {
+        it("[attr^=val]", () => {
             const expected = DomUtils.getElementById("attr-test-2", document);
             expect(
                 CSSselect.selectAll("#attributes div[test^=two]", document)[0]
             ).to.be(expected); // found attribute with ^=
-        },
+        });
 
-        "[attr$=val]"() {
+        it("[attr$=val]", () => {
             const expected = DomUtils.getElementById("attr-test-2", document);
             expect(
                 CSSselect.selectAll("#attributes div[test$=foo]", document)[0]
             ).to.be(expected); // found attribute with $=
-        },
+        });
 
-        "[attr*=val]"() {
+        it("[attr*=val]", () => {
             const expected = DomUtils.getElementById("attr-test-3", document);
             expect(
                 CSSselect.selectAll("#attributes div[test*=hree]", document)[0]
             ).to.be(expected); // found attribute with *=
-        },
+        });
 
-        "direct descendants"() {
+        it("direct descendants", () => {
             expect(
                 CSSselect.selectAll(
                     "#direct-descend > .direct-descend",
@@ -346,9 +356,9 @@ module.exports = {
                     document
                 )
             ).to.have.length(3); // found three second-level direct descendents
-        },
+        });
 
-        "sibling elements"() {
+        it("sibling elements", () => {
             expect(
                 CSSselect.selectAll(
                     "#sibling-selector ~ .sibling-selector",
@@ -414,20 +424,11 @@ module.exports = {
             expect(
                 CSSselect.selectAll(".parent .youngest + .sibling", document)
             ).to.be.empty(); // found no younger siblings
-        },
-    },
+        });
+    });
 
-    /*
-'Uniq': {
-	'duplicates arent found in arrays': function () {
-		expect(CSSselect.uniq(['a', 'b', 'c', 'd', 'e', 'a', 'b', 'c', 'd', 'e'])).to.have.length(5); //result should be a, b, c, d, e
-		expect(CSSselect.uniq(['a', 'b', 'c', 'c', 'c'])).to.have.length(3); //result should be a, b, c
-	}
-},
-*/
-
-    "element-context queries": {
-        "relationship-first queries"() {
+    describe("element-context queries", () => {
+        it("relationship-first queries", () => {
             expect(
                 CSSselect.selectAll(
                     "> .direct-descend",
@@ -452,15 +453,15 @@ module.exports = {
                     CSSselect.selectAll(".idless", document)[0]
                 )
             ).to.have.length(1); // found one sibling from a root with no id
-        },
+        });
 
         // should be able to query on an element that hasn't been inserted into the dom
-        "detached fragments"() {
+        it("detached fragments", () => {
             expect(CSSselect.selectAll(".a span", frag)).to.have.length(1); // should find child elements of fragment
             expect(CSSselect.selectAll("> div p em", frag)).to.have.length(2); // should find child elements of fragment, relationship first
-        },
+        });
 
-        "byId sub-queries within detached fragment"() {
+        it("byId sub-queries within detached fragment", () => {
             expect(CSSselect.selectAll("#emem", frag)).to.have.length(1); // found "#id" in fragment
             expect(CSSselect.selectAll(".d.i #emem", frag)).to.have.length(1); // found ".class.class #id" in fragment
             expect(CSSselect.selectAll(".d #oooo #emem", frag)).to.have.length(
@@ -475,30 +476,30 @@ module.exports = {
                 CSSselect.selectAll("#sep", CSSselect.selectAll("#emem", frag))
                     .length
             ).to.not.be.ok(); // shouldn't find #sep within #emem (unrelated)
-        },
+        });
 
-        "exclude self in match"() {
+        it("exclude self in match", () => {
             expect(
                 CSSselect.selectAll(
                     ".order-matters",
                     CSSselect.selectAll("#order-matters", document)[0]
                 )
             ).to.have.length(4); // should not include self in element-context queries
-        },
+        });
 
         // because form's have .length
-        "forms can be used as contexts"() {
+        it("forms can be used as contexts", () => {
             expect(
                 CSSselect.selectAll(
                     "*",
                     CSSselect.selectAll("form", document)[0]
                 )
             ).to.have.length(3); // found 3 elements under &lt;form&gt;
-        },
-    },
+        });
+    });
 
-    tokenizer: {
-        "should not get weird tokens"() {
+    describe("tokenizer", () => {
+        it("should not get weird tokens", () => {
             expect(
                 CSSselect.selectAll('div .tokens[title="one"]', document)[0]
             ).to.be(DomUtils.getElementById("token-one", document)); // found div .tokens[title="one"]
@@ -523,19 +524,19 @@ module.exports = {
                     document
                 )[0]
             ).to.be(DomUtils.getElementById("token-five", document)); // found div .tokens[title="one two three #%"] a[href=foo] div
-        },
-    },
+        });
+    });
 
-    "interesting syntaxes": {
-        "should parse bad selectors"() {
+    describe("interesting syntaxes", () => {
+        it("should parse bad selectors", () => {
             expect(
                 CSSselect.selectAll("#spaced-tokens    p    em    a", document)
                     .length
             ).to.be.ok(); // found element with funny tokens
-        },
-    },
+        });
+    });
 
-    "order matters": {
+    describe("order matters", () => {
         // <div id="order-matters">
         //   <p class="order-matters"></p>
         //   <a class="order-matters">
@@ -543,23 +544,23 @@ module.exports = {
         //   </a>
         // </div>
 
-        "the order of elements return matters"() {
-            function tag(el) {
+        it("the order of elements return matters", () => {
+            function tag(el: Element) {
                 return el.name.toLowerCase();
             }
             const els = CSSselect.selectAll(
                 "#order-matters .order-matters",
                 document
-            );
+            ) as Element[];
             expect(tag(els[0])).to.be("p"); // first element matched is a {p} tag
             expect(tag(els[1])).to.be("a"); // first element matched is a {a} tag
             expect(tag(els[2])).to.be("em"); // first element matched is a {em} tag
             expect(tag(els[3])).to.be("b"); // first element matched is a {b} tag
-        },
-    },
+        });
+    });
 
-    "pseudo-selectors": {
-        ":contains"() {
+    describe("pseudo-selectors", () => {
+        it(":contains", () => {
             expect(
                 CSSselect.selectAll("li:contains(humans)", document)
             ).to.have.length(1); // found by "element:contains(text)"
@@ -573,34 +574,34 @@ module.exports = {
             expect(
                 CSSselect.selectAll("ol:contains(humans)", document)
             ).to.have.length(1); // found by "ancestor:contains(text)"
-        },
+        });
 
-        ":not"() {
+        it(":not", () => {
             expect(
                 CSSselect.selectAll(".odd:not(div)", document)
             ).to.have.length(1); // found one .odd :not an &lt;a&gt;
-        },
+        });
 
-        ":first-child"() {
+        it(":first-child", () => {
             expect(
                 CSSselect.selectAll("#pseudos div:first-child", document)[0]
             ).to.be(pseudos[0]); // found first child
             expect(
                 CSSselect.selectAll("#pseudos div:first-child", document)
             ).to.have.length(1); // found only 1
-        },
+        });
 
-        ":last-child"() {
-            const all = DomUtils.getElementsByTagName("div", pseudos);
+        it(":last-child", () => {
+            const all = getElementsByTagName("div", pseudos);
             expect(
                 CSSselect.selectAll("#pseudos div:last-child", document)[0]
             ).to.be(all[all.length - 1]); // found last child
             expect(
                 CSSselect.selectAll("#pseudos div:last-child", document)
             ).to.have.length(1); // found only 1
-        },
+        });
 
-        'ol > li[attr="boosh"]:last-child'() {
+        it('ol > li[attr="boosh"]:last-child', () => {
             const expected = DomUtils.getElementById(
                 "attr-child-boosh",
                 document
@@ -617,10 +618,10 @@ module.exports = {
                     document
                 )[0]
             ).to.be(expected); // found correct element
-        },
+        });
 
-        ":nth-child(odd|even|x)"() {
-            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
+        it(":nth-child(odd|even|x)", () => {
+            const second = getElementsByTagName("div", pseudos)[1];
             expect(
                 CSSselect.selectAll("#pseudos :nth-child(odd)", document)
             ).to.have.length(4); // found 4 odd elements
@@ -633,11 +634,11 @@ module.exports = {
             expect(
                 CSSselect.selectAll("#pseudos div:nth-child(2)", document)[0]
             ).to.be(second); // found 2nd nth-child of pseudos
-        },
+        });
 
-        ":nth-child(expr)"() {
-            const fifth = DomUtils.getElementsByTagName("a", pseudos)[0];
-            const sixth = DomUtils.getElementsByTagName("div", pseudos)[4];
+        it(":nth-child(expr)", () => {
+            const fifth = getElementsByTagName("a", pseudos)[0];
+            const sixth = getElementsByTagName("div", pseudos)[4];
 
             expect(
                 CSSselect.selectAll("#pseudos :nth-child(3n+1)", document)
@@ -657,10 +658,10 @@ module.exports = {
             expect(
                 CSSselect.selectAll("#pseudos :nth-child(3n)", document)[1]
             ).to.be(sixth); // second :nth-child(3n) is the sixth child
-        },
+        });
 
-        ":nth-last-child(odd|even|x)"() {
-            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
+        it(":nth-last-child(odd|even|x)", () => {
+            const second = getElementsByTagName("div", pseudos)[1];
             expect(
                 CSSselect.selectAll("#pseudos :nth-last-child(odd)", document)
             ).to.have.length(4); // found 4 odd elements
@@ -682,10 +683,10 @@ module.exports = {
                     document
                 )[0]
             ).to.be(second); // 6th nth-last-child should be 2nd of 7 elements
-        },
+        });
 
-        ":nth-last-child(expr)"() {
-            const third = DomUtils.getElementsByTagName("div", pseudos)[2];
+        it(":nth-last-child(expr)", () => {
+            const third = getElementsByTagName("div", pseudos)[2];
 
             expect(
                 CSSselect.selectAll("#pseudos :nth-last-child(3n+1)", document)
@@ -705,10 +706,10 @@ module.exports = {
                     document
                 )[0]
             ).to.be(third); // first :nth-last-child(3n+2) is the third child
-        },
+        });
 
-        ":nth-of-type(expr)"() {
-            const a = DomUtils.getElementsByTagName("a", pseudos)[0];
+        it(":nth-of-type(expr)", () => {
+            const a = getElementsByTagName("a", pseudos)[0];
 
             expect(
                 CSSselect.selectAll("#pseudos div:nth-of-type(3n+1)", document)
@@ -728,10 +729,10 @@ module.exports = {
             expect(
                 CSSselect.selectAll("#pseudos a:nth-of-type(1)", document)
             ).to.have.length(1); // found the first a
-        },
+        });
 
-        ":nth-last-of-type(expr)"() {
-            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
+        it(":nth-last-of-type(expr)", () => {
+            const second = getElementsByTagName("div", pseudos)[1];
 
             expect(
                 CSSselect.selectAll(
@@ -751,37 +752,37 @@ module.exports = {
                     document
                 )[0]
             ).to.be(second); // 5th nth-last-of-type should be 2nd of 7 elements
-        },
+        });
 
-        ":first-of-type"() {
+        it(":first-of-type", () => {
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)[0]
-            ).to.be(DomUtils.getElementsByTagName("a", pseudos)[0]); // found first a element
+            ).to.be(getElementsByTagName("a", pseudos)[0]); // found first a element
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)
             ).to.have.length(1); // found only 1
-        },
+        });
 
-        ":last-of-type"() {
-            const all = DomUtils.getElementsByTagName("div", pseudos);
+        it(":last-of-type", () => {
+            const all = getElementsByTagName("div", pseudos);
             expect(
                 CSSselect.selectAll("#pseudos div:last-of-type", document)[0]
             ).to.be(all[all.length - 1]); // found last div element
             expect(
                 CSSselect.selectAll("#pseudos div:last-of-type", document)
             ).to.have.length(1); // found only 1
-        },
+        });
 
-        ":only-of-type"() {
+        it(":only-of-type", () => {
             expect(
                 CSSselect.selectAll("#pseudos a:only-of-type", document)[0]
-            ).to.be(DomUtils.getElementsByTagName("a", pseudos)[0]); // found the only a element
+            ).to.be(getElementsByTagName("a", pseudos)[0]); // found the only a element
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)
             ).to.have.length(1); // found only 1
-        },
+        });
 
-        ":target"() {
+        it(":target", () => {
             location.hash = "";
             expect(
                 CSSselect.selectAll("#pseudos:target", document)
@@ -791,43 +792,18 @@ module.exports = {
                 CSSselect.selectAll("#pseudos:target", document)
             ).to.have.length(1); // now #pseudos is the target
             location.hash = "";
-        },
+        });
 
-        "custom pseudos"() {
+        it("custom pseudos", () => {
             // :humanoid implemented just for testing purposes
             expect(CSSselect.selectAll(":humanoid", document)).to.have.length(
                 2
             ); // selected using custom pseudo
-        },
-    },
+        });
+    });
 
-    /*
-'argument types': {
-
-	'should be able to pass in nodes as arguments': function () {
-		var el = DomUtils.getElementById('boosh', document);
-		expect(CSSselect.selectAll(el)[0]).to.be(el); //CSSselect.selectAll(el)[0] == el
-		expect(CSSselect.selectAll(el, 'body')[0]).to.be(el); //CSSselect.selectAll(el, 'body')[0] == el
-		expect(CSSselect.selectAll(el, document)[0]).to.be(el); //CSSselect.selectAll(el, document)[0] == el
-		expect(CSSselect.selectAll(window)[0]).to.be(window); //CSSselect.selectAll(window)[0] == window
-		expect(CSSselect.selectAll(document)[0]).to.be(document); //CSSselect.selectAll(document)[0] == document
-	},
-
-	'should be able to pass in an array of results as arguments': function () {
-		var el = DomUtils.getElementById('boosh', document);
-		var result = CSSselect.selectAll([CSSselect.selectAll('#boosh', document), CSSselect.selectAll(document), CSSselect.selectAll(window)]);
-		expect(result).to.have.length(3); //3 elements in the combined set
-		expect(result[0]).to.be(el); //result[0] == el
-		expect(result[1]).to.be(document); //result[0] == document
-		expect(result[2]).to.be(window); //result[0] == window
-		expect(CSSselect.selectAll([CSSselect.selectAll('#pseudos div.odd', document), CSSselect.selectAll('#pseudos div.even', document)])).to.have.length(6); //found all the odd and even divs
-	}
-
-},
-*/
-
-    "is()": {
-        "simple selectors"() {
+    describe("is()", () => {
+        it("simple selectors", () => {
             expect(CSSselect.is(el, "li")).to.be.ok(); // tag
             expect(CSSselect.is(el, "*")).to.be.ok(); // wildcard
             expect(CSSselect.is(el, "#attr-child-boosh")).to.be.ok(); // #id
@@ -837,16 +813,18 @@ module.exports = {
             expect(CSSselect.is(el, "#foo")).to.not.be.ok(); // wrong #id
             expect(CSSselect.is(el, "[foo]")).to.not.be.ok(); // wrong [attr]
             expect(CSSselect.is(el, "[attr=foo]")).to.not.be.ok(); // wrong [attr=val]
-        },
-        "selector sequences"() {
+        });
+
+        it("selector sequences", () => {
             expect(
                 CSSselect.is(el, "li#attr-child-boosh[attr=boosh]")
             ).to.be.ok(); // tag#id[attr=val]
             expect(
                 CSSselect.is(el, "div#attr-child-boosh[attr=boosh]")
             ).to.not.be.ok(); // wrong tag#id[attr=val]
-        },
-        "selector sequences combinators"() {
+        });
+
+        it("selector sequences combinators", () => {
             expect(CSSselect.is(el, "ol li")).to.be.ok(); // tag tag
             expect(CSSselect.is(el, "ol>li")).to.be.ok(); // tag>tag
             expect(CSSselect.is(el, "ol>li+li")).to.be.ok(); // tab>tag+tag
@@ -865,8 +843,9 @@ module.exports = {
                     "div#fixtures>div a"
                 )
             ).to.be.ok(); // tag#id>tag tag where ambiguous middle tag requires backtracking
-        },
-        pseudos() {
+        });
+
+        it("pseudos", () => {
             // TODO: more tests!
             expect(CSSselect.is(el, "li:contains(hello)")).to.be.ok(); // matching :contains(text)
             expect(CSSselect.is(el, "li:contains(human)")).to.not.be.ok(); // non-matching :contains(text)
@@ -882,37 +861,44 @@ module.exports = {
                     ":humanoid"
                 )
             ).to.not.be.ok(); // non-matching custom pseudo
-        },
-        context() {
+        });
+
+        it("context", () => {
             expect(
                 CSSselect.is(el, "li#attr-child-boosh[attr=boosh]", {
-                    context: CSSselect.selectAll("#list", document)[0],
+                    context: CSSselect.selectAll(
+                        "#list",
+                        document
+                    )[0] as Element,
                 })
             ).to.be.ok(); // context
             expect(
                 CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]", {
-                    context: CSSselect.selectAll("#boosh", document)[0],
+                    context: CSSselect.selectAll(
+                        "#boosh",
+                        document
+                    )[0] as Element,
                 })
             ).to.not.be.ok(); // wrong context
-        },
-    },
+        });
+    });
 
-    "selecting elements in other documents": {
-        "get element by id"() {
+    describe("selecting elements in other documents", () => {
+        it("get element by id", () => {
             const result = CSSselect.selectAll("#hsoob", doc);
             expect(result[0]).to.be.ok(); // found element with id=hsoob
-        },
+        });
 
-        "get elements by class"() {
+        it("get elements by class", () => {
             expect(CSSselect.selectAll("#hsoob .a", doc)).to.have.length(2); // found two elements
             expect(CSSselect.selectAll("#hsoob div.a", doc)[0]).to.be.ok(); // found one element
             expect(CSSselect.selectAll("#hsoob div", doc)).to.have.length(2); // found two {div} elements
             expect(CSSselect.selectAll("#hsoob span", doc)[0]).to.be.ok(); // found one {span} element
             expect(CSSselect.selectAll("#hsoob div div", doc)[0]).to.be.ok(); // found a single div
             expect(CSSselect.selectAll("p.odd", doc)).to.have.length(1); // found single br
-        },
+        });
 
-        "complex selectors"() {
+        it("complex selectors", () => {
             expect(CSSselect.selectAll(".d ~ .sib", doc)).to.have.length(2); // found one ~ sibling
             expect(CSSselect.selectAll(".a .d + .sib", doc)).to.have.length(1); // found 2 + siblings
             expect(
@@ -921,9 +907,9 @@ module.exports = {
             expect(
                 CSSselect.selectAll('.a .d ~ .sib[test="f g"]', doc)
             ).to.have.length(1); // found 1 ~ sibling with test attribute
-        },
+        });
 
-        "byId sub-queries"() {
+        it("byId sub-queries", () => {
             expect(CSSselect.selectAll("#hsoob #spanny", doc)).to.have.length(
                 1
             ); // found "#id #id" in frame
@@ -932,9 +918,9 @@ module.exports = {
                 CSSselect.selectAll(".a #booshTest #spanny", doc)
             ).to.have.length(1); // found ".class #id #id" in frame
             expect(CSSselect.selectAll("> #hsoob", doc)).to.have.length(1); // found "> #id" in frame
-        },
+        });
 
-        "byId sub-queries within sub-context"() {
+        it("byId sub-queries within sub-context", () => {
             expect(
                 CSSselect.selectAll(
                     "#spanny",
@@ -971,6 +957,6 @@ module.exports = {
                     CSSselect.selectAll("#lonelyHsoob", doc)
                 ).length
             ).to.not.be.ok(); // shouldn't find #booshTest within #lonelyHsoob (unrelated)
-        },
-    },
-};
+        });
+    });
+});

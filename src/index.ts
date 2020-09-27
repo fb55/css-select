@@ -126,7 +126,7 @@ export const selectAll = getSelectorFunc(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
         options: InternalOptions<Node, ElementNode>
-    ) =>
+    ): ElementNode[] =>
         query === falseFunc || !elems || elems.length === 0
             ? []
             : options.adapter.findAll(query, elems)
@@ -146,7 +146,7 @@ export const selectOne = getSelectorFunc(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
         options: InternalOptions<Node, ElementNode>
-    ) =>
+    ): ElementNode | null =>
         query === falseFunc || !elems || elems.length === 0
             ? null
             : options.adapter.findOne(query, elems)

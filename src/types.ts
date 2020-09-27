@@ -117,7 +117,7 @@ export interface Options<Node, ElementNode extends Node> {
     /**
      * The context of the current query. Used to
      */
-    context?: ElementNode[];
+    context?: ElementNode | ElementNode[];
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects

@@ -1,11 +1,12 @@
-const CSSselect = require("../src");
-const makeDom = require("htmlparser2").parseDOM;
-const { falseFunc } = require("boolbase");
-const assert = require("assert");
+import * as CSSselect from "../src";
+import { parseDOM as makeDom } from "htmlparser2";
+import { falseFunc } from "boolbase";
+import * as assert from "assert";
+import type { Element } from "domhandler";
 
 const dom = makeDom(
     '<div><div data-foo="In the end, it doesn\'t really matter."></div><div data-foo="Indeed-that\'s a delicate matter.">'
-);
+) as Element[];
 
 describe("Attributes", () => {
     describe("ignore case", () => {
