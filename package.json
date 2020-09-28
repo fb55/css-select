@@ -13,6 +13,7 @@
         "url": "git://github.com/fb55/css-select.git"
     },
     "main": "lib/index.js",
+    "types": "lib/index.d.ts",
     "files": [
         "lib"
     ],
@@ -46,7 +47,6 @@
         "prepare": "npm run build"
     },
     "license": "BSD-2-Clause",
-    "types": "index.d.ts",
     "prettier": {
         "tabWidth": 4
     },
