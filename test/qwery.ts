@@ -3,6 +3,7 @@ import * as helper from "./tools/helper";
 const document = helper.getDocument("qwery.html");
 import * as CSSselect from "../src";
 import type { Node, Element } from "domhandler";
+import { parseDOM } from "htmlparser2";
 
 const location = { hash: "" };
 CSSselect.pseudos.target = (elem, { adapter }) =>
@@ -19,7 +20,7 @@ const getElementsByTagName = (id: string, document: Node | Node[]) =>
 CSSselect.pseudos.humanoid = (e) =>
     CSSselect.is(e, ":matches(li,ol):contains(human)");
 
-const frag = helper.getDOM(
+const frag = parseDOM(
     '<root><div class="d i v">' +
         '<p id="oooo"><em></em><em id="emem"></em></p>' +
         "</div>" +
@@ -28,7 +29,7 @@ const frag = helper.getDOM(
         "</p></root>"
 );
 
-const doc = helper.getDOM(
+const doc = parseDOM(
     '<root><div id="hsoob">' +
         '<div class="a b">' +
         '<div class="d e sib" test="fg" id="booshTest"><p><span id="spanny"></span></p></div>' +

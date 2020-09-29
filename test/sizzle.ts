@@ -128,7 +128,7 @@ describe("Sizzle", () => {
         t("div em, em\\,", [], siblingTest);
 
         const iframe = document.getElementById("iframe");
-        iframe.children = helper.getDOM("<body><p id='foo'>bar</p></body>");
+        iframe.children = parseDOM("<body><p id='foo'>bar</p></body>");
         iframe.children.forEach((e) => {
             e.parent = iframe;
         });
@@ -203,7 +203,7 @@ describe("Sizzle", () => {
             )
         ).toBe(true);
 
-        xml = helper.getDOM(
+        xml = parseDOM(
             "<?xml version='1.0' encoding='UTF-8'?><root><elem id='1'/></root>",
             {
                 xmlMode: true,
@@ -415,7 +415,7 @@ describe("Sizzle", () => {
         t("form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
 
         const div = document.createElement("div");
-        div.children = helper.getDOM(
+        div.children = parseDOM(
             "<div class='test e'></div><div class='test'></div>"
         );
         div.children.forEach((e) => {
@@ -934,7 +934,7 @@ describe("Sizzle", () => {
 
         // #3279
         const div = document.createElement("div");
-        div.children = helper.getDOM(
+        div.children = parseDOM(
             "<div id='foo' xml:test='something'></div>"
         );
 

@@ -12,15 +12,6 @@ export function getDOMFromPath(
     return htmlparser2.parseDOM(fs.readFileSync(filePath, "utf8"), options);
 }
 
-export function getFile(
-    name: string,
-    options?: htmlparser2.ParserOptions
-): Node[] {
-    return getDOMFromPath(path.join(__dirname, "docs", name), options);
-}
-
-export const getDOM = htmlparser2.parseDOM;
-
 export interface SimpleDocument extends Array<Node> {
     getElementsByTagName(name: string): Element[];
     getElementById(id: string): Element;
