@@ -2,4 +2,3 @@
 node_modules/
 coverage/
 lib/
-.nyc_output/
