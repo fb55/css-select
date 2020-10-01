@@ -29,14 +29,14 @@ describe("NWMatcher", () => {
     describe("Basic Selectors", () => {
         it("*", () => {
             // Universal selector
-            const results = document.getElementsByTagName("*");
+            const results = DomUtils.getElementsByTagName("*", document);
             // Comment nodes should be ignored.
             expect(select("*")).toStrictEqual(results);
         });
 
         it("E", () => {
             // Type selector
-            const nodes = document.getElementsByTagName("li");
+            const nodes = DomUtils.getElementsByTagName("li", document);
             expect(select("li")).toStrictEqual(nodes);
             expect(select("strong", getById("fixtures"))[0]).toBe(
                 getById("strong")

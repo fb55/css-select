@@ -1,16 +1,14 @@
-import { DomUtils } from "htmlparser2";
 import * as helper from "./tools/helper";
 const document = helper.getDocument("qwery.html");
 import * as CSSselect from "../src";
-import type { Node, Element } from "domhandler";
+import * as DomUtils from "domutils";
+import type { Element } from "domhandler";
 import { parseDOM } from "htmlparser2";
 
 const location = { hash: "" };
 CSSselect.pseudos.target = (elem, { adapter }) =>
     adapter.getAttributeValue(elem, "id") === location.hash.substr(1);
 
-const getElementsByTagName = (id: string, document: Node | Node[]) =>
-    DomUtils.getElementsByTagName(id, document, true);
 // ---
 
 /*
@@ -592,7 +590,7 @@ describe("qwery", () => {
         });
 
         it(":last-child", () => {
-            const all = getElementsByTagName("div", pseudos);
+            const all = DomUtils.getElementsByTagName("div", pseudos);
             expect(
                 CSSselect.selectAll("#pseudos div:last-child", document)[0]
             ).toBe(all[all.length - 1]); // Found last child
@@ -621,7 +619,7 @@ describe("qwery", () => {
         });
 
         it(":nth-child(odd|even|x)", () => {
-            const second = getElementsByTagName("div", pseudos)[1];
+            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
             expect(
                 CSSselect.selectAll("#pseudos :nth-child(odd)", document)
             ).toHaveLength(4); // Found 4 odd elements
@@ -637,8 +635,8 @@ describe("qwery", () => {
         });
 
         it(":nth-child(expr)", () => {
-            const fifth = getElementsByTagName("a", pseudos)[0];
-            const sixth = getElementsByTagName("div", pseudos)[4];
+            const fifth = DomUtils.getElementsByTagName("a", pseudos)[0];
+            const sixth = DomUtils.getElementsByTagName("div", pseudos)[4];
 
             expect(
                 CSSselect.selectAll("#pseudos :nth-child(3n+1)", document)
@@ -661,7 +659,7 @@ describe("qwery", () => {
         });
 
         it(":nth-last-child(odd|even|x)", () => {
-            const second = getElementsByTagName("div", pseudos)[1];
+            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
             expect(
                 CSSselect.selectAll("#pseudos :nth-last-child(odd)", document)
             ).toHaveLength(4); // Found 4 odd elements
@@ -686,7 +684,7 @@ describe("qwery", () => {
         });
 
         it(":nth-last-child(expr)", () => {
-            const third = getElementsByTagName("div", pseudos)[2];
+            const third = DomUtils.getElementsByTagName("div", pseudos)[2];
 
             expect(
                 CSSselect.selectAll("#pseudos :nth-last-child(3n+1)", document)
@@ -709,7 +707,7 @@ describe("qwery", () => {
         });
 
         it(":nth-of-type(expr)", () => {
-            const a = getElementsByTagName("a", pseudos)[0];
+            const a = DomUtils.getElementsByTagName("a", pseudos)[0];
 
             expect(
                 CSSselect.selectAll("#pseudos div:nth-of-type(3n+1)", document)
@@ -732,7 +730,7 @@ describe("qwery", () => {
         });
 
         it(":nth-last-of-type(expr)", () => {
-            const second = getElementsByTagName("div", pseudos)[1];
+            const second = DomUtils.getElementsByTagName("div", pseudos)[1];
 
             expect(
                 CSSselect.selectAll(
@@ -757,14 +755,14 @@ describe("qwery", () => {
         it(":first-of-type", () => {
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)[0]
-            ).toBe(getElementsByTagName("a", pseudos)[0]); // Found first a element
+            ).toBe(DomUtils.getElementsByTagName("a", pseudos)[0]); // Found first a element
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)
             ).toHaveLength(1); // Found only 1
         });
 
         it(":last-of-type", () => {
-            const all = getElementsByTagName("div", pseudos);
+            const all = DomUtils.getElementsByTagName("div", pseudos);
             expect(
                 CSSselect.selectAll("#pseudos div:last-of-type", document)[0]
             ).toBe(all[all.length - 1]); // Found last div element
@@ -776,7 +774,7 @@ describe("qwery", () => {
         it(":only-of-type", () => {
             expect(
                 CSSselect.selectAll("#pseudos a:only-of-type", document)[0]
-            ).toBe(getElementsByTagName("a", pseudos)[0]); // Found the only a element
+            ).toBe(DomUtils.getElementsByTagName("a", pseudos)[0]); // Found the only a element
             expect(
                 CSSselect.selectAll("#pseudos a:first-of-type", document)
             ).toHaveLength(1); // Found only 1

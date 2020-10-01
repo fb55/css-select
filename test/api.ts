@@ -1,10 +1,10 @@
 import * as CSSselect from "../src";
-import { parseDOM as makeDom } from "htmlparser2";
+import { parseDOM } from "htmlparser2";
 import { trueFunc, falseFunc } from "boolbase";
 import type { Element } from "domhandler";
 
-const [dom] = makeDom("<div id=foo><p>foo</p></div>") as Element[];
-const [xmlDom] = makeDom("<DiV id=foo><P>foo</P></DiV>", {
+const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
+const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
     xmlMode: true,
 }) as Element[];
 
@@ -44,7 +44,7 @@ describe("API", () => {
             expect(CSSselect.selectAll("p", ps)).toStrictEqual(ps);
         });
         it("should support pseudos led by a traversal (#111)", () => {
-            const [dom] = makeDom(
+            const [dom] = parseDOM(
                 '<div><div class="foo">a</div><div class="bar">b</div></div>'
             ) as Element[];
             const a = CSSselect.selectAll(".foo:has(+.bar)", dom);

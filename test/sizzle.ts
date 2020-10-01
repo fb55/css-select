@@ -1,5 +1,4 @@
 import * as DomUtils from "domutils";
-import * as helper from "./tools/helper";
 import * as CSSselect from "../src";
 import type { Element } from "domhandler";
 import { q, t, createWithFriesXML, loadDoc } from "./tools/sizzle-testinit";
@@ -934,9 +933,7 @@ describe("Sizzle", () => {
 
         // #3279
         const div = document.createElement("div");
-        div.children = parseDOM(
-            "<div id='foo' xml:test='something'></div>"
-        );
+        div.children = parseDOM("<div id='foo' xml:test='something'></div>");
 
         // Finding by attribute with escaped characters.
         expect(CSSselect.selectAll("[xml\\:test]", div)).toStrictEqual([
