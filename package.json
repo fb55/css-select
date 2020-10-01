@@ -3,6 +3,7 @@
     "version": "3.0.3",
     "description": "a CSS selector compiler/engine",
     "author": "Felix Boehm <me@feedic.com>",
+    "funding": "https://github.com/sponsors/fb55",
     "keywords": [
         "css",
         "selector",
