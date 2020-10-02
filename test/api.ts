@@ -173,5 +173,29 @@ describe("API", () => {
                 CSSselect.selectAll("p", div, { context: div })
             ).toStrictEqual(p);
         });
+
+        it("should cache results by default", () => {
+            const [dom] = parseDOM(
+                '<div id="foo"><p>bar</p></div>'
+            ) as Element[];
+            const query = CSSselect.compile("#bar p");
+
+            expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
+            dom.attribs.id = "bar";
+            // The query should be cached and the changed attribute should be ignored.
+            expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
+        });
+
+        it("should skip cacheing results if asked to", () => {
+            const [dom] = parseDOM(
+                '<div id="foo"><p>bar</p></div>'
+            ) as Element[];
+            const query = CSSselect.compile("#bar p", { cacheResults: false });
+
+            expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
+            dom.attribs.id = "bar";
+            // The query should not be cached, the changed attribute should be picked up.
+            expect(CSSselect.selectAll(query, [dom])).toHaveLength(1);
+        });
     });
 });

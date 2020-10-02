@@ -111,13 +111,21 @@ export interface Options<Node, ElementNode extends Node> {
     rootFunc?: (element: ElementNode) => boolean;
     /**
      * The adapter to use when interacting with the backing DOM structure. By
-     * default it uses domutils.
+     * default it uses the `domutils` module.
      */
     adapter?: Adapter<Node, ElementNode>;
     /**
-     * The context of the current query. Used to
+     * The context of the current query. Used to limit the scope of searches.
+     * Can be matched directly using the `:scope` pseudo-selector.
      */
     context?: ElementNode | ElementNode[];
+    /**
+     * Allow css-select to cache results for some selectors, sometimes greatly
+     * improving querying performance. Disable this if your document can
+     * change in between queries with the same compiled selector.
+     * Defaults to `true`.
+     */
+    cacheResults?: boolean;
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects

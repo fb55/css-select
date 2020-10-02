@@ -51,7 +51,10 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
         // Traversal
         case "descendant":
-            if (typeof WeakSet === "undefined") {
+            if (
+                options.cacheResults === false ||
+                typeof WeakSet === "undefined"
+            ) {
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 
