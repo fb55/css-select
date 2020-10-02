@@ -86,11 +86,6 @@ describe("Sizzle", () => {
 
         // Checking sort order
         t("h2, h1", ["qunit-header", "qunit-banner", "qunit-userAgent"]);
-        /*
-         * // Checking sort order
-         * t("h2:first, h1:first", ["qunit-header", "qunit-banner"]);
-         *
-         */
         // Checking sort order
         t("#qunit-fixture p, #qunit-fixture p a", [
             "firstp",
@@ -696,7 +691,7 @@ describe("Sizzle", () => {
     });
 
     it("attributes", () => {
-        expect.assertions(68);
+        expect.assertions(77);
 
         // Attribute Exists
         t("#qunit-fixture a[title]", ["google"]);
@@ -874,7 +869,8 @@ describe("Sizzle", () => {
                 "<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
                 "<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
                 "<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
-                "<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>"
+                "<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>",
+            { decodeEntities: true }
         ) as Element[];
         attrbad.forEach((attr) =>
             DomUtils.appendChild(document.getElementById("qunit-fixture"), attr)
@@ -890,29 +886,26 @@ describe("Sizzle", () => {
         // Escaped brackets
         t("input[name=foo\\[baz\\]]", ["attrbad_brackets"]);
 
-        // TODO Fix attribute parsing
-        /*
-         * // Escaped quote + right bracket
-         * t("input[data-attr='foo_baz\\']']", ["attrbad_injection"]);
-         *
-         *  // Quoted quote
-         * t("input[data-attr='\\'']", ["attrbad_quote"]);
-         *  // Quoted backslash
-         * t("input[data-attr='\\\\']", ["attrbad_backslash"]);
-         *  // Quoted backslash quote
-         * t("input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"]);
-         *  // Quoted backslash backslash
-         * t("input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"]);
-         *
-         *  // Quoted backslash backslash (numeric escape)
-         * t("input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"]);
-         *  // Quoted backslash backslash (numeric escape with trailing space)
-         * t("input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"]);
-         *  // Quoted backslash backslash (numeric escape with trailing tab)
-         * t("input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"]);
-         * // Long numeric escape (BMP)
-         * t("input[data-attr='\\04e00']", ["attrbad_unicode"]);
-         */
+        // Escaped quote + right bracket
+        t("input[data-attr='foo_baz\\']']", ["attrbad_injection"]);
+
+        // Quoted quote
+        t("input[data-attr='\\'']", ["attrbad_quote"]);
+        // Quoted backslash
+        t("input[data-attr='\\\\']", ["attrbad_backslash"]);
+        // Quoted backslash quote
+        t("input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"]);
+        // Quoted backslash backslash
+        t("input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"]);
+
+        // Quoted backslash backslash (numeric escape)
+        t("input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"]);
+        // Quoted backslash backslash (numeric escape with trailing space)
+        t("input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"]);
+        // Quoted backslash backslash (numeric escape with trailing tab)
+        t("input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"]);
+        // Long numeric escape (BMP)
+        t("input[data-attr='\\04e00']", ["attrbad_unicode"]);
 
         document.getElementById("attrbad_unicode").attribs["data-attr"] =
             "\uD834\uDF06A";
@@ -1042,7 +1035,7 @@ describe("Sizzle", () => {
     });
 
     it("pseudo - nth-child", () => {
-        expect.assertions(28);
+        expect.assertions(29);
 
         // Nth-child
         t("p:nth-child(1)", ["firstp", "sndp"]);
@@ -1063,10 +1056,8 @@ describe("Sizzle", () => {
         // Nth-child(3)
         t("#select1 option:nth-child(3)", ["option1c"]);
 
-        /*
-         * // "Nth-child(0n+3)"
-         * t("#select1 option:nth-child(0n+3)", ["option1c"]);
-         */
+        // "Nth-child(0n+3)"
+        t("#select1 option:nth-child(0n+3)", ["option1c"]);
 
         // Nth-child(1n+0)
         t("#select1 option:nth-child(1n+0)", [
@@ -1138,7 +1129,7 @@ describe("Sizzle", () => {
     });
 
     it("pseudo - nth-last-child", () => {
-        expect.assertions(28);
+        expect.assertions(29);
 
         // Nth-last-child
         t("form:nth-last-child(5)", ["testForm"]);
@@ -1164,10 +1155,8 @@ describe("Sizzle", () => {
         // Nth-last-child(3)
         t("#select1 option:nth-last-child(3)", ["option1b"]);
 
-        /*
-         * // Nth-last-child(0n+3)
-         * t("#select1 option:nth-last-child(0n+3)", ["option1b"]);
-         */
+        // Nth-last-child(0n+3)
+        t("#select1 option:nth-last-child(0n+3)", ["option1b"]);
 
         // Nth-last-child(1n+0)
         t("#select1 option:nth-last-child(1n+0)", [
@@ -1439,16 +1428,8 @@ describe("Sizzle", () => {
 
         // Multi-pseudo
         t("#ap:has(*), #ap:has(*)", ["ap"]);
-        /*
-         * // Multi-positional
-         * t("#ap:gt(0), #ap:lt(1)", ["ap"]);
-         */
         // Multi-pseudo with leading nonexistent id
         t("#nonexistent:has(*), #ap:has(*)", ["ap"]);
-        /*
-         * // Multi-positional with leading nonexistent id
-         * t("#nonexistent:gt(0), #ap:lt(1)", ["ap"]);
-         */
 
         // Tokenization stressor
         t(
@@ -1462,10 +1443,6 @@ describe("Sizzle", () => {
 
         // Not
         t("a.blog:not(.link)", ["mark"]);
-        /*
-         * // :not() with :first
-         * t("#foo p:not(:first) .link", ["simon"]);
-         */
 
         // Not - multiple
         t("#form option:not(:contains(Nothing),#option1b,:selected)", [
@@ -1646,147 +1623,6 @@ describe("Sizzle", () => {
             "#form select:not(.select1):contains(Nothing) > option:not(option)",
             []
         );
-    });
-
-    it.skip(":not - position", () => {
-        // Positional :not()
-        t("#foo p:not(:last)", ["sndp", "en"]);
-        // Positional :not() prefix
-        t("#foo p:not(:last) a", ["yahoo"]);
-        // Compound positional :not()
-        t("#foo p:not(:first, :last)", ["en"]);
-        t("#foo p:not(:first, :even)", ["en"]);
-        t("#foo p:not(:first, :odd)", ["sap"]);
-        // Reordered compound positional :not()
-        t("#foo p:not(:odd, :first)", ["sap"]);
-
-        // Positional :not() with pre-filter
-        t("#foo p:not([id]:first)", ["en", "sap"]);
-        // Positional :not() with post-filter
-        t("#foo p:not(:first[id])", ["en", "sap"]);
-        // Positional :not() with pre-filter
-        t("#foo p:not([lang]:first)", ["sndp", "sap"]);
-        // Positional :not() with post-filter
-        t("#foo p:not(:first[lang])", ["sndp", "en", "sap"]);
-    });
-
-    it.skip("pseudo - position", () => {
-        expect.assertions(38);
-
-        /*
-         * Moved over from 'child and adjacent'
-         */
-        // Element Preceded By positional with a context.
-        t(
-            "~ em:first",
-            ["siblingnext"],
-            document.getElementById("siblingfirst")
-        );
-        // Find by general sibling combinator (#8310)
-        expect(
-            CSSselect.selectAll("#listWithTabIndex li:eq(2) ~ li", document)
-        ).toHaveLength(1);
-        const nothiddendiv = document.getElementById("nothiddendiv");
-        // Verify child context positional selector
-        t("> :first", ["nothiddendivchild"], nothiddendiv);
-        // Verify child context positional selector
-        t("> :eq(0)", ["nothiddendivchild"], nothiddendiv);
-        // Verify child context positional selector
-        t("> *:first", ["nothiddendivchild"], nothiddendiv);
-
-        // First element
-        t("div:first", ["qunit"]);
-        // First element(case-insensitive)
-        t("div:fiRst", ["qunit"]);
-        // Nth Element
-        t("#qunit-fixture p:nth(1)", ["ap"]);
-        // First Element
-        t("#qunit-fixture p:first", ["firstp"]);
-        // Last Element
-        t("p:last", ["first"]);
-        // Even Elements
-        t("#qunit-fixture p:even", ["firstp", "sndp", "sap"]);
-        // Odd Elements
-        t("#qunit-fixture p:odd", ["ap", "en", "first"]);
-        // Position Equals
-        t("#qunit-fixture p:eq(1)", ["ap"]);
-        // Position Equals (negative)
-        t("#qunit-fixture p:eq(-1)", ["first"]);
-        // Position Greater Than
-        t("#qunit-fixture p:gt(0)", ["ap", "sndp", "en", "sap", "first"]);
-        // Position Less Than
-        t("#qunit-fixture p:lt(3)", ["firstp", "ap", "sndp"]);
-
-        // Check position filtering
-        t("div#nothiddendiv:eq(0)", ["nothiddendiv"]);
-        // Check position filtering
-        t("div#nothiddendiv:last", ["nothiddendiv"]);
-        // Check position filtering
-        t("div#nothiddendiv:not(:gt(0))", ["nothiddendiv"]);
-        // Check position filtering
-        t("#foo > :not(:first)", ["en", "sap"]);
-        // Check position filtering
-        t("#qunit-fixture select > :not(:gt(2))", [
-            "option1a",
-            "option1b",
-            "option1c",
-        ]);
-        // Check position filtering
-        t("#qunit-fixture select:lt(2) :not(:first)", [
-            "option1b",
-            "option1c",
-            "option1d",
-            "option2a",
-            "option2b",
-            "option2c",
-            "option2d",
-        ]);
-        // Check position filtering
-        t("div.nothiddendiv:eq(0)", ["nothiddendiv"]);
-        // Check position filtering
-        t("div.nothiddendiv:last", ["nothiddendiv"]);
-        // Check position filtering
-        t("div.nothiddendiv:not(:lt(0))", ["nothiddendiv"]);
-
-        // Check element position
-        t("#qunit-fixture div div:eq(0)", ["nothiddendivchild"]);
-        // Check element position
-        t("#select1 option:eq(3)", ["option1d"]);
-        // Check element position
-        t("#qunit-fixture div div:eq(10)", ["names-group"]);
-        // Check element position
-        t("#qunit-fixture div div:first", ["nothiddendivchild"]);
-        // Check element position
-        t("#qunit-fixture div > div:first", ["nothiddendivchild"]);
-        // Check element position
-        t("#dl div:first div:first", ["foo"]);
-        // Check element position
-        t("#dl div:first > div:first", ["foo"]);
-        // Check element position
-        t("div#nothiddendiv:first > div:first", ["nothiddendivchild"]);
-        // Chained pseudo after a pos pseudo
-        t("#listWithTabIndex li:eq(0):contains(Rice)", [
-            "foodWithNegativeTabIndex",
-        ]);
-
-        // Check sort order with POS and comma
-        t("#qunit-fixture em>em>em>em:first-child,div>em:first", [
-            "siblingfirst",
-            "siblinggreatgrandchild",
-        ]);
-
-        // Isolated position
-        t(":last", ["last"]);
-
-        // See jQuery #12526
-        const context = document.getElementById("qunit-fixture");
-        DomUtils.appendChild(
-            context,
-            parseDOM("<div id='jquery12526'></div>")[0]
-        );
-
-        // Post-manipulation positional
-        t(":last", ["jquery12526"], context);
     });
 
     it("pseudo - form", () => {
