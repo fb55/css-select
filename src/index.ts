@@ -77,24 +77,36 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         options?: Options<Node, ElementNode>
     ): T {
         const opts = convertOptionFormats(options);
-        let elems: ElementNode[] | ElementNode = elements;
 
         if (typeof query !== "function") {
-            query = compileUnsafe<Node, ElementNode>(query, opts, elems);
-        }
-        /*
-         * Add siblings if the query requires them.
-         * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
-         */
-        if (query.shouldTestNextSiblings) {
-            elems = appendNextSiblings(opts.context ?? elems, opts.adapter);
+            query = compileUnsafe<Node, ElementNode>(query, opts, elements);
         }
 
-        const filteredElements = Array.isArray(elems)
-            ? opts.adapter.removeSubsets(elems)
-            : opts.adapter.getChildren(elems);
+        const filteredElements = prepareContext(
+            elements,
+            opts.adapter,
+            query.shouldTestNextSiblings
+        );
         return searchFunc(query, filteredElements, opts);
     };
+}
+
+export function prepareContext<Node, ElementNode extends Node>(
+    elems: ElementNode | ElementNode[],
+    adapter: Adapter<Node, ElementNode>,
+    shouldTestNextSiblings = false
+): Node[] {
+    /*
+     * Add siblings if the query requires them.
+     * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
+     */
+    if (shouldTestNextSiblings) {
+        elems = appendNextSiblings(elems, adapter);
+    }
+
+    return Array.isArray(elems)
+        ? adapter.removeSubsets(elems)
+        : adapter.getChildren(elems);
 }
 
 function appendNextSiblings<Node, ElementNode extends Node>(
