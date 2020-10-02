@@ -70,7 +70,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 let current: ElementNode | null = elem;
 
                 while ((current = adapter.getParent(current))) {
-                    if (!isFalseCache.has(elem)) {
+                    if (!isFalseCache.has(current)) {
                         if (next(current)) return true;
                         isFalseCache.add(current);
                     }

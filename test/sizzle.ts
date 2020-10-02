@@ -1727,4 +1727,13 @@ describe("Sizzle", () => {
             document.getElementById("foo")
         );
     });
+
+    it("more specific selector should find less elements", () => {
+        // Same selector, but with an attribute filter added
+        expect(
+            CSSselect.selectAll("#qunit-fixture div div", document).length
+        ).toBeGreaterThanOrEqual(
+            CSSselect.selectAll("#qunit-fixture div div[id]", document).length
+        );
+    });
 });
