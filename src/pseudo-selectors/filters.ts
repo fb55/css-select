@@ -18,6 +18,7 @@ function getAttribFunc(name: string, value: string): Filter {
         type: "attribute",
         action: "equals",
         ignoreCase: false,
+        namespace: null,
         name,
         value,
     };

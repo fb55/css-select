@@ -95,13 +95,6 @@ describe("API", () => {
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
         });
-
-        it("should strip quotes", () => {
-            let matches = CSSselect.selectAll(":matches('p, div')", [dom]);
-            expect(matches).toHaveLength(2);
-            matches = CSSselect.selectAll(':matches("p, div")', [dom]);
-            expect(matches).toHaveLength(2);
-        });
     });
 
     describe("parent selector (<)", () => {

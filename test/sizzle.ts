@@ -208,7 +208,7 @@ describe("Sizzle", () => {
     });
 
     it("broken", () => {
-        expect.assertions(26);
+        expect.assertions(27);
 
         const broken = (selector: string) =>
             expect(() => CSSselect.compile(selector)).toThrow(Error);
@@ -216,9 +216,8 @@ describe("Sizzle", () => {
         broken("[");
         broken("(");
         broken("{");
-        // `broken("<");
         broken("()");
-        // `broken("<>");
+        broken("<>");
         broken("{}");
         broken(",");
         broken(",a");
