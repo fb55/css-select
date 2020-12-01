@@ -3,7 +3,9 @@
     "version": "3.1.0",
     "description": "a CSS selector compiler/engine",
     "author": "Felix Boehm <me@feedic.com>",
-    "funding": "https://github.com/sponsors/fb55",
+    "funding": {
+        "url": "https://github.com/sponsors/fb55"
+    },
     "keywords": [
         "css",
         "selector",
@@ -23,7 +25,7 @@
         "css-what": "^4.0.0",
         "domhandler": "^3.2.0",
         "domutils": "^2.4.1",
-        "nth-check": "^1.0.2"
+        "nth-check": "^2.0.0"
     },
     "devDependencies": {
         "@types/jest": "^26.0.14",
