@@ -860,18 +860,20 @@ describe("Sizzle", () => {
          * Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
          * Use seeded results to bypass querySelectorAll optimizations
          */
-        const attrbad = parseDOM(
-            "<input type='hidden' id='attrbad_space' name='foo bar'/>" +
-                "<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
-                "<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
-                "<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
-                "<input type='hidden' id='attrbad_quote' data-attr='&#39;'/>" +
-                "<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
-                "<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
-                "<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
-                "<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>",
-            { decodeEntities: true }
-        ) as Element[];
+        const attrbad = [
+            ...parseDOM(
+                "<input type='hidden' id='attrbad_space' name='foo bar'/>" +
+                    "<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
+                    "<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
+                    "<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
+                    "<input type='hidden' id='attrbad_quote' data-attr='&#39;'/>" +
+                    "<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
+                    "<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
+                    "<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
+                    "<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>",
+                { decodeEntities: true }
+            ),
+        ] as Element[];
         attrbad.forEach((attr) =>
             DomUtils.appendChild(document.getElementById("qunit-fixture"), attr)
         );
@@ -1373,15 +1375,17 @@ describe("Sizzle", () => {
 
         const tmp = document.createElement("div");
         tmp.attribs.id = "tmp_input";
-        document.body.children.push(tmp);
+        DomUtils.appendChild(document.body, tmp);
 
         ["button", "submit", "reset"].forEach((type) => {
-            const els = parseDOM(
-                "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
-                    /%/g,
-                    type
-                )
-            );
+            const els = [
+                ...parseDOM(
+                    "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
+                        /%/g,
+                        type
+                    )
+                ),
+            ];
             els.forEach((el) => DomUtils.appendChild(tmp, el));
 
             // Input Buttons :${type}
@@ -1393,7 +1397,7 @@ describe("Sizzle", () => {
             expect(CSSselect.is(els[1], `:${type}`)).toBe(true);
         });
 
-        document.body.children.pop();
+        DomUtils.removeElement(tmp);
 
         // Caching system tolerates recursive selection
         t(
@@ -1628,9 +1632,11 @@ describe("Sizzle", () => {
     it("pseudo - form", () => {
         expect.assertions(10);
 
-        const extraTexts = parseDOM(
-            '<input id="impliedText"/><input id="capitalText" type="TEXT">'
-        );
+        const extraTexts = [
+            ...parseDOM(
+                '<input id="impliedText"/><input id="capitalText" type="TEXT">'
+            ),
+        ];
 
         extraTexts.forEach((text) =>
             DomUtils.appendChild(document.getElementById("form"), text)
