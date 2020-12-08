@@ -49,7 +49,7 @@ describe("API", () => {
             ) as Element[];
             const a = CSSselect.selectAll(".foo:has(+.bar)", dom);
             expect(a).toHaveLength(1);
-            expect(a[0]).toStrictEqual(dom.children[0]);
+            expect(a[0]).toStrictEqual(dom.children[0] as Element);
         });
     });
 

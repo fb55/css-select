@@ -23,8 +23,8 @@
     "dependencies": {
         "boolbase": "^1.0.0",
         "css-what": "^4.0.0",
-        "domhandler": "^3.2.0",
-        "domutils": "^2.4.1",
+        "domhandler": "^4.0.0",
+        "domutils": "^2.4.3",
         "nth-check": "^2.0.0"
     },
     "devDependencies": {
@@ -36,7 +36,7 @@
         "coveralls": "^3.0.2",
         "eslint": "^7.9.0",
         "eslint-config-prettier": "^7.0.0",
-        "htmlparser2": "^5.0.1",
+        "htmlparser2": "^6.0.0",
         "jest": "^26.4.2",
         "prettier": "^2.1.2",
         "ts-jest": "^26.4.0",

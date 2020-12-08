@@ -15,32 +15,32 @@ describe("Attributes", () => {
                 dom
             );
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[1]]);
+            expect(matches).toStrictEqual([dom[0].children[1] as Element]);
             matches = CSSselect.selectAll(
                 '[data-foo="inDeeD-THAT\'s a DELICATE matteR." i]',
                 dom
             );
-            expect(matches).toStrictEqual([dom[0].children[1]]);
+            expect(matches).toStrictEqual([dom[0].children[1] as Element]);
         });
 
         it("should for ^=", () => {
             let matches = CSSselect.selectAll("[data-foo^=IN i]", dom);
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
             matches = CSSselect.selectAll("[data-foo^=in i]", dom);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
             matches = CSSselect.selectAll("[data-foo^=iN i]", dom);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
         });
 
         it("should for $=", () => {
             let matches = CSSselect.selectAll('[data-foo$="MATTER." i]', dom);
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
             matches = CSSselect.selectAll('[data-foo$="matter." i]', dom);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
             matches = CSSselect.selectAll('[data-foo$="MaTtEr." i]', dom);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
         });
 
         it("should for !=", () => {
@@ -49,36 +49,36 @@ describe("Attributes", () => {
                 dom
             );
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll(
                 '[data-foo!="inDeeD-THAT\'s a DELICATE matteR." i]',
                 dom
             );
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
         });
 
         it("should for *=", () => {
             let matches = CSSselect.selectAll("[data-foo*=IT i]", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll("[data-foo*=tH i]", dom);
-            expect(matches).toStrictEqual(dom[0].children);
+            expect(matches).toStrictEqual(dom[0].children as Element[]);
         });
 
         it("should for |=", () => {
             let matches = CSSselect.selectAll("[data-foo|=indeed i]", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[1]]);
+            expect(matches).toStrictEqual([dom[0].children[1] as Element]);
             matches = CSSselect.selectAll("[data-foo|=inDeeD i]", dom);
-            expect(matches).toStrictEqual([dom[0].children[1]]);
+            expect(matches).toStrictEqual([dom[0].children[1] as Element]);
         });
 
         it("should for ~=", () => {
             let matches = CSSselect.selectAll("[data-foo~=IT i]", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll("[data-foo~=dElIcAtE i]", dom);
-            expect(matches).toStrictEqual([dom[0].children[1]]);
+            expect(matches).toStrictEqual([dom[0].children[1] as Element]);
         });
     });
 
