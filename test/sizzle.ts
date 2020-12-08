@@ -128,7 +128,7 @@ describe("Sizzle", () => {
         });
         // Other document as context
         expect(CSSselect.selectAll("p:contains(bar)", iframe)).toStrictEqual([
-            DomUtils.getElementById("foo", iframe.children),
+            DomUtils.getElementById("foo", iframe.children) as Element,
         ]);
         iframe.children = [];
 
@@ -151,11 +151,10 @@ describe("Sizzle", () => {
         // Real use case would be using .watch in browsers with window.watch (see Issue #157)
         const elem = document.createElement("toString");
         elem.attribs.id = "toString";
-        const siblings = q("qunit-fixture")[0].children;
-        siblings.push(elem);
+        DomUtils.appendChild(q("qunit-fixture")[0], elem);
         // Element name matches Object.prototype property
         t("tostring#toString", ["toString"]);
-        siblings.pop();
+        DomUtils.removeElement(elem);
     });
 
     it("XML Document Selectors", () => {
@@ -415,14 +414,16 @@ describe("Sizzle", () => {
             e.parent = div;
         });
         // Finding a second class.
-        expect(CSSselect.selectAll(".e", div)).toStrictEqual([div.children[0]]);
+        expect(CSSselect.selectAll(".e", div)).toStrictEqual([
+            div.children[0] as Element,
+        ]);
 
         const lastChild = div.children[div.children.length - 1] as Element;
         lastChild.attribs.class = "e";
 
         // Finding a modified class.
         expect(CSSselect.selectAll(".e", div)).toStrictEqual([
-            div.children[0],
+            div.children[0] as Element,
             lastChild,
         ]);
 
@@ -929,7 +930,7 @@ describe("Sizzle", () => {
 
         // Finding by attribute with escaped characters.
         expect(CSSselect.selectAll("[xml\\:test]", div)).toStrictEqual([
-            div.children[0],
+            div.children[0] as Element,
         ]);
 
         const foo = document.getElementById("foo");

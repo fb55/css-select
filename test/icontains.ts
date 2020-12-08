@@ -14,31 +14,43 @@ describe("icontains", () => {
                 dom
             );
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
+            expect(matches).toStrictEqual([
+                dom[0],
+                dom[0].children[1],
+            ] as Element[]);
             matches = CSSselect.selectAll(
                 ":icontains(inDeeD-THAT's a DELICATE matteR.)",
                 dom
             );
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
+            expect(matches).toStrictEqual([
+                dom[0],
+                dom[0].children[1],
+            ] as Element[]);
         });
 
         it("should match substring", () => {
             let matches = CSSselect.selectAll(":icontains(indeed)", dom);
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
+            expect(matches).toStrictEqual([
+                dom[0],
+                dom[0].children[1],
+            ] as Element[]);
             matches = CSSselect.selectAll(":icontains(inDeeD)", dom);
             expect(matches).toHaveLength(2);
-            expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
+            expect(matches).toStrictEqual([
+                dom[0],
+                dom[0].children[1],
+            ] as Element[]);
         });
 
         it("should match specific element", () => {
             let matches = CSSselect.selectAll("p:icontains(matter)", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll("p:icontains(mATter)", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
         });
 
         it("should match multiple elements", () => {
@@ -48,14 +60,14 @@ describe("icontains", () => {
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
             matches = CSSselect.selectAll(":icontains(mATter)", dom);
             expect(matches).toHaveLength(3);
             expect(matches).toStrictEqual([
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
         });
 
         it("should match empty string", () => {
@@ -65,7 +77,7 @@ describe("icontains", () => {
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
         });
 
         it("should match quoted string", () => {
@@ -75,13 +87,13 @@ describe("icontains", () => {
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
             matches = CSSselect.selectAll("p:icontains('matter')", dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll('p:icontains("matter")', dom);
             expect(matches).toHaveLength(1);
-            expect(matches).toStrictEqual([dom[0].children[0]]);
+            expect(matches).toStrictEqual([dom[0].children[0] as Element]);
         });
 
         it("should match whitespace", () => {
@@ -91,14 +103,14 @@ describe("icontains", () => {
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
             matches = CSSselect.selectAll(":icontains( mATter)", dom);
             expect(matches).toHaveLength(3);
             expect(matches).toStrictEqual([
                 dom[0],
                 dom[0].children[0],
                 dom[0].children[1],
-            ]);
+            ] as Element[]);
         });
     });
 

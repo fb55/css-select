@@ -144,7 +144,10 @@ export const filters: Record<string, Filter> = {
 
     // TODO determine the actual root element
     root(next, _rule, { adapter }) {
-        return (elem) => !adapter.getParent(elem) && next(elem);
+        return (elem) => {
+            const parent = adapter.getParent(elem);
+            return (parent == null || !adapter.isTag(parent)) && next(elem);
+        };
     },
 
     scope<Node, ElementNode extends Node>(
