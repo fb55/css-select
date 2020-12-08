@@ -14,11 +14,14 @@ import type { Node, Element } from "domhandler";
 const document = helper.getDocument("nwmatcher.html");
 
 // Prototype's `$` function
-function getById(...args: string[]): Element | Element[] {
-    const elements = args.map((id) =>
-        DomUtils.getElementById(id, document)
-    ) as Element[];
-    return elements.length === 1 ? elements[0] : elements;
+function getByIds(...args: string[]): Element[] {
+    return args.map((id) => getById(id));
+}
+
+function getById(id: string): Element {
+    const elem = DomUtils.getElementById(id, document);
+    if (!elem) throw new Error(`Did not find element with ID ${id}`);
+    return elem;
 }
 
 // NWMatcher methods
@@ -54,7 +57,7 @@ describe("NWMatcher", () => {
         it(".class", () => {
             // Class selector
             expect(select(".first")).toStrictEqual(
-                getById("p", "link_1", "item_1")
+                getByIds("p", "link_1", "item_1")
             );
             expect(select(".second")).toHaveLength(0);
         });
@@ -67,7 +70,7 @@ describe("NWMatcher", () => {
         it("E.class", () => {
             const secondLink = getById("link_2");
             expect(select("a.internal")).toStrictEqual(
-                getById("link_1", "link_2")
+                getByIds("link_1", "link_2")
             );
             expect(select("a.internal.highlight")[0]).toBe(secondLink);
             expect(select("a.highlight.internal")[0]).toBe(secondLink);
@@ -104,13 +107,13 @@ describe("NWMatcher", () => {
             );
             expect(select("[id]")).toStrictEqual(select("*[id]"));
             expect(select("[type=radio]")).toStrictEqual(
-                getById("checked_radio", "unchecked_radio")
+                getByIds("checked_radio", "unchecked_radio")
             );
             expect(select("[type=checkbox]")).toStrictEqual(
                 select("*[type=checkbox]")
             );
             expect(select("[title]")).toStrictEqual(
-                getById("with_title", "commaParent")
+                getByIds("with_title", "commaParent")
             );
             expect(select("#troubleForm [type=radio]")).toStrictEqual(
                 select("#troubleForm *[type=radio]")
@@ -126,7 +129,7 @@ describe("NWMatcher", () => {
             expect(select("li#item_3[class]")[0]).toBe(getById("item_3"));
             expect(
                 select('#troubleForm2 input[name="brackets[5][]"]')
-            ).toStrictEqual(getById("chk_1", "chk_2"));
+            ).toStrictEqual(getByIds("chk_1", "chk_2"));
             // Brackets in attribute value
             expect(
                 select('#troubleForm2 input[name="brackets[5][]"]:checked')[0]
@@ -150,7 +153,7 @@ describe("NWMatcher", () => {
 
         it('E[foo="bar"]', () => {
             expect(select('a[href="#"]')).toStrictEqual(
-                getById("link_1", "link_2", "link_3")
+                getByIds("link_1", "link_2", "link_3")
             );
             expect(
                 select(
@@ -161,10 +164,10 @@ describe("NWMatcher", () => {
 
         it('E[foo~="bar"]', () => {
             expect(select('a[class~="internal"]')).toStrictEqual(
-                getById("link_1", "link_2")
+                getByIds("link_1", "link_2")
             );
             expect(select("a[class~=internal]")).toStrictEqual(
-                getById("link_1", "link_2")
+                getByIds("link_1", "link_2")
             );
             expect(select('a[class~=external][href="#"]')[0]).toBe(
                 getById("link_3")
@@ -179,36 +182,36 @@ describe("NWMatcher", () => {
         it('E[foo^="bar"]', () => {
             // Matching beginning of string
             expect(select("div[class^=bro]")).toStrictEqual(
-                getById("father", "uncle")
+                getByIds("father", "uncle")
             );
             expect(select('#level1 *[id^="level2_"]')).toStrictEqual(
-                getById("level2_1", "level2_2", "level2_3")
+                getByIds("level2_1", "level2_2", "level2_3")
             );
             expect(select("#level1 *[id^=level2_]")).toStrictEqual(
-                getById("level2_1", "level2_2", "level2_3")
+                getByIds("level2_1", "level2_2", "level2_3")
             );
         });
 
         it('E[foo$="bar"]', () => {
             // Matching end of string
             expect(select("div[class$=men]")).toStrictEqual(
-                getById("father", "uncle")
+                getByIds("father", "uncle")
             );
             expect(select('#level1 *[id$="_1"]')).toStrictEqual(
-                getById("level2_1", "level3_1")
+                getByIds("level2_1", "level3_1")
             );
             expect(select("#level1 *[id$=_1]")).toStrictEqual(
-                getById("level2_1", "level3_1")
+                getByIds("level2_1", "level3_1")
             );
         });
 
         it('E[foo*="bar"]', () => {
             // Matching substring
             expect(select('div[class*="ers m"]')).toStrictEqual(
-                getById("father", "uncle")
+                getByIds("father", "uncle")
             );
             expect(select('#level1 *[id*="2"]')).toStrictEqual(
-                getById("level2_1", "level3_2", "level2_2", "level2_3")
+                getByIds("level2_1", "level3_2", "level2_2", "level2_3")
             );
         });
     });
@@ -219,11 +222,11 @@ describe("NWMatcher", () => {
                 getById("level2_1")
             );
             expect(select("#level1 *:first-child")).toStrictEqual(
-                getById("level2_1", "level3_1", "level_only_child")
+                getByIds("level2_1", "level3_1", "level_only_child")
             );
             expect(select("#level1>div:first-child")).toHaveLength(0);
             expect(select("#level1 span:first-child")).toStrictEqual(
-                getById("level2_1", "level3_1")
+                getByIds("level2_1", "level3_1")
             );
             expect(select("#level1:first-child")).toHaveLength(0);
         });
@@ -231,7 +234,7 @@ describe("NWMatcher", () => {
         it("E:last-child", () => {
             expect(select("#level1>*:last-child")[0]).toBe(getById("level2_3"));
             expect(select("#level1 *:last-child")).toStrictEqual(
-                getById("level3_2", "level_only_child", "level2_3")
+                getByIds("level3_2", "level_only_child", "level2_3")
             );
             expect(select("#level1>div:last-child")[0]).toBe(
                 getById("level2_3")
@@ -246,10 +249,10 @@ describe("NWMatcher", () => {
             expect(select("#p *:nth-child(3)")[0]).toBe(getById("link_2"));
             expect(select("#p a:nth-child(3)")[0]).toBe(getById("link_2"));
             expect(select("#list > li:nth-child(n+2)")).toStrictEqual(
-                getById("item_2", "item_3")
+                getByIds("item_2", "item_3")
             );
             expect(select("#list > li:nth-child(-n+2)")).toStrictEqual(
-                getById("item_1", "item_2")
+                getByIds("item_1", "item_2")
             );
         });
 
@@ -354,7 +357,7 @@ describe("NWMatcher", () => {
 
         it("E:checked", () => {
             expect(select("#troubleForm *:checked")).toStrictEqual(
-                getById("checked_box", "checked_radio")
+                getByIds("checked_box", "checked_radio")
             );
         });
     });
@@ -363,7 +366,7 @@ describe("NWMatcher", () => {
         it("E F", () => {
             // Descendant
             expect(select("#fixtures a *")).toStrictEqual(
-                getById("em2", "em", "span")
+                getByIds("em2", "em", "span")
             );
             expect(select("div#fixtures p")[0]).toBe(getById("p"));
         });
@@ -412,36 +415,36 @@ describe("NWMatcher", () => {
         it("E > F", () => {
             // Child
             expect(select("p.first > a")).toStrictEqual(
-                getById("link_1", "link_2")
+                getByIds("link_1", "link_2")
             );
             expect(select("div#grandfather > div")).toStrictEqual(
-                getById("father", "uncle")
+                getByIds("father", "uncle")
             );
             expect(select("#level1>span")).toStrictEqual(
-                getById("level2_1", "level2_2")
+                getByIds("level2_1", "level2_2")
             );
             expect(select("#level1 > span")).toStrictEqual(
-                getById("level2_1", "level2_2")
+                getByIds("level2_1", "level2_2")
             );
             expect(select("#level2_1 > *")).toStrictEqual(
-                getById("level3_1", "level3_2")
+                getByIds("level3_1", "level3_2")
             );
             expect(select("div > #nonexistent")).toHaveLength(0);
 
             expect(select("> a", select("p.first"))).toStrictEqual(
-                getById("link_1", "link_2")
+                getByIds("link_1", "link_2")
             );
             expect(select("> div", select("div#grandfather"))).toStrictEqual(
-                getById("father", "uncle")
+                getByIds("father", "uncle")
             );
             expect(select(">span", select("#level1"))).toStrictEqual(
-                getById("level2_1", "level2_2")
+                getByIds("level2_1", "level2_2")
             );
             expect(select("> span", select("#level1"))).toStrictEqual(
-                getById("level2_1", "level2_2")
+                getByIds("level2_1", "level2_2")
             );
             expect(select("> *", select("#level2_1"))).toStrictEqual(
-                getById("level3_1", "level3_2")
+                getByIds("level3_1", "level3_2")
             );
             expect(select("> #nonexistent", select("div"))).toHaveLength(0);
         });
@@ -456,7 +459,7 @@ describe("NWMatcher", () => {
             expect(select("div ~ #level2_3")).toHaveLength(0);
             expect(select("#level2_1 ~ span")[0]).toBe(getById("level2_2"));
             expect(select("#level2_1 ~ *")).toStrictEqual(
-                getById("level2_2", "level2_3")
+                getByIds("level2_2", "level2_3")
             );
             expect(select("#level3_1 ~ #level3_2")[0]).toBe(
                 getById("level3_2")
@@ -473,7 +476,7 @@ describe("NWMatcher", () => {
                 getById("level2_2")
             );
             expect(select("~ *", select("#level2_1"))).toStrictEqual(
-                getById("level2_2", "level2_3")
+                getByIds("level2_2", "level2_3")
             );
             expect(select("~ #level3_2", select("#level3_1"))[0]).toBe(
                 getById("level3_2")
@@ -577,7 +580,7 @@ describe("NWMatcher", () => {
             expect(
                 select('#list, .first,*[xml:lang="es-us"] , #troubleForm')
             ).toStrictEqual(
-                getById(
+                getByIds(
                     "p",
                     "link_1",
                     "list",
@@ -589,7 +592,7 @@ describe("NWMatcher", () => {
             expect(
                 select('#list, .first, *[xml:lang="es-us"], #troubleForm')
             ).toStrictEqual(
-                getById(
+                getByIds(
                     "p",
                     "link_1",
                     "list",
@@ -605,12 +608,12 @@ describe("NWMatcher", () => {
                 select(
                     'form[title*="commas,"], input[value="#commaOne,#commaTwo"]'
                 )
-            ).toStrictEqual(getById("commaParent", "commaChild"));
+            ).toStrictEqual(getByIds("commaParent", "commaChild"));
             expect(
                 select(
                     'form[title*="commas,"], input[value="#commaOne,#commaTwo"]'
                 )
-            ).toStrictEqual(getById("commaParent", "commaChild"));
+            ).toStrictEqual(getByIds("commaParent", "commaChild"));
         });
     });
 });
