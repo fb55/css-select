@@ -118,6 +118,7 @@ export const pseudos: Record<string, Pseudo> = {
 
         if (
             !parent ||
+            !adapter.isTag(parent) ||
             adapter.getName(parent) !== "select" ||
             adapter.hasAttrib(parent, "multiple")
         ) {

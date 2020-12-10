@@ -124,6 +124,10 @@ describe("API", () => {
             match = CSSselect.selectOne("*", []);
             expect(match).toBeNull();
         });
+        it("should properly handle root elements", () => {
+            expect(CSSselect.selectOne("div:root", [dom])).toBe(dom);
+            expect(CSSselect.selectOne("* > div", [dom])).toBeNull();
+        });
     });
 
     describe("options", () => {

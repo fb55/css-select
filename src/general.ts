@@ -59,7 +59,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                     let current: ElementNode | null = elem;
 
                     while ((current = adapter.getParent(current))) {
-                        if (next(current)) return true;
+                        if (adapter.isTag(current) && next(current)) {
+                            return true;
+                        }
                     }
 
                     return false;
@@ -74,7 +76,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 while ((current = adapter.getParent(current))) {
                     if (!isFalseCache.has(current)) {
-                        if (next(current)) return true;
+                        if (adapter.isTag(current) && next(current)) {
+                            return true;
+                        }
                         isFalseCache.add(current);
                     }
                 }
@@ -87,7 +91,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 let current: ElementNode | null = elem;
 
                 do {
-                    if (next(current)) return true;
+                    if (adapter.isTag(current) && next(current)) return true;
                 } while ((current = adapter.getParent(current)));
 
                 return false;
@@ -107,7 +111,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         case "child":
             return function child(elem: ElementNode): boolean {
                 const parent = adapter.getParent(elem);
-                return !!parent && next(parent);
+                return !!parent && adapter.isTag(parent) && next(parent);
             };
 
         case "sibling":

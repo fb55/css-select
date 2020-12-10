@@ -32,7 +32,10 @@ function getChildFunc<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     adapter: Adapter<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
-    return (elem) => !!adapter.getParent(elem) && next(elem);
+    return (elem) => {
+        const parent = adapter.getParent(elem);
+        return !!parent && adapter.isTag(parent) && next(elem);
+    };
 }
 
 export const filters: Record<string, Filter> = {

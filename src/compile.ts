@@ -60,9 +60,10 @@ function absolutize<Node, ElementNode extends Node>(
     context?: ElementNode[]
 ) {
     // TODO Use better check if the context is a document
-    const hasContext = !!context?.every(
-        (e) => e === PLACEHOLDER_ELEMENT || !!adapter.getParent(e)
-    );
+    const hasContext = !!context?.every((e) => {
+        const parent = adapter.getParent(e);
+        return e === PLACEHOLDER_ELEMENT || !!(parent && adapter.isTag(parent));
+    });
 
     for (const t of token) {
         if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
