@@ -1,4 +1,5 @@
 # css-select [![NPM version](http://img.shields.io/npm/v/css-select.svg)](https://npmjs.org/package/css-select) [![Build Status](https://travis-ci.com/fb55/css-select.svg?branch=master)](http://travis-ci.com/fb55/css-select) [![Downloads](https://img.shields.io/npm/dm/css-select.svg)](https://npmjs.org/package/css-select) [![Coverage](https://coveralls.io/repos/fb55/css-select/badge.svg?branch=master)](https://coveralls.io/r/fb55/css-select)
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ffb55%2Fcss-select.svg?type=shield)](https://app.fossa.com/projects/git%2Bgithub.com%2Ffb55%2Fcss-select?ref=badge_shield)
 
 a CSS selector compiler/engine
 
@@ -257,3 +258,7 @@ Tidelift will coordinate the fix and disclosure.
 Available as part of the Tidelift Subscription
 
 The maintainers of `css-select` and thousands of other packages are working with Tidelift to deliver commercial support and maintenance for the open source dependencies you use to build your applications. Save time, reduce risk, and improve code health, while paying the maintainers of the exact dependencies you use. [Learn more.](https://tidelift.com/subscription/pkg/npm-css-select?utm_source=npm-css-select&utm_medium=referral&utm_campaign=enterprise&utm_term=repo)
+
+
+## License
+[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Ffb55%2Fcss-select.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Ffb55%2Fcss-select?ref=badge_large)
