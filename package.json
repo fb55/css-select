@@ -57,7 +57,8 @@
     },
     "license": "BSD-2-Clause",
     "prettier": {
-        "tabWidth": 4
+        "tabWidth": 4,
+        "proseWrap": "always"
     },
     "jest": {
         "preset": "ts-jest",
