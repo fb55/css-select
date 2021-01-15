@@ -125,10 +125,20 @@ the first match, or `null` if there was no match.
 
 ### Options
 
+All options are optional.
+
 -   `xmlMode`: When enabled, tag names will be case-sensitive. Default: `false`.
 -   `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
--   `rootFunc`: The last function in the stack, will be called with the last element that's looked at. Should return `true`.
--   `adapter`: The adapter to use when interacting with the backing DOM structure. By default it uses [`domutils`](https://github.com/fb55/domutils).
+-   `rootFunc`: The last function in the stack, will be called with the last
+    element that's looked at.
+-   `adapter`: The adapter to use when interacting with the backing DOM
+    structure. By default it uses the `domutils` module.
+-   `context`: The context of the current query. Used to limit the scope of
+    searches. Can be matched directly using the `:scope` pseudo-selector.
+-   `cacheResults`: Allow css-select to cache results for some selectors,
+    sometimes greatly improving querying performance. Disable this if your
+    document can change in between queries with the same compiled selector.
+    Default: `true`.
 
 #### Custom Adapters
 
@@ -182,6 +192,7 @@ _As defined by CSS 4 and / or jQuery._
     -   `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`,
         `:password`, `:reset`, `:radio` etc. \*
     -   `:matches`, `:is` \*
+    -   `:scope` (uses the context from the passed options)
 
 **\***: Not part of CSS3
 

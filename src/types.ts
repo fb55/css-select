@@ -97,11 +97,15 @@ export interface Adapter<Node, ElementNode extends Node> {
 
 export interface Options<Node, ElementNode extends Node> {
     /**
-     * When enabled, tag names will be case-sensitive. Default: false.
+     * When enabled, tag names will be case-sensitive.
+     *
+     * @default false
      */
     xmlMode?: boolean;
     /**
-     * Limits the module to only use CSS3 selectors. Default: false.
+     * Limits the module to only use CSS3 selectors.
+     *
+     * @default false
      */
     strict?: boolean;
     /**
@@ -123,7 +127,8 @@ export interface Options<Node, ElementNode extends Node> {
      * Allow css-select to cache results for some selectors, sometimes greatly
      * improving querying performance. Disable this if your document can
      * change in between queries with the same compiled selector.
-     * Defaults to `true`.
+     *
+     * @default true
      */
     cacheResults?: boolean;
 }
