@@ -183,15 +183,15 @@ _As defined by CSS 4 and / or jQuery._
 -   Pseudos:
     -   [`:not`](https://developer.mozilla.org/en-US/docs/Web/CSS/:not)
     -   [`:contains`](https://api.jquery.com/contains-selector)
-    -   `:icontains` (case-insensitive version of
-        [`:contains`](https://api.jquery.com/contains-selector))
+    -   `:icontains` (case-insensitive version of `:contains`)
     -   [`:has`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)
     -   [`:root`](https://developer.mozilla.org/en-US/docs/Web/CSS/:root)
     -   [`:empty`](https://developer.mozilla.org/en-US/docs/Web/CSS/:empty)
     -   [`:parent`](https://api.jquery.com/parent-selector)
     -   [`:first-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child),
         [`:last-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child),
-        `:first-child-of-type`, `:last-child-of-type`
+        [`:first-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:first-of-type),
+        [`:last-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:last-of-type)
     -   [`:only-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type),
         [`:only-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child)
     -   [`:nth-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child),
@@ -220,7 +220,7 @@ _As defined by CSS 4 and / or jQuery._
         [`:password`](https://api.jquery.com/password-selector),
         [`:reset`](https://api.jquery.com/reset-selector),
         [`:radio`](https://api.jquery.com/radio-selector) etc.
-    -   [`:is`](https://developer.mozilla.org/en-US/docs/Web/CSS/:is), with the
+    -   [`:is`](https://developer.mozilla.org/en-US/docs/Web/CSS/:is), plus its
         legacy alias `:matches`
     -   [`:scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/:scope)
         (uses the context from the passed options)
