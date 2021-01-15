@@ -153,14 +153,23 @@ for an implementation backed by the DOM.
 
 _As defined by CSS 4 and / or jQuery._
 
--   Universal (`*`)
--   Tag (`<tagname>`)
--   Descendant (` `)
--   Child (`>`)
+-   [Selector lists](https://developer.mozilla.org/en-US/docs/Web/CSS/Selector_list)
+    (`,`)
+-   [Universal](https://developer.mozilla.org/en-US/docs/Web/CSS/Universal_selectors)
+    (`*`)
+-   [Type](https://developer.mozilla.org/en-US/docs/Web/CSS/Type_selectors)
+    (`<tagname>`)
+-   [Descendant](https://developer.mozilla.org/en-US/docs/Web/CSS/Descendant_combinator)
+    (` `)
+-   [Child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator)
+    (`>`)
 -   Parent (`<`)
--   Sibling (`+`)
--   Adjacent (`~`)
--   Attribute (`[attr=foo]`), with supported comparisons:
+-   [Adjacent sibling](https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator)
+    (`+`)
+-   [General sibling](https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator)
+    (`~`)
+-   [Attribute](https://developer.mozilla.org/en-US/docs/Web/CSS/Attribute_selectors)
+    (`[attr=foo]`), with supported comparisons:
     -   `[attr]` (existential)
     -   `=`
     -   `~=`
@@ -172,26 +181,49 @@ _As defined by CSS 4 and / or jQuery._
     -   Also, `i` can be added after the comparison to make the comparison
         case-insensitive (eg. `[attr=foo i]`)
 -   Pseudos:
-    -   `:not`
-    -   `:contains`
-    -   `:icontains` (case-insensitive version of `:contains`)
-    -   `:has`
-    -   `:root`
-    -   `:empty`
-    -   `:parent`
-    -   `:[first|last]-child[-of-type]`
-    -   `:only-of-type`, `:only-child`
-    -   `:nth-[last-]child[-of-type]`
-    -   `:link`, `:any-link`
-    -   `:visited`, `:hover`, `:active` (these depend on optional Adapter
-        methods, so these will work only if implemented in Adapter)
-    -   `:selected`, `:checked`
-    -   `:enabled`, `:disabled`
-    -   `:required`, `:optional`
-    -   `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`,
-        `:password`, `:reset`, `:radio` etc.
-    -   `:matches`, `:is`
-    -   `:scope` (uses the context from the passed options)
+    -   [`:not`](https://developer.mozilla.org/en-US/docs/Web/CSS/:not)
+    -   [`:contains`](https://api.jquery.com/contains-selector)
+    -   `:icontains` (case-insensitive version of
+        [`:contains`](https://api.jquery.com/contains-selector))
+    -   [`:has`](https://developer.mozilla.org/en-US/docs/Web/CSS/:has)
+    -   [`:root`](https://developer.mozilla.org/en-US/docs/Web/CSS/:root)
+    -   [`:empty`](https://developer.mozilla.org/en-US/docs/Web/CSS/:empty)
+    -   [`:parent`](https://api.jquery.com/parent-selector)
+    -   [`:first-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:first-child),
+        [`:last-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:last-child),
+        `:first-child-of-type`, `:last-child-of-type`
+    -   [`:only-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:only-of-type),
+        [`:only-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:only-child)
+    -   [`:nth-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-child),
+        [`:nth-last-child`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-child),
+        [`:nth-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-of-type),
+        [`:nth-last-of-type`](https://developer.mozilla.org/en-US/docs/Web/CSS/:nth-last-of-type),
+    -   [`:link`](https://developer.mozilla.org/en-US/docs/Web/CSS/:link),
+        [`:any-link`](https://developer.mozilla.org/en-US/docs/Web/CSS/:any-link)
+    -   [`:visited`](https://developer.mozilla.org/en-US/docs/Web/CSS/:visited),
+        [`:hover`](https://developer.mozilla.org/en-US/docs/Web/CSS/:hover),
+        [`:active`](https://developer.mozilla.org/en-US/docs/Web/CSS/:active)
+        (these depend on optional `Adapter` methods, so these will only match
+        elements if implemented in `Adapter`)
+    -   [`:selected`](https://api.jquery.com/selected-selector),
+        [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked)
+    -   [`:enabled`](https://developer.mozilla.org/en-US/docs/Web/CSS/:enabled),
+        [`:disabled`](https://developer.mozilla.org/en-US/docs/Web/CSS/:disabled)
+    -   [`:required`](https://developer.mozilla.org/en-US/docs/Web/CSS/:required),
+        [`:optional`](https://developer.mozilla.org/en-US/docs/Web/CSS/:optional)
+    -   [`:header`](https://api.jquery.com/header-selector),
+        [`:button`](https://api.jquery.com/button-selector),
+        [`:input`](https://api.jquery.com/input-selector),
+        [`:text`](https://api.jquery.com/text-selector),
+        [`:checkbox`](https://api.jquery.com/checkbox-selector),
+        [`:file`](https://api.jquery.com/file-selector),
+        [`:password`](https://api.jquery.com/password-selector),
+        [`:reset`](https://api.jquery.com/reset-selector),
+        [`:radio`](https://api.jquery.com/radio-selector) etc.
+    -   [`:is`](https://developer.mozilla.org/en-US/docs/Web/CSS/:is), with the
+        legacy alias `:matches`
+    -   [`:scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/:scope)
+        (uses the context from the passed options)
 
 ---
 
