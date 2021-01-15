@@ -53,7 +53,6 @@ export const subselects: Record<string, Subselect> = {
     matches(next, token, options, context, compileToken) {
         const opts = {
             xmlMode: !!options.xmlMode,
-            strict: !!options.strict,
             adapter: options.adapter,
             equals: options.equals,
             rootFunc: next,
@@ -64,18 +63,9 @@ export const subselects: Record<string, Subselect> = {
     not(next, token, options, context, compileToken) {
         const opts = {
             xmlMode: !!options.xmlMode,
-            strict: !!options.strict,
             adapter: options.adapter,
             equals: options.equals,
         };
-
-        if (opts.strict) {
-            if (token.length > 1 || token.some(containsTraversal)) {
-                throw new Error(
-                    "complex selectors in :not aren't allowed in strict mode"
-                );
-            }
-        }
 
         const func = compileToken(token, opts, context);
 
@@ -96,7 +86,6 @@ export const subselects: Record<string, Subselect> = {
         const { adapter } = options;
         const opts = {
             xmlMode: !!options.xmlMode,
-            strict: !!options.strict,
             adapter,
             equals: options.equals,
         };

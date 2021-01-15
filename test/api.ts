@@ -140,24 +140,6 @@ describe("API", () => {
             ).toBe(true);
         });
 
-        it("should be strict", () => {
-            const opts = { strict: true };
-            expect(() => CSSselect.compile(":checkbox", opts)).toThrow(Error);
-            expect(() => CSSselect.compile("[attr=val i]", opts)).toThrow(
-                Error
-            );
-            expect(() => CSSselect.compile("[attr!=val]", opts)).toThrow(Error);
-            expect(() => CSSselect.compile("[attr!=val i]", opts)).toThrow(
-                Error
-            );
-            expect(() => CSSselect.compile("foo < bar", opts)).toThrow(Error);
-            expect(() => CSSselect.compile(":not(:parent)", opts)).toThrow(
-                Error
-            );
-            expect(() => CSSselect.compile(":not(a > b)", opts)).toThrow(Error);
-            expect(() => CSSselect.compile(":not(a, b)", opts)).toThrow(Error);
-        });
-
         it("should recognize contexts", () => {
             const div = CSSselect.selectAll("div", [dom]);
             const p = CSSselect.selectAll("p", [dom]);

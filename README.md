@@ -128,7 +128,6 @@ the first match, or `null` if there was no match.
 All options are optional.
 
 -   `xmlMode`: When enabled, tag names will be case-sensitive. Default: `false`.
--   `strict`: Limits the module to only use CSS3 selectors. Default: `false`.
 -   `rootFunc`: The last function in the stack, will be called with the last
     element that's looked at.
 -   `adapter`: The adapter to use when interacting with the backing DOM
@@ -156,9 +155,9 @@ _As defined by CSS 4 and / or jQuery._
 
 -   Universal (`*`)
 -   Tag (`<tagname>`)
--   Descendant (``)
+-   Descendant (` `)
 -   Child (`>`)
--   Parent (`<`) \*
+-   Parent (`<`)
 -   Sibling (`+`)
 -   Adjacent (`~`)
 -   Attribute (`[attr=foo]`), with supported comparisons:
@@ -169,32 +168,30 @@ _As defined by CSS 4 and / or jQuery._
     -   `*=`
     -   `^=`
     -   `$=`
-    -   `!=` \*
+    -   `!=`
     -   Also, `i` can be added after the comparison to make the comparison
-        case-insensitive (eg. `[attr=foo i]`) \*
+        case-insensitive (eg. `[attr=foo i]`)
 -   Pseudos:
     -   `:not`
-    -   `:contains` \*
-    -   `:icontains` \* (case-insensitive version of `:contains`)
-    -   `:has` \*
+    -   `:contains`
+    -   `:icontains` (case-insensitive version of `:contains`)
+    -   `:has`
     -   `:root`
     -   `:empty`
-    -   `:parent` \*
+    -   `:parent`
     -   `:[first|last]-child[-of-type]`
     -   `:only-of-type`, `:only-child`
     -   `:nth-[last-]child[-of-type]`
     -   `:link`, `:any-link`
-    -   `:visited`, `:hover`, `:active` \* (these depend on optional Adapter
+    -   `:visited`, `:hover`, `:active` (these depend on optional Adapter
         methods, so these will work only if implemented in Adapter)
-    -   `:selected` \*, `:checked`
+    -   `:selected`, `:checked`
     -   `:enabled`, `:disabled`
     -   `:required`, `:optional`
     -   `:header`, `:button`, `:input`, `:text`, `:checkbox`, `:file`,
-        `:password`, `:reset`, `:radio` etc. \*
-    -   `:matches`, `:is` \*
+        `:password`, `:reset`, `:radio` etc.
+    -   `:matches`, `:is`
     -   `:scope` (uses the context from the passed options)
-
-**\***: Not part of CSS3
 
 ---
 

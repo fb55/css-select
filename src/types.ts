@@ -103,12 +103,6 @@ export interface Options<Node, ElementNode extends Node> {
      */
     xmlMode?: boolean;
     /**
-     * Limits the module to only use CSS3 selectors.
-     *
-     * @default false
-     */
-    strict?: boolean;
-    /**
      * The last function in the stack, will be called with the last element
      * that's looked at.
      */

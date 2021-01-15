@@ -25,13 +25,6 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             throw new Error("Pseudo-elements are not supported by css-select");
 
         case "attribute":
-            if (
-                options.strict &&
-                (selector.ignoreCase || selector.action === "not")
-            ) {
-                throw new Error("Unsupported attribute selector");
-            }
-
             return attributeRules[selector.action](next, selector, options);
 
         case "pseudo":
@@ -98,10 +91,6 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             };
 
         case "parent":
-            if (options.strict) {
-                throw new Error("Parent selector isn't part of CSS3");
-            }
-
             return function parent(elem: ElementNode): boolean {
                 return adapter
                     .getChildren(elem)

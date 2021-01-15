@@ -21,9 +21,6 @@ import { subselects } from "./subselects";
 
 export { filters, pseudos };
 
-// FIXME This is pretty hacky
-const reCSS3 = /^(?:(?:nth|last|first|only)-(?:child|of-type)|root|empty|(?:en|dis)abled|checked|not)$/;
-
 export function compilePseudoSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     selector: PseudoSelector,
@@ -32,10 +29,6 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
-
-    if (options.strict && !reCSS3.test(name)) {
-        throw new Error(`:${name} isn't part of CSS3`);
-    }
 
     if (Array.isArray(data)) {
         return subselects[name](next, data, options, context, compileToken);
