@@ -53,6 +53,29 @@ describe("API", () => {
         });
     });
 
+    describe("errors", () => {
+        it("should throw with a pseudo-element", () => {
+            expect(() => CSSselect.compile("::after")).toThrow("not supported");
+        });
+
+        it("should throw if parameter is supplied for pseudo", () => {
+            expect(() => CSSselect.compile(":any-link(test)")).toThrow(
+                "doesn't have any arguments"
+            );
+        });
+
+        it("should throw if no parameter is supplied for pseudo", () => {
+            CSSselect.pseudos.foovalue = (elem, { adapter }, subselect) =>
+                adapter.getAttributeValue(elem, "foo") === subselect;
+
+            expect(() => CSSselect.compile(":foovalue")).toThrow(
+                "requires an argument"
+            );
+
+            delete CSSselect.pseudos.foovalue;
+        });
+    });
+
     describe("unsatisfiable and universally valid selectors", () => {
         it("in :not", () => {
             let func = CSSselect._compileUnsafe(":not(*)");
@@ -90,6 +113,19 @@ describe("API", () => {
             expect(matches).toHaveLength(2);
             matches = CSSselect.selectAll(
                 ":matches(boo, baa, tag, div, foo, bar, baz)",
+                [dom]
+            );
+            expect(matches).toHaveLength(1);
+            expect(matches[0]).toBe(dom);
+        });
+
+        it("should support alias :is", () => {
+            let matches = CSSselect.selectAll(":is(p, div)", [dom]);
+            expect(matches).toHaveLength(2);
+            matches = CSSselect.selectAll(":is(div, :not(div))", [dom]);
+            expect(matches).toHaveLength(2);
+            matches = CSSselect.selectAll(
+                ":is(boo, baa, tag, div, foo, bar, baz)",
                 [dom]
             );
             expect(matches).toHaveLength(1);
