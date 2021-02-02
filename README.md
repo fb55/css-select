@@ -109,7 +109,7 @@ Queries `elems`, returns an array containing all matches.
 
 Aliases: `default` export, `CSSselect.iterate(query, elems)`.
 
-#### `CSSselect.compile(query)`
+#### `CSSselect.compile(query, options)`
 
 Compiles the query, returns a function.
 
