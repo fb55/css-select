@@ -35,7 +35,7 @@
         "cheerio-soupselect": "^0.1.1",
         "coveralls": "^3.0.2",
         "eslint": "^7.9.0",
-        "eslint-config-prettier": "^7.0.0",
+        "eslint-config-prettier": "^8.1.0",
         "htmlparser2": "^6.0.0",
         "jest": "^26.4.2",
         "prettier": "^2.1.2",
