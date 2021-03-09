@@ -22,7 +22,7 @@
     ],
     "dependencies": {
         "boolbase": "^1.0.0",
-        "css-what": "^4.0.0",
+        "css-what": "^5.0.0",
         "domhandler": "^4.0.0",
         "domutils": "^2.4.3",
         "nth-check": "^2.0.0"
