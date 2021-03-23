@@ -89,7 +89,7 @@ export const pseudos: Record<string, Pseudo> = {
             );
     },
 
-    // :matches(a, area, link)[href]
+    // :is(a, area, link)[href]
     "any-link"(elem, options) {
         return (
             isLinkTag(elem, options) && options.adapter.hasAttrib(elem, "href")
@@ -108,7 +108,7 @@ export const pseudos: Record<string, Pseudo> = {
      * to consider: :target
      */
 
-    // :matches([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
+    // :is([selected], select:not([multiple]):not(> option[selected]) > option:first-of-type)
     selected(elem, { adapter, equals }) {
         if (adapter.hasAttrib(elem, "selected")) return true;
         else if (adapter.getName(elem) !== "option") return false;
@@ -145,10 +145,10 @@ export const pseudos: Record<string, Pseudo> = {
     },
     /*
      * https://html.spec.whatwg.org/multipage/scripting.html#disabled-elements
-     * :matches(
-     *   :matches(button, input, select, textarea, menuitem, optgroup, option)[disabled],
-     *   optgroup[disabled] > option),
-     *  fieldset[disabled] * //TODO not child of first <legend>
+     * :is(
+     *   :is(button, input, select, textarea, optgroup, option)[disabled],
+     *   optgroup[disabled] > option,
+     *   fieldset[disabled] :not(fieldset[disabled] legend:first-child *)
      * )
      */
     disabled(elem, { adapter }) {
@@ -157,18 +157,18 @@ export const pseudos: Record<string, Pseudo> = {
     enabled(elem, { adapter }) {
         return !adapter.hasAttrib(elem, "disabled");
     },
-    // :matches(:matches(:radio, :checkbox)[checked], :selected) (TODO menuitem)
+    // :is(:is(input[type=radio], input[type=checkbox])[checked], option:selected)
     checked(elem, options) {
         return (
             options.adapter.hasAttrib(elem, "checked") ||
             pseudos.selected(elem, options)
         );
     },
-    // :matches(input, select, textarea)[required]
+    // :is(input, select, textarea)[required]
     required(elem, { adapter }) {
         return adapter.hasAttrib(elem, "required");
     },
-    // :matches(input, select, textarea):not([required])
+    // :is(input, select, textarea):not([required])
     optional(elem, { adapter }) {
         return !adapter.hasAttrib(elem, "required");
     },
@@ -179,10 +179,10 @@ export const pseudos: Record<string, Pseudo> = {
     parent(elem, options) {
         return !pseudos.empty(elem, options);
     },
-    // :matches(h1, h2, h3, h4, h5, h6)
+    // :is(h1, h2, h3, h4, h5, h6)
     header: namePseudo(["h1", "h2", "h3", "h4", "h5", "h6"]),
 
-    // :matches(button, input[type=button])
+    // :is(button, input[type=button])
     button(elem, { adapter }) {
         const name = adapter.getName(elem);
         return (
@@ -191,9 +191,9 @@ export const pseudos: Record<string, Pseudo> = {
                 adapter.getAttributeValue(elem, "type") === "button")
         );
     },
-    // :matches(input, textarea, select, button)
+    // :is(input, textarea, select, button)
     input: namePseudo(["input", "textarea", "select", "button"]),
-    // `input:matches(:not([type!='']), [type='text' i])`
+    // `input:is([type=''], [type=text])`
     text(elem, { adapter }) {
         const type = adapter.getAttributeValue(elem, "type");
         return (

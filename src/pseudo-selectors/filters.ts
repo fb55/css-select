@@ -175,12 +175,20 @@ export const filters: Record<string, Filter> = {
     },
 
     // JQuery extensions (others follow as pseudos)
+
+    // [type=checkbox]
     checkbox: getAttribFunc("type", "checkbox"),
+    // [type=file]
     file: getAttribFunc("type", "file"),
+    // [type=password]
     password: getAttribFunc("type", "password"),
+    // [type=radio]
     radio: getAttribFunc("type", "radio"),
+    // [type=reset]
     reset: getAttribFunc("type", "reset"),
+    // [type=image]
     image: getAttribFunc("type", "image"),
+    // [type=submit]
     submit: getAttribFunc("type", "submit"),
 
     // Dynamic state pseudos. These depend on optional Adapter methods.
