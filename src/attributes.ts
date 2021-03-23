@@ -31,9 +31,15 @@ export const attributeRules: Record<
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return (elem) =>
-                adapter.getAttributeValue(elem, name)?.toLowerCase() ===
-                    value && next(elem);
+            return (elem) => {
+                const attr = adapter.getAttributeValue(elem, name);
+                return (
+                    attr != null &&
+                    attr.length === value.length &&
+                    attr.toLowerCase() === value &&
+                    next(elem)
+                );
+            };
         }
 
         return (elem) =>
@@ -51,6 +57,7 @@ export const attributeRules: Record<
                 const attr = adapter.getAttributeValue(elem, name);
                 return (
                     attr != null &&
+                    attr.length >= len &&
                     (attr.length === len || attr.charAt(len) === "-") &&
                     attr.substr(0, len).toLowerCase() === value &&
                     next(elem)
@@ -62,6 +69,7 @@ export const attributeRules: Record<
             const attr = adapter.getAttributeValue(elem, name);
             return (
                 attr != null &&
+                attr.length >= len &&
                 attr.substr(0, len) === value &&
                 (attr.length === len || attr.charAt(len) === "-") &&
                 next(elem)
@@ -80,7 +88,12 @@ export const attributeRules: Record<
 
         return function element(elem) {
             const attr = adapter.getAttributeValue(elem, name);
-            return attr != null && regex.test(attr) && next(elem);
+            return (
+                attr != null &&
+                attr.length >= value.length &&
+                regex.test(attr) &&
+                next(elem)
+            );
         };
     },
     exists(next, { name }, { adapter }) {
@@ -98,11 +111,15 @@ export const attributeRules: Record<
         if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return (elem) =>
-                adapter
-                    .getAttributeValue(elem, name)
-                    ?.substr(0, len)
-                    .toLowerCase() === value && next(elem);
+            return (elem) => {
+                const attr = adapter.getAttributeValue(elem, name);
+                return (
+                    attr != null &&
+                    attr.length >= len &&
+                    attr.substr(0, len).toLowerCase() === value &&
+                    next(elem)
+                );
+            };
         }
 
         return (elem) =>
@@ -144,7 +161,12 @@ export const attributeRules: Record<
 
             return function anyIC(elem) {
                 const attr = adapter.getAttributeValue(elem, name);
-                return attr != null && regex.test(attr) && next(elem);
+                return (
+                    attr != null &&
+                    attr.length >= value.length &&
+                    regex.test(attr) &&
+                    next(elem)
+                );
             };
         }
 
@@ -162,9 +184,15 @@ export const attributeRules: Record<
         } else if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return (elem) =>
-                adapter.getAttributeValue(elem, name)?.toLowerCase() !==
-                    value && next(elem);
+            return (elem) => {
+                const attr = adapter.getAttributeValue(elem, name);
+                return (
+                    (attr == null ||
+                        attr.length !== value.length ||
+                        attr.toLowerCase() !== value) &&
+                    next(elem)
+                );
+            };
         }
 
         return (elem) =>
