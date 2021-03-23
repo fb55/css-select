@@ -48,7 +48,7 @@ describe("Attributes", () => {
                 '[data-foo!="indeed-that\'s a delicate matter." i]',
                 dom
             );
-            expect(matches).toHaveLength(1);
+            expect(matches).toHaveLength(2);
             expect(matches).toStrictEqual([dom[0].children[0] as Element]);
             matches = CSSselect.selectAll(
                 '[data-foo!="inDeeD-THAT\'s a DELICATE matteR." i]',

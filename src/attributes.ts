@@ -162,15 +162,9 @@ export const attributeRules: Record<
         } else if (data.ignoreCase) {
             value = value.toLowerCase();
 
-            return (elem) => {
-                const attr = adapter.getAttributeValue(elem, name);
-
-                return (
-                    attr != null &&
-                    attr.toLocaleLowerCase() !== value &&
-                    next(elem)
-                );
-            };
+            return (elem) =>
+                adapter.getAttributeValue(elem, name)?.toLowerCase() !==
+                    value && next(elem);
         }
 
         return (elem) =>
