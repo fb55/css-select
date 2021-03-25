@@ -62,7 +62,10 @@ function absolutize<Node, ElementNode extends Node>(
     // TODO Use better check if the context is a document
     const hasContext = !!context?.every((e) => {
         const parent = adapter.getParent(e);
-        return e === PLACEHOLDER_ELEMENT || !!(parent && adapter.isTag(parent));
+        return (
+            e === PLACEHOLDER_ELEMENT ||
+            (parent != null && adapter.isTag(parent))
+        );
     });
 
     for (const t of token) {

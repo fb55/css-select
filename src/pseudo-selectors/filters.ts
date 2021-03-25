@@ -1,8 +1,6 @@
 import getNCheck from "nth-check";
 import { trueFunc, falseFunc } from "boolbase";
-import { attributeRules } from "../attributes";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types";
-import type { AttributeSelector } from "css-what";
 
 export type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -11,30 +9,13 @@ export type Filter = <Node, ElementNode extends Node>(
     context?: ElementNode[]
 ) => CompiledQuery<ElementNode>;
 
-const checkAttrib = attributeRules.equals;
-
-function getAttribFunc(name: string, value: string): Filter {
-    const data: AttributeSelector = {
-        type: "attribute",
-        action: "equals",
-        ignoreCase: false,
-        namespace: null,
-        name,
-        value,
-    };
-
-    return function attribFunc(next, _rule, options) {
-        return checkAttrib(next, data, options);
-    };
-}
-
 function getChildFunc<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     adapter: Adapter<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
     return (elem) => {
         const parent = adapter.getParent(elem);
-        return !!parent && adapter.isTag(parent) && next(elem);
+        return parent != null && adapter.isTag(parent) && next(elem);
     };
 }
 
@@ -174,52 +155,29 @@ export const filters: Record<string, Filter> = {
         return (elem) => context.includes(elem) && next(elem);
     },
 
-    // JQuery extensions (others follow as pseudos)
+    hover: dynamicStatePseudo("isHovered"),
+    visited: dynamicStatePseudo("isVisited"),
+    active: dynamicStatePseudo("isActive"),
+};
 
-    // [type=checkbox]
-    checkbox: getAttribFunc("type", "checkbox"),
-    // [type=file]
-    file: getAttribFunc("type", "file"),
-    // [type=password]
-    password: getAttribFunc("type", "password"),
-    // [type=radio]
-    radio: getAttribFunc("type", "radio"),
-    // [type=reset]
-    reset: getAttribFunc("type", "reset"),
-    // [type=image]
-    image: getAttribFunc("type", "image"),
-    // [type=submit]
-    submit: getAttribFunc("type", "submit"),
+/**
+ * Dynamic state pseudos. These depend on optional Adapter methods.
+ *
+ * @param name The name of the adapter method to call.
+ * @returns Pseudo for the `filters` object.
+ */
+function dynamicStatePseudo(
+    name: "isHovered" | "isVisited" | "isActive"
+): Filter {
+    return function dynamicPseudo(next, _rule, { adapter }) {
+        const func = adapter[name];
 
-    // Dynamic state pseudos. These depend on optional Adapter methods.
-    hover(next, _rule, { adapter }) {
-        const { isHovered } = adapter;
-        if (typeof isHovered !== "function") {
-            return falseFunc;
-        }
-
-        return function hover(elem) {
-            return isHovered(elem) && next(elem);
-        };
-    },
-    visited(next, _rule, { adapter }) {
-        const { isVisited } = adapter;
-        if (typeof isVisited !== "function") {
-            return falseFunc;
-        }
-
-        return function visited(elem) {
-            return isVisited(elem) && next(elem);
-        };
-    },
-    active(next, _rule, { adapter }) {
-        const { isActive } = adapter;
-        if (typeof isActive !== "function") {
+        if (typeof func !== "function") {
             return falseFunc;
         }
 
         return function active(elem) {
-            return isActive(elem) && next(elem);
+            return func(elem) && next(elem);
         };
-    },
-};
+    };
+}
