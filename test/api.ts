@@ -62,6 +62,10 @@ describe("API", () => {
             expect(() => CSSselect.compile(":any-link(test)")).toThrow(
                 "doesn't have any arguments"
             );
+
+            expect(() => CSSselect.compile(":only-child(test)")).toThrow(
+                "doesn't have any arguments"
+            );
         });
 
         it("should throw if no parameter is supplied for pseudo", () => {
@@ -117,6 +121,33 @@ describe("API", () => {
             );
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
+        });
+
+        it("should support traversals", () => {
+            let matches = CSSselect.selectAll(":matches(div p)", [dom]);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("p");
+
+            matches = CSSselect.selectAll(":matches(div > p)", [dom]);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("p");
+
+            matches = CSSselect.selectAll(":matches(p < div)", [dom]);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("div");
+
+            matches = CSSselect.selectAll(":matches(> p)", [dom]);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("p");
+
+            matches = CSSselect.selectAll("div:has(:is(:scope p))", [dom]);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("div");
+
+            const [multiLevelDom] = parseDOM("<a><b><c><d>") as Element[];
+            matches = CSSselect.selectAll(":is(* c)", multiLevelDom);
+            expect(matches).toHaveLength(1);
+            expect(matches[0].name).toBe("c");
         });
 
         it("should support alias :is", () => {

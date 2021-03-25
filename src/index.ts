@@ -192,5 +192,5 @@ export function is<Node, ElementNode extends Node>(
  */
 export default selectAll;
 
-// Export filters and pseudos to allow users to supply their own.
-export { filters, pseudos } from "./pseudo-selectors";
+// Export filters, pseudos and aliases to allow users to supply their own.
+export { filters, pseudos, aliases } from "./pseudo-selectors";

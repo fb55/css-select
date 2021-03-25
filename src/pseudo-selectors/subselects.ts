@@ -7,10 +7,6 @@ import { isTraversal } from "../procedure";
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};
 
-function containsTraversal(t: Selector[]): boolean {
-    return t.some(isTraversal);
-}
-
 export function ensureIsTag<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     adapter: Adapter<Node, ElementNode>
@@ -38,28 +34,28 @@ export function getNextSiblings<Node, ElementNode extends Node>(
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);
 }
 
+const is: Subselect = (next, token, options, context, compileToken) => {
+    const opts = {
+        xmlMode: !!options.xmlMode,
+        adapter: options.adapter,
+        equals: options.equals,
+    };
+
+    const func = compileToken(token, opts, context);
+    return (elem) => func(elem) && next(elem);
+};
+
 /*
- * :not, :has and :matches have to compile selectors
+ * :not, :has, :is and :matches have to compile selectors
  * doing this in src/pseudos.ts would lead to circular dependencies,
  * so we add them here
  */
 export const subselects: Record<string, Subselect> = {
+    is,
     /**
-     * `:is` is an alias for `:matches`.
+     * `:matches` is an alias for `:is`.
      */
-    is(next, token, options, context, compileToken) {
-        return subselects.matches(next, token, options, context, compileToken);
-    },
-    matches(next, token, options, context, compileToken) {
-        const opts = {
-            xmlMode: !!options.xmlMode,
-            adapter: options.adapter,
-            equals: options.equals,
-            rootFunc: next,
-        };
-
-        return compileToken(token, opts, context);
-    },
+    matches: is,
     not(next, token, options, context, compileToken) {
         const opts = {
             xmlMode: !!options.xmlMode,
@@ -91,8 +87,8 @@ export const subselects: Record<string, Subselect> = {
         };
 
         // @ts-expect-error Uses an array as a pointer to the current element (side effects)
-        const context: ElementNode[] | undefined = subselect.some(
-            containsTraversal
+        const context: ElementNode[] | undefined = subselect.some((s) =>
+            s.some(isTraversal)
         )
             ? [PLACEHOLDER_ELEMENT]
             : undefined;

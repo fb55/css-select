@@ -14,12 +14,13 @@
  */
 import { trueFunc, falseFunc } from "boolbase";
 import type { CompiledQuery, InternalOptions, CompileToken } from "../types";
-import type { PseudoSelector } from "css-what";
+import { parse, PseudoSelector } from "css-what";
 import { filters } from "./filters";
 import { pseudos, verifyPseudoArgs } from "./pseudos";
+import { aliases } from "./aliases";
 import { subselects } from "./subselects";
 
-export { filters, pseudos };
+export { filters, pseudos, aliases };
 
 export function compilePseudoSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -32,6 +33,15 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
     if (Array.isArray(data)) {
         return subselects[name](next, data, options, context, compileToken);
+    }
+    if (name in aliases) {
+        if (data != null) {
+            throw new Error(`Pseudo ${name} doesn't have any arguments`);
+        }
+
+        // The alias has to be parsed here, to make sure options are respected.
+        const alias = parse(aliases[name], options);
+        return subselects.is(next, alias, options, context, compileToken);
     }
     if (name in filters) {
         return filters[name](next, data as string, options, context);

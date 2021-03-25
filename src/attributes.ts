@@ -57,7 +57,6 @@ export const attributeRules: Record<
                 const attr = adapter.getAttributeValue(elem, name);
                 return (
                     attr != null &&
-                    attr.length >= len &&
                     (attr.length === len || attr.charAt(len) === "-") &&
                     attr.substr(0, len).toLowerCase() === value &&
                     next(elem)
@@ -69,9 +68,8 @@ export const attributeRules: Record<
             const attr = adapter.getAttributeValue(elem, name);
             return (
                 attr != null &&
-                attr.length >= len &&
-                attr.substr(0, len) === value &&
                 (attr.length === len || attr.charAt(len) === "-") &&
+                attr.substr(0, len) === value &&
                 next(elem)
             );
         };
