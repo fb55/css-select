@@ -18,7 +18,7 @@ import type { CompiledQuery, InternalOptions } from "./types";
  * @param context Optional context for the selector.
  */
 export function compile<Node, ElementNode extends Node>(
-    selector: string,
+    selector: string | Selector[][],
     options: InternalOptions<Node, ElementNode>,
     context?: ElementNode[]
 ): CompiledQuery<ElementNode> {
@@ -27,11 +27,12 @@ export function compile<Node, ElementNode extends Node>(
 }
 
 export function compileUnsafe<Node, ElementNode extends Node>(
-    selector: string,
+    selector: string | Selector[][],
     options: InternalOptions<Node, ElementNode>,
     context?: ElementNode[] | ElementNode
 ): CompiledQuery<ElementNode> {
-    const token = parse(selector, options);
+    const token =
+        typeof selector === "string" ? parse(selector, options) : selector;
     return compileToken<Node, ElementNode>(token, options, context);
 }
 

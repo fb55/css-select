@@ -25,11 +25,28 @@ describe("API", () => {
         });
     });
 
-    describe("can be queried by function", () => {
-        it("in `is`", () => {
+    describe("can be queried with more than a selector", () => {
+        it("function in `is`", () => {
             expect(CSSselect.is(dom, (elem) => elem.attribs.id === "foo")).toBe(
                 true
             );
+        });
+
+        it("parsed selector in `is`", () => {
+            expect(
+                CSSselect.is(dom, [
+                    [
+                        {
+                            type: "attribute",
+                            action: "equals",
+                            ignoreCase: false,
+                            name: "id",
+                            namespace: null,
+                            value: "foo",
+                        },
+                    ],
+                ])
+            ).toBe(true);
         });
         // Probably more cases should be added here
     });

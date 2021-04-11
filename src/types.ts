@@ -138,7 +138,10 @@ export interface CompiledQuery<ElementNode> {
     (node: ElementNode): boolean;
     shouldTestNextSiblings?: boolean;
 }
-export type Query<ElementNode> = string | CompiledQuery<ElementNode>;
+export type Query<ElementNode> =
+    | string
+    | CompiledQuery<ElementNode>
+    | Selector[][];
 export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
