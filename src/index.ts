@@ -49,7 +49,7 @@ function wrapCompile<Selector, Node, ElementNode extends Node>(
     return function addAdapter(
         selector: Selector,
         options?: Options<Node, ElementNode>,
-        context?: Node[]
+        context?: Node[] | Node
     ) {
         const opts = convertOptionFormats(options);
 

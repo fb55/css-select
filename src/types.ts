@@ -116,7 +116,7 @@ export interface Options<Node, ElementNode extends Node> {
      * The context of the current query. Used to limit the scope of searches.
      * Can be matched directly using the `:scope` pseudo-selector.
      */
-    context?: ElementNode | ElementNode[];
+    context?: Node | Node[];
     /**
      * Allow css-select to cache results for some selectors, sometimes greatly
      * improving querying performance. Disable this if your document can
@@ -145,5 +145,5 @@ export type Query<ElementNode> =
 export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
+    context?: Node[] | Node
 ) => CompiledQuery<ElementNode>;

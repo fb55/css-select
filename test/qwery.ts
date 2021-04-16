@@ -41,6 +41,8 @@ const doc = parseDOM(
 
 const el = DomUtils.getElementById("attr-child-boosh", document);
 
+if (!el) throw new Error("Couldn't find element");
+
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 const pseudos = DomUtils.getElementById("pseudos", document)!.children.filter(
     DomUtils.isTag
