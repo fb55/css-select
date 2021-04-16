@@ -43,7 +43,7 @@ function wrapCompile<Selector, Node, ElementNode extends Node>(
     func: (
         selector: Selector,
         options: InternalOptions<Node, ElementNode>,
-        context?: Node[]
+        context?: Node[] | Node
     ) => CompiledQuery<ElementNode>
 ) {
     return function addAdapter(

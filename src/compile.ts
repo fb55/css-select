@@ -20,7 +20,7 @@ import type { CompiledQuery, InternalOptions } from "./types";
 export function compile<Node, ElementNode extends Node>(
     selector: string | Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: Node[] | Node
 ): CompiledQuery<ElementNode> {
     const next = compileUnsafe(selector, options, context);
     return ensureIsTag(next, options.adapter);
