@@ -29,7 +29,7 @@ export function compile<Node, ElementNode extends Node>(
 export function compileUnsafe<Node, ElementNode extends Node>(
     selector: string | Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[] | ElementNode
+    context?: Node[] | Node
 ): CompiledQuery<ElementNode> {
     const token =
         typeof selector === "string" ? parse(selector, options) : selector;
@@ -58,15 +58,12 @@ const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
 function absolutize<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     { adapter }: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: Node[]
 ) {
     // TODO Use better check if the context is a document
     const hasContext = !!context?.every((e) => {
-        const parent = adapter.getParent(e);
-        return (
-            e === PLACEHOLDER_ELEMENT ||
-            (parent != null && adapter.isTag(parent))
-        );
+        const parent = adapter.isTag(e) && adapter.getParent(e);
+        return e === PLACEHOLDER_ELEMENT || (parent && adapter.isTag(parent));
     });
 
     for (const t of token) {
@@ -85,7 +82,7 @@ function absolutize<Node, ElementNode extends Node>(
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[] | ElementNode
+    context?: Node[] | Node
 ): CompiledQuery<ElementNode> {
     token = token.filter((t) => t.length > 0);
 
@@ -134,7 +131,7 @@ export function compileToken<Node, ElementNode extends Node>(
 function compileRules<Node, ElementNode extends Node>(
     rules: InternalSelector[],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: Node[]
 ): CompiledQuery<ElementNode> {
     return rules.reduce<CompiledQuery<ElementNode>>(
         (previous, rule) =>

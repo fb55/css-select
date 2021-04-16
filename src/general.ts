@@ -15,7 +15,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     selector: InternalSelector,
     options: InternalOptions<Node, ElementNode>,
-    context: ElementNode[] | undefined,
+    context: Node[] | undefined,
     compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
     const { adapter, equals } = options;

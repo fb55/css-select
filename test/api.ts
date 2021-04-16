@@ -1,5 +1,5 @@
 import * as CSSselect from "../src";
-import { parseDOM } from "htmlparser2";
+import { parseDOM, parseDocument } from "htmlparser2";
 import { trueFunc, falseFunc } from "boolbase";
 import type { Element } from "domhandler";
 
@@ -67,6 +67,11 @@ describe("API", () => {
             const a = CSSselect.selectAll(".foo:has(+.bar)", dom);
             expect(a).toHaveLength(1);
             expect(a[0]).toStrictEqual(dom.children[0] as Element);
+        });
+
+        it("should accept document root nodes", () => {
+            const doc = parseDocument("<div id=foo><p>foo</p></div>");
+            expect(CSSselect.selectAll(":contains(foo)", doc)).toHaveLength(2);
         });
     });
 

@@ -73,7 +73,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
 ) {
     return function select(
         query: Query<ElementNode>,
-        elements: ElementNode[] | ElementNode,
+        elements: Node[] | Node,
         options?: Options<Node, ElementNode>
     ): T {
         const opts = convertOptionFormats(options);
@@ -92,7 +92,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
 }
 
 export function prepareContext<Node, ElementNode extends Node>(
-    elems: ElementNode | ElementNode[],
+    elems: Node | Node[],
     adapter: Adapter<Node, ElementNode>,
     shouldTestNextSiblings = false
 ): Node[] {
@@ -110,9 +110,9 @@ export function prepareContext<Node, ElementNode extends Node>(
 }
 
 function appendNextSiblings<Node, ElementNode extends Node>(
-    elem: ElementNode | ElementNode[],
+    elem: Node | Node[],
     adapter: Adapter<Node, ElementNode>
-): ElementNode[] {
+): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
     const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
 
