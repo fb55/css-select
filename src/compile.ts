@@ -21,7 +21,7 @@ export function compile<Node, ElementNode extends Node>(
     selector: string | Selector[][],
     options: InternalOptions<Node, ElementNode>,
     context?: Node[] | Node
-): CompiledQuery<ElementNode> {
+): CompiledQuery<Node> {
     const next = compileUnsafe(selector, options, context);
     return ensureIsTag(next, options.adapter);
 }

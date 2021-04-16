@@ -10,8 +10,8 @@ export const PLACEHOLDER_ELEMENT = {};
 export function ensureIsTag<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     adapter: Adapter<Node, ElementNode>
-): CompiledQuery<ElementNode> {
-    if (next === falseFunc) return next;
+): CompiledQuery<Node> {
+    if (next === falseFunc) return falseFunc;
     return (elem: Node) => adapter.isTag(elem) && next(elem);
 }
 

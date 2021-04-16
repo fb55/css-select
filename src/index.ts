@@ -39,18 +39,18 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     return opts as InternalOptions<Node, ElementNode>;
 }
 
-function wrapCompile<Selector, Node, ElementNode extends Node>(
+function wrapCompile<Selector, Node, ElementNode extends Node, R extends Node>(
     func: (
         selector: Selector,
         options: InternalOptions<Node, ElementNode>,
         context?: Node[] | Node
-    ) => CompiledQuery<ElementNode>
+    ) => CompiledQuery<R>
 ) {
     return function addAdapter(
         selector: Selector,
         options?: Options<Node, ElementNode>,
         context?: Node[] | Node
-    ) {
+    ): CompiledQuery<R> {
         const opts = convertOptionFormats(options);
 
         return func(selector, opts, context);
