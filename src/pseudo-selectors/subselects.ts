@@ -19,7 +19,7 @@ export type Subselect = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     subselect: Selector[][],
     options: InternalOptions<Node, ElementNode>,
-    context: ElementNode[] | undefined,
+    context: Node[] | undefined,
     compileToken: CompileToken<Node, ElementNode>
 ) => CompiledQuery<ElementNode>;
 
@@ -76,7 +76,7 @@ export const subselects: Record<string, Subselect> = {
         next: CompiledQuery<ElementNode>,
         subselect: Selector[][],
         options: InternalOptions<Node, ElementNode>,
-        _context: ElementNode[] | undefined,
+        _context: Node[] | undefined,
         compileToken: CompileToken<Node, ElementNode>
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;

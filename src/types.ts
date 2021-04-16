@@ -145,5 +145,5 @@ export type Query<ElementNode> =
 export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: Node[]
 ) => CompiledQuery<ElementNode>;

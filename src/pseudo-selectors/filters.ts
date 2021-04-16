@@ -6,7 +6,7 @@ export type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     text: string,
     options: InternalOptions<Node, ElementNode>,
-    context?: ElementNode[]
+    context?: Node[]
 ) => CompiledQuery<ElementNode>;
 
 function getChildFunc<Node, ElementNode extends Node>(
@@ -138,7 +138,7 @@ export const filters: Record<string, Filter> = {
         next: CompiledQuery<ElementNode>,
         rule: string,
         options: InternalOptions<Node, ElementNode>,
-        context?: ElementNode[]
+        context?: Node[]
     ): CompiledQuery<ElementNode> {
         const { equals } = options;
 
