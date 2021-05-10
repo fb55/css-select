@@ -1,0 +1,22 @@
+version: 2
+updates:
+    - package-ecosystem: npm
+      directory: "/"
+      schedule:
+          interval: daily
+          time: "13:00"
+          timezone: America/Los_Angeles
+      open-pull-requests-limit: 10
+      ignore:
+          - dependency-name: "@types/node"
+            versions:
+                - 15.0.0
+          - dependency-name: domutils
+            versions:
+                - 2.5.1
+          - dependency-name: domhandler
+            versions:
+                - 4.1.0
+          - dependency-name: eslint-config-prettier
+            versions:
+                - 8.0.0
