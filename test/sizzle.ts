@@ -207,7 +207,7 @@ describe("Sizzle", () => {
     });
 
     it("broken", () => {
-        expect.assertions(27);
+        expect.assertions(26);
 
         const broken = (selector: string) =>
             expect(() => CSSselect.compile(selector)).toThrow(Error);
@@ -256,7 +256,6 @@ describe("Sizzle", () => {
             DomUtils.appendChild(document.getElementById("form"), node)
         );
 
-        broken("input[name=foo.baz]");
         // Shouldn't be matching those inner brackets
         broken("input[name=foo[baz]]");
     });
