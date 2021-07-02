@@ -34,7 +34,6 @@
         "@typescript-eslint/eslint-plugin": "^4.1.0",
         "@typescript-eslint/parser": "^4.1.0",
         "cheerio-soupselect": "^0.1.1",
-        "coveralls": "^3.0.2",
         "eslint": "^7.9.0",
         "eslint-config-prettier": "^8.1.0",
         "htmlparser2": "^6.0.0",
@@ -44,8 +43,8 @@
         "typescript": "^4.0.2"
     },
     "scripts": {
-        "test": "jest --coverage && npm run lint",
-        "coverage": "cat coverage/lcov.info | coveralls",
+        "test": "npm run test:jest && npm run lint",
+        "test:jest": "jest",
         "lint": "npm run lint:es && npm run lint:prettier",
         "lint:es": "eslint src",
         "lint:prettier": "npm run prettier -- --check",
