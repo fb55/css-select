@@ -29,7 +29,7 @@
     },
     "devDependencies": {
         "@types/boolbase": "^1.0.0",
-        "@types/jest": "^26.0.14",
+        "@types/jest": "^26.0.24",
         "@types/node": "^16.3.0",
         "@typescript-eslint/eslint-plugin": "^4.1.0",
         "@typescript-eslint/parser": "^4.1.0",
