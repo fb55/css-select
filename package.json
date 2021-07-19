@@ -34,7 +34,7 @@
         "@typescript-eslint/eslint-plugin": "^4.28.3",
         "@typescript-eslint/parser": "^4.28.3",
         "cheerio-soupselect": "^0.1.1",
-        "eslint": "^7.30.0",
+        "eslint": "^7.31.0",
         "eslint-config-prettier": "^8.1.0",
         "htmlparser2": "^6.0.0",
         "jest": "^27.0.3",
