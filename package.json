@@ -39,7 +39,7 @@
         "htmlparser2": "^6.0.0",
         "jest": "^27.0.3",
         "prettier": "^2.1.2",
-        "ts-jest": "^27.0.4",
+        "ts-jest": "^27.0.5",
         "typescript": "^4.0.2"
     },
     "scripts": {
