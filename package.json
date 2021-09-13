@@ -40,7 +40,7 @@
         "jest": "^27.1.1",
         "prettier": "^2.4.0",
         "ts-jest": "^27.0.5",
-        "typescript": "^4.4.2"
+        "typescript": "^4.4.3"
     },
     "scripts": {
         "test": "npm run test:jest && npm run lint",
