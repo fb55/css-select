@@ -46,16 +46,17 @@ const is: Subselect = (next, token, options, context, compileToken) => {
 };
 
 /*
- * :not, :has, :is and :matches have to compile selectors
+ * :not, :has, :is, :matches and :where have to compile selectors
  * doing this in src/pseudos.ts would lead to circular dependencies,
  * so we add them here
  */
 export const subselects: Record<string, Subselect> = {
     is,
     /**
-     * `:matches` is an alias for `:is`.
+     * `:matches` and `:where` are aliases for `:is`.
      */
     matches: is,
+    where: is,
     not(next, token, options, context, compileToken) {
         const opts = {
             xmlMode: !!options.xmlMode,
