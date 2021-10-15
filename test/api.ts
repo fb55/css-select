@@ -184,6 +184,19 @@ describe("API", () => {
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
         });
+
+        it("should support alias :where", () => {
+            let matches = CSSselect.selectAll(":where(p, div)", [dom]);
+            expect(matches).toHaveLength(2);
+            matches = CSSselect.selectAll(":where(div, :not(div))", [dom]);
+            expect(matches).toHaveLength(2);
+            matches = CSSselect.selectAll(
+                ":where(boo, baa, tag, div, foo, bar, baz)",
+                [dom]
+            );
+            expect(matches).toHaveLength(1);
+            expect(matches[0]).toBe(dom);
+        });
     });
 
     describe("parent selector (<)", () => {
