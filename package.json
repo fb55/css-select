@@ -1,6 +1,6 @@
 {
     "name": "css-select",
-    "version": "4.1.3",
+    "version": "4.2.0",
     "description": "a CSS selector compiler/engine",
     "author": "Felix Boehm <me@feedic.com>",
     "funding": {
