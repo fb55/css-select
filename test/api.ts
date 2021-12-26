@@ -255,6 +255,14 @@ describe("API", () => {
             ).toStrictEqual(p);
         });
 
+        it("should not crash when siblings repeat", () => {
+            const dom = parseDOM(`<div></div>`.repeat(51)) as Element[];
+
+            expect(
+                CSSselect.selectAll("+div", dom, { context: dom })
+            ).toHaveLength(50);
+        });
+
         it("should cache results by default", () => {
             const [dom] = parseDOM(
                 '<div id="foo"><p>bar</p></div>'

@@ -115,8 +115,9 @@ function appendNextSiblings<Node, ElementNode extends Node>(
 ): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
     const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
+    const elemsLength = elems.length;
 
-    for (let i = 0; i < elems.length; i++) {
+    for (let i = 0; i < elemsLength; i++) {
         const nextSiblings = getNextSiblings(elems[i], adapter);
         elems.push(...nextSiblings);
     }
