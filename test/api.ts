@@ -2,6 +2,7 @@ import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { trueFunc, falseFunc } from "boolbase";
 import type { Element } from "domhandler";
+import { SelectorType, AttributeAction } from "css-what";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
 const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
@@ -37,8 +38,8 @@ describe("API", () => {
                 CSSselect.is(dom, [
                     [
                         {
-                            type: "attribute",
-                            action: "equals",
+                            type: SelectorType.Attribute,
+                            action: AttributeAction.Equals,
                             ignoreCase: false,
                             name: "id",
                             namespace: null,

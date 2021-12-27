@@ -7,6 +7,7 @@ export const procedure: Record<InternalSelector["type"], number> = {
     attribute: 1,
     pseudo: 0,
     "pseudo-element": 0, // Here to make TS happy, we don't support this.
+    "column-combinator": -1,
     descendant: -1,
     child: -1,
     parent: -1,
