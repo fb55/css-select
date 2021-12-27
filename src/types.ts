@@ -100,8 +100,32 @@ export interface Options<Node, ElementNode extends Node> {
      * When enabled, tag names will be case-sensitive.
      *
      * @default false
+     * @deprecated Will be infered from the document in a future version.
      */
     xmlMode?: boolean;
+    /**
+     * Lower-case attribute names.
+     *
+     * @default !xmlMode
+     * @deprecated Will be infered from the document in a future version.
+     */
+    lowerCaseAttributeNames?: boolean;
+    /**
+     * Lower-case tag names.
+     *
+     * @default !xmlMode
+     * @deprecated Will be infered from the document in a future version.
+     */
+    lowerCaseTags?: boolean;
+    /**
+     * Is the document in quirks mode?
+     *
+     * This will lead to .className and #id being case-insensitive.
+     *
+     * @default false
+     * @deprecated Will be infered from the document in a future version.
+     */
+    quirksMode?: boolean;
     /**
      * The last function in the stack, will be called with the last element
      * that's looked at.

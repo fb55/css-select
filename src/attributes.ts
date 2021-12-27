@@ -14,6 +14,72 @@ function escapeRegex(value: string): string {
 }
 
 /**
+ * Attributes that are case-insensitive in HTML.
+ *
+ * @private
+ * @see https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
+ */
+const caseInsensitiveAttributes = new Set([
+    "accept",
+    "accept-charset",
+    "align",
+    "alink",
+    "axis",
+    "bgcolor",
+    "charset",
+    "checked",
+    "clear",
+    "codetype",
+    "color",
+    "compact",
+    "declare",
+    "defer",
+    "dir",
+    "direction",
+    "disabled",
+    "enctype",
+    "face",
+    "frame",
+    "hreflang",
+    "http-equiv",
+    "lang",
+    "language",
+    "link",
+    "media",
+    "method",
+    "multiple",
+    "nohref",
+    "noresize",
+    "noshade",
+    "nowrap",
+    "readonly",
+    "rel",
+    "rev",
+    "rules",
+    "scope",
+    "scrolling",
+    "selected",
+    "shape",
+    "target",
+    "text",
+    "type",
+    "valign",
+    "valuetype",
+    "vlink",
+]);
+
+function shouldIgnoreCase<Node, ElementNode extends Node>(
+    selector: AttributeSelector,
+    options: InternalOptions<Node, ElementNode>
+): boolean {
+    return typeof selector.ignoreCase === "boolean"
+        ? selector.ignoreCase
+        : selector.ignoreCase === "quirks"
+        ? !!options.quirksMode
+        : !options.xmlMode && caseInsensitiveAttributes.has(selector.name);
+}
+
+/**
  * Attribute selectors
  */
 export const attributeRules: Record<
@@ -24,11 +90,12 @@ export const attributeRules: Record<
         options: InternalOptions<Node, ElementNode>
     ) => CompiledQuery<ElementNode>
 > = {
-    equals(next, data, { adapter }) {
+    equals(next, data, options) {
+        const { adapter } = options;
         const { name } = data;
         let { value } = data;
 
-        if (data.ignoreCase) {
+        if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return (elem) => {
@@ -45,12 +112,13 @@ export const attributeRules: Record<
         return (elem) =>
             adapter.getAttributeValue(elem, name) === value && next(elem);
     },
-    hyphen(next, data, { adapter }) {
+    hyphen(next, data, options) {
+        const { adapter } = options;
         const { name } = data;
         let { value } = data;
         const len = value.length;
 
-        if (data.ignoreCase) {
+        if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return function hyphenIC(elem) {
@@ -74,14 +142,16 @@ export const attributeRules: Record<
             );
         };
     },
-    element(next, { name, value, ignoreCase }, { adapter }) {
+    element(next, data, options) {
+        const { adapter } = options;
+        const { name, value } = data;
         if (/\s/.test(value)) {
             return falseFunc;
         }
 
         const regex = new RegExp(
             `(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`,
-            ignoreCase ? "i" : ""
+            shouldIgnoreCase(data, options) ? "i" : ""
         );
 
         return function element(elem) {
@@ -97,7 +167,8 @@ export const attributeRules: Record<
     exists(next, { name }, { adapter }) {
         return (elem) => adapter.hasAttrib(elem, name) && next(elem);
     },
-    start(next, data, { adapter }) {
+    start(next, data, options) {
+        const { adapter } = options;
         const { name } = data;
         let { value } = data;
         const len = value.length;
@@ -106,7 +177,7 @@ export const attributeRules: Record<
             return falseFunc;
         }
 
-        if (data.ignoreCase) {
+        if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return (elem) => {
@@ -124,7 +195,8 @@ export const attributeRules: Record<
             !!adapter.getAttributeValue(elem, name)?.startsWith(value) &&
             next(elem);
     },
-    end(next, data, { adapter }) {
+    end(next, data, options) {
+        const { adapter } = options;
         const { name } = data;
         let { value } = data;
         const len = -value.length;
@@ -133,7 +205,7 @@ export const attributeRules: Record<
             return falseFunc;
         }
 
-        if (data.ignoreCase) {
+        if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return (elem) =>
@@ -147,14 +219,15 @@ export const attributeRules: Record<
             !!adapter.getAttributeValue(elem, name)?.endsWith(value) &&
             next(elem);
     },
-    any(next, data, { adapter }) {
+    any(next, data, options) {
+        const { adapter } = options;
         const { name, value } = data;
 
         if (value === "") {
             return falseFunc;
         }
 
-        if (data.ignoreCase) {
+        if (shouldIgnoreCase(data, options)) {
             const regex = new RegExp(escapeRegex(value), "i");
 
             return function anyIC(elem) {
@@ -172,14 +245,15 @@ export const attributeRules: Record<
             !!adapter.getAttributeValue(elem, name)?.includes(value) &&
             next(elem);
     },
-    not(next, data, { adapter }) {
+    not(next, data, options) {
+        const { adapter } = options;
         const { name } = data;
         let { value } = data;
 
         if (value === "") {
             return (elem) =>
                 !!adapter.getAttributeValue(elem, name) && next(elem);
-        } else if (data.ignoreCase) {
+        } else if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return (elem) => {

@@ -1,5 +1,5 @@
 import { InternalSelector } from "./types";
-import { parse, Selector } from "css-what";
+import { parse, Selector, SelectorType } from "css-what";
 import { trueFunc, falseFunc } from "boolbase";
 import sortRules from "./sort";
 import { isTraversal } from "./procedure";
@@ -31,8 +31,7 @@ export function compileUnsafe<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,
     context?: Node[] | Node
 ): CompiledQuery<ElementNode> {
-    const token =
-        typeof selector === "string" ? parse(selector, options) : selector;
+    const token = typeof selector === "string" ? parse(selector) : selector;
     return compileToken<Node, ElementNode>(token, options, context);
 }
 
@@ -45,11 +44,15 @@ function includesScopePseudo(t: InternalSelector): boolean {
     );
 }
 
-const DESCENDANT_TOKEN: Selector = { type: "descendant" };
+const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };
 const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
     type: "_flexibleDescendant",
 };
-const SCOPE_TOKEN: Selector = { type: "pseudo", name: "scope", data: null };
+const SCOPE_TOKEN: Selector = {
+    type: SelectorType.Pseudo,
+    name: "scope",
+    data: null,
+};
 
 /*
  * CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector

@@ -6,6 +6,7 @@ import type {
     InternalSelector,
     CompileToken,
 } from "./types";
+import { SelectorType } from "css-what";
 
 /*
  * All available rules
@@ -21,13 +22,21 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     const { adapter, equals } = options;
 
     switch (selector.type) {
-        case "pseudo-element":
+        case SelectorType.PseudoElement: {
             throw new Error("Pseudo-elements are not supported by css-select");
-
-        case "attribute":
+        }
+        case SelectorType.ColumnCombinator: {
+            throw new Error(
+                "Column combinators are not yet supported by css-select"
+            );
+        }
+        case SelectorType.Attribute: {
+            if (!options.xmlMode || options.lowerCaseAttributeNames) {
+                selector.name = selector.name.toLowerCase();
+            }
             return attributeRules[selector.action](next, selector, options);
-
-        case "pseudo":
+        }
+        case SelectorType.Pseudo: {
             return compilePseudoSelector(
                 next,
                 selector,
@@ -35,15 +44,22 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 context,
                 compileToken
             );
-
+        }
         // Tags
-        case "tag":
+        case SelectorType.Tag: {
+            let { name } = selector;
+
+            if (!options.xmlMode || options.lowerCaseTags) {
+                name = name.toLowerCase();
+            }
+
             return function tag(elem: ElementNode): boolean {
-                return adapter.getName(elem) === selector.name && next(elem);
+                return adapter.getName(elem) === name && next(elem);
             };
+        }
 
         // Traversal
-        case "descendant":
+        case SelectorType.Descendant: {
             if (
                 options.cacheResults === false ||
                 typeof WeakSet === "undefined"
@@ -62,7 +78,6 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             }
 
             // @ts-expect-error `ElementNode` is not extending object
-            // eslint-disable-next-line no-case-declarations
             const isFalseCache = new WeakSet<ElementNode>();
             return function cachedDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
@@ -78,7 +93,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 return false;
             };
-        case "_flexibleDescendant":
+        }
+        case "_flexibleDescendant": {
             // Include element itself, only used while querying an array
             return function flexibleDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
@@ -89,21 +105,21 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 return false;
             };
-
-        case "parent":
+        }
+        case SelectorType.Parent: {
             return function parent(elem: ElementNode): boolean {
                 return adapter
                     .getChildren(elem)
                     .some((elem) => adapter.isTag(elem) && next(elem));
             };
-
-        case "child":
+        }
+        case SelectorType.Child: {
             return function child(elem: ElementNode): boolean {
                 const parent = adapter.getParent(elem);
                 return parent != null && adapter.isTag(parent) && next(parent);
             };
-
-        case "sibling":
+        }
+        case SelectorType.Sibling: {
             return function sibling(elem: ElementNode): boolean {
                 const siblings = adapter.getSiblings(elem);
 
@@ -117,8 +133,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 return false;
             };
-
-        case "adjacent":
+        }
+        case SelectorType.Adjacent: {
             return function adjacent(elem: ElementNode): boolean {
                 const siblings = adapter.getSiblings(elem);
                 let lastElement;
@@ -133,8 +149,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 return !!lastElement && next(lastElement);
             };
-
-        case "universal":
+        }
+        case SelectorType.Universal: {
             return next;
+        }
     }
 }

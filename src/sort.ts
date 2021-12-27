@@ -1,5 +1,5 @@
 import type { InternalSelector } from "./types";
-import type { AttributeAction } from "css-what";
+import { AttributeAction, SelectorType } from "css-what";
 import { procedure } from "./procedure";
 
 const attributes: Record<AttributeAction, number> = {
@@ -40,7 +40,7 @@ export default function sortByProcedure(arr: InternalSelector[]): void {
 function getProcedure(token: InternalSelector): number {
     let proc = procedure[token.type];
 
-    if (token.type === "attribute") {
+    if (token.type === SelectorType.Attribute) {
         proc = attributes[token.action];
 
         if (proc === attributes.equals && token.name === "id") {
@@ -55,7 +55,7 @@ function getProcedure(token: InternalSelector): number {
              */
             proc >>= 1;
         }
-    } else if (token.type === "pseudo") {
+    } else if (token.type === SelectorType.Pseudo) {
         if (!token.data) {
             proc = 3;
         } else if (token.name === "has" || token.name === "contains") {
