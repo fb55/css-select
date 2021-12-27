@@ -60,7 +60,7 @@ describe("qwery", () => {
             ).toHaveLength(2); // Context found 2 elements (#boosh .a)
         });
 
-        it.skip("should be able to pass qwery result as context", () => {
+        it("should be able to pass qwery result as context", () => {
             expect(
                 CSSselect.selectAll(
                     ".a",
@@ -68,20 +68,20 @@ describe("qwery", () => {
                 )
             ).toHaveLength(2); // Context found 2 elements(.a, #boosh)
             expect(
-                CSSselect.selectAll(".a", CSSselect.selectAll(".a", document))
-            ).toHaveLength(0); // Context found 0 elements(.a, .a)
+                CSSselect.selectAll("> .a", CSSselect.selectAll(".a", document))
+            ).toHaveLength(1); // Context found 0 elements(.a, .a)
             expect(
-                CSSselect.selectAll(".a", CSSselect.selectAll(".b", document))
+                CSSselect.selectAll("> .a", CSSselect.selectAll(".b", document))
             ).toHaveLength(1); // Context found 1 elements(.a, .b)
             expect(
                 CSSselect.selectAll(
-                    ".a",
+                    "> .a",
                     CSSselect.selectAll("#boosh .b", document)
                 )
             ).toHaveLength(1); // Context found 1 elements(.a, #boosh .b)
             expect(
                 CSSselect.selectAll(
-                    ".b",
+                    "> .b",
                     CSSselect.selectAll("#boosh .b", document)
                 )
             ).toHaveLength(0); // Context found 0 elements(.b, #boosh .b)

@@ -81,6 +81,12 @@ describe("API", () => {
             expect(() => CSSselect.compile("::after")).toThrow("not supported");
         });
 
+        it("should throw with a column combinator", () => {
+            expect(() => CSSselect.compile("foo || bar")).toThrow(
+                "not yet supported"
+            );
+        });
+
         it("should throw if parameter is supplied for pseudo", () => {
             expect(() => CSSselect.compile(":any-link(test)")).toThrow(
                 "doesn't have any arguments"

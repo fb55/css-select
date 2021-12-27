@@ -140,12 +140,12 @@ describe("NWMatcher", () => {
             );
         });
 
-        it.skip("E[foo] with namespaced attributes", () => {
-            expect(select("[xml:lang]")).toStrictEqual([
+        it("E[foo] with namespaced attributes", () => {
+            expect(select("[xml\\:lang]")).toStrictEqual([
                 document.documentElement,
                 getById("item_3"),
             ]);
-            expect(select("*[xml:lang]")).toStrictEqual([
+            expect(select("*[xml\\:lang]")).toStrictEqual([
                 document.documentElement,
                 getById("item_3"),
             ]);
@@ -575,10 +575,10 @@ describe("NWMatcher", () => {
             );
         });
 
-        it.skip("Multiple Selectors with lang", () => {
+        it("Multiple Selectors with lang", () => {
             // The next two assertions should return document-ordered lists of matching elements --Diego Perini
             expect(
-                select('#list, .first,*[xml:lang="es-us"] , #troubleForm')
+                select('#list, .first,*[xml\\:lang="es-us"] , #troubleForm')
             ).toStrictEqual(
                 getByIds(
                     "p",
@@ -590,7 +590,7 @@ describe("NWMatcher", () => {
                 )
             );
             expect(
-                select('#list, .first, *[xml:lang="es-us"], #troubleForm')
+                select('#list, .first, *[xml\\:lang="es-us"], #troubleForm')
             ).toStrictEqual(
                 getByIds(
                     "p",
