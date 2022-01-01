@@ -1,8 +1,10 @@
 import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { trueFunc, falseFunc } from "boolbase";
-import type { Element } from "domhandler";
+import * as DomUtils from "domutils";
+import type { Node, Element } from "domhandler";
 import { SelectorType, AttributeAction } from "css-what";
+import { Adapter } from "../src/types";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
 const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
@@ -292,6 +294,36 @@ describe("API", () => {
             dom.attribs.id = "bar";
             // The query should not be cached, the changed attribute should be picked up.
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(1);
+        });
+    });
+
+    describe("optional adapter methods", () => {
+        it("should support prevElementSibling", () => {
+            const adapter = {
+                ...DomUtils,
+                prevElementSibling: undefined,
+            } as Adapter<Node, Element>;
+
+            const dom = parseDOM(
+                `${"<p>foo".repeat(10)}<div>bar</div>`
+            ) as Element[];
+
+            expect(
+                CSSselect.selectAll("p + div", dom, { adapter })
+            ).toStrictEqual(CSSselect.selectAll("p + div", dom));
+        });
+
+        it("should support isHovered", () => {
+            const dom = parseDOM(`${"<p>foo".repeat(10)}`) as Element[];
+
+            const adapter = {
+                ...DomUtils,
+                isHovered: (el) => el === dom[dom.length - 1],
+            } as Adapter<Node, Element>;
+
+            const selection = CSSselect.selectAll("p:hover", dom, { adapter });
+            expect(selection).toHaveLength(1);
+            expect(selection[0]).toBe(dom[dom.length - 1]);
         });
     });
 });

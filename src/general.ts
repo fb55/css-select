@@ -135,6 +135,13 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             };
         }
         case SelectorType.Adjacent: {
+            if (adapter.prevElementSibling) {
+                return function adjacent(elem: ElementNode): boolean {
+                    const previous = adapter.prevElementSibling!(elem);
+                    return previous != null && next(previous);
+                };
+            }
+
             return function adjacent(elem: ElementNode): boolean {
                 const siblings = adapter.getSiblings(elem);
                 let lastElement;

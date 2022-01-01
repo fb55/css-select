@@ -41,6 +41,11 @@ export interface Adapter<Node, ElementNode extends Node> {
     getSiblings: (node: Node) => Node[];
 
     /**
+     * Returns the previous element sibling of a node.
+     */
+    prevElementSibling?: (node: Node) => ElementNode | null;
+
+    /**
      * Get the text content of the node, and its children if it has any.
      */
     getText: (node: Node) => string;
