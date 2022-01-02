@@ -11,6 +11,8 @@ const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
     xmlMode: true,
 }) as Element[];
 
+const notYet = "not yet supported by css-select";
+
 describe("API", () => {
     describe("removes duplicates", () => {
         it("between identical trees", () => {
@@ -84,9 +86,25 @@ describe("API", () => {
         });
 
         it("should throw with a column combinator", () => {
-            expect(() => CSSselect.compile("foo || bar")).toThrow(
-                "not yet supported"
-            );
+            expect(() => CSSselect.compile("foo || bar")).toThrow(notYet);
+        });
+
+        it("should throw with attribute namespace", () => {
+            expect(() => CSSselect.compile("[foo|bar]")).toThrow(notYet);
+            expect(() => CSSselect.compile("[|bar]")).not.toThrow();
+            expect(() => CSSselect.compile("[*|bar]")).toThrow(notYet);
+        });
+
+        it("should throw with tag namespace", () => {
+            expect(() => CSSselect.compile("foo|bar")).toThrow(notYet);
+            expect(() => CSSselect.compile("|bar")).toThrow(notYet);
+            expect(() => CSSselect.compile("*|bar")).toThrow(notYet);
+        });
+
+        it("should throw with universal selector", () => {
+            expect(() => CSSselect.compile("foo|*")).toThrow(notYet);
+            expect(() => CSSselect.compile("|*")).toThrow(notYet);
+            expect(() => CSSselect.compile("*|*")).not.toThrow();
         });
 
         it("should throw if parameter is supplied for pseudo", () => {
@@ -299,10 +317,10 @@ describe("API", () => {
 
     describe("optional adapter methods", () => {
         it("should support prevElementSibling", () => {
-            const adapter = {
+            const adapter: Adapter<Node, Element> = {
                 ...DomUtils,
                 prevElementSibling: undefined,
-            } as Adapter<Node, Element>;
+            };
 
             const dom = parseDOM(
                 `${"<p>foo".repeat(10)}<div>bar</div>`
@@ -316,10 +334,10 @@ describe("API", () => {
         it("should support isHovered", () => {
             const dom = parseDOM(`${"<p>foo".repeat(10)}`) as Element[];
 
-            const adapter = {
+            const adapter: Adapter<Node, Element> = {
                 ...DomUtils,
                 isHovered: (el) => el === dom[dom.length - 1],
-            } as Adapter<Node, Element>;
+            };
 
             const selection = CSSselect.selectAll("p:hover", dom, { adapter });
             expect(selection).toHaveLength(1);

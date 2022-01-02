@@ -31,6 +31,12 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             );
         }
         case SelectorType.Attribute: {
+            if (selector.namespace != null) {
+                throw new Error(
+                    "Namespaced attributes are not yet supported by css-select"
+                );
+            }
+
             if (!options.xmlMode || options.lowerCaseAttributeNames) {
                 selector.name = selector.name.toLowerCase();
             }
@@ -47,6 +53,12 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         }
         // Tags
         case SelectorType.Tag: {
+            if (selector.namespace != null) {
+                throw new Error(
+                    "Namespaced tag names are not yet supported by css-select"
+                );
+            }
+
             let { name } = selector;
 
             if (!options.xmlMode || options.lowerCaseTags) {
@@ -158,6 +170,12 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             };
         }
         case SelectorType.Universal: {
+            if (selector.namespace != null && selector.namespace !== "*") {
+                throw new Error(
+                    "Namespaced universal selectors are not yet supported by css-select"
+                );
+            }
+
             return next;
         }
     }
