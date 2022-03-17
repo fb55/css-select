@@ -22,8 +22,8 @@ below.
 -   🧪 Partial implementation of jQuery/Sizzle extensions (see
     [cheerio-select](https://github.com/cheeriojs/cheerio-select) for the
     remaining selectors)
--   🧑‍🔬 High test coverage, including the full test suites from Sizzle, Qwery
-    and NWMatcher.
+-   🧑‍🔬 High test coverage, including the full test suites from Sizzle, Qwery and
+    NWMatcher.
 -   🥼 Reliably great performance
 
 ## Why?
