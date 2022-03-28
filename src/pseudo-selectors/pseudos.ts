@@ -18,6 +18,10 @@ export const pseudos: Record<string, Pseudo> = {
     },
 
     "first-child"(elem, { adapter, equals }) {
+        if (adapter.prevElementSibling) {
+            return adapter.prevElementSibling(elem) == null;
+        }
+
         const firstChild = adapter
             .getSiblings(elem)
             .find((elem) => adapter.isTag(elem));
