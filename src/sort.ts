@@ -69,23 +69,17 @@ function getProcedure(token: InternalSelector): number {
         } else if (token.name === "has" || token.name === "contains") {
             proc = 0; // Expensive in any case
         } else if (Array.isArray(token.data)) {
-            // "matches" and "not"
-            proc = 0;
+            // Eg. :matches, :not
+            proc = Math.min(
+                ...token.data.map((d) => Math.min(...d.map(getProcedure)))
+            );
 
-            for (let i = 0; i < token.data.length; i++) {
-                // TODO better handling of complex selectors
-                if (token.data[i].length !== 1) continue;
-                const cur = getProcedure(token.data[i][0]);
-                // Avoid executing :has or :contains
-                if (cur === 0) {
-                    proc = 0;
-                    break;
-                }
-                if (cur > proc) proc = cur;
+            // If we have traversals, try to avoid executing this selector
+            if (proc < 0) {
+                proc = 0;
             }
-            if (token.data.length > 1 && proc > 0) proc -= 1;
         } else {
-            proc = 1;
+            proc = 2;
         }
     }
     return proc;
