@@ -6,7 +6,7 @@ import type {
     CompileToken,
     Adapter,
 } from "../types.js";
-import { isTraversal } from "../procedure.js";
+import { isTraversal } from "../sort.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};

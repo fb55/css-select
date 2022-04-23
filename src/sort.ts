@@ -1,17 +1,25 @@
 import type { InternalSelector } from "./types.js";
-import { AttributeAction, SelectorType } from "css-what";
-import { procedure } from "./procedure.js";
+import { AttributeAction, SelectorType, type Traversal } from "css-what";
 
-const attributes: Record<AttributeAction, number> = {
-    exists: 10,
-    equals: 8,
-    not: 7,
-    start: 6,
-    end: 6,
-    any: 5,
-    hyphen: 4,
-    element: 4,
-};
+const procedure = new Map<InternalSelector["type"], number>([
+    [SelectorType.Universal, 50],
+    [SelectorType.Tag, 30],
+    [SelectorType.Attribute, 1],
+    [SelectorType.Pseudo, 0],
+]);
+
+export function isTraversal(token: InternalSelector): token is Traversal {
+    return !procedure.has(token.type);
+}
+
+const attributes = new Map<AttributeAction, number>([
+    [AttributeAction.Exists, 10],
+    [AttributeAction.Equals, 8],
+    [AttributeAction.Not, 7],
+    [AttributeAction.Start, 6],
+    [AttributeAction.End, 6],
+    [AttributeAction.Any, 5],
+]);
 
 /**
  * Sort the parts of the passed selector,
@@ -38,12 +46,12 @@ export default function sortByProcedure(arr: InternalSelector[]): void {
 }
 
 function getProcedure(token: InternalSelector): number {
-    let proc = procedure[token.type];
+    let proc = procedure.get(token.type) ?? -1;
 
     if (token.type === SelectorType.Attribute) {
-        proc = attributes[token.action];
+        proc = attributes.get(token.action) ?? 4;
 
-        if (proc === attributes.equals && token.name === "id") {
+        if (token.action === AttributeAction.Equals && token.name === "id") {
             // Prefer ID selectors (eg. #ID)
             proc = 9;
         }

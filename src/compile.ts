@@ -1,7 +1,6 @@
 import { parse, Selector, SelectorType } from "css-what";
 import boolbase from "boolbase";
-import sortRules from "./sort.js";
-import { isTraversal } from "./procedure.js";
+import sortRules, { isTraversal } from "./sort.js";
 import { compileGeneralSelector } from "./general.js";
 import {
     ensureIsTag,
@@ -90,8 +89,6 @@ export function compileToken<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,
     context?: Node[] | Node
 ): CompiledQuery<ElementNode> {
-    token = token.filter((t) => t.length > 0);
-
     token.forEach(sortRules);
 
     context = options.context ?? context;
