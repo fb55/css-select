@@ -1,6 +1,6 @@
 import * as helper from "./helper";
 import CSSselect from "../../src";
-import type { Element, Node } from "domhandler";
+import type { Element, Node, Document } from "domhandler";
 let document = loadDoc();
 
 export function loadDoc(): helper.SimpleDocument {
@@ -36,10 +36,10 @@ export function t(
     expect(actualIds).toStrictEqual(expectedIds);
 }
 
-const xmlDoc = helper.getDOMFromPath("fries.xml", {
+const xmlDoc = helper.getDocumentFromPath("fries.xml", {
     xmlMode: true,
 });
 
-export function createWithFriesXML(): Node[] {
+export function createWithFriesXML(): Document {
     return xmlDoc;
 }

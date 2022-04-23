@@ -19,9 +19,7 @@ function getByIds(...args: string[]): Element[] {
 }
 
 function getById(id: string): Element {
-    const elem = DomUtils.getElementById(id, document);
-    if (!elem) throw new Error(`Did not find element with ID ${id}`);
-    return elem;
+    return document.getElementById(id);
 }
 
 // NWMatcher methods
