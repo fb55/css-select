@@ -27,6 +27,11 @@ const select = (query: string, doc: Node[] | Node = document): Node[] =>
     CSSselect.selectAll(query, doc);
 
 describe("NWMatcher", () => {
+    // Test whether our helper above throws
+    it("should throw when getting an element by an invalid ID", () => {
+        expect(() => getById("foo")).toThrow();
+    });
+
     describe("Basic Selectors", () => {
         it("*", () => {
             // Universal selector

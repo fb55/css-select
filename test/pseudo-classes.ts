@@ -1,12 +1,12 @@
 import * as CSSselect from "../src";
-import { parseDOM } from "htmlparser2";
-import type { Element } from "domhandler";
+import { DomUtils, parseDOM } from "htmlparser2";
+import { Element } from "domhandler";
 
 const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"
 ) as Element[];
 
-describe("icontains", () => {
+describe(":icontains", () => {
     describe("ignore case", () => {
         it("should match full string", () => {
             let matches = CSSselect.selectAll(
@@ -107,5 +107,40 @@ describe("icontains", () => {
             const matches = CSSselect.selectAll("p:icontains(indeed)", dom);
             expect(matches).toHaveLength(0);
         });
+    });
+});
+
+describe("unmatched", () => {
+    it("should throw on unknown pseudo-class (#741)", () => {
+        expect(() => CSSselect.selectAll(":unmatched(foo)", dom)).toThrow(
+            "Unknown pseudo-class :unmatched"
+        );
+
+        expect(() => CSSselect.selectAll(":unmatched(foo)", dom)).toThrow(
+            "Unknown pseudo-class :unmatched"
+        );
+
+        expect(() => CSSselect.selectAll(":host-context(foo)", dom)).toThrow(
+            "Unknown pseudo-class :host-context"
+        );
+    });
+});
+
+describe(":first-child", () => {
+    it("should match", () => {
+        const matches = CSSselect.selectAll(":first-child", dom);
+        expect(matches).toHaveLength(2);
+        expect(matches).toStrictEqual([dom[0], dom[0].children[0]]);
+    });
+
+    it("should work without `prevElementSibling`", () => {
+        const adapter = {
+            ...DomUtils,
+            prevElementSibling: undefined,
+        };
+
+        const matches = CSSselect.selectAll(":first-child", dom, { adapter });
+        expect(matches).toHaveLength(2);
+        expect(matches).toStrictEqual([dom[0], dom[0].children[0]]);
     });
 });
