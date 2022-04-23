@@ -1,6 +1,6 @@
 import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
-import { trueFunc, falseFunc } from "boolbase";
+import boolbase from "boolbase";
 import * as DomUtils from "domutils";
 import type { Element } from "domhandler";
 import { SelectorType, AttributeAction } from "css-what";
@@ -131,11 +131,11 @@ describe("API", () => {
     describe("unsatisfiable and universally valid selectors", () => {
         it("in :not", () => {
             let func = CSSselect._compileUnsafe(":not(*)");
-            expect(func).toBe(falseFunc);
+            expect(func).toBe(boolbase.falseFunc);
             func = CSSselect._compileUnsafe(":not(:nth-child(-1n-1))");
-            expect(func).toBe(trueFunc);
+            expect(func).toBe(boolbase.trueFunc);
             func = CSSselect._compileUnsafe(":not(:not(:not(*)))");
-            expect(func).toBe(falseFunc);
+            expect(func).toBe(boolbase.falseFunc);
         });
 
         it("in :has", () => {
@@ -143,17 +143,17 @@ describe("API", () => {
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
             const func = CSSselect._compileUnsafe(":has(:nth-child(-1n-1))");
-            expect(func).toBe(falseFunc);
+            expect(func).toBe(boolbase.falseFunc);
         });
 
         it("should skip unsatisfiable", () => {
             const func = CSSselect._compileUnsafe("* :not(*) foo");
-            expect(func).toBe(falseFunc);
+            expect(func).toBe(boolbase.falseFunc);
         });
 
         it("should promote universally valid", () => {
             const func = CSSselect._compileUnsafe("*, foo");
-            expect(func).toBe(trueFunc);
+            expect(func).toBe(boolbase.trueFunc);
         });
     });
 
@@ -243,7 +243,7 @@ describe("API", () => {
             expect(CSSselect.selectOne(":contains(foo)", [dom])).toBe(dom);
         });
         it("should take shortcuts when applicable", () => {
-            let match = CSSselect.selectOne(falseFunc, {
+            let match = CSSselect.selectOne(boolbase.falseFunc, {
                 get length() {
                     throw new Error("Did not take shortcut");
                 },

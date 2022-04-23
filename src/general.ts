@@ -1,12 +1,12 @@
-import { attributeRules } from "./attributes";
-import { compilePseudoSelector } from "./pseudo-selectors";
+import { attributeRules } from "./attributes.js";
+import { compilePseudoSelector } from "./pseudo-selectors/index.js";
 import type {
     Adapter,
     CompiledQuery,
     InternalOptions,
     InternalSelector,
     CompileToken,
-} from "./types";
+} from "./types.js";
 import { SelectorType } from "css-what";
 
 function getElementParent<Node, ElementNode extends Node>(

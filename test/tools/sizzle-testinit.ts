@@ -1,4 +1,4 @@
-import * as helper from "./helper";
+import * as helper from "./helper.js";
 import CSSselect from "../../src";
 import type { Element, Node, Document } from "domhandler";
 let document = loadDoc();

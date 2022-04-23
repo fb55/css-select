@@ -1,5 +1,5 @@
-import { falseFunc } from "boolbase";
-import { CompiledQuery, InternalOptions } from "./types";
+import boolbase from "boolbase";
+import type { CompiledQuery, InternalOptions } from "./types.js";
 import type { AttributeSelector, AttributeAction } from "css-what";
 
 /**
@@ -146,7 +146,7 @@ export const attributeRules: Record<
         const { adapter } = options;
         const { name, value } = data;
         if (/\s/.test(value)) {
-            return falseFunc;
+            return boolbase.falseFunc;
         }
 
         const regex = new RegExp(
@@ -174,7 +174,7 @@ export const attributeRules: Record<
         const len = value.length;
 
         if (len === 0) {
-            return falseFunc;
+            return boolbase.falseFunc;
         }
 
         if (shouldIgnoreCase(data, options)) {
@@ -202,7 +202,7 @@ export const attributeRules: Record<
         const len = -value.length;
 
         if (len === 0) {
-            return falseFunc;
+            return boolbase.falseFunc;
         }
 
         if (shouldIgnoreCase(data, options)) {
@@ -224,7 +224,7 @@ export const attributeRules: Record<
         const { name, value } = data;
 
         if (value === "") {
-            return falseFunc;
+            return boolbase.falseFunc;
         }
 
         if (shouldIgnoreCase(data, options)) {
