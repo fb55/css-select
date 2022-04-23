@@ -39,7 +39,7 @@ export function compileUnsafe<Node, ElementNode extends Node>(
 
 function includesScopePseudo(t: InternalSelector): boolean {
     return (
-        t.type === "pseudo" &&
+        t.type === SelectorType.Pseudo &&
         (t.name === "scope" ||
             (Array.isArray(t.data) &&
                 t.data.some((data) => data.some(includesScopePseudo))))
@@ -72,7 +72,11 @@ function absolutize<Node, ElementNode extends Node>(
     });
 
     for (const t of token) {
-        if (t.length > 0 && isTraversal(t[0]) && t[0].type !== "descendant") {
+        if (
+            t.length > 0 &&
+            isTraversal(t[0]) &&
+            t[0].type !== SelectorType.Descendant
+        ) {
             // Don't continue in else branch
         } else if (hasContext && !t.some(includesScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
@@ -106,13 +110,19 @@ export function compileToken<Node, ElementNode extends Node>(
             if (rules.length >= 2) {
                 const [first, second] = rules;
 
-                if (first.type !== "pseudo" || first.name !== "scope") {
+                if (
+                    first.type !== SelectorType.Pseudo ||
+                    first.name !== "scope"
+                ) {
                     // Ignore
-                } else if (isArrayContext && second.type === "descendant") {
+                } else if (
+                    isArrayContext &&
+                    second.type === SelectorType.Descendant
+                ) {
                     rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
                 } else if (
-                    second.type === "adjacent" ||
-                    second.type === "sibling"
+                    second.type === SelectorType.Adjacent ||
+                    second.type === SelectorType.Sibling
                 ) {
                     shouldTestNextSiblings = true;
                 }
