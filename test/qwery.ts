@@ -2,7 +2,7 @@ import * as helper from "./tools/helper";
 const document = helper.getDocument("qwery.html");
 import * as CSSselect from "../src";
 import * as DomUtils from "domutils";
-import type { Element } from "domhandler";
+import { AnyNode, Element, ParentNode } from "domhandler";
 import { parseDOM } from "htmlparser2";
 
 const location = { hash: "" };
@@ -39,14 +39,12 @@ const doc = parseDOM(
         '<div id="lonelyHsoob"></div></root>'
 );
 
-const el = DomUtils.getElementById("attr-child-boosh", document);
-
-if (!el) throw new Error("Couldn't find element");
+const el = document.getElementById("attr-child-boosh");
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-const pseudos = DomUtils.getElementById("pseudos", document)!.children.filter(
-    DomUtils.isTag
-);
+const pseudos = document
+    .getElementById("pseudos")
+    .children.filter(DomUtils.isTag);
 
 describe("qwery", () => {
     describe("Contexts", () => {
@@ -233,7 +231,7 @@ describe("qwery", () => {
     describe("CSS 2", () => {
         it("get elements by attribute", () => {
             const wanted = CSSselect.selectAll("#boosh div[test]", document)[0];
-            const expected = DomUtils.getElementById("booshTest", document);
+            const expected = document.getElementById("booshTest");
             expect(wanted).toBe(expected); // Found attribute
             expect(
                 CSSselect.selectAll("#boosh div[test=fg]", document)[0]
@@ -253,7 +251,7 @@ describe("qwery", () => {
         });
 
         it("crazy town", () => {
-            const el = DomUtils.getElementById("attr-test3", document);
+            const el = document.getElementById("attr-test3");
             expect(
                 CSSselect.selectAll(
                     'div#attr-test3.found.you[title="whatup duders"]',
@@ -267,14 +265,14 @@ describe("qwery", () => {
         /* CSS 2 SPEC */
 
         it("[attr]", () => {
-            const expected = DomUtils.getElementById("attr-test-1", document);
+            const expected = document.getElementById("attr-test-1");
             expect(
                 CSSselect.selectAll("#attributes div[unique-test]", document)[0]
             ).toBe(expected); // Found attribute with [attr]
         });
 
         it("[attr=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-2", document);
+            const expected = document.getElementById("attr-test-2");
             expect(
                 CSSselect.selectAll(
                     '#attributes div[test="two-foo"]',
@@ -296,14 +294,14 @@ describe("qwery", () => {
         });
 
         it("[attr~=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-3", document);
+            const expected = document.getElementById("attr-test-3");
             expect(
                 CSSselect.selectAll("#attributes div[test~=three]", document)[0]
             ).toBe(expected); // Found attribute with ~=
         });
 
         it("[attr|=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-2", document);
+            const expected = document.getElementById("attr-test-2");
             expect(
                 CSSselect.selectAll(
                     '#attributes div[test|="two-foo"]',
@@ -316,7 +314,7 @@ describe("qwery", () => {
         });
 
         it("[href=#x] special case", () => {
-            const expected = DomUtils.getElementById("attr-test-4", document);
+            const expected = document.getElementById("attr-test-4");
             expect(
                 CSSselect.selectAll('#attributes a[href="#aname"]', document)[0]
             ).toBe(expected); // Found attribute with href=#x
@@ -325,21 +323,21 @@ describe("qwery", () => {
         /* CSS 3 SPEC */
 
         it("[attr^=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-2", document);
+            const expected = document.getElementById("attr-test-2");
             expect(
                 CSSselect.selectAll("#attributes div[test^=two]", document)[0]
             ).toBe(expected); // Found attribute with ^=
         });
 
         it("[attr$=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-2", document);
+            const expected = document.getElementById("attr-test-2");
             expect(
                 CSSselect.selectAll("#attributes div[test$=foo]", document)[0]
             ).toBe(expected); // Found attribute with $=
         });
 
         it("[attr*=val]", () => {
-            const expected = DomUtils.getElementById("attr-test-3", document);
+            const expected = document.getElementById("attr-test-3");
             expect(
                 CSSselect.selectAll("#attributes div[test*=hree]", document)[0]
             ).toBe(expected); // Found attribute with *=
@@ -500,28 +498,28 @@ describe("qwery", () => {
         it("should not get weird tokens", () => {
             expect(
                 CSSselect.selectAll('div .tokens[title="one"]', document)[0]
-            ).toBe(DomUtils.getElementById("token-one", document)); // Found div .tokens[title="one"]
+            ).toBe(document.getElementById("token-one")); // Found div .tokens[title="one"]
             expect(
                 CSSselect.selectAll('div .tokens[title="one two"]', document)[0]
-            ).toBe(DomUtils.getElementById("token-two", document)); // Found div .tokens[title="one two"]
+            ).toBe(document.getElementById("token-two")); // Found div .tokens[title="one two"]
             expect(
                 CSSselect.selectAll(
                     'div .tokens[title="one two three #%"]',
                     document
                 )[0]
-            ).toBe(DomUtils.getElementById("token-three", document)); // Found div .tokens[title="one two three #%"]
+            ).toBe(document.getElementById("token-three")); // Found div .tokens[title="one two three #%"]
             expect(
                 CSSselect.selectAll(
                     "div .tokens[title='one two three #%'] a",
                     document
                 )[0]
-            ).toBe(DomUtils.getElementById("token-four", document)); // Found div .tokens[title=\'one two three #%\'] a
+            ).toBe(document.getElementById("token-four")); // Found div .tokens[title=\'one two three #%\'] a
             expect(
                 CSSselect.selectAll(
                     'div .tokens[title="one two three #%"] a[href$=foo] div',
                     document
                 )[0]
-            ).toBe(DomUtils.getElementById("token-five", document)); // Found div .tokens[title="one two three #%"] a[href=foo] div
+            ).toBe(document.getElementById("token-five")); // Found div .tokens[title="one two three #%"] a[href=foo] div
         });
     });
 
@@ -548,7 +546,7 @@ describe("qwery", () => {
             function tag(el: Element) {
                 return el.name.toLowerCase();
             }
-            const els = CSSselect.selectAll(
+            const els = CSSselect.selectAll<AnyNode, ParentNode>(
                 "#order-matters .order-matters",
                 document
             ) as Element[];
@@ -602,10 +600,7 @@ describe("qwery", () => {
         });
 
         it('ol > li[attr="boosh"]:last-child', () => {
-            const expected = DomUtils.getElementById(
-                "attr-child-boosh",
-                document
-            );
+            const expected = document.getElementById("attr-child-boosh");
             expect(
                 CSSselect.selectAll(
                     'ol > li[attr="boosh"]:last-child',
@@ -863,18 +858,18 @@ describe("qwery", () => {
         it("context", () => {
             expect(
                 CSSselect.is(el, "li#attr-child-boosh[attr=boosh]", {
-                    context: CSSselect.selectAll(
+                    context: CSSselect.selectAll<AnyNode, ParentNode>(
                         "#list",
                         document
-                    )[0] as Element,
+                    )[0],
                 })
             ).toBeTruthy(); // Context
             expect(
                 CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]", {
-                    context: CSSselect.selectAll(
+                    context: CSSselect.selectAll<AnyNode, ParentNode>(
                         "#boosh",
                         document
-                    )[0] as Element,
+                    )[0],
                 })
             ).toBeFalsy(); // Wrong context
         });

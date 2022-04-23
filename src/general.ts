@@ -1,12 +1,24 @@
 import { attributeRules } from "./attributes";
 import { compilePseudoSelector } from "./pseudo-selectors";
 import type {
+    Adapter,
     CompiledQuery,
     InternalOptions,
     InternalSelector,
     CompileToken,
 } from "./types";
 import { SelectorType } from "css-what";
+
+function getElementParent<Node, ElementNode extends Node>(
+    node: ElementNode,
+    adapter: Adapter<Node, ElementNode>
+): ElementNode | null {
+    const parent = adapter.getParent(node);
+    if (parent && adapter.isTag(parent)) {
+        return parent;
+    }
+    return null;
+}
 
 /*
  * All available rules
@@ -79,8 +91,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 
-                    while ((current = adapter.getParent(current))) {
-                        if (adapter.isTag(current) && next(current)) {
+                    while ((current = getElementParent(current, adapter))) {
+                        if (next(current)) {
                             return true;
                         }
                     }
@@ -94,7 +106,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             return function cachedDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
 
-                while ((current = adapter.getParent(current))) {
+                while ((current = getElementParent(current, adapter))) {
                     if (!isFalseCache.has(current)) {
                         if (adapter.isTag(current) && next(current)) {
                             return true;
@@ -112,8 +124,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 let current: ElementNode | null = elem;
 
                 do {
-                    if (adapter.isTag(current) && next(current)) return true;
-                } while ((current = adapter.getParent(current)));
+                    if (next(current)) return true;
+                } while ((current = getElementParent(current, adapter)));
 
                 return false;
             };

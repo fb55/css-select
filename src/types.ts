@@ -32,7 +32,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the parent of the node
      */
-    getParent: (node: ElementNode) => ElementNode | null;
+    getParent: (node: ElementNode) => Node | null;
 
     /**
      * Get the siblings of the node. Note that unlike jQuery's `siblings` method,

@@ -2,9 +2,8 @@ import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { trueFunc, falseFunc } from "boolbase";
 import * as DomUtils from "domutils";
-import type { Node, Element } from "domhandler";
+import type { Element } from "domhandler";
 import { SelectorType, AttributeAction } from "css-what";
-import { Adapter } from "../src/types";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
 const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
@@ -71,7 +70,7 @@ describe("API", () => {
             ) as Element[];
             const a = CSSselect.selectAll(".foo:has(+.bar)", dom);
             expect(a).toHaveLength(1);
-            expect(a[0]).toStrictEqual(dom.children[0] as Element);
+            expect(a[0]).toStrictEqual(dom.children[0]);
         });
 
         it("should accept document root nodes", () => {
@@ -317,7 +316,7 @@ describe("API", () => {
 
     describe("optional adapter methods", () => {
         it("should support prevElementSibling", () => {
-            const adapter: Adapter<Node, Element> = {
+            const adapter = {
                 ...DomUtils,
                 prevElementSibling: undefined,
             };
@@ -334,9 +333,9 @@ describe("API", () => {
         it("should support isHovered", () => {
             const dom = parseDOM(`${"<p>foo".repeat(10)}`) as Element[];
 
-            const adapter: Adapter<Node, Element> = {
+            const adapter = {
                 ...DomUtils,
-                isHovered: (el) => el === dom[dom.length - 1],
+                isHovered: (el: Element) => el === dom[dom.length - 1],
             };
 
             const selection = CSSselect.selectAll("p:hover", dom, { adapter });

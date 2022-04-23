@@ -1,7 +1,7 @@
 import * as DomUtils from "domutils";
 import { falseFunc } from "boolbase";
 import type {
-    Node as DomHandlerNode,
+    AnyNode as DomHandlerNode,
     Element as DomHandlerElement,
 } from "domhandler";
 import { compile as compileRaw, compileUnsafe, compileToken } from "./compile";
