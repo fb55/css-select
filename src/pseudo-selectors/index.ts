@@ -32,6 +32,10 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     const { name, data } = selector;
 
     if (Array.isArray(data)) {
+        if (!(name in subselects)) {
+            throw new Error(`Unknown pseudo-class :${name}(${data})`);
+        }
+
         return subselects[name](next, data, options, context, compileToken);
     }
     if (name in aliases) {
@@ -56,5 +60,5 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
             ? (elem) => pseudo(elem, options, data)
             : (elem) => pseudo(elem, options, data) && next(elem);
     }
-    throw new Error(`unmatched pseudo-class :${name}`);
+    throw new Error(`Unknown pseudo-class :${name}`);
 }

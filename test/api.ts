@@ -342,5 +342,10 @@ describe("API", () => {
             expect(selection).toHaveLength(1);
             expect(selection[0]).toBe(dom[dom.length - 1]);
         });
+
+        it("should not match any elements if `isHovered` is not defined", () => {
+            const dom = parseDOM(`${"<p>foo".repeat(10)}`);
+            expect(CSSselect.selectAll("p:hover", dom)).toHaveLength(0);
+        });
     });
 });
