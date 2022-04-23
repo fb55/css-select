@@ -30,7 +30,7 @@ export function t(
     context: Node[] | Node | null = document
 ): void {
     const actual = CSSselect(selector, context) as Element[];
-    const actualIds = actual.map((e) => e.attribs.id);
+    const actualIds = actual.map((e) => e.attribs["id"]);
 
     // Should not contain falsy values
     expect(actualIds).toStrictEqual(expectedIds);

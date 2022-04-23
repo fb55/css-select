@@ -2,8 +2,9 @@ import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
 import boolbase from "boolbase";
 import * as DomUtils from "domutils";
-import type { Element } from "domhandler";
+import type { AnyNode, Element } from "domhandler";
 import { SelectorType, AttributeAction } from "css-what";
+import type { Adapter } from "../src/types.js";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
 const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {
@@ -31,9 +32,9 @@ describe("API", () => {
 
     describe("can be queried with more than a selector", () => {
         it("function in `is`", () => {
-            expect(CSSselect.is(dom, (elem) => elem.attribs.id === "foo")).toBe(
-                true
-            );
+            expect(
+                CSSselect.is(dom, (elem) => elem.attribs["id"] === "foo")
+            ).toBe(true);
         });
 
         it("parsed selector in `is`", () => {
@@ -117,14 +118,14 @@ describe("API", () => {
         });
 
         it("should throw if no parameter is supplied for pseudo", () => {
-            CSSselect.pseudos.foovalue = (elem, { adapter }, subselect) =>
+            CSSselect.pseudos["foovalue"] = (elem, { adapter }, subselect) =>
                 adapter.getAttributeValue(elem, "foo") === subselect;
 
             expect(() => CSSselect.compile(":foovalue")).toThrow(
                 "requires an argument"
             );
 
-            delete CSSselect.pseudos.foovalue;
+            delete CSSselect.pseudos["foovalue"];
         });
     });
 
@@ -296,7 +297,7 @@ describe("API", () => {
             const query = CSSselect.compile("#bar p");
 
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
-            dom.attribs.id = "bar";
+            dom.attribs["id"] = "bar";
             // The query should be cached and the changed attribute should be ignored.
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
         });
@@ -308,7 +309,7 @@ describe("API", () => {
             const query = CSSselect.compile("#bar p", { cacheResults: false });
 
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
-            dom.attribs.id = "bar";
+            dom.attribs["id"] = "bar";
             // The query should not be cached, the changed attribute should be picked up.
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(1);
         });
@@ -316,10 +317,8 @@ describe("API", () => {
 
     describe("optional adapter methods", () => {
         it("should support prevElementSibling", () => {
-            const adapter = {
-                ...DomUtils,
-                prevElementSibling: undefined,
-            };
+            const adapter: Adapter<AnyNode, Element> = { ...DomUtils };
+            delete adapter.prevElementSibling;
 
             const dom = parseDOM(
                 `${"<p>foo".repeat(10)}<div>bar</div>`

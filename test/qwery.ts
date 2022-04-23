@@ -2,11 +2,11 @@ import * as helper from "./tools/helper";
 const document = helper.getDocument("qwery.html");
 import * as CSSselect from "../src";
 import * as DomUtils from "domutils";
-import { AnyNode, Element, ParentNode } from "domhandler";
+import type { AnyNode, Element, ParentNode } from "domhandler";
 import { parseDOM } from "htmlparser2";
 
 const location = { hash: "" };
-CSSselect.pseudos.target = (elem, { adapter }) =>
+CSSselect.pseudos["target"] = (elem, { adapter }) =>
     adapter.getAttributeValue(elem, "id") === location.hash.substr(1);
 
 // ---
@@ -15,7 +15,7 @@ CSSselect.pseudos.target = (elem, { adapter }) =>
  * Adapted from https://github.com/ded/qwery/blob/master/tests/tests.js
  */
 
-CSSselect.pseudos.humanoid = (e) =>
+CSSselect.pseudos["humanoid"] = (e) =>
     CSSselect.is(e, ":matches(li,ol):contains(human)");
 
 const frag = parseDOM(
