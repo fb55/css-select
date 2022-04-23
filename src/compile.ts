@@ -1,14 +1,17 @@
-import { InternalSelector } from "./types";
 import { parse, Selector, SelectorType } from "css-what";
-import { trueFunc, falseFunc } from "boolbase";
-import sortRules from "./sort";
-import { isTraversal } from "./procedure";
-import { compileGeneralSelector } from "./general";
+import boolbase from "boolbase";
+import sortRules from "./sort.js";
+import { isTraversal } from "./procedure.js";
+import { compileGeneralSelector } from "./general.js";
 import {
     ensureIsTag,
     PLACEHOLDER_ELEMENT,
-} from "./pseudo-selectors/subselects";
-import type { CompiledQuery, InternalOptions } from "./types";
+} from "./pseudo-selectors/subselects.js";
+import type {
+    CompiledQuery,
+    InternalOptions,
+    InternalSelector,
+} from "./types.js";
 
 /**
  * Compiles a selector to an executable function.
@@ -124,7 +127,7 @@ export function compileToken<Node, ElementNode extends Node>(
                 finalContext
             );
         })
-        .reduce(reduceRules, falseFunc);
+        .reduce(reduceRules, boolbase.falseFunc);
 
     query.shouldTestNextSiblings = shouldTestNextSiblings;
 
@@ -138,8 +141,8 @@ function compileRules<Node, ElementNode extends Node>(
 ): CompiledQuery<ElementNode> {
     return rules.reduce<CompiledQuery<ElementNode>>(
         (previous, rule) =>
-            previous === falseFunc
-                ? falseFunc
+            previous === boolbase.falseFunc
+                ? boolbase.falseFunc
                 : compileGeneralSelector(
                       previous,
                       rule,
@@ -147,7 +150,7 @@ function compileRules<Node, ElementNode extends Node>(
                       context,
                       compileToken
                   ),
-        options.rootFunc ?? trueFunc
+        options.rootFunc ?? boolbase.trueFunc
     );
 }
 
@@ -155,10 +158,10 @@ function reduceRules<Node, ElementNode extends Node>(
     a: CompiledQuery<ElementNode>,
     b: CompiledQuery<ElementNode>
 ): CompiledQuery<ElementNode> {
-    if (b === falseFunc || a === trueFunc) {
+    if (b === boolbase.falseFunc || a === boolbase.trueFunc) {
         return a;
     }
-    if (a === falseFunc || b === trueFunc) {
+    if (a === boolbase.falseFunc || b === boolbase.trueFunc) {
         return b;
     }
 

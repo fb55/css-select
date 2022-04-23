@@ -1,6 +1,7 @@
 import * as CSSselect from "../src";
 import { DomUtils, parseDOM } from "htmlparser2";
-import { Element } from "domhandler";
+import type { AnyNode, Element } from "domhandler";
+import type { Adapter } from "../src/types.js";
 
 const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"
@@ -134,10 +135,8 @@ describe(":first-child", () => {
     });
 
     it("should work without `prevElementSibling`", () => {
-        const adapter = {
-            ...DomUtils,
-            prevElementSibling: undefined,
-        };
+        const adapter: Adapter<AnyNode, Element> = { ...DomUtils };
+        delete adapter.prevElementSibling;
 
         const matches = CSSselect.selectAll(":first-child", dom, { adapter });
         expect(matches).toHaveLength(2);

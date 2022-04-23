@@ -1,6 +1,6 @@
 import getNCheck from "nth-check";
-import { trueFunc, falseFunc } from "boolbase";
-import type { CompiledQuery, InternalOptions, Adapter } from "../types";
+import boolbase from "boolbase";
+import type { CompiledQuery, InternalOptions, Adapter } from "../types.js";
 
 export type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -40,8 +40,8 @@ export const filters: Record<string, Filter> = {
     "nth-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === falseFunc) return falseFunc;
-        if (func === trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
 
         return function nthChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -60,8 +60,8 @@ export const filters: Record<string, Filter> = {
     "nth-last-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === falseFunc) return falseFunc;
-        if (func === trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
 
         return function nthLastChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -80,8 +80,8 @@ export const filters: Record<string, Filter> = {
     "nth-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === falseFunc) return falseFunc;
-        if (func === trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
 
         return function nthOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -104,8 +104,8 @@ export const filters: Record<string, Filter> = {
     "nth-last-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === falseFunc) return falseFunc;
-        if (func === trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
 
         return function nthLastOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -144,7 +144,7 @@ export const filters: Record<string, Filter> = {
 
         if (!context || context.length === 0) {
             // Equivalent to :root
-            return filters.root(next, rule, options);
+            return filters["root"](next, rule, options);
         }
 
         if (context.length === 1) {
@@ -173,7 +173,7 @@ function dynamicStatePseudo(
         const func = adapter[name];
 
         if (typeof func !== "function") {
-            return falseFunc;
+            return boolbase.falseFunc;
         }
 
         return function active(elem) {

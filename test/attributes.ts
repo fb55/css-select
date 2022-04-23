@@ -1,6 +1,6 @@
 import * as CSSselect from "../src";
 import { parseDocument } from "htmlparser2";
-import { falseFunc } from "boolbase";
+import boolbase from "boolbase";
 import type { Element } from "domhandler";
 
 const dom = parseDocument(
@@ -86,16 +86,20 @@ describe("Attributes", () => {
     describe("no matches", () => {
         it("should for ~=", () => {
             expect(CSSselect._compileUnsafe("[foo~='baz bar']")).toBe(
-                falseFunc
+                boolbase.falseFunc
             );
         });
 
         it("should for $=", () => {
-            expect(CSSselect._compileUnsafe("[foo$='']")).toBe(falseFunc);
+            expect(CSSselect._compileUnsafe("[foo$='']")).toBe(
+                boolbase.falseFunc
+            );
         });
 
         it("should for *=", () => {
-            expect(CSSselect._compileUnsafe("[foo*='']")).toBe(falseFunc);
+            expect(CSSselect._compileUnsafe("[foo*='']")).toBe(
+                boolbase.falseFunc
+            );
         });
     });
 });

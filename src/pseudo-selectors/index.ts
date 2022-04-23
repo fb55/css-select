@@ -12,13 +12,13 @@
  * of `next()` and your code.
  * Pseudos should be used to implement simple checks.
  */
-import { trueFunc, falseFunc } from "boolbase";
-import type { CompiledQuery, InternalOptions, CompileToken } from "../types";
+import boolbase from "boolbase";
+import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
 import { parse, PseudoSelector } from "css-what";
-import { filters } from "./filters";
-import { pseudos, verifyPseudoArgs } from "./pseudos";
-import { aliases } from "./aliases";
-import { subselects } from "./subselects";
+import { filters } from "./filters.js";
+import { pseudos, verifyPseudoArgs } from "./pseudos.js";
+import { aliases } from "./aliases.js";
+import { subselects } from "./subselects.js";
 
 export { filters, pseudos, aliases };
 
@@ -45,7 +45,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
         // The alias has to be parsed here, to make sure options are respected.
         const alias = parse(aliases[name]);
-        return subselects.is(next, alias, options, context, compileToken);
+        return subselects["is"](next, alias, options, context, compileToken);
     }
     if (name in filters) {
         return filters[name](next, data as string, options, context);
@@ -54,9 +54,9 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         const pseudo = pseudos[name];
         verifyPseudoArgs(pseudo, name, data);
 
-        return pseudo === falseFunc
-            ? falseFunc
-            : next === trueFunc
+        return pseudo === boolbase.falseFunc
+            ? boolbase.falseFunc
+            : next === boolbase.trueFunc
             ? (elem) => pseudo(elem, options, data)
             : (elem) => pseudo(elem, options, data) && next(elem);
     }

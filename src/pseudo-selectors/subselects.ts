@@ -1,8 +1,12 @@
-import { CompileToken } from "./../types";
 import type { Selector } from "css-what";
-import { trueFunc, falseFunc } from "boolbase";
-import type { CompiledQuery, InternalOptions, Adapter } from "../types";
-import { isTraversal } from "../procedure";
+import boolbase from "boolbase";
+import type {
+    CompiledQuery,
+    InternalOptions,
+    CompileToken,
+    Adapter,
+} from "../types.js";
+import { isTraversal } from "../procedure.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};
@@ -11,7 +15,7 @@ export function ensureIsTag<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     adapter: Adapter<Node, ElementNode>
 ): CompiledQuery<Node> {
-    if (next === falseFunc) return falseFunc;
+    if (next === boolbase.falseFunc) return boolbase.falseFunc;
     return (elem: Node) => adapter.isTag(elem) && next(elem);
 }
 
@@ -66,8 +70,8 @@ export const subselects: Record<string, Subselect> = {
 
         const func = compileToken(token, opts, context);
 
-        if (func === falseFunc) return next;
-        if (func === trueFunc) return falseFunc;
+        if (func === boolbase.falseFunc) return next;
+        if (func === boolbase.trueFunc) return boolbase.falseFunc;
 
         return function not(elem) {
             return !func(elem) && next(elem);
@@ -96,8 +100,8 @@ export const subselects: Record<string, Subselect> = {
 
         const compiled = compileToken(subselect, opts, context);
 
-        if (compiled === falseFunc) return falseFunc;
-        if (compiled === trueFunc) {
+        if (compiled === boolbase.falseFunc) return boolbase.falseFunc;
+        if (compiled === boolbase.trueFunc) {
             return (elem) =>
                 adapter.getChildren(elem).some(adapter.isTag) && next(elem);
         }
