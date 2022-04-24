@@ -127,6 +127,24 @@ describe("API", () => {
 
             delete CSSselect.pseudos["foovalue"];
         });
+
+        it("should throw if parameter is supplied for user-provided pseudo", () =>
+            expect(() =>
+                CSSselect.compile(":foovalue(boo)", {
+                    pseudos: { foovalue: "tag" },
+                })
+            ).toThrow("doesn't have any arguments"));
+
+        it("should throw if no parameter is supplied for user-provided pseudo", () =>
+            expect(() =>
+                CSSselect.compile(":foovalue", {
+                    pseudos: {
+                        foovalue(_el, data) {
+                            return data != null;
+                        },
+                    },
+                })
+            ).toThrow("requires an argument"));
     });
 
     describe("unsatisfiable and universally valid selectors", () => {
