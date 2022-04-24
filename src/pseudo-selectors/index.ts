@@ -12,7 +12,6 @@
  * of `next()` and your code.
  * Pseudos should be used to implement simple checks.
  */
-import boolbase from "boolbase";
 import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
 import { parse, PseudoSelector } from "css-what";
 import { filters } from "./filters.js";
@@ -38,27 +37,38 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
         return subselects[name](next, data, options, context, compileToken);
     }
-    if (name in aliases) {
+
+    const userPseudo = options.pseudos?.[name];
+
+    const stringPseudo =
+        typeof userPseudo === "string" ? userPseudo : aliases[name];
+
+    if (typeof stringPseudo === "string") {
         if (data != null) {
             throw new Error(`Pseudo ${name} doesn't have any arguments`);
         }
 
         // The alias has to be parsed here, to make sure options are respected.
-        const alias = parse(aliases[name]);
+        const alias = parse(stringPseudo);
         return subselects["is"](next, alias, options, context, compileToken);
     }
+
+    if (typeof userPseudo === "function") {
+        verifyPseudoArgs(userPseudo, name, data, 1);
+
+        return (elem) => userPseudo(elem, data) && next(elem);
+    }
+
     if (name in filters) {
         return filters[name](next, data as string, options, context);
     }
+
     if (name in pseudos) {
         const pseudo = pseudos[name];
-        verifyPseudoArgs(pseudo, name, data);
+        verifyPseudoArgs(pseudo, name, data, 2);
 
-        return pseudo === boolbase.falseFunc
-            ? boolbase.falseFunc
-            : next === boolbase.trueFunc
-            ? (elem) => pseudo(elem, options, data)
-            : (elem) => pseudo(elem, options, data) && next(elem);
+        return (elem) => pseudo(elem, options, data) && next(elem);
     }
+
     throw new Error(`Unknown pseudo-class :${name}`);
 }

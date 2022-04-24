@@ -128,6 +128,18 @@ export interface Options<Node, ElementNode extends Node> {
      */
     quirksMode?: boolean;
     /**
+     * Pseudo-classes that override the default ones.
+     *
+     * Maps from names to either strings of functions.
+     * - A string value is a selector that the element must match to be selected.
+     * - A function is called with the element as its first argument, and optional
+     *  parameters second. If it returns true, the element is selected.
+     */
+    pseudos?: Record<
+        string,
+        string | ((elem: ElementNode, value?: string | null) => boolean)
+    >;
+    /**
      * The last function in the stack, will be called with the last element
      * that's looked at.
      */

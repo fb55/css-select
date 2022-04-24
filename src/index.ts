@@ -198,4 +198,5 @@ export function is<Node, ElementNode extends Node>(
 export default selectAll;
 
 // Export filters, pseudos and aliases to allow users to supply their own.
+/** @deprecated Use the `pseudos` option instead. */
 export { filters, pseudos, aliases } from "./pseudo-selectors/index.js";

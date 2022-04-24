@@ -144,6 +144,7 @@ All options are optional.
     sometimes greatly improving querying performance. Disable this if your
     document can change in between queries with the same compiled selector.
     Default: `true`.
+-   `pseudos`: A map of pseudo-selectors to functions or strings.
 
 #### Custom Adapters
 

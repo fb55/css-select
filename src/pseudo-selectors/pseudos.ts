@@ -4,7 +4,7 @@ import type { InternalOptions } from "../types.js";
 export type Pseudo = <Node, ElementNode extends Node>(
     elem: ElementNode,
     options: InternalOptions<Node, ElementNode>,
-    subselect?: ElementNode | string | null
+    subselect?: string | null
 ) => boolean;
 
 // While filters are precompiled, pseudos get called when they are needed
@@ -92,16 +92,17 @@ export const pseudos: Record<string, Pseudo> = {
     },
 };
 
-export function verifyPseudoArgs(
-    func: Pseudo,
+export function verifyPseudoArgs<T extends Array<unknown>>(
+    func: (...args: T) => boolean,
     name: string,
-    subselect: PseudoSelector["data"]
+    subselect: PseudoSelector["data"],
+    argIndex: number
 ): void {
     if (subselect === null) {
-        if (func.length > 2) {
-            throw new Error(`pseudo-selector :${name} requires an argument`);
+        if (func.length > argIndex) {
+            throw new Error(`Pseudo-class :${name} requires an argument`);
         }
-    } else if (func.length === 2) {
-        throw new Error(`pseudo-selector :${name} doesn't have any arguments`);
+    } else if (func.length === argIndex) {
+        throw new Error(`Pseudo-class :${name} doesn't have any arguments`);
     }
 }
