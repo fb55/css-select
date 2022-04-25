@@ -119,14 +119,15 @@ export const subselects: Record<string, Subselect> = {
             const { shouldTestNextSiblings = false } = compiled;
 
             return (elem) => {
+                if (!next(elem)) return false;
+
                 context[0] = elem;
                 const childs = adapter.getChildren(elem);
                 const nextElements = shouldTestNextSiblings
                     ? [...childs, ...getNextSiblings(elem, adapter)]
                     : childs;
-                return (
-                    next(elem) && adapter.existsOne(hasElement, nextElements)
-                );
+
+                return adapter.existsOne(hasElement, nextElements);
             };
         }
 
