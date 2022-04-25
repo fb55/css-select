@@ -331,6 +331,17 @@ describe("API", () => {
             // The query should not be cached, the changed attribute should be picked up.
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(1);
         });
+
+        it("should pass options to sub-selectors", () => {
+            expect(
+                CSSselect.selectAll("div:is(DiV#FOO):not([ID]):foo", [dom], {
+                    xmlMode: true,
+                    lowerCaseTags: true,
+                    quirksMode: true,
+                    pseudos: { foo: "#fOO" },
+                })
+            ).toHaveLength(1);
+        });
     });
 
     describe("optional adapter methods", () => {

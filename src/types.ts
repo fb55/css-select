@@ -135,10 +135,12 @@ export interface Options<Node, ElementNode extends Node> {
      * - A function is called with the element as its first argument, and optional
      *  parameters second. If it returns true, the element is selected.
      */
-    pseudos?: Record<
-        string,
-        string | ((elem: ElementNode, value?: string | null) => boolean)
-    >;
+    pseudos?:
+        | Record<
+              string,
+              string | ((elem: ElementNode, value?: string | null) => boolean)
+          >
+        | undefined;
     /**
      * The last function in the stack, will be called with the last element
      * that's looked at.

@@ -38,15 +38,29 @@ export function getNextSiblings<Node, ElementNode extends Node>(
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);
 }
 
-const is: Subselect = (next, token, options, context, compileToken) => {
-    const opts = {
+function copyOptions<Node, ElementNode extends Node>(
+    options: InternalOptions<Node, ElementNode>
+): InternalOptions<Node, ElementNode> {
+    return {
         xmlMode: !!options.xmlMode,
+        lowerCaseAttributeNames: !!options.lowerCaseAttributeNames,
+        lowerCaseTags: !!options.lowerCaseTags,
+        quirksMode: !!options.quirksMode,
+        cacheResults: !!options.cacheResults,
+        pseudos: options.pseudos,
         adapter: options.adapter,
         equals: options.equals,
     };
+}
 
-    const func = compileToken(token, opts, context);
-    return (elem) => func(elem) && next(elem);
+const is: Subselect = (next, token, options, context, compileToken) => {
+    const func = compileToken(token, copyOptions(options), context);
+
+    return func === boolbase.trueFunc
+        ? next
+        : func === boolbase.falseFunc
+        ? boolbase.falseFunc
+        : (elem) => func(elem) && next(elem);
 };
 
 /*
@@ -62,20 +76,13 @@ export const subselects: Record<string, Subselect> = {
     matches: is,
     where: is,
     not(next, token, options, context, compileToken) {
-        const opts = {
-            xmlMode: !!options.xmlMode,
-            adapter: options.adapter,
-            equals: options.equals,
-        };
+        const func = compileToken(token, copyOptions(options), context);
 
-        const func = compileToken(token, opts, context);
-
-        if (func === boolbase.falseFunc) return next;
-        if (func === boolbase.trueFunc) return boolbase.falseFunc;
-
-        return function not(elem) {
-            return !func(elem) && next(elem);
-        };
+        return func === boolbase.falseFunc
+            ? next
+            : func === boolbase.trueFunc
+            ? boolbase.falseFunc
+            : (elem) => !func(elem) && next(elem);
     },
     has<Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
@@ -85,11 +92,6 @@ export const subselects: Record<string, Subselect> = {
         compileToken: CompileToken<Node, ElementNode>
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;
-        const opts = {
-            xmlMode: !!options.xmlMode,
-            adapter,
-            equals: options.equals,
-        };
 
         // @ts-expect-error Uses an array as a pointer to the current element (side effects)
         const context: ElementNode[] | undefined = subselect.some((s) =>
@@ -98,7 +100,7 @@ export const subselects: Record<string, Subselect> = {
             ? [PLACEHOLDER_ELEMENT]
             : undefined;
 
-        const compiled = compileToken(subselect, opts, context);
+        const compiled = compileToken(subselect, copyOptions(options), context);
 
         if (compiled === boolbase.falseFunc) return boolbase.falseFunc;
         if (compiled === boolbase.trueFunc) {
@@ -108,13 +110,13 @@ export const subselects: Record<string, Subselect> = {
 
         const hasElement = ensureIsTag(compiled, adapter);
 
-        const { shouldTestNextSiblings = false } = compiled;
-
-        /*
-         * `shouldTestNextSiblings` will only be true if the query starts with
-         * a traversal (sibling or adjacent). That means we will always have a context.
-         */
         if (context) {
+            /*
+             * `shouldTestNextSiblings` will only be true if the query starts with
+             * a traversal (sibling or adjacent). That means we will always have a context.
+             */
+            const { shouldTestNextSiblings = false } = compiled;
+
             return (elem) => {
                 context[0] = elem;
                 const childs = adapter.getChildren(elem);
