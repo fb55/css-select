@@ -41,6 +41,7 @@ export function getNextSiblings<Node, ElementNode extends Node>(
 function copyOptions<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>
 ): InternalOptions<Node, ElementNode> {
+    // Not copied: context, rootFunc
     return {
         xmlMode: !!options.xmlMode,
         lowerCaseAttributeNames: !!options.lowerCaseAttributeNames,
