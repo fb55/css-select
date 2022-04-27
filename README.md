@@ -141,12 +141,18 @@ All options are optional.
 -   `adapter`: The adapter to use when interacting with the backing DOM
     structure. By default it uses the `domutils` module.
 -   `context`: The context of the current query. Used to limit the scope of
-    searches. Can be matched directly using the `:scope` pseudo-selector.
+    searches. Can be matched directly using the `:scope` pseudo-class.
+-   `relativeSelector`: By default, selectors are relative to the `context`,
+    which means that no parent elements of the context will be matched. (Eg.
+    `a b c` with context `b` will never give any results.) If `relativeSelector`
+    is set to `false`, selectors won't be
+    [absolutized](http://www.w3.org/TR/selectors4/#absolutizing) and selectors
+    can test for parent elements outside of the `context`.
 -   `cacheResults`: Allow css-select to cache results for some selectors,
     sometimes greatly improving querying performance. Disable this if your
     document can change in between queries with the same compiled selector.
     Default: `true`.
--   `pseudos`: A map of pseudo-selectors to functions or strings.
+-   `pseudos`: A map of pseudo-class names to functions or strings.
 
 #### Custom Adapters
 

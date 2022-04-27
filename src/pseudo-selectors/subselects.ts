@@ -94,24 +94,22 @@ export const subselects: Record<string, Subselect> = {
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;
 
-        // @ts-expect-error Uses an array as a pointer to the current element (side effects)
-        const context: ElementNode[] | undefined = subselect.some((s) =>
-            s.some(isTraversal)
-        )
-            ? [PLACEHOLDER_ELEMENT]
+        const opts = copyOptions(options);
+        opts.relativeSelector = true;
+
+        const context = subselect.some((s) => s.some(isTraversal))
+            ? // Used as a placeholder. Will be replaced with the actual element.
+              ([PLACEHOLDER_ELEMENT] as unknown as ElementNode[])
             : undefined;
 
-        const compiled = compileToken(subselect, copyOptions(options), context);
+        const compiled = compileToken(subselect, opts, context);
 
         if (compiled === boolbase.falseFunc) return boolbase.falseFunc;
-        if (compiled === boolbase.trueFunc) {
-            return (elem) =>
-                adapter.getChildren(elem).some(adapter.isTag) && next(elem);
-        }
 
         const hasElement = ensureIsTag(compiled, adapter);
 
-        if (context) {
+        // If `compiled` is `trueFunc`, we can skip this.
+        if (context && compiled !== boolbase.trueFunc) {
             /*
              * `shouldTestNextSiblings` will only be true if the query starts with
              * a traversal (sibling or adjacent). That means we will always have a context.

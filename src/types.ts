@@ -153,9 +153,23 @@ export interface Options<Node, ElementNode extends Node> {
     adapter?: Adapter<Node, ElementNode>;
     /**
      * The context of the current query. Used to limit the scope of searches.
-     * Can be matched directly using the `:scope` pseudo-selector.
+     * Can be matched directly using the `:scope` pseudo-class.
      */
     context?: Node | Node[];
+    /**
+     * Indicates whether to consider the selector as a relative selector.
+     *
+     * Relative selectors that don't include a `:scope` pseudo-class behave
+     * as if they have a `:scope ` prefix (a `:scope` pseudo-class, followed by
+     * a descendant selector).
+     *
+     * If relative selectors are disabled, selectors starting with a traversal
+     * will lead to an error.
+     *
+     * @default true
+     * @see {@link https://www.w3.org/TR/selectors-4/#relative}
+     */
+    relativeSelector?: boolean;
     /**
      * Allow css-select to cache results for some selectors, sometimes greatly
      * improving querying performance. Disable this if your document can
