@@ -149,31 +149,46 @@ describe("API", () => {
 
     describe("unsatisfiable and universally valid selectors", () => {
         it("in :not", () => {
-            let func = CSSselect._compileUnsafe(":not(*)");
-            expect(func).toBe(boolbase.falseFunc);
-            func = CSSselect._compileUnsafe(":not(:nth-child(-1n-1))");
-            expect(func).toBe(boolbase.trueFunc);
-            func = CSSselect._compileUnsafe(":not(:not(:not(*)))");
-            expect(func).toBe(boolbase.falseFunc);
+            expect(CSSselect._compileUnsafe(":not(*)")).toBe(
+                boolbase.falseFunc
+            );
+            expect(CSSselect._compileUnsafe(":not(:nth-child(-1n-1))")).toBe(
+                boolbase.trueFunc
+            );
+            expect(CSSselect._compileUnsafe(":not(:not(:not(*)))")).toBe(
+                boolbase.falseFunc
+            );
         });
 
         it("in :has", () => {
             const matches = CSSselect.selectAll(":has(*)", [dom]);
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
-            const func = CSSselect._compileUnsafe(":has(:nth-child(-1n-1))");
-            expect(func).toBe(boolbase.falseFunc);
+            expect(CSSselect._compileUnsafe(":has(:nth-child(-1n-1))")).toBe(
+                boolbase.falseFunc
+            );
         });
 
-        it("should skip unsatisfiable", () => {
-            const func = CSSselect._compileUnsafe("* :not(*) foo");
-            expect(func).toBe(boolbase.falseFunc);
+        it("in :is", () => {
+            expect(CSSselect._compileUnsafe(":is(*)")).toBe(boolbase.trueFunc);
+            expect(CSSselect._compileUnsafe(":is(:nth-child(-1n-1))")).toBe(
+                boolbase.falseFunc
+            );
+            expect(CSSselect._compileUnsafe(":is(:not(:not(*)))")).toBe(
+                boolbase.trueFunc
+            );
+            expect(CSSselect._compileUnsafe(":is(*, :scope)")).toBe(
+                boolbase.trueFunc
+            );
         });
 
-        it("should promote universally valid", () => {
-            const func = CSSselect._compileUnsafe("*, foo");
-            expect(func).toBe(boolbase.trueFunc);
-        });
+        it("should skip unsatisfiable", () =>
+            expect(CSSselect._compileUnsafe("* :not(*) foo")).toBe(
+                boolbase.falseFunc
+            ));
+
+        it("should promote universally valid", () =>
+            expect(CSSselect._compileUnsafe("*, foo")).toBe(boolbase.trueFunc));
     });
 
     describe(":matches", () => {
