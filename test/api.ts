@@ -108,6 +108,13 @@ describe("API", () => {
             expect(() => CSSselect.compile("::after")).toThrow("not supported");
         });
 
+        it("should throw an error if encountering a traversal-first selector with relative selectors disabled", () =>
+            expect(() =>
+                CSSselect.compile("> p", { relativeSelector: false })
+            ).toThrow(
+                "Relative selectors are not allowed when the `relativeSelector` option is disabled"
+            ));
+
         it("should throw with a column combinator", () => {
             expect(() => CSSselect.compile("foo || bar")).toThrow(notYet);
         });
