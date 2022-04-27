@@ -57,7 +57,7 @@ const SCOPE_TOKEN: Selector = {
 };
 
 /*
- * CSS 4 Spec (Draft): 3.3.1. Absolutizing a Scope-relative Selector
+ * CSS 4 Spec (Draft): 3.4.1. Absolutizing a Relative Selector
  * http://www.w3.org/TR/selectors4/#absolutizing
  */
 function absolutize<Node, ElementNode extends Node>(
@@ -101,7 +101,14 @@ export function compileToken<Node, ElementNode extends Node>(
     const finalContext =
         context && (Array.isArray(context) ? context : [context]);
 
-    absolutize(token, options, finalContext);
+    // Check if the selector is relative
+    if (options.relativeSelector !== false) {
+        absolutize(token, options, finalContext);
+    } else if (token.some((t) => t.length > 0 && isTraversal(t[0]))) {
+        throw new Error(
+            "Relative selectors are not allowed when the `relativeSelector` option is disabled"
+        );
+    }
 
     let shouldTestNextSiblings = false;
 

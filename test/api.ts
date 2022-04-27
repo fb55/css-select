@@ -78,6 +78,29 @@ describe("API", () => {
             const doc = parseDocument("<div id=foo><p>foo</p></div>");
             expect(CSSselect.selectAll(":contains(foo)", doc)).toHaveLength(2);
         });
+
+        it("should support scoped selections relative to the root (#709)", () => {
+            const doc = parseDocument(`
+                <div class="parent">
+                    <div class="one"><p class="p1"></p></div>
+                    <div class="two"><p class="p2"></p></div>
+                    <div class="three"><p class="p3"></p></div>
+                </div>`);
+
+            const two = CSSselect.selectOne(".two", doc);
+            expect(
+                CSSselect.selectOne(".parent .two .p2", two, {
+                    relativeSelector: false,
+                })
+            ).toMatchObject({
+                attribs: { class: "p2" },
+            });
+            expect(
+                CSSselect.selectOne(".parent .two .p3", two, {
+                    relativeSelector: false,
+                })
+            ).toBeNull();
+        });
     });
 
     describe("errors", () => {
@@ -164,9 +187,17 @@ describe("API", () => {
             const matches = CSSselect.selectAll(":has(*)", [dom]);
             expect(matches).toHaveLength(1);
             expect(matches[0]).toBe(dom);
+
             expect(CSSselect._compileUnsafe(":has(:nth-child(-1n-1))")).toBe(
                 boolbase.falseFunc
             );
+
+            const matches2 = CSSselect.selectAll(
+                "p:has(+ *)",
+                parseDOM("<p><p>")
+            );
+            expect(matches2).toHaveLength(1);
+            expect(matches2[0]).toHaveProperty("tagName", "p");
         });
 
         it("in :is", () => {
