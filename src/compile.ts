@@ -91,11 +91,12 @@ function absolutize<Node, ElementNode extends Node>(
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[] | Node
+    ctx?: Node[] | Node
 ): CompiledQuery<ElementNode> {
     token.forEach(sortRules);
 
-    context = options.context ?? context;
+    const { context = ctx, rootFunc = boolbase.trueFunc } = options;
+
     const isArrayContext = Array.isArray(context);
 
     const finalContext =
@@ -138,10 +139,21 @@ export function compileToken<Node, ElementNode extends Node>(
             return compileRules<Node, ElementNode>(
                 rules,
                 options,
-                finalContext
+                finalContext,
+                rootFunc
             );
         })
-        .reduce(reduceRules, boolbase.falseFunc);
+        .reduce<CompiledQuery<ElementNode>>(
+            (a, b) =>
+                b === boolbase.falseFunc || a === rootFunc
+                    ? a
+                    : a === boolbase.falseFunc || b === rootFunc
+                    ? b
+                    : function combine(elem) {
+                          return a(elem) || b(elem);
+                      },
+            boolbase.falseFunc
+        );
 
     query.shouldTestNextSiblings = shouldTestNextSiblings;
 
@@ -151,7 +163,8 @@ export function compileToken<Node, ElementNode extends Node>(
 function compileRules<Node, ElementNode extends Node>(
     rules: InternalSelector[],
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
+    context: Node[] | undefined,
+    rootFunc: CompiledQuery<ElementNode>
 ): CompiledQuery<ElementNode> {
     return rules.reduce<CompiledQuery<ElementNode>>(
         (previous, rule) =>
@@ -164,22 +177,6 @@ function compileRules<Node, ElementNode extends Node>(
                       context,
                       compileToken
                   ),
-        options.rootFunc ?? boolbase.trueFunc
+        rootFunc
     );
-}
-
-function reduceRules<Node, ElementNode extends Node>(
-    a: CompiledQuery<ElementNode>,
-    b: CompiledQuery<ElementNode>
-): CompiledQuery<ElementNode> {
-    if (b === boolbase.falseFunc || a === boolbase.trueFunc) {
-        return a;
-    }
-    if (a === boolbase.falseFunc || b === boolbase.trueFunc) {
-        return b;
-    }
-
-    return function combine(elem) {
-        return a(elem) || b(elem);
-    };
 }

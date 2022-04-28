@@ -227,6 +227,13 @@ describe("API", () => {
 
         it("should promote universally valid", () =>
             expect(CSSselect._compileUnsafe("*, foo")).toBe(boolbase.trueFunc));
+
+        it("should promote `rootFunc`", () => {
+            const rootFunc = jest.fn(); // Used as a function reference.
+            expect(CSSselect._compileUnsafe(":is(*), foo", { rootFunc })).toBe(
+                rootFunc
+            );
+        });
     });
 
     describe(":matches", () => {
