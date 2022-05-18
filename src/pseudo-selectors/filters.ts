@@ -1,6 +1,8 @@
 import getNCheck from "nth-check";
 import boolbase from "boolbase";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types.js";
+import { attributeRules } from "../attributes";
+import { AttributeAction, SelectorType } from "css-what";
 
 export type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -158,6 +160,21 @@ export const filters: Record<string, Filter> = {
     hover: dynamicStatePseudo("isHovered"),
     visited: dynamicStatePseudo("isVisited"),
     active: dynamicStatePseudo("isActive"),
+
+    lang(next, data, options) {
+        return attributeRules[AttributeAction.Equals](
+            next,
+            {
+                type: SelectorType.Attribute,
+                name: "lang",
+                value: data,
+                action: AttributeAction.Equals,
+                ignoreCase: null,
+                namespace: null,
+            },
+            options
+        );
+    },
 };
 
 /**

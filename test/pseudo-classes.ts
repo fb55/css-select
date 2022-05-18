@@ -4,7 +4,7 @@ import type { AnyNode, Element } from "domhandler";
 import type { Adapter } from "../src/types.js";
 
 const dom = parseDOM(
-    "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"
+    '<div><p lang="en">In the end, it doesn\'t really Matter.</p><div lang="en">Indeed-that\'s a delicate matter.</div>'
 ) as Element[];
 
 describe(":icontains", () => {
@@ -141,5 +141,13 @@ describe(":first-child", () => {
         const matches = CSSselect.selectAll(":first-child", dom, { adapter });
         expect(matches).toHaveLength(2);
         expect(matches).toStrictEqual([dom[0], dom[0].children[0]]);
+    });
+});
+
+describe(":lang", () => {
+    it("should match the correct lang", () => {
+        const matches = CSSselect.selectAll(":lang(en)", dom);
+        expect(matches).toHaveLength(2);
+        expect(matches).toStrictEqual([dom[0].children[0], dom[0].children[1]]);
     });
 });
