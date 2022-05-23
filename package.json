@@ -30,7 +30,7 @@
         "css-what": "^6.1.0",
         "domhandler": "^5.0.3",
         "domutils": "^3.0.1",
-        "nth-check": "^2.0.1"
+        "nth-check": "^2.1.1"
     },
     "devDependencies": {
         "@types/boolbase": "^1.0.1",
