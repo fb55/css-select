@@ -7,13 +7,23 @@ export type Pseudo = <Node, ElementNode extends Node>(
     subselect?: string | null
 ) => boolean;
 
+/**
+ * CSS limits the characters considered as whitespace to space, tab & line
+ * feed. We add carriage returns as htmlparser2 doesn't normalize them to
+ * line feeds.
+ *
+ * @see {@link https://www.w3.org/TR/css-text-3/#white-space}
+ */
+const isDocumentWhiteSpace = /^[ \t\r\n]*$/;
+
 // While filters are precompiled, pseudos get called when they are needed
 export const pseudos: Record<string, Pseudo> = {
     empty(elem, { adapter }) {
         return !adapter.getChildren(elem).some(
             (elem) =>
+                adapter.isTag(elem) ||
                 // FIXME: `getText` call is potentially expensive.
-                adapter.isTag(elem) || adapter.getText(elem) !== ""
+                !isDocumentWhiteSpace.test(adapter.getText(elem))
         );
     },
 
