@@ -1,5 +1,5 @@
 import { parse, Selector, SelectorType } from "css-what";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import sortRules, { isTraversal } from "./sort.js";
 import { compileGeneralSelector } from "./general.js";
 import {

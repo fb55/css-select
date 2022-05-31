@@ -1,5 +1,5 @@
 import getNCheck from "nth-check";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types.js";
 
 export type Filter = <Node, ElementNode extends Node>(

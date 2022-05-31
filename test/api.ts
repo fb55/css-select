@@ -1,6 +1,6 @@
 import * as CSSselect from "../src";
 import { parseDOM, parseDocument } from "htmlparser2";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import * as DomUtils from "domutils";
 import type { AnyNode, Element } from "domhandler";
 import { SelectorType, AttributeAction } from "css-what";

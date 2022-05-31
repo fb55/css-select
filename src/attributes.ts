@@ -1,4 +1,4 @@
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import type { CompiledQuery, InternalOptions } from "./types.js";
 import type { AttributeSelector, AttributeAction } from "css-what";
 

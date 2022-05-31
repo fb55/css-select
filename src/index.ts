@@ -1,5 +1,5 @@
 import * as DomUtils from "domutils";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import type {
     AnyNode as DomHandlerNode,
     Element as DomHandlerElement,
