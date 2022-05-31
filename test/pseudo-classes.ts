@@ -1,5 +1,5 @@
 import * as CSSselect from "../src";
-import { DomUtils, parseDOM } from "htmlparser2";
+import { DomUtils, parseDocument, parseDOM } from "htmlparser2";
 import type { AnyNode, Element } from "domhandler";
 import type { Adapter } from "../src/types.js";
 
@@ -141,5 +141,32 @@ describe(":first-child", () => {
         const matches = CSSselect.selectAll(":first-child", dom, { adapter });
         expect(matches).toHaveLength(2);
         expect(matches).toStrictEqual([dom[0], dom[0].children[0]]);
+    });
+});
+
+describe(":empty", () => {
+    // Adopted from the example in https://www.w3.org/TR/selectors-4/#the-empty-pseudo
+
+    it("should match", () => {
+        const dom = parseDocument(`
+            <p></p>
+            <p>
+            <p> </p>
+            <p></p>
+        `);
+        const matches = CSSselect.selectAll("p:empty", dom);
+        expect(matches).toHaveLength(4);
+    });
+
+    it("should not match", () => {
+        const dom = parseDocument(`
+            <div>text</div>
+            <div><p></p></div>
+            <div>&nbsp;</div>
+            <div><p>bla</p></div>
+            <div>this is not <p>:empty</p></div>
+        `);
+        const matches = CSSselect.selectAll("div:empty", dom);
+        expect(matches).toHaveLength(0);
     });
 });
