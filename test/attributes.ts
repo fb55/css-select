@@ -1,6 +1,6 @@
 import * as CSSselect from "../src";
 import { parseDocument } from "htmlparser2";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import type { Element } from "domhandler";
 
 const dom = parseDocument(

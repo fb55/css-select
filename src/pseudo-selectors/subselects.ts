@@ -1,5 +1,5 @@
 import type { Selector } from "css-what";
-import boolbase from "boolbase";
+import * as boolbase from "boolbase";
 import type {
     CompiledQuery,
     InternalOptions,

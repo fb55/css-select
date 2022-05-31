@@ -1,5 +1,5 @@
-import fs from "fs";
-import path from "path";
+import { readFileSync } from "fs";
+import { join } from "path";
 import { parseDocument, ParserOptions } from "htmlparser2";
 import * as DomUtils from "domutils";
 import { Text, Element, Document } from "domhandler";
@@ -8,8 +8,8 @@ export function getDocumentFromPath(
     file: string,
     options?: ParserOptions
 ): Document {
-    const filePath = path.join(__dirname, "..", "fixtures", file);
-    return parseDocument(fs.readFileSync(filePath, "utf8"), options);
+    const filePath = join(__dirname, "..", "fixtures", file);
+    return parseDocument(readFileSync(filePath, "utf8"), options);
 }
 
 export interface SimpleDocument extends Document {
