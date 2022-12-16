@@ -1,4 +1,4 @@
-# css-select [![NPM version](http://img.shields.io/npm/v/css-select.svg)](https://npmjs.org/package/css-select) [![Build Status](https://travis-ci.com/fb55/css-select.svg?branch=master)](http://travis-ci.com/fb55/css-select) [![Downloads](https://img.shields.io/npm/dm/css-select.svg)](https://npmjs.org/package/css-select) [![Coverage](https://coveralls.io/repos/fb55/css-select/badge.svg?branch=master)](https://coveralls.io/r/fb55/css-select)
+# css-select [![NPM version](https://img.shields.io/npm/v/css-select.svg)](https://npmjs.org/package/css-select) [![Node.js CI](https://github.com/fb55/css-select/actions/workflows/nodejs-test.yml/badge.svg)](https://github.com/fb55/css-select/actions/workflows/nodejs-test.yml) [![Downloads](https://img.shields.io/npm/dm/css-select.svg)](https://npmjs.org/package/css-select) [![Coverage](https://coveralls.io/repos/fb55/css-select/badge.svg?branch=master)](https://coveralls.io/r/fb55/css-select)
 
 A CSS selector compiler and engine
 
