@@ -143,11 +143,29 @@ export const selectAll = getSelectorFunc(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
         options: InternalOptions<Node, ElementNode>
-    ): ElementNode[] =>
-        query === boolbase.falseFunc || !elems || elems.length === 0
+    ): ElementNode[] => {
+        const { adapter } = options;
+        const found = query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : options.adapter.findAll(query, elems)
+            : adapter.findAll(query, elems)
+
+        return found.filter((elem) => hasTemplateParent(elem, adapter));
+    }
 );
+
+function hasTemplateParent<Node, ElementNode extends Node>(
+    elem: ElementNode,
+    adapter: Adapter<Node, ElementNode>
+): boolean {
+    const parent = adapter.getParent(elem);
+    if (parent && adapter.isTag(parent)) {
+        if (adapter.getName(parent) === "template") {
+            return false;
+        }
+        return hasTemplateParent(parent, adapter);
+    }
+    return true;
+}
 
 /**
  * @template Node The generic Node type for the DOM adapter being used.
