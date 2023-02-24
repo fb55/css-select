@@ -145,26 +145,33 @@ export const selectAll = getSelectorFunc(
         options: InternalOptions<Node, ElementNode>
     ): ElementNode[] => {
         const { adapter } = options;
-        const found = query === boolbase.falseFunc || !elems || elems.length === 0
+        return query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : adapter.findAll(query, elems)
-
-        return found.filter((elem) => hasTemplateParent(elem, adapter));
+            : findAllOutsideTemplate(query, elems, adapter)
     }
 );
 
-function hasTemplateParent<Node, ElementNode extends Node>(
-    elem: ElementNode,
-    adapter: Adapter<Node, ElementNode>
-): boolean {
-    const parent = adapter.getParent(elem);
-    if (parent && adapter.isTag(parent)) {
-        if (adapter.getName(parent) === "template") {
-            return false;
+function findAllOutsideTemplate<Node, ElementNode extends Node>(
+    query: Predicate<ElementNode>,
+    elems: Node[] | null,
+    adapter: Adapter<Node, ElementNode>,
+): ElementNode[] {
+    const result: Node[] = [];
+    const stack = (elems ?? []).filter(adapter.isTag);
+    let elem;
+    while ((elem = stack.shift())) {
+        if (adapter.getName(elem) !== "template") {
+            const children = adapter.getChildren(elem).filter(adapter.isTag);
+
+            if (children.length > 0) {
+                stack.unshift(...children);
+            }
         }
-        return hasTemplateParent(parent, adapter);
+
+        if (query(elem)) result.push(elem);
     }
-    return true;
+
+    return result.filter(adapter.isTag);
 }
 
 /**

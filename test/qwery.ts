@@ -321,6 +321,10 @@ describe("qwery", () => {
         it("cannot query element within template context", () => {
             expect(selectAll("#insert", doc)).toHaveLength(0);
         });
+
+        it("can still query template itself", () => {
+            expect(selectAll("template", doc)).toHaveLength(1);
+        });
     });
 
     describe("tokenizer", () => {
