@@ -147,11 +147,11 @@ export const selectAll = getSelectorFunc(
         const { adapter } = options;
         return query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : findAllOutsideTemplate(query, elems, adapter)
+            : findAllExcludingTemplateChildren(query, elems, adapter)
     }
 );
 
-function findAllOutsideTemplate<Node, ElementNode extends Node>(
+function findAllExcludingTemplateChildren<Node, ElementNode extends Node>(
     query: Predicate<ElementNode>,
     elems: Node[] | null,
     adapter: Adapter<Node, ElementNode>,
