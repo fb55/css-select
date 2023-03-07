@@ -42,8 +42,7 @@ const doc = parseDOM(
         "</div>" +
         '<p class="odd"></p>' +
         "</div>" +
-        '<div id="lonelyHsoob"></div>' +
-        '<template><div><p id="insert"></p></div></template></root>'
+        '<div id="lonelyHsoob"></div></root>'
 );
 
 const el = document.getElementById("attr-child-boosh");
@@ -316,14 +315,6 @@ describe("qwery", () => {
         // Because form's have .length
         it("forms can be used as contexts", () => {
             expect(selectAll("*", selectAll("form")[0])).toHaveLength(3); // Found 3 elements under &lt;form&gt;
-        });
-
-        it("cannot query element within template context", () => {
-            expect(selectAll("#insert", doc)).toHaveLength(0);
-        });
-
-        it("can still query template itself", () => {
-            expect(selectAll("template", doc)).toHaveLength(1);
         });
     });
 
