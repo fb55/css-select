@@ -143,7 +143,8 @@ export const selectAll = getSelectorFunc(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
         options: InternalOptions<Node, ElementNode>
-    ): ElementNode[] => query === boolbase.falseFunc || !elems || elems.length === 0
+    ): ElementNode[] =>
+        query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
             : findAllExcludingTemplateChildren(query, elems, options)
 );
@@ -151,9 +152,9 @@ export const selectAll = getSelectorFunc(
 function findAllExcludingTemplateChildren<Node, ElementNode extends Node>(
     query: Predicate<ElementNode>,
     elems: Node[] | null,
-    options: InternalOptions<Node, ElementNode>,
+    options: InternalOptions<Node, ElementNode>
 ): ElementNode[] {
-    const {adapter, xmlMode} = options;
+    const { adapter, xmlMode } = options;
     const result: Node[] = [];
     const stack = (elems ?? []).filter(adapter.isTag);
     let elem;

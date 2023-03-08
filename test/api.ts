@@ -103,7 +103,9 @@ describe("API", () => {
         });
 
         it("cannot query element within template context, but still query template itself", () => {
-            const doc = parseDocument(`<template><div><p id="insert"></p></div></template>`);
+            const doc = parseDocument(
+                `<template><div><p id="insert"></p></div></template>`
+            );
 
             expect(CSSselect.selectAll("#insert", doc)).toHaveLength(0);
             expect(CSSselect.selectAll("template", doc)).toHaveLength(1);
