@@ -62,21 +62,6 @@ export interface Adapter<Node, ElementNode extends Node> {
     removeSubsets: (nodes: Node[]) => Node[];
 
     /**
-     * Finds all of the element nodes in the array that match the test predicate,
-     * as well as any of their children that match it.
-     */
-    findAll: (test: Predicate<ElementNode>, nodes: Node[]) => ElementNode[];
-
-    /**
-     * Finds the first node in the array that matches the test predicate, or one
-     * of its children.
-     */
-    findOne: (
-        test: Predicate<ElementNode>,
-        elems: Node[]
-    ) => ElementNode | null;
-
-    /**
      * The adapter can also optionally include an equals method, if your DOM
      * structure needs a custom equality test to compare two objects which refer
      * to the same underlying node. If not provided, `css-select` will fall back to
