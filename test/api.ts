@@ -101,6 +101,19 @@ describe("API", () => {
                 })
             ).toBeNull();
         });
+
+        it("cannot query element within template context, but still query template itself", () => {
+            const doc = parseDocument(
+                `<template><div><p id="insert"></p></div></template>`
+            );
+
+            expect(CSSselect.selectAll("#insert", doc)).toHaveLength(0);
+            expect(CSSselect.selectAll("template", doc)).toHaveLength(1);
+
+            const opts = { xmlMode: true };
+            expect(CSSselect.selectAll("#insert", doc, opts)).toHaveLength(1);
+            expect(CSSselect.selectAll("template", doc, opts)).toHaveLength(1);
+        });
     });
 
     describe("errors", () => {

@@ -146,8 +146,33 @@ export const selectAll = getSelectorFunc(
     ): ElementNode[] =>
         query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : options.adapter.findAll(query, elems)
+            : findAllExcludingTemplateChildren(query, elems, options)
 );
+
+function findAllExcludingTemplateChildren<Node, ElementNode extends Node>(
+    query: Predicate<ElementNode>,
+    elems: Node[] | null,
+    options: InternalOptions<Node, ElementNode>
+): ElementNode[] {
+    const { adapter, xmlMode } = options;
+    const result: Node[] = [];
+    const stack = (elems ?? []).filter(adapter.isTag);
+    let elem;
+    while ((elem = stack.shift())) {
+        const include = xmlMode ?? adapter.getName(elem) !== "template";
+        if (include) {
+            const children = adapter.getChildren(elem).filter(adapter.isTag);
+
+            if (children.length > 0) {
+                stack.unshift(...children);
+            }
+        }
+
+        if (query(elem)) result.push(elem);
+    }
+
+    return result.filter(adapter.isTag);
+}
 
 /**
  * @template Node The generic Node type for the DOM adapter being used.
