@@ -108,11 +108,15 @@ describe("API", () => {
             );
 
             expect(CSSselect.selectAll("#insert", doc)).toHaveLength(0);
+            expect(CSSselect.selectOne("#insert", doc)).toBeNull();
             expect(CSSselect.selectAll("template", doc)).toHaveLength(1);
+            expect(CSSselect.selectOne("template", doc)).toBeTruthy();
 
             const opts = { xmlMode: true };
             expect(CSSselect.selectAll("#insert", doc, opts)).toHaveLength(1);
+            expect(CSSselect.selectOne("#insert", doc, opts)).toBeTruthy();
             expect(CSSselect.selectAll("template", doc, opts)).toHaveLength(1);
+            expect(CSSselect.selectOne("template", doc, opts)).toBeTruthy();
         });
     });
 

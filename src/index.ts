@@ -131,7 +131,7 @@ function appendNextSiblings<Node, ElementNode extends Node>(
 /**
  * @template Node The generic Node type for the DOM adapter being used.
  * @template ElementNode The Node type for elements for the DOM adapter being used.
- * @param elems Elements to query. If it is an element, its children will be queried..
+ * @param elems Elements to query. If it is an element, its children will be queried.
  * @param query can be either a CSS selector string or a compiled query function.
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
@@ -146,21 +146,31 @@ export const selectAll = getSelectorFunc(
     ): ElementNode[] =>
         query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : findAllExcludingTemplateChildren(query, elems, options)
+            : findAll(query, elems, options)
 );
 
-function findAllExcludingTemplateChildren<Node, ElementNode extends Node>(
+/**
+ * Find all elements matching the query. If not in XML mode, the query will ignore
+ * the contents of `<template>` elements.
+ *
+ *
+ * @param query - Function that returns true if the element matches the query.
+ * @param elems - Nodes to query. If a node is an element, its children will be queried.
+ * @param options - Options for querying the document.
+ * @returns All matching elements.
+ */
+function findAll<Node, ElementNode extends Node>(
     query: Predicate<ElementNode>,
-    elems: Node[] | null,
+    elems: Node[],
     options: InternalOptions<Node, ElementNode>
 ): ElementNode[] {
-    const { adapter, xmlMode } = options;
-    const result: Node[] = [];
-    const stack = (elems ?? []).filter(adapter.isTag);
+    const { adapter, xmlMode = false } = options;
+    const result: ElementNode[] = [];
+    const stack = elems.filter(adapter.isTag);
+
     let elem;
     while ((elem = stack.shift())) {
-        const include = xmlMode ?? adapter.getName(elem) !== "template";
-        if (include) {
+        if (xmlMode || adapter.getName(elem) !== "template") {
             const children = adapter.getChildren(elem).filter(adapter.isTag);
 
             if (children.length > 0) {
@@ -171,13 +181,13 @@ function findAllExcludingTemplateChildren<Node, ElementNode extends Node>(
         if (query(elem)) result.push(elem);
     }
 
-    return result.filter(adapter.isTag);
+    return result;
 }
 
 /**
  * @template Node The generic Node type for the DOM adapter being used.
  * @template ElementNode The Node type for elements for the DOM adapter being used.
- * @param elems Elements to query. If it is an element, its children will be queried..
+ * @param elems Elements to query. If it is an element, its children will be queried.
  * @param query can be either a CSS selector string or a compiled query function.
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
@@ -191,8 +201,42 @@ export const selectOne = getSelectorFunc(
     ): ElementNode | null =>
         query === boolbase.falseFunc || !elems || elems.length === 0
             ? null
-            : options.adapter.findOne(query, elems)
+            : findOne(query, elems, options)
 );
+
+/**
+ * Find the first element matching the query. If not in XML mode, the query will ignore
+ * the contents of `<template>` elements.
+ *
+ *
+ * @param query - Function that returns true if the element matches the query.
+ * @param elems - Nodes to query. If a node is an element, its children will be queried.
+ * @param options - Options for querying the document.
+ * @returns The first matching element, or null if there was no match.
+ */
+function findOne<Node, ElementNode extends Node>(
+    query: Predicate<ElementNode>,
+    elems: Node[],
+    options: InternalOptions<Node, ElementNode>
+): ElementNode | null {
+    const { adapter, xmlMode = false } = options;
+    const stack = elems.filter(adapter.isTag);
+
+    let elem;
+    while ((elem = stack.shift())) {
+        if (xmlMode || adapter.getName(elem) !== "template") {
+            const children = adapter.getChildren(elem).filter(adapter.isTag);
+
+            if (children.length > 0) {
+                stack.unshift(...children);
+            }
+        }
+
+        if (query(elem)) return elem;
+    }
+
+    return null;
+}
 
 /**
  * Tests whether or not an element is matched by query.
