@@ -35,7 +35,7 @@
     "devDependencies": {
         "@types/boolbase": "^1.0.1",
         "@types/jest": "^27.5.0",
-        "@types/node": "^18.15.3",
+        "@types/node": "^18.15.5",
         "@typescript-eslint/eslint-plugin": "^5.54.1",
         "@typescript-eslint/parser": "^5.56.0",
         "cheerio-soupselect": "^0.1.1",
