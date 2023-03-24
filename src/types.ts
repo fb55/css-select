@@ -137,6 +137,15 @@ export interface Options<Node, ElementNode extends Node> {
      */
     adapter?: Adapter<Node, ElementNode>;
     /**
+     * The equality function to use when comparing nodes. By default it uses
+     * `===`.
+     *
+     * @param a - The first node to compare.
+     * @param b - The second node to compare.
+     * @returns Whether the two nodes are equal.
+     */
+    equals: (a: Node, b: Node) => boolean;
+    /**
      * The context of the current query. Used to limit the scope of searches.
      * Can be matched directly using the `:scope` pseudo-class.
      */

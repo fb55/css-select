@@ -33,12 +33,11 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     /*
      * We force one format of options to the other one.
      */
-    // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
-    const opts: Options<Node, ElementNode> = options ?? defaultOptions;
-    // @ts-expect-error Same as above.
-    opts.adapter ??= DomUtils;
-    // @ts-expect-error `equals` does not exist on `Options`
-    opts.equals ??= opts.adapter?.equals ?? defaultEquals;
+    const opts = (options ?? defaultOptions) as Options<Node, ElementNode>;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    opts.adapter ??= DomUtils as never as Adapter<Node, ElementNode>;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    opts.equals ??= opts.adapter.equals ?? defaultEquals;
 
     return opts as InternalOptions<Node, ElementNode>;
 }
