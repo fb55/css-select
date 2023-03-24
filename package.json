@@ -43,7 +43,7 @@
         "eslint-config-prettier": "^8.8.0",
         "htmlparser2": "^8.0.2",
         "jest": "^27.5.1",
-        "prettier": "^2.8.6",
+        "prettier": "^2.8.7",
         "ts-jest": "^27.1.4",
         "typescript": "^4.9.5"
     },
