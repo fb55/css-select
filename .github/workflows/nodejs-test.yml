@@ -47,15 +47,15 @@ jobs:
 
             - name: Run Jest
               run: npm run test:jest
-              if: matrix.node != lts/*
+              if: matrix.node != "lts/*"
 
             - name: Run Jest with coverage
               run: npm run test:jest -- --coverage
-              if: matrix.node == lts/*
+              if: matrix.node == "lts/*"
 
             - name: Run Coveralls
               uses: coverallsapp/github-action@v2.0.0
-              if: matrix.node == lts/*
+              if: matrix.node == "lts/*"
               continue-on-error: true
               with:
                   github-token: "${{ secrets.GITHUB_TOKEN }}"
