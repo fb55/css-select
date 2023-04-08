@@ -9,7 +9,6 @@ on:
 env:
     CI: true
     FORCE_COLOR: 2
-    NODE_COV: 16 # The Node.js version to run coveralls on
 
 jobs:
     lint:
@@ -18,7 +17,7 @@ jobs:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: 16
+                  node-version: lts/*
                   cache: npm
             - run: npm ci
             - run: npm run lint
@@ -31,10 +30,10 @@ jobs:
             fail-fast: false
             matrix:
                 node:
-                    - 10
-                    - 12
                     - 14
                     - 16
+                    - 18
+                    - lts/*
 
         steps:
             - uses: actions/checkout@v3
@@ -48,15 +47,15 @@ jobs:
 
             - name: Run Jest
               run: npm run test:jest
-              if: matrix.node != env.NODE_COV
+              if: matrix.node != lts/*
 
             - name: Run Jest with coverage
               run: npm run test:jest -- --coverage
-              if: matrix.node == env.NODE_COV
+              if: matrix.node == lts/*
 
             - name: Run Coveralls
               uses: coverallsapp/github-action@v2.0.0
-              if: matrix.node == env.NODE_COV
+              if: matrix.node == lts/*
               continue-on-error: true
               with:
                   github-token: "${{ secrets.GITHUB_TOKEN }}"
