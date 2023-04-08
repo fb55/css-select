@@ -79,7 +79,7 @@
         },
         "testMatch": [
             "<rootDir>/test/*.ts",
-            "<rootDir>/**/*.test.ts"
+            "<rootDir>/**/*.spec.ts"
         ]
     }
 }
