@@ -31,7 +31,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     context: Node[] | undefined,
     compileToken: CompileToken<Node, ElementNode>
 ): CompiledQuery<ElementNode> {
-    const { adapter, equals } = options;
+    const { adapter, equals, cacheResults } = options;
 
     switch (selector.type) {
         case SelectorType.PseudoElement: {
@@ -84,10 +84,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
         // Traversal
         case SelectorType.Descendant: {
-            if (
-                options.cacheResults === false ||
-                typeof WeakSet === "undefined"
-            ) {
+            if (cacheResults === false || typeof WeakSet === "undefined") {
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 

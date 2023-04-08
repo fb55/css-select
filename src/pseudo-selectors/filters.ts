@@ -1,5 +1,6 @@
 import getNCheck from "nth-check";
 import * as boolbase from "boolbase";
+import { cacheParentResults } from "./helper.js";
 import type { CompiledQuery, InternalOptions, Adapter } from "../types.js";
 
 export type Filter = <Node, ElementNode extends Node>(
@@ -20,20 +21,20 @@ function getChildFunc<Node, ElementNode extends Node>(
 }
 
 export const filters: Record<string, Filter> = {
-    contains(next, text, { adapter }) {
-        return function contains(elem) {
-            return next(elem) && adapter.getText(elem).includes(text);
-        };
-    },
-    icontains(next, text, { adapter }) {
-        const itext = text.toLowerCase();
+    contains(next, text, options) {
+        const { getText } = options.adapter;
 
-        return function icontains(elem) {
-            return (
-                next(elem) &&
-                adapter.getText(elem).toLowerCase().includes(itext)
-            );
-        };
+        return cacheParentResults(next, options, (elem) =>
+            getText(elem).includes(text)
+        );
+    },
+    icontains(next, text, options) {
+        const itext = text.toLowerCase();
+        const { getText } = options.adapter;
+
+        return cacheParentResults(next, options, (elem) =>
+            getText(elem).toLowerCase().includes(itext)
+        );
     },
 
     // Location specific methods

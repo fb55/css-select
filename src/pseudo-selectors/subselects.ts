@@ -1,5 +1,6 @@
 import type { Selector } from "css-what";
 import * as boolbase from "boolbase";
+import { cacheParentResults } from "./helper.js";
 import type {
     CompiledQuery,
     InternalOptions,
@@ -99,7 +100,7 @@ export const subselects: Record<string, Subselect> = {
 
         const context = subselect.some((s) => s.some(isTraversal))
             ? // Used as a placeholder. Will be replaced with the actual element.
-              ([PLACEHOLDER_ELEMENT] as unknown as ElementNode[])
+              [PLACEHOLDER_ELEMENT as unknown as ElementNode]
             : undefined;
 
         const compiled = compileToken(subselect, opts, context);
@@ -114,23 +115,29 @@ export const subselects: Record<string, Subselect> = {
              * `shouldTestNextSiblings` will only be true if the query starts with
              * a traversal (sibling or adjacent). That means we will always have a context.
              */
-            const { shouldTestNextSiblings = false } = compiled;
+            return compiled.shouldTestNextSiblings
+                ? (elem) => {
+                      if (!next(elem)) return false;
 
-            return (elem) => {
-                if (!next(elem)) return false;
+                      context[0] = elem;
 
-                context[0] = elem;
-                const childs = adapter.getChildren(elem);
-                const nextElements = shouldTestNextSiblings
-                    ? [...childs, ...getNextSiblings(elem, adapter)]
-                    : childs;
+                      return adapter.existsOne(hasElement, [
+                          ...adapter.getChildren(elem),
+                          ...getNextSiblings(elem, adapter),
+                      ]);
+                  }
+                : cacheParentResults(next, options, (elem) => {
+                      context[0] = elem;
 
-                return adapter.existsOne(hasElement, nextElements);
-            };
+                      return adapter.existsOne(
+                          hasElement,
+                          adapter.getChildren(elem)
+                      );
+                  });
         }
 
-        return (elem) =>
-            next(elem) &&
-            adapter.existsOne(hasElement, adapter.getChildren(elem));
+        return cacheParentResults(next, options, (elem) =>
+            adapter.existsOne(hasElement, adapter.getChildren(elem))
+        );
     },
 };
