@@ -135,7 +135,7 @@ export interface Options<Node, ElementNode extends Node> {
      * The adapter to use when interacting with the backing DOM structure. By
      * default it uses the `domutils` module.
      */
-    adapter?: Adapter<Node, ElementNode>;
+    adapter?: Adapter<Node, ElementNode> | undefined;
     /**
      * The context of the current query. Used to limit the scope of searches.
      * Can be matched directly using the `:scope` pseudo-class.
