@@ -1,6 +1,6 @@
 import { parse, Selector, SelectorType } from "css-what";
 import * as boolbase from "boolbase";
-import sortRules, { isTraversal } from "./helpers/selectors.js";
+import { sortRules, isTraversal } from "./helpers/selectors.js";
 import { compileGeneralSelector } from "./general.js";
 import {
     ensureIsTag,

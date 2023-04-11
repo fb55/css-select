@@ -1,25 +1,31 @@
 import type { InternalSelector } from "../types.js";
-import { AttributeAction, SelectorType, type Traversal } from "css-what";
-
-const procedure = new Map<InternalSelector["type"], number>([
-    [SelectorType.Universal, 50],
-    [SelectorType.Tag, 30],
-    [SelectorType.Attribute, 1],
-    [SelectorType.Pseudo, 0],
-]);
+import {
+    AttributeAction,
+    AttributeSelector,
+    SelectorType,
+    type Traversal,
+} from "css-what";
 
 export function isTraversal(token: InternalSelector): token is Traversal {
-    return !procedure.has(token.type);
+    switch (token.type) {
+        case SelectorType.Descendant:
+        case SelectorType.Child:
+        case SelectorType.Parent:
+        case SelectorType.Sibling:
+        case SelectorType.Adjacent:
+        case SelectorType.ColumnCombinator:
+        case "_flexibleDescendant": {
+            return true;
+        }
+        case SelectorType.Attribute:
+        case SelectorType.Pseudo:
+        case SelectorType.Tag:
+        case SelectorType.Universal:
+        case SelectorType.PseudoElement: {
+            return false;
+        }
+    }
 }
-
-const attributes = new Map<AttributeAction, number>([
-    [AttributeAction.Exists, 10],
-    [AttributeAction.Equals, 8],
-    [AttributeAction.Not, 7],
-    [AttributeAction.Start, 6],
-    [AttributeAction.End, 6],
-    [AttributeAction.Any, 5],
-]);
 
 /**
  * Sort the parts of the passed selector,
@@ -28,7 +34,7 @@ const attributes = new Map<AttributeAction, number>([
  *
  * @param arr Selector to sort
  */
-export default function sortByProcedure(arr: InternalSelector[]): void {
+export function sortRules(arr: InternalSelector[]): void {
     const procs = arr.map(getProcedure);
     for (let i = 1; i < arr.length; i++) {
         const procNew = procs[i];
@@ -45,42 +51,80 @@ export default function sortByProcedure(arr: InternalSelector[]): void {
     }
 }
 
-function getProcedure(token: InternalSelector): number {
-    let proc = procedure.get(token.type) ?? -1;
-
-    if (token.type === SelectorType.Attribute) {
-        proc = attributes.get(token.action) ?? 4;
-
-        if (token.action === AttributeAction.Equals && token.name === "id") {
+function getAttributeProcedure(token: AttributeSelector): number {
+    switch (token.action) {
+        case AttributeAction.Exists: {
+            return 10;
+        }
+        case AttributeAction.Equals: {
             // Prefer ID selectors (eg. #ID)
-            proc = 9;
+            return token.name === "id" ? 9 : 8;
         }
-
-        if (token.ignoreCase) {
-            /*
-             * IgnoreCase adds some overhead, prefer "normal" token
-             * this is a binary operation, to ensure it's still an int
-             */
-            proc >>= 1;
+        case AttributeAction.Not: {
+            return 7;
         }
-    } else if (token.type === SelectorType.Pseudo) {
-        if (!token.data) {
-            proc = 3;
-        } else if (token.name === "has" || token.name === "contains") {
-            proc = 0; // Expensive in any case
-        } else if (Array.isArray(token.data)) {
-            // Eg. :matches, :not
-            proc = Math.min(
-                ...token.data.map((d) => Math.min(...d.map(getProcedure)))
-            );
-
-            // If we have traversals, try to avoid executing this selector
-            if (proc < 0) {
-                proc = 0;
-            }
-        } else {
-            proc = 2;
+        case AttributeAction.Start: {
+            return 6;
+        }
+        case AttributeAction.End: {
+            return 6;
+        }
+        case AttributeAction.Any: {
+            return 5;
+        }
+        case AttributeAction.Hyphen: {
+            return 4;
+        }
+        case AttributeAction.Element: {
+            return 3;
         }
     }
-    return proc;
+}
+
+function getProcedure(token: InternalSelector): number {
+    switch (token.type) {
+        case SelectorType.Universal: {
+            return 50;
+        }
+        case SelectorType.Tag: {
+            return 30;
+        }
+        case SelectorType.Attribute: {
+            const proc = getAttributeProcedure(token);
+
+            // `ignoreCase` adds some overhead, half the result if applicable.
+            return token.ignoreCase ? Math.floor(proc / 2) : proc;
+        }
+        case SelectorType.Pseudo: {
+            if (!token.data) {
+                return 3;
+            }
+
+            if (
+                token.name === "has" ||
+                token.name === "contains" ||
+                token.name === "icontains"
+            ) {
+                return 0; // Expensive in any case — run as late as possible.
+            }
+
+            // Eg. `:is`, `:not`
+            if (Array.isArray(token.data)) {
+                // If we have traversals, try to avoid executing this selector
+                return Math.max(
+                    0,
+                    Math.min(
+                        ...token.data.map((d) =>
+                            Math.min(...d.map(getProcedure))
+                        )
+                    )
+                );
+            }
+
+            return 2;
+        }
+        default: {
+            return -1;
+        }
+    }
 }
