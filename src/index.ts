@@ -1,11 +1,11 @@
 import * as DomUtils from "domutils";
 import * as boolbase from "boolbase";
+import { parse, type Selector } from "css-what";
 import type {
     AnyNode as DomHandlerNode,
     Element as DomHandlerElement,
 } from "domhandler";
-import type { Selector } from "css-what";
-import { compileUnsafe, compileToken } from "./compile.js";
+import { compileToken } from "./compile.js";
 import type {
     CompiledQuery,
     Options,
@@ -40,45 +40,56 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     return opts as InternalOptions<Node, ElementNode>;
 }
 
-function wrapCompile<Selector, Node, ElementNode extends Node, R extends Node>(
-    func: (
-        selector: Selector,
-        options: InternalOptions<Node, ElementNode>,
-        context?: Node[] | Node
-    ) => CompiledQuery<R>
-) {
-    return function addAdapter(
-        selector: Selector,
-        options?: Options<Node, ElementNode>,
-        context?: Node[] | Node
-    ): CompiledQuery<R> {
-        const opts = convertOptionFormats(options);
-
-        return func(selector, opts, context);
-    };
-}
-
 /**
  * Compiles a selector to an executable function.
+ *
+ * The returned function checks if each passed node is an element. Use
+ * `_compileUnsafe` to skip this check.
  *
  * @param selector Selector to compile.
  * @param options Compilation options.
  * @param context Optional context for the selector.
  */
-export const compile = wrapCompile(function compile<
-    Node,
-    ElementNode extends Node
->(
+export function compile<Node, ElementNode extends Node>(
     selector: string | Selector[][],
-    options: InternalOptions<Node, ElementNode>,
+    options?: Options<Node, ElementNode>,
     context?: Node[] | Node
 ): CompiledQuery<Node> {
-    const next = compileUnsafe(selector, options, context);
-    if (next === boolbase.falseFunc) return boolbase.falseFunc;
-    return (elem: Node) => options.adapter.isTag(elem) && next(elem);
-});
-export const _compileUnsafe = wrapCompile(compileUnsafe);
-export const _compileToken = wrapCompile(compileToken);
+    const opts = convertOptionFormats(options);
+    const next = _compileUnsafe(selector, opts, context);
+
+    return next === boolbase.falseFunc
+        ? boolbase.falseFunc
+        : (elem: Node) => opts.adapter.isTag(elem) && next(elem);
+}
+/**
+ * Like `compile`, but does not add a check if elements are tags.
+ */
+export function _compileUnsafe<Node, ElementNode extends Node>(
+    selector: string | Selector[][],
+    options?: Options<Node, ElementNode>,
+    context?: Node[] | Node
+): CompiledQuery<ElementNode> {
+    return _compileToken<Node, ElementNode>(
+        typeof selector === "string" ? parse(selector) : selector,
+        options,
+        context
+    );
+}
+/**
+ * @deprecated Use `_compileUnsafe` instead.
+ */
+export function _compileToken<Node, ElementNode extends Node>(
+    selector: Selector[][],
+    options?: Options<Node, ElementNode>,
+    context?: Node[] | Node
+): CompiledQuery<ElementNode> {
+    return compileToken<Node, ElementNode>(
+        selector,
+        convertOptionFormats(options),
+        context
+    );
+}
 
 function getSelectorFunc<Node, ElementNode extends Node, T>(
     searchFunc: (
@@ -95,7 +106,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         const opts = convertOptionFormats(options);
 
         if (typeof query !== "function") {
-            query = compileUnsafe<Node, ElementNode>(query, opts, elements);
+            query = _compileUnsafe<Node, ElementNode>(query, opts, elements);
         }
 
         const filteredElements = prepareContext(
