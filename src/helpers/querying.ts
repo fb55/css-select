@@ -79,3 +79,11 @@ export function getNextSiblings<Node, ElementNode extends Node>(
     if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);
 }
+
+export function getElementParent<Node, ElementNode extends Node>(
+    node: ElementNode,
+    adapter: Adapter<Node, ElementNode>
+): ElementNode | null {
+    const parent = adapter.getParent(node);
+    return parent && adapter.isTag(parent) ? parent : null;
+}

@@ -175,7 +175,9 @@ _As defined by CSS 4 and / or jQuery._
 -   [Child](https://developer.mozilla.org/en-US/docs/Web/CSS/Child_combinator)
     (`>`): Selects elements that are direct children of the specified element.
 -   Parent (`<`): Selects elements that are direct parents of the specified
-    element.
+    element. This follows an
+    [old proposal](https://shauninman.com/archive/2008/05/05/css_qualified_selectors)
+    that has been made obsolete by the `:has()` pseudo-class.
 -   [Adjacent sibling](https://developer.mozilla.org/en-US/docs/Web/CSS/Adjacent_sibling_combinator)
     (`+`): Selects elements that are the next sibling of the specified element.
 -   [General sibling](https://developer.mozilla.org/en-US/docs/Web/CSS/General_sibling_combinator)

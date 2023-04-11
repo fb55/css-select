@@ -1,24 +1,15 @@
 import getNCheck from "nth-check";
 import * as boolbase from "boolbase";
 import { cacheParentResults } from "../helpers/cache.js";
-import type { CompiledQuery, InternalOptions, Adapter } from "../types.js";
+import type { CompiledQuery, InternalOptions } from "../types.js";
+import { getElementParent } from "../helpers/querying.js";
 
-export type Filter = <Node, ElementNode extends Node>(
+type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     text: string,
     options: InternalOptions<Node, ElementNode>,
     context?: Node[]
 ) => CompiledQuery<ElementNode>;
-
-function getChildFunc<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    adapter: Adapter<Node, ElementNode>
-): CompiledQuery<ElementNode> {
-    return (elem) => {
-        const parent = adapter.getParent(elem);
-        return parent != null && adapter.isTag(parent) && next(elem);
-    };
-}
 
 export const filters: Record<string, Filter> = {
     contains(next, text, options) {
@@ -42,7 +33,10 @@ export const filters: Record<string, Filter> = {
         const func = getNCheck(rule);
 
         if (func === boolbase.falseFunc) return boolbase.falseFunc;
-        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.trueFunc) {
+            return (elem) =>
+                getElementParent(elem, adapter) !== null && next(elem);
+        }
 
         return function nthChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -62,7 +56,10 @@ export const filters: Record<string, Filter> = {
         const func = getNCheck(rule);
 
         if (func === boolbase.falseFunc) return boolbase.falseFunc;
-        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.trueFunc) {
+            return (elem) =>
+                getElementParent(elem, adapter) !== null && next(elem);
+        }
 
         return function nthLastChild(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -82,7 +79,10 @@ export const filters: Record<string, Filter> = {
         const func = getNCheck(rule);
 
         if (func === boolbase.falseFunc) return boolbase.falseFunc;
-        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.trueFunc) {
+            return (elem) =>
+                getElementParent(elem, adapter) !== null && next(elem);
+        }
 
         return function nthOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -106,7 +106,10 @@ export const filters: Record<string, Filter> = {
         const func = getNCheck(rule);
 
         if (func === boolbase.falseFunc) return boolbase.falseFunc;
-        if (func === boolbase.trueFunc) return getChildFunc(next, adapter);
+        if (func === boolbase.trueFunc) {
+            return (elem) =>
+                getElementParent(elem, adapter) !== null && next(elem);
+        }
 
         return function nthLastOfType(elem) {
             const siblings = adapter.getSiblings(elem);
@@ -129,10 +132,7 @@ export const filters: Record<string, Filter> = {
 
     // TODO determine the actual root element
     root(next, _rule, { adapter }) {
-        return (elem) => {
-            const parent = adapter.getParent(elem);
-            return (parent == null || !adapter.isTag(parent)) && next(elem);
-        };
+        return (elem) => getElementParent(elem, adapter) === null && next(elem);
     },
 
     scope<Node, ElementNode extends Node>(

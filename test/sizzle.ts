@@ -123,9 +123,7 @@ describe("Sizzle", () => {
 
         const iframe = document.getElementById("iframe");
         iframe.children = parseDOM("<body><p id='foo'>bar</p></body>");
-        iframe.children.forEach((e) => {
-            e.parent = iframe;
-        });
+        for (const e of iframe.children) e.parent = iframe;
         // Other document as context
         expect(CSSselect.selectAll("p:contains(bar)", iframe)).toStrictEqual([
             DomUtils.getElementById("foo", iframe.children),
@@ -250,11 +248,11 @@ describe("Sizzle", () => {
         broken(":only-last-child");
 
         // Make sure attribute value quoting works correctly. See: #6093
-        parseDOM(
+        for (const node of parseDOM(
             "<input type='hidden' value='2' name='foo.baz' id='attrbad1'/><input type='hidden' value='2' name='foo[baz]' id='attrbad2'/>"
-        ).forEach((node) =>
-            DomUtils.appendChild(document.getElementById("form"), node)
-        );
+        )) {
+            DomUtils.appendChild(document.getElementById("form"), node);
+        }
 
         // Shouldn't be matching those inner brackets
         broken("input[name=foo[baz]]");
@@ -350,9 +348,10 @@ describe("Sizzle", () => {
                 .attribs["id"]
         );
 
-        parseDOM("<a id='backslash\\foo'></a>").forEach((node) =>
-            DomUtils.appendChild(document.getElementById("form"), node)
-        );
+        for (const node of parseDOM("<a id='backslash\\foo'></a>")) {
+            DomUtils.appendChild(document.getElementById("form"), node);
+        }
+
         // ID Selector contains backslash
         t("#backslash\\\\foo", ["backslash\\foo"]);
 
@@ -418,9 +417,8 @@ describe("Sizzle", () => {
         div.children = parseDOM(
             "<div class='test e'></div><div class='test'></div>"
         );
-        div.children.forEach((e) => {
-            e.parent = div;
-        });
+        for (const e of div.children) e.parent = div;
+
         // Finding a second class.
         expect(CSSselect.selectAll(".e", div)).toStrictEqual([div.children[0]]);
 
@@ -866,23 +864,24 @@ describe("Sizzle", () => {
          * Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
          * Use seeded results to bypass querySelectorAll optimizations
          */
-        const attrbad = [
-            ...parseDOM(
-                "<input type='hidden' id='attrbad_space' name='foo bar'/>" +
-                    "<input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>" +
-                    "<input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>" +
-                    "<input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>" +
-                    "<input type='hidden' id='attrbad_quote' data-attr='&#39;'/>" +
-                    "<input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>" +
-                    "<input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>" +
-                    "<input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>" +
-                    "<input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>",
-                { decodeEntities: true }
-            ),
-        ] as Element[];
-        attrbad.forEach((attr) =>
-            DomUtils.appendChild(document.getElementById("qunit-fixture"), attr)
-        );
+        const attrbad = parseDOM(
+            `<input type='hidden' id='attrbad_space' name='foo bar'/>
+                <input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>
+                <input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>
+                <input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>
+                <input type='hidden' id='attrbad_quote' data-attr='&#39;'/>
+                <input type='hidden' id='attrbad_backslash' data-attr='&#92;'/>
+                <input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>
+                <input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>
+                <input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>`
+        ).slice(0) as Element[];
+
+        for (const attr of attrbad) {
+            DomUtils.appendChild(
+                document.getElementById("qunit-fixture"),
+                attr
+            );
+        }
 
         // Underscores don't need escaping
         t("input[id=types_all]", ["types_all"]);
@@ -923,7 +922,7 @@ describe("Sizzle", () => {
          */
         t("input[data-attr='\\01D306A']", ["attrbad_unicode"]);
 
-        attrbad.forEach((attr) => DomUtils.removeElement(attr));
+        for (const attr of attrbad) DomUtils.removeElement(attr);
 
         // `input[type=text]`
         t("#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
@@ -1038,7 +1037,7 @@ describe("Sizzle", () => {
         // No longer second child
         t("p:nth-child(2)", []);
 
-        newNodes.forEach((node) => DomUtils.removeElement(node));
+        for (const node of newNodes) DomUtils.removeElement(node);
 
         // Restored second child
         t("p:nth-child(2)", ["ap", "en"]);
@@ -1647,9 +1646,9 @@ describe("Sizzle", () => {
             ),
         ];
 
-        extraTexts.forEach((text) =>
-            DomUtils.appendChild(document.getElementById("form"), text)
-        );
+        for (const text of extraTexts) {
+            DomUtils.appendChild(document.getElementById("form"), text);
+        }
 
         // Form element :input
         t("#form :input", [
@@ -1721,7 +1720,7 @@ describe("Sizzle", () => {
         // Hidden inputs should be treated as enabled. See QSA test.
         t("#hidden1:enabled", ["hidden1"]);
 
-        extraTexts.forEach((text) => DomUtils.removeElement(text));
+        for (const text of extraTexts) DomUtils.removeElement(text);
     });
 
     it("pseudo - :root", () => {
