@@ -85,5 +85,5 @@ export function getElementParent<Node, ElementNode extends Node>(
     adapter: Adapter<Node, ElementNode>
 ): ElementNode | null {
     const parent = adapter.getParent(node);
-    return parent && adapter.isTag(parent) ? parent : null;
+    return parent != null && adapter.isTag(parent) ? parent : null;
 }
