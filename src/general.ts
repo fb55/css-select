@@ -125,8 +125,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         }
         case SelectorType.Child: {
             return function child(elem: ElementNode): boolean {
-                const parent = adapter.getParent(elem);
-                return parent != null && adapter.isTag(parent) && next(parent);
+                const parent = getElementParent(elem, adapter);
+                return parent !== null && next(parent);
             };
         }
         case SelectorType.Sibling: {

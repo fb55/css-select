@@ -19,11 +19,15 @@ const isDocumentWhiteSpace = /^[ \t\r\n]*$/;
 // While filters are precompiled, pseudos get called when they are needed
 export const pseudos: Record<string, Pseudo> = {
     empty(elem, { adapter }) {
-        return !adapter.getChildren(elem).some(
-            (elem) =>
-                adapter.isTag(elem) ||
+        const children = adapter.getChildren(elem);
+        return (
+            // First, make sure the tag does not have any element children.
+            children.every((elem) => !adapter.isTag(elem)) &&
+            // Then, check that the text content is only whitespace.
+            children.every((elem) =>
                 // FIXME: `getText` call is potentially expensive.
-                !isDocumentWhiteSpace.test(adapter.getText(elem))
+                isDocumentWhiteSpace.test(adapter.getText(elem))
+            )
         );
     },
 

@@ -12,6 +12,7 @@ import type {
     InternalOptions,
     InternalSelector,
 } from "./types.js";
+import { getElementParent } from "./helpers/querying.js";
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };
 const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
@@ -33,10 +34,11 @@ function absolutize<Node, ElementNode extends Node>(
     context?: Node[]
 ) {
     // TODO Use better check if the context is a document
-    const hasContext = !!context?.every((e) => {
-        const parent = adapter.isTag(e) && adapter.getParent(e);
-        return e === PLACEHOLDER_ELEMENT || (parent && adapter.isTag(parent));
-    });
+    const hasContext = !!context?.every(
+        (e) =>
+            e === PLACEHOLDER_ELEMENT ||
+            (adapter.isTag(e) && getElementParent(e, adapter) !== null)
+    );
 
     for (const t of token) {
         if (

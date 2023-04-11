@@ -1,4 +1,5 @@
 import type { CompiledQuery, InternalOptions } from "../types.js";
+import { getElementParent } from "./querying.js";
 
 /**
  * Some selectors such as `:contains` and (non-relative) `:has` will only be
@@ -14,7 +15,7 @@ export function cacheParentResults<Node, ElementNode extends Node>(
     { adapter, cacheResults }: InternalOptions<Node, ElementNode>,
     matches: (elem: ElementNode) => boolean
 ): CompiledQuery<ElementNode> {
-    if (cacheResults === false || typeof WeakSet === "undefined") {
+    if (cacheResults === false || typeof WeakMap === "undefined") {
         return (elem) => next(elem) && matches(elem);
     }
 
@@ -40,9 +41,9 @@ export function cacheParentResults<Node, ElementNode extends Node>(
         let node = elem;
 
         do {
-            const parent = adapter.getParent(node);
+            const parent = getElementParent(node, adapter);
 
-            if (parent == null || !adapter.isTag(parent)) {
+            if (parent === null) {
                 return addResultToCache(elem);
             }
 
