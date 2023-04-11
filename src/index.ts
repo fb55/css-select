@@ -106,7 +106,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         const opts = convertOptionFormats(options);
 
         if (typeof query !== "function") {
-            query = compileUnsafe<Node, ElementNode>(query, opts, elements);
+            query = _compileUnsafe<Node, ElementNode>(query, opts, elements);
         }
 
         const filteredElements = prepareContext(
