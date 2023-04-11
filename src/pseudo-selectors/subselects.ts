@@ -1,13 +1,14 @@
 import type { Selector } from "css-what";
 import * as boolbase from "boolbase";
-import { cacheParentResults } from "./helper.js";
+import { cacheParentResults } from "../helpers/cache.js";
 import type {
     CompiledQuery,
     InternalOptions,
     CompileToken,
     Adapter,
 } from "../types.js";
-import { isTraversal } from "../sort.js";
+import { isTraversal } from "../helpers/selectors.js";
+import { findOne } from "../helpers/querying.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};
@@ -121,23 +122,35 @@ export const subselects: Record<string, Subselect> = {
 
                       context[0] = elem;
 
-                      return adapter.existsOne(hasElement, [
-                          ...adapter.getChildren(elem),
-                          ...getNextSiblings(elem, adapter),
-                      ]);
+                      return (
+                          findOne(
+                              hasElement,
+                              [
+                                  ...adapter.getChildren(elem),
+                                  ...getNextSiblings(elem, adapter),
+                              ],
+                              options
+                          ) !== null
+                      );
                   }
                 : cacheParentResults(next, options, (elem) => {
                       context[0] = elem;
 
-                      return adapter.existsOne(
-                          hasElement,
-                          adapter.getChildren(elem)
+                      return (
+                          findOne(
+                              hasElement,
+                              adapter.getChildren(elem),
+                              options
+                          ) !== null
                       );
                   });
         }
 
-        return cacheParentResults(next, options, (elem) =>
-            adapter.existsOne(hasElement, adapter.getChildren(elem))
+        return cacheParentResults(
+            next,
+            options,
+            (elem) =>
+                findOne(hasElement, adapter.getChildren(elem), options) !== null
         );
     },
 };

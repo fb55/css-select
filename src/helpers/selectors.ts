@@ -1,4 +1,4 @@
-import type { InternalSelector } from "./types.js";
+import type { InternalSelector } from "../types.js";
 import { AttributeAction, SelectorType, type Traversal } from "css-what";
 
 const procedure = new Map<InternalSelector["type"], number>([
