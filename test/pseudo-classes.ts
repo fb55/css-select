@@ -170,3 +170,33 @@ describe(":empty", () => {
         expect(matches).toHaveLength(0);
     });
 });
+
+describe(":has", () => {
+    it("should cache :has if applicable", () => {
+        const dom = parseDocument(`
+            <div>
+                <div class="a">
+                    <div class="b"></div>
+                    <div class="c"></div>
+                </div>
+                <div class="d"></div>
+            </div>
+        `);
+        const compiled = CSSselect.compile(":has(.a .b ~ .c)");
+
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(compiled, dom)
+        ).toHaveLength(2);
+
+        (dom.childNodes[1] as any).childNodes[1].attribs.class = "";
+
+        // Should not find the element anymore
+        expect(CSSselect.selectAll<AnyNode, Element>(".a", dom)).toHaveLength(
+            0
+        );
+        // But as we have cached the results in `compiled`, we should succeed here.
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(compiled, dom)
+        ).toHaveLength(2);
+    });
+});

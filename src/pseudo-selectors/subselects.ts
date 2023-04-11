@@ -1,27 +1,14 @@
 import type { Selector } from "css-what";
 import * as boolbase from "boolbase";
 import { cacheParentResults } from "../helpers/cache.js";
-import type {
-    CompiledQuery,
-    InternalOptions,
-    CompileToken,
-    Adapter,
-} from "../types.js";
-import { isTraversal } from "../helpers/selectors.js";
-import { findOne } from "../helpers/querying.js";
+import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
+import { isTraversal, includesScopePseudo } from "../helpers/selectors.js";
+import { findOne, getNextSiblings } from "../helpers/querying.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};
 
-export function ensureIsTag<Node, ElementNode extends Node>(
-    next: CompiledQuery<ElementNode>,
-    adapter: Adapter<Node, ElementNode>
-): CompiledQuery<Node> {
-    if (next === boolbase.falseFunc) return boolbase.falseFunc;
-    return (elem: Node) => adapter.isTag(elem) && next(elem);
-}
-
-export type Subselect = <Node, ElementNode extends Node>(
+type Subselect = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     subselect: Selector[][],
     options: InternalOptions<Node, ElementNode>,
@@ -29,15 +16,20 @@ export type Subselect = <Node, ElementNode extends Node>(
     compileToken: CompileToken<Node, ElementNode>
 ) => CompiledQuery<ElementNode>;
 
-export function getNextSiblings<Node, ElementNode extends Node>(
-    elem: Node,
-    adapter: Adapter<Node, ElementNode>
-): ElementNode[] {
-    const siblings = adapter.getSiblings(elem);
-    if (siblings.length <= 1) return [];
-    const elemIndex = siblings.indexOf(elem);
-    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
-    return siblings.slice(elemIndex + 1).filter(adapter.isTag);
+/**
+ * Check if the selector has any properties that rely on the current element.
+ * If not, we can cache the result of the selector.
+ *
+ * We can't cache selectors that start with a traversal (e.g. `>`, `+`, `~`),
+ * or include a `:scope`.
+ *
+ * @param selector - The selector to check.
+ * @returns Whether the selector has any properties that rely on the current element.
+ */
+function hasDependsOnCurrentElement(selector: Selector[][]) {
+    return selector.some(
+        (sel) => isTraversal(sel[0]) || sel.some(includesScopePseudo)
+    );
 }
 
 function copyOptions<Node, ElementNode extends Node>(
@@ -103,32 +95,30 @@ export const subselects: Record<string, Subselect> = {
             ? // Used as a placeholder. Will be replaced with the actual element.
               [PLACEHOLDER_ELEMENT as unknown as ElementNode]
             : undefined;
+        const skipCache = hasDependsOnCurrentElement(subselect);
 
         const compiled = compileToken(subselect, opts, context);
 
         if (compiled === boolbase.falseFunc) return boolbase.falseFunc;
 
-        const hasElement = ensureIsTag(compiled, adapter);
-
         // If `compiled` is `trueFunc`, we can skip this.
         if (context && compiled !== boolbase.trueFunc) {
-            /*
-             * `shouldTestNextSiblings` will only be true if the query starts with
-             * a traversal (sibling or adjacent). That means we will always have a context.
-             */
-            return compiled.shouldTestNextSiblings
+            return skipCache
                 ? (elem) => {
                       if (!next(elem)) return false;
 
                       context[0] = elem;
+                      const childs = adapter.getChildren(elem);
 
                       return (
                           findOne(
-                              hasElement,
-                              [
-                                  ...adapter.getChildren(elem),
-                                  ...getNextSiblings(elem, adapter),
-                              ],
+                              compiled,
+                              compiled.shouldTestNextSiblings
+                                  ? [
+                                        ...childs,
+                                        ...getNextSiblings(elem, adapter),
+                                    ]
+                                  : childs,
                               options
                           ) !== null
                       );
@@ -138,7 +128,7 @@ export const subselects: Record<string, Subselect> = {
 
                       return (
                           findOne(
-                              hasElement,
+                              compiled,
                               adapter.getChildren(elem),
                               options
                           ) !== null
@@ -146,11 +136,11 @@ export const subselects: Record<string, Subselect> = {
                   });
         }
 
-        return cacheParentResults(
-            next,
-            options,
-            (elem) =>
-                findOne(hasElement, adapter.getChildren(elem), options) !== null
-        );
+        const hasOne = (elem: ElementNode) =>
+            findOne(compiled, adapter.getChildren(elem), options) !== null;
+
+        return skipCache
+            ? (elem) => next(elem) && hasOne(elem)
+            : cacheParentResults(next, options, hasOne);
     },
 };
