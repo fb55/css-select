@@ -1,4 +1,4 @@
-import { parse, Selector, SelectorType } from "css-what";
+import { Selector, SelectorType } from "css-what";
 import * as boolbase from "boolbase";
 import {
     sortRules,
@@ -12,15 +12,6 @@ import type {
     InternalOptions,
     InternalSelector,
 } from "./types.js";
-
-export function compileUnsafe<Node, ElementNode extends Node>(
-    selector: string | Selector[][],
-    options: InternalOptions<Node, ElementNode>,
-    context?: Node[] | Node
-): CompiledQuery<ElementNode> {
-    const token = typeof selector === "string" ? parse(selector) : selector;
-    return compileToken<Node, ElementNode>(token, options, context);
-}
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };
 const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
