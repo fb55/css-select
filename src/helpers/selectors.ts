@@ -3,28 +3,12 @@ import {
     AttributeAction,
     AttributeSelector,
     SelectorType,
+    isTraversal as isTraversalBase,
     type Traversal,
 } from "css-what";
 
 export function isTraversal(token: InternalSelector): token is Traversal {
-    switch (token.type) {
-        case SelectorType.Descendant:
-        case SelectorType.Child:
-        case SelectorType.Parent:
-        case SelectorType.Sibling:
-        case SelectorType.Adjacent:
-        case SelectorType.ColumnCombinator:
-        case "_flexibleDescendant": {
-            return true;
-        }
-        case SelectorType.Attribute:
-        case SelectorType.Pseudo:
-        case SelectorType.Tag:
-        case SelectorType.Universal:
-        case SelectorType.PseudoElement: {
-            return false;
-        }
-    }
+    return token.type === "_flexibleDescendant" || isTraversalBase(token);
 }
 
 /**
