@@ -1,4 +1,4 @@
-import type { InternalOptions, Predicate } from "../types.js";
+import type { Adapter, InternalOptions, Predicate } from "../types.js";
 
 /**
  * Find all elements matching the query. If not in XML mode, the query will ignore
@@ -67,4 +67,12 @@ export function findOne<Node, ElementNode extends Node>(
     }
 
     return null;
+}
+
+export function getElementParent<Node, ElementNode extends Node>(
+    node: ElementNode,
+    adapter: Adapter<Node, ElementNode>
+): ElementNode | null {
+    const parent = adapter.getParent(node);
+    return parent && adapter.isTag(parent) ? parent : null;
 }

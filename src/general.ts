@@ -1,24 +1,13 @@
 import { attributeRules } from "./attributes.js";
+import { getElementParent } from "./helpers/querying.js";
 import { compilePseudoSelector } from "./pseudo-selectors/index.js";
 import type {
-    Adapter,
     CompiledQuery,
     InternalOptions,
     InternalSelector,
     CompileToken,
 } from "./types.js";
 import { SelectorType } from "css-what";
-
-function getElementParent<Node, ElementNode extends Node>(
-    node: ElementNode,
-    adapter: Adapter<Node, ElementNode>
-): ElementNode | null {
-    const parent = adapter.getParent(node);
-    if (parent && adapter.isTag(parent)) {
-        return parent;
-    }
-    return null;
-}
 
 /*
  * All available rules
