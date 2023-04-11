@@ -3,7 +3,7 @@ import * as boolbase from "boolbase";
 import * as DomUtils from "domutils";
 import type { Element, Node } from "domhandler";
 import * as CSSselect from "../index.js";
-import { cacheParentResults } from "./helper.js";
+import { cacheParentResults } from "./cache.js";
 
 describe("cacheParentResults", () => {
     it("should rely on parent for matches", () => {

@@ -18,6 +18,7 @@ import type {
     Predicate,
 } from "./types.js";
 import { getNextSiblings } from "./pseudo-selectors/subselects.js";
+import { findAll, findOne } from "./helpers/querying.js";
 
 export type { Options };
 
@@ -150,41 +151,6 @@ export const selectAll = getSelectorFunc(
 );
 
 /**
- * Find all elements matching the query. If not in XML mode, the query will ignore
- * the contents of `<template>` elements.
- *
- *
- * @param query - Function that returns true if the element matches the query.
- * @param elems - Nodes to query. If a node is an element, its children will be queried.
- * @param options - Options for querying the document.
- * @returns All matching elements.
- */
-function findAll<Node, ElementNode extends Node>(
-    query: Predicate<ElementNode>,
-    elems: Node[],
-    options: InternalOptions<Node, ElementNode>
-): ElementNode[] {
-    const { adapter, xmlMode = false } = options;
-    const result: ElementNode[] = [];
-    const stack = elems.filter(adapter.isTag);
-
-    let elem;
-    while ((elem = stack.shift())) {
-        if (xmlMode || adapter.getName(elem) !== "template") {
-            const children = adapter.getChildren(elem).filter(adapter.isTag);
-
-            if (children.length > 0) {
-                stack.unshift(...children);
-            }
-        }
-
-        if (query(elem)) result.push(elem);
-    }
-
-    return result;
-}
-
-/**
  * @template Node The generic Node type for the DOM adapter being used.
  * @template ElementNode The Node type for elements for the DOM adapter being used.
  * @param elems Elements to query. If it is an element, its children will be queried.
@@ -203,40 +169,6 @@ export const selectOne = getSelectorFunc(
             ? null
             : findOne(query, elems, options)
 );
-
-/**
- * Find the first element matching the query. If not in XML mode, the query will ignore
- * the contents of `<template>` elements.
- *
- *
- * @param query - Function that returns true if the element matches the query.
- * @param elems - Nodes to query. If a node is an element, its children will be queried.
- * @param options - Options for querying the document.
- * @returns The first matching element, or null if there was no match.
- */
-function findOne<Node, ElementNode extends Node>(
-    query: Predicate<ElementNode>,
-    elems: Node[],
-    options: InternalOptions<Node, ElementNode>
-): ElementNode | null {
-    const { adapter, xmlMode = false } = options;
-    const stack = elems.filter(adapter.isTag);
-
-    let elem;
-    while ((elem = stack.shift())) {
-        if (xmlMode || adapter.getName(elem) !== "template") {
-            const children = adapter.getChildren(elem).filter(adapter.isTag);
-
-            if (children.length > 0) {
-                stack.unshift(...children);
-            }
-        }
-
-        if (query(elem)) return elem;
-    }
-
-    return null;
-}
 
 /**
  * Tests whether or not an element is matched by query.

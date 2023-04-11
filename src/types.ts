@@ -10,11 +10,6 @@ export interface Adapter<Node, ElementNode extends Node> {
     isTag: (node: Node) => node is ElementNode;
 
     /**
-     * Does at least one of passed element nodes pass the test predicate?
-     */
-    existsOne: (test: Predicate<ElementNode>, elems: Node[]) => boolean;
-
-    /**
      * Get the attribute value.
      */
     getAttributeValue: (elem: ElementNode, name: string) => string | undefined;
