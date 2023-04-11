@@ -1,32 +1,17 @@
 import { parse, Selector, SelectorType } from "css-what";
 import * as boolbase from "boolbase";
-import { sortRules, isTraversal } from "./helpers/selectors.js";
-import { compileGeneralSelector } from "./general.js";
 import {
-    ensureIsTag,
-    PLACEHOLDER_ELEMENT,
-} from "./pseudo-selectors/subselects.js";
+    sortRules,
+    isTraversal,
+    includesScopePseudo,
+} from "./helpers/selectors.js";
+import { compileGeneralSelector } from "./general.js";
+import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
 import type {
     CompiledQuery,
     InternalOptions,
     InternalSelector,
 } from "./types.js";
-
-/**
- * Compiles a selector to an executable function.
- *
- * @param selector Selector to compile.
- * @param options Compilation options.
- * @param context Optional context for the selector.
- */
-export function compile<Node, ElementNode extends Node>(
-    selector: string | Selector[][],
-    options: InternalOptions<Node, ElementNode>,
-    context?: Node[] | Node
-): CompiledQuery<Node> {
-    const next = compileUnsafe(selector, options, context);
-    return ensureIsTag(next, options.adapter);
-}
 
 export function compileUnsafe<Node, ElementNode extends Node>(
     selector: string | Selector[][],
@@ -35,15 +20,6 @@ export function compileUnsafe<Node, ElementNode extends Node>(
 ): CompiledQuery<ElementNode> {
     const token = typeof selector === "string" ? parse(selector) : selector;
     return compileToken<Node, ElementNode>(token, options, context);
-}
-
-function includesScopePseudo(t: InternalSelector): boolean {
-    return (
-        t.type === SelectorType.Pseudo &&
-        (t.name === "scope" ||
-            (Array.isArray(t.data) &&
-                t.data.some((data) => data.some(includesScopePseudo))))
-    );
 }
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };

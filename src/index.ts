@@ -4,11 +4,8 @@ import type {
     AnyNode as DomHandlerNode,
     Element as DomHandlerElement,
 } from "domhandler";
-import {
-    compile as compileRaw,
-    compileUnsafe,
-    compileToken,
-} from "./compile.js";
+import type { Selector } from "css-what";
+import { compileUnsafe, compileToken } from "./compile.js";
 import type {
     CompiledQuery,
     Options,
@@ -17,8 +14,7 @@ import type {
     Adapter,
     Predicate,
 } from "./types.js";
-import { getNextSiblings } from "./pseudo-selectors/subselects.js";
-import { findAll, findOne } from "./helpers/querying.js";
+import { findAll, findOne, getNextSiblings } from "./helpers/querying.js";
 
 export type { Options };
 
@@ -63,9 +59,24 @@ function wrapCompile<Selector, Node, ElementNode extends Node, R extends Node>(
 }
 
 /**
- * Compiles the query, returns a function.
+ * Compiles a selector to an executable function.
+ *
+ * @param selector Selector to compile.
+ * @param options Compilation options.
+ * @param context Optional context for the selector.
  */
-export const compile = wrapCompile(compileRaw);
+export const compile = wrapCompile(function compile<
+    Node,
+    ElementNode extends Node
+>(
+    selector: string | Selector[][],
+    options: InternalOptions<Node, ElementNode>,
+    context?: Node[] | Node
+): CompiledQuery<Node> {
+    const next = compileUnsafe(selector, options, context);
+    if (next === boolbase.falseFunc) return boolbase.falseFunc;
+    return (elem: Node) => options.adapter.isTag(elem) && next(elem);
+});
 export const _compileUnsafe = wrapCompile(compileUnsafe);
 export const _compileToken = wrapCompile(compileToken);
 
@@ -186,8 +197,7 @@ export function is<Node, ElementNode extends Node>(
     query: Query<ElementNode>,
     options?: Options<Node, ElementNode>
 ): boolean {
-    const opts = convertOptionFormats(options);
-    return (typeof query === "function" ? query : compileRaw(query, opts))(
+    return (typeof query === "function" ? query : compile(query, options))(
         elem
     );
 }

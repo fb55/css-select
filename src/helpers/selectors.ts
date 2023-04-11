@@ -112,3 +112,12 @@ function getProcedure(token: InternalSelector): number {
         }
     }
 }
+
+export function includesScopePseudo(t: InternalSelector): boolean {
+    return (
+        t.type === SelectorType.Pseudo &&
+        (t.name === "scope" ||
+            (Array.isArray(t.data) &&
+                t.data.some((data) => data.some(includesScopePseudo))))
+    );
+}

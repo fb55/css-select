@@ -1,7 +1,7 @@
 import type { PseudoSelector } from "css-what";
 import type { InternalOptions } from "../types.js";
 
-export type Pseudo = <Node, ElementNode extends Node>(
+type Pseudo = <Node, ElementNode extends Node>(
     elem: ElementNode,
     options: InternalOptions<Node, ElementNode>,
     subselect?: string | null

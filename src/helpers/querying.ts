@@ -69,6 +69,17 @@ export function findOne<Node, ElementNode extends Node>(
     return null;
 }
 
+export function getNextSiblings<Node, ElementNode extends Node>(
+    elem: Node,
+    adapter: Adapter<Node, ElementNode>
+): ElementNode[] {
+    const siblings = adapter.getSiblings(elem);
+    if (siblings.length <= 1) return [];
+    const elemIndex = siblings.indexOf(elem);
+    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
+    return siblings.slice(elemIndex + 1).filter(adapter.isTag);
+}
+
 export function getElementParent<Node, ElementNode extends Node>(
     node: ElementNode,
     adapter: Adapter<Node, ElementNode>
