@@ -4,6 +4,7 @@ import {
     sortRules,
     isTraversal,
     includesScopePseudo,
+    getQuality,
 } from "./helpers/selectors.js";
 import { compileGeneralSelector } from "./general.js";
 import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
@@ -11,6 +12,7 @@ import type {
     CompiledQuery,
     InternalOptions,
     InternalSelector,
+    Predicate,
 } from "./types.js";
 import { getElementParent } from "./helpers/querying.js";
 
@@ -81,71 +83,61 @@ export function compileToken<Node, ElementNode extends Node>(
     }
 
     let shouldTestNextSiblings = false;
+    let query: CompiledQuery<ElementNode> = boolbase.falseFunc;
 
-    const query = token
-        .map((rules) => {
-            if (rules.length >= 2) {
-                const [first, second] = rules;
+    combineLoop: for (const rules of token) {
+        if (rules.length >= 2) {
+            const [first, second] = rules;
 
-                if (
-                    first.type !== SelectorType.Pseudo ||
-                    first.name !== "scope"
-                ) {
-                    // Ignore
-                } else if (
-                    isArrayContext &&
-                    second.type === SelectorType.Descendant
-                ) {
-                    rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
-                } else if (
-                    second.type === SelectorType.Adjacent ||
-                    second.type === SelectorType.Sibling
-                ) {
-                    shouldTestNextSiblings = true;
-                }
+            if (first.type !== SelectorType.Pseudo || first.name !== "scope") {
+                // Ignore
+            } else if (
+                isArrayContext &&
+                second.type === SelectorType.Descendant
+            ) {
+                rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
+            } else if (
+                second.type === SelectorType.Adjacent ||
+                second.type === SelectorType.Sibling
+            ) {
+                shouldTestNextSiblings = true;
             }
+        }
 
-            return compileRules<Node, ElementNode>(
-                rules,
+        let next = rootFunc;
+        let hasExpensiveSubselector = false;
+
+        for (const rule of rules) {
+            next = compileGeneralSelector(
+                next,
+                rule,
                 options,
                 finalContext,
-                rootFunc
+                compileToken,
+                hasExpensiveSubselector
             );
-        })
-        .reduce<CompiledQuery<ElementNode>>(
-            (a, b) =>
-                b === boolbase.falseFunc || a === rootFunc
-                    ? a
-                    : a === boolbase.falseFunc || b === rootFunc
-                    ? b
-                    : function combine(elem) {
-                          return a(elem) || b(elem);
-                      },
-            boolbase.falseFunc
-        );
+
+            const quality = getQuality(rule);
+
+            if (quality === 0) {
+                hasExpensiveSubselector = true;
+            }
+
+            // If the sub-selector won't match any elements, skip it.
+            if (next === boolbase.falseFunc) continue combineLoop;
+        }
+
+        // If we have a function that always returns true, we can stop here.
+        if (next === rootFunc) return rootFunc;
+
+        query = query === boolbase.falseFunc ? next : or(query, next);
+    }
 
     query.shouldTestNextSiblings = shouldTestNextSiblings;
 
     return query;
 }
 
-function compileRules<Node, ElementNode extends Node>(
-    rules: InternalSelector[],
-    options: InternalOptions<Node, ElementNode>,
-    context: Node[] | undefined,
-    rootFunc: CompiledQuery<ElementNode>
-): CompiledQuery<ElementNode> {
-    return rules.reduce<CompiledQuery<ElementNode>>(
-        (previous, rule) =>
-            previous === boolbase.falseFunc
-                ? boolbase.falseFunc
-                : compileGeneralSelector(
-                      previous,
-                      rule,
-                      options,
-                      context,
-                      compileToken
-                  ),
-        rootFunc
-    );
+function or<T>(a: Predicate<T>, b: Predicate<T>): Predicate<T> {
+    return (elem) => a(elem) || b(elem);
 }
