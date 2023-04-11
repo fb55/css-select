@@ -12,30 +12,30 @@ export function isTraversal(token: InternalSelector): token is Traversal {
 }
 
 /**
- * Sort the parts of the passed selector,
- * as there is potential for optimization
- * (some types of selectors are faster than others)
+ * Sort the parts of the passed selector, as there is potential for
+ * optimization (some types of selectors are faster than others).
  *
  * @param arr Selector to sort
  */
 export function sortRules(arr: InternalSelector[]): void {
-    const procs = arr.map(getProcedure);
+    const ratings = arr.map(getQuality);
     for (let i = 1; i < arr.length; i++) {
-        const procNew = procs[i];
+        const procNew = ratings[i];
 
         if (procNew < 0) continue;
 
-        for (let j = i - 1; j >= 0 && procNew < procs[j]; j--) {
-            const token = arr[j + 1];
-            arr[j + 1] = arr[j];
-            arr[j] = token;
-            procs[j + 1] = procs[j];
-            procs[j] = procNew;
+        // Use insertion sort to move the token to the correct position.
+        for (let j = i; j > 0 && procNew < ratings[j - 1]; j--) {
+            const token = arr[j];
+            arr[j] = arr[j - 1];
+            arr[j - 1] = token;
+            ratings[j] = ratings[j - 1];
+            ratings[j - 1] = procNew;
         }
     }
 }
 
-function getAttributeProcedure(token: AttributeSelector): number {
+function getAttributeQuality(token: AttributeSelector): number {
     switch (token.action) {
         case AttributeAction.Exists: {
             return 10;
@@ -65,7 +65,14 @@ function getAttributeProcedure(token: AttributeSelector): number {
     }
 }
 
-function getProcedure(token: InternalSelector): number {
+/**
+ * Determine the quality of the passed token. The higher the number, the
+ * faster the token is to execute.
+ *
+ * @param token Token to get the quality of.
+ * @returns The token's quality.
+ */
+export function getQuality(token: InternalSelector): number {
     switch (token.type) {
         case SelectorType.Universal: {
             return 50;
@@ -74,38 +81,32 @@ function getProcedure(token: InternalSelector): number {
             return 30;
         }
         case SelectorType.Attribute: {
-            const proc = getAttributeProcedure(token);
-
-            // `ignoreCase` adds some overhead, half the result if applicable.
-            return token.ignoreCase ? Math.floor(proc / 2) : proc;
+            return Math.floor(
+                getAttributeQuality(token) /
+                    // `ignoreCase` adds some overhead, half the result if applicable.
+                    (token.ignoreCase ? 2 : 1)
+            );
         }
         case SelectorType.Pseudo: {
-            if (!token.data) {
-                return 3;
-            }
-
-            if (
-                token.name === "has" ||
-                token.name === "contains" ||
-                token.name === "icontains"
-            ) {
-                return 0; // Expensive in any case — run as late as possible.
-            }
-
-            // Eg. `:is`, `:not`
-            if (Array.isArray(token.data)) {
-                // If we have traversals, try to avoid executing this selector
-                return Math.max(
-                    0,
-                    Math.min(
-                        ...token.data.map((d) =>
-                            Math.min(...d.map(getProcedure))
-                        )
-                    )
-                );
-            }
-
-            return 2;
+            return !token.data
+                ? 3
+                : token.name === "has" ||
+                  token.name === "contains" ||
+                  token.name === "icontains"
+                ? // Expensive in any case — run as late as possible.
+                  0
+                : Array.isArray(token.data)
+                ? // Eg. `:is`, `:not`
+                  Math.max(
+                      // If we have traversals, try to avoid executing this selector
+                      0,
+                      Math.min(
+                          ...token.data.map((d) =>
+                              Math.min(...d.map(getQuality))
+                          )
+                      )
+                  )
+                : 2;
         }
         default: {
             return -1;

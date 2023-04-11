@@ -28,7 +28,9 @@ type Subselect = <Node, ElementNode extends Node>(
  */
 function hasDependsOnCurrentElement(selector: Selector[][]) {
     return selector.some(
-        (sel) => isTraversal(sel[0]) || sel.some(includesScopePseudo)
+        (sel) =>
+            sel.length > 0 &&
+            (isTraversal(sel[0]) || sel.some(includesScopePseudo))
     );
 }
 

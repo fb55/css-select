@@ -18,7 +18,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     selector: InternalSelector,
     options: InternalOptions<Node, ElementNode>,
     context: Node[] | undefined,
-    compileToken: CompileToken<Node, ElementNode>
+    compileToken: CompileToken<Node, ElementNode>,
+    hasExpensiveSubselector: boolean
 ): CompiledQuery<ElementNode> {
     const { adapter, equals, cacheResults } = options;
 
@@ -73,7 +74,11 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
         // Traversal
         case SelectorType.Descendant: {
-            if (cacheResults === false || typeof WeakSet === "undefined") {
+            if (
+                !hasExpensiveSubselector ||
+                cacheResults === false ||
+                typeof WeakMap === "undefined"
+            ) {
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 
@@ -87,17 +92,30 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 };
             }
 
-            // @ts-expect-error `ElementNode` is not extending object
-            const isFalseCache = new WeakSet<ElementNode>();
+            const resultCache = new WeakMap<
+                // @ts-expect-error `ElementNode` is not extending object
+                ElementNode,
+                { matches: boolean }
+            >();
             return function cachedDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
+                let result;
 
                 while ((current = getElementParent(current, adapter))) {
-                    if (!isFalseCache.has(current)) {
-                        if (adapter.isTag(current) && next(current)) {
+                    const cached = resultCache.get(current);
+
+                    if (cached === undefined) {
+                        result ??= { matches: false };
+                        result.matches = next(current);
+                        resultCache.set(current, result);
+                        if (result.matches) {
                             return true;
                         }
-                        isFalseCache.add(current);
+                    } else {
+                        if (result) {
+                            result.matches = cached.matches;
+                        }
+                        return cached.matches;
                     }
                 }
 

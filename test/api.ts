@@ -387,12 +387,15 @@ describe("API", () => {
 
         it("should cache results by default", () => {
             const [dom] = parseDOM(
-                '<div id="foo"><p>bar</p></div>'
+                '<div><p id="foo">bar</p></div>'
             ) as Element[];
-            const query = CSSselect.compile("#bar p");
+            const selector = ":has(#bar) p";
+            const query = CSSselect.compile(selector);
 
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
-            dom.attribs["id"] = "bar";
+            (dom.childNodes[0] as Element).attribs["id"] = "bar";
+
+            expect(CSSselect.selectAll(selector, [dom])).toHaveLength(1);
             // The query should be cached and the changed attribute should be ignored.
             expect(CSSselect.selectAll(query, [dom])).toHaveLength(0);
         });
