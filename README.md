@@ -31,7 +31,7 @@ below.
 ## Why?
 
 Most CSS engines written in JavaScript execute selectors left-to-right. That
-means thet execute every component of the selector in order, from left to right.
+means they execute every component of the selector in order, from left to right.
 As an example: For the selector `a b`, these engines will first query for `a`
 elements, then search these for `b` elements. (That's the approach of eg.
 [`Sizzle`](https://github.com/jquery/sizzle),
