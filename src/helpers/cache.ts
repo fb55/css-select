@@ -13,7 +13,7 @@ import { getElementParent } from "./querying.js";
 export function cacheParentResults<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     { adapter, cacheResults }: InternalOptions<Node, ElementNode>,
-    matches: (elem: ElementNode) => boolean
+    matches: (elem: ElementNode) => boolean,
 ): CompiledQuery<ElementNode> {
     if (cacheResults === false || typeof WeakMap === "undefined") {
         return (elem) => next(elem) && matches(elem);

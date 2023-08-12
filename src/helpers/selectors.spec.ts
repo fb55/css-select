@@ -32,26 +32,26 @@ describe("sortRules", () => {
     it("should sort attribute selectors", () => {
         expect(
             parseSortStringify(
-                ".foo#bar[foo=bar][foo^=bar][foo$=bar][foo!=bar][foo=bar i][foo!=bar s]"
-            )
+                ".foo#bar[foo=bar][foo^=bar][foo$=bar][foo!=bar][foo=bar i][foo!=bar s]",
+            ),
         ).toBe(
-            '.foo#bar[foo="bar" i][foo^="bar"][foo$="bar"][foo!="bar"][foo!="bar" s][foo="bar"]'
+            '.foo#bar[foo="bar" i][foo^="bar"][foo$="bar"][foo!="bar"][foo!="bar" s][foo="bar"]',
         );
     });
 
     it("should sort pseudo selectors", () => {
         expect(
             parseSortStringify(
-                ":not(:empty):empty:contains(a):icontains(a):has(div):is(div):is(foo bar):is([foo])"
-            )
+                ":not(:empty):empty:contains(a):icontains(a):has(div):is(div):is(foo bar):is([foo])",
+            ),
         ).toBe(
-            ":contains(a):icontains(a):has(div):is(foo bar):not(:empty):empty:is([foo]):is(div)"
+            ":contains(a):icontains(a):has(div):is(foo bar):not(:empty):empty:is([foo]):is(div)",
         );
     });
 
     it("should support traversals", () => {
         expect(
-            parseSortStringify("div > *:empty[foo] + [bar=foo i]:is(div)")
+            parseSortStringify("div > *:empty[foo] + [bar=foo i]:is(div)"),
         ).toBe('div > :empty[foo]* + [bar="foo" i]:is(div)');
     });
 });

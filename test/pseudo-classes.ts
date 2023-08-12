@@ -4,7 +4,7 @@ import type { AnyNode, Element } from "domhandler";
 import type { Adapter } from "../src/types.js";
 
 const dom = parseDOM(
-    "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>"
+    "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>",
 ) as Element[];
 
 describe(":icontains", () => {
@@ -12,13 +12,13 @@ describe(":icontains", () => {
         it("should match full string", () => {
             let matches = CSSselect.selectAll(
                 ":icontains(indeed-that's a delicate matter.)",
-                dom
+                dom,
             );
             expect(matches).toHaveLength(2);
             expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
             matches = CSSselect.selectAll(
                 ":icontains(inDeeD-THAT's a DELICATE matteR.)",
-                dom
+                dom,
             );
             expect(matches).toHaveLength(2);
             expect(matches).toStrictEqual([dom[0], dom[0].children[1]]);
@@ -114,15 +114,15 @@ describe(":icontains", () => {
 describe("unmatched", () => {
     it("should throw on unknown pseudo-class (#741)", () => {
         expect(() => CSSselect.selectAll(":unmatched(foo)", dom)).toThrow(
-            "Unknown pseudo-class :unmatched"
+            "Unknown pseudo-class :unmatched",
         );
 
         expect(() => CSSselect.selectAll(":unmatched(foo)", dom)).toThrow(
-            "Unknown pseudo-class :unmatched"
+            "Unknown pseudo-class :unmatched",
         );
 
         expect(() => CSSselect.selectAll(":host-context(foo)", dom)).toThrow(
-            "Unknown pseudo-class :host-context"
+            "Unknown pseudo-class :host-context",
         );
     });
 });
@@ -185,18 +185,18 @@ describe(":has", () => {
         const compiled = CSSselect.compile(":has(.a .b ~ .c)");
 
         expect(
-            CSSselect.selectAll<AnyNode, Element>(compiled, dom)
+            CSSselect.selectAll<AnyNode, Element>(compiled, dom),
         ).toHaveLength(2);
 
         (dom.childNodes[1] as any).childNodes[1].attribs.class = "";
 
         // Should not find the element anymore
         expect(CSSselect.selectAll<AnyNode, Element>(".a", dom)).toHaveLength(
-            0
+            0,
         );
         // But as we have cached the results in `compiled`, we should succeed here.
         expect(
-            CSSselect.selectAll<AnyNode, Element>(compiled, dom)
+            CSSselect.selectAll<AnyNode, Element>(compiled, dom),
         ).toHaveLength(2);
     });
 });

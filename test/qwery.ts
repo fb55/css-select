@@ -30,7 +30,7 @@ const frag = parseDOM(
         "</div>" +
         '<p id="sep">' +
         '<div class="a"><span></span></div>' +
-        "</p></root>"
+        "</p></root>",
 );
 
 const doc = parseDOM(
@@ -42,7 +42,7 @@ const doc = parseDOM(
         "</div>" +
         '<p class="odd"></p>' +
         "</div>" +
-        '<div id="lonelyHsoob"></div></root>'
+        '<div id="lonelyHsoob"></div></root>',
 );
 
 const el = document.getElementById("attr-child-boosh");
@@ -73,22 +73,22 @@ describe("qwery", () => {
 
         it("byId sub-queries within context", () => {
             expect(selectAll("#booshTest", selectAll("#boosh"))).toHaveLength(
-                1
+                1,
             ); // Found "#id #id"
             expect(
-                selectAll(".a.b #booshTest", selectAll("#boosh"))
+                selectAll(".a.b #booshTest", selectAll("#boosh")),
             ).toHaveLength(1); // Found ".class.class #id"
             expect(
-                selectAll(".a>#booshTest", selectAll("#boosh"))
+                selectAll(".a>#booshTest", selectAll("#boosh")),
             ).toHaveLength(1); // Found ".class>#id"
             expect(
-                selectAll(">.a>#booshTest", selectAll("#boosh"))
+                selectAll(">.a>#booshTest", selectAll("#boosh")),
             ).toHaveLength(1); // Found ">.class>#id"
             expect(selectAll("#boosh", selectAll("#booshTest"))).toHaveLength(
-                0
+                0,
             ); // Shouldn't find #boosh (ancestor) within #booshTest (descendent)
             expect(selectAll("#boosh", selectAll("#lonelyBoosh"))).toHaveLength(
-                0
+                0,
             ); // Shouldn't find #boosh within #lonelyBoosh (unrelated)
         });
     });
@@ -138,19 +138,19 @@ describe("qwery", () => {
              */
             expect(selectAll("div#fixtures > div a")).toHaveLength(5); // Found four results for "div#fixtures > div a"
             expect(
-                selectAll(".direct-descend > .direct-descend .lvl2")
+                selectAll(".direct-descend > .direct-descend .lvl2"),
             ).toHaveLength(1); // Found one result for ".direct-descend > .direct-descend .lvl2"
             expect(
-                selectAll(".direct-descend > .direct-descend div")
+                selectAll(".direct-descend > .direct-descend div"),
             ).toHaveLength(1); // Found one result for ".direct-descend > .direct-descend div"
             expect(
-                selectAll(".direct-descend > .direct-descend div")
+                selectAll(".direct-descend > .direct-descend div"),
             ).toHaveLength(1); // Found one result for ".direct-descend > .direct-descend div"
             expect(selectAll("div#fixtures div ~ a div")).toHaveLength(0); // Found no results for odd query
             expect(
                 selectAll(
-                    ".direct-descend > .direct-descend > .direct-descend ~ .lvl2"
-                )
+                    ".direct-descend > .direct-descend > .direct-descend ~ .lvl2",
+                ),
             ).toHaveLength(0); // Found no results for another odd query
         });
     });
@@ -172,7 +172,7 @@ describe("qwery", () => {
         it("crazy town", () => {
             const el = document.getElementById("attr-test3");
             expect(
-                selectAll('div#attr-test3.found.you[title="whatup duders"]')[0]
+                selectAll('div#attr-test3.found.you[title="whatup duders"]')[0],
             ).toBe(el); // Found the right element
         });
     });
@@ -188,13 +188,13 @@ describe("qwery", () => {
         it("[attr=val]", () => {
             const expected = document.getElementById("attr-test-2");
             expect(selectAll('#attributes div[test="two-foo"]')[0]).toBe(
-                expected
+                expected,
             ); // Found attribute with =
             expect(selectAll("#attributes div[test='two-foo']")[0]).toBe(
-                expected
+                expected,
             ); // Found attribute with =
             expect(selectAll("#attributes div[test=two-foo]")[0]).toBe(
-                expected
+                expected,
             ); // Found attribute with =
         });
 
@@ -206,7 +206,7 @@ describe("qwery", () => {
         it("[attr|=val]", () => {
             const expected = document.getElementById("attr-test-2");
             expect(selectAll('#attributes div[test|="two-foo"]')[0]).toBe(
-                expected
+                expected,
             ); // Found attribute with |=
             expect(selectAll("#attributes div[test|=two]")[0]).toBe(expected); // Found attribute with |=
         });
@@ -235,25 +235,25 @@ describe("qwery", () => {
 
         it("direct descendants", () => {
             expect(selectAll("#direct-descend > .direct-descend")).toHaveLength(
-                2
+                2,
             ); // Found two direct descendents
             expect(
-                selectAll("#direct-descend > .direct-descend > .lvl2")
+                selectAll("#direct-descend > .direct-descend > .lvl2"),
             ).toHaveLength(3); // Found three second-level direct descendents
         });
 
         it("sibling elements", () => {
             expect(
-                selectAll("#sibling-selector ~ .sibling-selector")
+                selectAll("#sibling-selector ~ .sibling-selector"),
             ).toHaveLength(2); // Found two siblings
             expect(
-                selectAll("#sibling-selector ~ div.sibling-selector")
+                selectAll("#sibling-selector ~ div.sibling-selector"),
             ).toHaveLength(2); // Found two siblings
             expect(
-                selectAll("#sibling-selector + div.sibling-selector")
+                selectAll("#sibling-selector + div.sibling-selector"),
             ).toHaveLength(1); // Found one sibling
             expect(
-                selectAll("#sibling-selector + .sibling-selector")
+                selectAll("#sibling-selector + .sibling-selector"),
             ).toHaveLength(1); // Found one sibling
 
             expect(selectAll(".parent .oldest ~ .sibling")).toHaveLength(4); // Found four younger siblings
@@ -276,16 +276,22 @@ describe("qwery", () => {
     describe("element-context queries", () => {
         it("relationship-first queries", () => {
             expect(
-                selectAll("> .direct-descend", selectAll("#direct-descend"))
+                selectAll("> .direct-descend", selectAll("#direct-descend")),
             ).toHaveLength(2); // Found two direct descendents using > first
             expect(
-                selectAll("~ .sibling-selector", selectAll("#sibling-selector"))
+                selectAll(
+                    "~ .sibling-selector",
+                    selectAll("#sibling-selector"),
+                ),
             ).toHaveLength(2); // Found two siblings with ~ first
             expect(
-                selectAll("+ .sibling-selector", selectAll("#sibling-selector"))
+                selectAll(
+                    "+ .sibling-selector",
+                    selectAll("#sibling-selector"),
+                ),
             ).toHaveLength(1); // Found one sibling with + first
             expect(
-                selectAll("> .tokens a", selectAll(".idless")[0])
+                selectAll("> .tokens a", selectAll(".idless")[0]),
             ).toHaveLength(1); // Found one sibling from a root with no id
         });
 
@@ -301,14 +307,14 @@ describe("qwery", () => {
             expect(selectAll(".d #oooo #emem", frag)).toHaveLength(1); // Found ".class #id #id" in fragment
             expect(selectAll("> div #oooo", frag)).toHaveLength(1); // Found "> .class #id" in fragment
             expect(selectAll("#oooo", selectAll("#emem", frag))).toHaveLength(
-                0
+                0,
             ); // Shouldn't find #oooo (ancestor) within #emem (descendent)
             expect(selectAll("#sep", selectAll("#emem", frag))).toHaveLength(0); // Shouldn't find #sep within #emem (unrelated)
         });
 
         it("exclude self in match", () => {
             expect(
-                selectAll(".order-matters", selectAll("#order-matters")[0])
+                selectAll(".order-matters", selectAll("#order-matters")[0]),
             ).toHaveLength(4); // Should not include self in element-context queries
         });
 
@@ -321,21 +327,21 @@ describe("qwery", () => {
     describe("tokenizer", () => {
         it("should not get weird tokens", () => {
             expect(selectAll('div .tokens[title="one"]')[0]).toBe(
-                document.getElementById("token-one")
+                document.getElementById("token-one"),
             ); // Found div .tokens[title="one"]
             expect(selectAll('div .tokens[title="one two"]')[0]).toBe(
-                document.getElementById("token-two")
+                document.getElementById("token-two"),
             ); // Found div .tokens[title="one two"]
             expect(selectAll('div .tokens[title="one two three #%"]')[0]).toBe(
-                document.getElementById("token-three")
+                document.getElementById("token-three"),
             ); // Found div .tokens[title="one two three #%"]
             expect(
-                selectAll("div .tokens[title='one two three #%'] a")[0]
+                selectAll("div .tokens[title='one two three #%'] a")[0],
             ).toBe(document.getElementById("token-four")); // Found div .tokens[title=\'one two three #%\'] a
             expect(
                 selectAll(
-                    'div .tokens[title="one two three #%"] a[href$=foo] div'
-                )[0]
+                    'div .tokens[title="one two three #%"] a[href$=foo] div',
+                )[0],
             ).toBe(document.getElementById("token-five")); // Found div .tokens[title="one two three #%"] a[href=foo] div
         });
     });
@@ -343,7 +349,7 @@ describe("qwery", () => {
     describe("interesting syntaxes", () => {
         it("should parse bad selectors", () => {
             expect(
-                selectAll("#spaced-tokens    p    em    a").length
+                selectAll("#spaced-tokens    p    em    a").length,
             ).toBeTruthy(); // Found element with funny tokens
         });
     });
@@ -391,7 +397,7 @@ describe("qwery", () => {
         it(":last-child", () => {
             const all = DomUtils.getElementsByTagName("div", pseudos);
             expect(selectAll("#pseudos div:last-child")[0]).toBe(
-                all[all.length - 1]
+                all[all.length - 1],
             ); // Found last child
             expect(selectAll("#pseudos div:last-child")).toHaveLength(1); // Found only 1
         });
@@ -399,10 +405,10 @@ describe("qwery", () => {
         it('ol > li[attr="boosh"]:last-child', () => {
             const expected = document.getElementById("attr-child-boosh");
             expect(selectAll('ol > li[attr="boosh"]:last-child')).toHaveLength(
-                1
+                1,
             ); // Only 1 element found
             expect(selectAll('ol > li[attr="boosh"]:last-child')[0]).toBe(
-                expected
+                expected,
             ); // Found correct element
         });
 
@@ -430,10 +436,10 @@ describe("qwery", () => {
             const second = DomUtils.getElementsByTagName("div", pseudos)[1];
             expect(selectAll("#pseudos :nth-last-child(odd)")).toHaveLength(4); // Found 4 odd elements
             expect(selectAll("#pseudos div:nth-last-child(odd)")).toHaveLength(
-                3
+                3,
             ); // Found 3 odd elements with div tag
             expect(selectAll("#pseudos div:nth-last-child(even)")).toHaveLength(
-                3
+                3,
             ); // Found 3 even elements with div tag
             expect(selectAll("#pseudos div:nth-last-child(6)")[0]).toBe(second); // 6th nth-last-child should be 2nd of 7 elements
         });
@@ -463,19 +469,19 @@ describe("qwery", () => {
             const second = DomUtils.getElementsByTagName("div", pseudos)[1];
 
             expect(
-                selectAll("#pseudos div:nth-last-of-type(3n+1)")
+                selectAll("#pseudos div:nth-last-of-type(3n+1)"),
             ).toHaveLength(2); // Found 2 div elements
             expect(selectAll("#pseudos a:nth-last-of-type(3n+1)")).toHaveLength(
-                1
+                1,
             ); // Found 1 a element
             expect(selectAll("#pseudos div:nth-last-of-type(5)")[0]).toBe(
-                second
+                second,
             ); // 5th nth-last-of-type should be 2nd of 7 elements
         });
 
         it(":first-of-type", () => {
             expect(selectAll("#pseudos a:first-of-type")[0]).toBe(
-                DomUtils.getElementsByTagName("a", pseudos)[0]
+                DomUtils.getElementsByTagName("a", pseudos)[0],
             ); // Found first a element
             expect(selectAll("#pseudos a:first-of-type")).toHaveLength(1); // Found only 1
         });
@@ -483,14 +489,14 @@ describe("qwery", () => {
         it(":last-of-type", () => {
             const all = DomUtils.getElementsByTagName("div", pseudos);
             expect(selectAll("#pseudos div:last-of-type")[0]).toBe(
-                all[all.length - 1]
+                all[all.length - 1],
             ); // Found last div element
             expect(selectAll("#pseudos div:last-of-type")).toHaveLength(1); // Found only 1
         });
 
         it(":only-of-type", () => {
             expect(selectAll("#pseudos a:only-of-type")[0]).toBe(
-                DomUtils.getElementsByTagName("a", pseudos)[0]
+                DomUtils.getElementsByTagName("a", pseudos)[0],
             ); // Found the only a element
             expect(selectAll("#pseudos a:first-of-type")).toHaveLength(1); // Found only 1
         });
@@ -524,10 +530,10 @@ describe("qwery", () => {
 
         it("selector sequences", () => {
             expect(
-                CSSselect.is(el, "li#attr-child-boosh[attr=boosh]")
+                CSSselect.is(el, "li#attr-child-boosh[attr=boosh]"),
             ).toBeTruthy(); // Tag#id[attr=val]
             expect(
-                CSSselect.is(el, "div#attr-child-boosh[attr=boosh]")
+                CSSselect.is(el, "div#attr-child-boosh[attr=boosh]"),
             ).toBeFalsy(); // Wrong tag#id[attr=val]
         });
 
@@ -536,16 +542,16 @@ describe("qwery", () => {
             expect(CSSselect.is(el, "ol>li")).toBeTruthy(); // Tag>tag
             expect(CSSselect.is(el, "ol>li+li")).toBeTruthy(); // Tab>tag+tag
             expect(
-                CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]")
+                CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]"),
             ).toBeTruthy(); // Tag#id tag#id[attr=val]
             expect(
-                CSSselect.is(el, "ol#list>li#attr-child-boosh[attr=boosh]")
+                CSSselect.is(el, "ol#list>li#attr-child-boosh[attr=boosh]"),
             ).toBeFalsy(); // Wrong tag#id>tag#id[attr=val]
             expect(
-                CSSselect.is(el, "ol ol li#attr-child-boosh[attr=boosh]")
+                CSSselect.is(el, "ol ol li#attr-child-boosh[attr=boosh]"),
             ).toBeTruthy(); // Tag tag tag#id[attr=val]
             expect(
-                CSSselect.is(selectAll("#token-four")[0], "div#fixtures>div a")
+                CSSselect.is(selectAll("#token-four")[0], "div#fixtures>div a"),
             ).toBeTruthy(); // Tag#id>tag tag where ambiguous middle tag requires backtracking
         });
 
@@ -553,10 +559,10 @@ describe("qwery", () => {
             expect(CSSselect.is(el, "li:contains(hello)")).toBe(true); // Matching :contains(text)
             expect(CSSselect.is(el, "li:contains(human)")).toBe(false); // Non-matching :contains(text)
             expect(
-                CSSselect.is(selectAll("#list>li")[2], ":humanoid", options)
+                CSSselect.is(selectAll("#list>li")[2], ":humanoid", options),
             ).toBe(true); // Matching custom pseudo
             expect(
-                CSSselect.is(selectAll("#list>li")[1], ":humanoid", options)
+                CSSselect.is(selectAll("#list>li")[1], ":humanoid", options),
             ).toBe(false); // Non-matching custom pseudo
         });
 
@@ -564,12 +570,12 @@ describe("qwery", () => {
             expect(
                 CSSselect.is(el, "li#attr-child-boosh[attr=boosh]", {
                     context: selectAll("#list")[0],
-                })
+                }),
             ).toBeTruthy(); // Context
             expect(
                 CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]", {
                     context: selectAll("#boosh")[0],
-                })
+                }),
             ).toBeFalsy(); // Wrong context
         });
     });
@@ -605,22 +611,22 @@ describe("qwery", () => {
 
         it("byId sub-queries within sub-context", () => {
             expect(selectAll("#spanny", selectAll("#hsoob", doc))).toHaveLength(
-                1
+                1,
             ); // Found "#id -> #id" in frame
             expect(
-                selectAll(".a #spanny", selectAll("#hsoob", doc))
+                selectAll(".a #spanny", selectAll("#hsoob", doc)),
             ).toHaveLength(1); // Found ".class #id" in frame
             expect(
-                selectAll(".a #booshTest #spanny", selectAll("#hsoob", doc))
+                selectAll(".a #booshTest #spanny", selectAll("#hsoob", doc)),
             ).toHaveLength(1); // Found ".class #id #id" in frame
             expect(
-                selectAll(".a > #booshTest", selectAll("#hsoob", doc))
+                selectAll(".a > #booshTest", selectAll("#hsoob", doc)),
             ).toHaveLength(1); // Found "> .class #id" in frame
             expect(
-                selectAll("#booshTest", selectAll("#spanny", doc))
+                selectAll("#booshTest", selectAll("#spanny", doc)),
             ).toHaveLength(0); // Shouldn't find #booshTest (ancestor) within #spanny (descendent)
             expect(
-                selectAll("#booshTest", selectAll("#lonelyHsoob", doc))
+                selectAll("#booshTest", selectAll("#lonelyHsoob", doc)),
             ).toHaveLength(0); // Shouldn't find #booshTest within #lonelyHsoob (unrelated)
         });
     });

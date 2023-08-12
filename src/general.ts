@@ -19,7 +19,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,
     context: Node[] | undefined,
     compileToken: CompileToken<Node, ElementNode>,
-    hasExpensiveSubselector: boolean
+    hasExpensiveSubselector: boolean,
 ): CompiledQuery<ElementNode> {
     const { adapter, equals, cacheResults } = options;
 
@@ -29,13 +29,13 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         }
         case SelectorType.ColumnCombinator: {
             throw new Error(
-                "Column combinators are not yet supported by css-select"
+                "Column combinators are not yet supported by css-select",
             );
         }
         case SelectorType.Attribute: {
             if (selector.namespace != null) {
                 throw new Error(
-                    "Namespaced attributes are not yet supported by css-select"
+                    "Namespaced attributes are not yet supported by css-select",
                 );
             }
 
@@ -50,14 +50,14 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 selector,
                 options,
                 context,
-                compileToken
+                compileToken,
             );
         }
         // Tags
         case SelectorType.Tag: {
             if (selector.namespace != null) {
                 throw new Error(
-                    "Namespaced tag names are not yet supported by css-select"
+                    "Namespaced tag names are not yet supported by css-select",
                 );
             }
 
@@ -188,7 +188,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         case SelectorType.Universal: {
             if (selector.namespace != null && selector.namespace !== "*") {
                 throw new Error(
-                    "Namespaced universal selectors are not yet supported by css-select"
+                    "Namespaced universal selectors are not yet supported by css-select",
                 );
             }
 

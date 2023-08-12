@@ -4,7 +4,7 @@ import type { InternalOptions } from "../types.js";
 type Pseudo = <Node, ElementNode extends Node>(
     elem: ElementNode,
     options: InternalOptions<Node, ElementNode>,
-    subselect?: string | null
+    subselect?: string | null,
 ) => boolean;
 
 /**
@@ -26,7 +26,7 @@ export const pseudos: Record<string, Pseudo> = {
             // Then, check that the text content is only whitespace.
             children.every((elem) =>
                 // FIXME: `getText` call is potentially expensive.
-                isDocumentWhiteSpace.test(adapter.getText(elem))
+                isDocumentWhiteSpace.test(adapter.getText(elem)),
             )
         );
     },
@@ -94,14 +94,14 @@ export const pseudos: Record<string, Pseudo> = {
                 (sibling) =>
                     equals(elem, sibling) ||
                     !adapter.isTag(sibling) ||
-                    adapter.getName(sibling) !== elemName
+                    adapter.getName(sibling) !== elemName,
             );
     },
     "only-child"(elem, { adapter, equals }) {
         return adapter
             .getSiblings(elem)
             .every(
-                (sibling) => equals(elem, sibling) || !adapter.isTag(sibling)
+                (sibling) => equals(elem, sibling) || !adapter.isTag(sibling),
             );
     },
 };
@@ -110,7 +110,7 @@ export function verifyPseudoArgs<T extends Array<unknown>>(
     func: (...args: T) => boolean,
     name: string,
     subselect: PseudoSelector["data"],
-    argIndex: number
+    argIndex: number,
 ): void {
     if (subselect === null) {
         if (func.length > argIndex) {

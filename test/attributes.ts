@@ -4,7 +4,7 @@ import * as boolbase from "boolbase";
 import type { Element } from "domhandler";
 
 const dom = parseDocument(
-    '<div data-foo="In the end, it doesn\'t really matter."></div><div data-foo="Indeed-that\'s a delicate matter.">'
+    '<div data-foo="In the end, it doesn\'t really matter."></div><div data-foo="Indeed-that\'s a delicate matter.">',
 );
 const domChilds = dom.children as Element[];
 
@@ -13,13 +13,13 @@ describe("Attributes", () => {
         it("should for =", () => {
             let matches = CSSselect.selectAll(
                 '[data-foo="indeed-that\'s a delicate matter." i]',
-                dom
+                dom,
             );
             expect(matches).toHaveLength(1);
             expect(matches).toStrictEqual([domChilds[1]]);
             matches = CSSselect.selectAll(
                 '[data-foo="inDeeD-THAT\'s a DELICATE matteR." i]',
-                dom
+                dom,
             );
             expect(matches).toStrictEqual([domChilds[1]]);
         });
@@ -47,13 +47,13 @@ describe("Attributes", () => {
         it("should for !=", () => {
             let matches = CSSselect.selectAll(
                 '[data-foo!="indeed-that\'s a delicate matter." i]',
-                dom
+                dom,
             );
             expect(matches).toHaveLength(1);
             expect(matches).toStrictEqual([domChilds[0]]);
             matches = CSSselect.selectAll(
                 '[data-foo!="inDeeD-THAT\'s a DELICATE matteR." i]',
-                dom
+                dom,
             );
             expect(matches).toStrictEqual([domChilds[0]]);
         });
@@ -86,19 +86,19 @@ describe("Attributes", () => {
     describe("no matches", () => {
         it("should for ~=", () => {
             expect(CSSselect._compileUnsafe("[foo~='baz bar']")).toBe(
-                boolbase.falseFunc
+                boolbase.falseFunc,
             );
         });
 
         it("should for $=", () => {
             expect(CSSselect._compileUnsafe("[foo$='']")).toBe(
-                boolbase.falseFunc
+                boolbase.falseFunc,
             );
         });
 
         it("should for *=", () => {
             expect(CSSselect._compileUnsafe("[foo*='']")).toBe(
-                boolbase.falseFunc
+                boolbase.falseFunc,
             );
         });
     });
