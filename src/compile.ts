@@ -33,13 +33,13 @@ const SCOPE_TOKEN: Selector = {
 function absolutize<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     { adapter }: InternalOptions<Node, ElementNode>,
-    context?: Node[]
+    context?: Node[],
 ) {
     // TODO Use better check if the context is a document
     const hasContext = !!context?.every(
         (e) =>
             e === PLACEHOLDER_ELEMENT ||
-            (adapter.isTag(e) && getElementParent(e, adapter) !== null)
+            (adapter.isTag(e) && getElementParent(e, adapter) !== null),
     );
 
     for (const t of token) {
@@ -62,7 +62,7 @@ function absolutize<Node, ElementNode extends Node>(
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    ctx?: Node[] | Node
+    ctx?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
     token.forEach(sortRules);
 
@@ -78,7 +78,7 @@ export function compileToken<Node, ElementNode extends Node>(
         absolutize(token, options, finalContext);
     } else if (token.some((t) => t.length > 0 && isTraversal(t[0]))) {
         throw new Error(
-            "Relative selectors are not allowed when the `relativeSelector` option is disabled"
+            "Relative selectors are not allowed when the `relativeSelector` option is disabled",
         );
     }
 
@@ -114,7 +114,7 @@ export function compileToken<Node, ElementNode extends Node>(
                 options,
                 finalContext,
                 compileToken,
-                hasExpensiveSubselector
+                hasExpensiveSubselector,
             );
 
             const quality = getQuality(rule);

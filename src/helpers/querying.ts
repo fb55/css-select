@@ -13,7 +13,7 @@ import type { InternalOptions, Predicate, Adapter } from "../types.js";
 export function findAll<Node, ElementNode extends Node>(
     query: Predicate<ElementNode>,
     elems: Node[],
-    options: InternalOptions<Node, ElementNode>
+    options: InternalOptions<Node, ElementNode>,
 ): ElementNode[] {
     const { adapter, xmlMode = false } = options;
     const result: ElementNode[] = [];
@@ -48,7 +48,7 @@ export function findAll<Node, ElementNode extends Node>(
 export function findOne<Node, ElementNode extends Node>(
     query: Predicate<ElementNode>,
     elems: Node[],
-    options: InternalOptions<Node, ElementNode>
+    options: InternalOptions<Node, ElementNode>,
 ): ElementNode | null {
     const { adapter, xmlMode = false } = options;
     const stack = elems.filter(adapter.isTag);
@@ -71,7 +71,7 @@ export function findOne<Node, ElementNode extends Node>(
 
 export function getNextSiblings<Node, ElementNode extends Node>(
     elem: Node,
-    adapter: Adapter<Node, ElementNode>
+    adapter: Adapter<Node, ElementNode>,
 ): ElementNode[] {
     const siblings = adapter.getSiblings(elem);
     if (siblings.length <= 1) return [];
@@ -82,7 +82,7 @@ export function getNextSiblings<Node, ElementNode extends Node>(
 
 export function getElementParent<Node, ElementNode extends Node>(
     node: ElementNode,
-    adapter: Adapter<Node, ElementNode>
+    adapter: Adapter<Node, ElementNode>,
 ): ElementNode | null {
     const parent = adapter.getParent(node);
     return parent != null && adapter.isTag(parent) ? parent : null;

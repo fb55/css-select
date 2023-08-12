@@ -84,7 +84,7 @@ export function getQuality(token: InternalSelector): number {
             return Math.floor(
                 getAttributeQuality(token) /
                     // `ignoreCase` adds some overhead, half the result if applicable.
-                    (token.ignoreCase ? 2 : 1)
+                    (token.ignoreCase ? 2 : 1),
             );
         }
         case SelectorType.Pseudo: {
@@ -102,9 +102,9 @@ export function getQuality(token: InternalSelector): number {
                       0,
                       Math.min(
                           ...token.data.map((d) =>
-                              Math.min(...d.map(getQuality))
-                          )
-                      )
+                              Math.min(...d.map(getQuality)),
+                          ),
+                      ),
                   )
                 : 2;
         }

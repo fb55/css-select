@@ -25,7 +25,7 @@ const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
 };
 
 function convertOptionFormats<Node, ElementNode extends Node>(
-    options?: Options<Node, ElementNode>
+    options?: Options<Node, ElementNode>,
 ): InternalOptions<Node, ElementNode> {
     /*
      * We force one format of options to the other one.
@@ -53,7 +53,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
 export function compile<Node, ElementNode extends Node>(
     selector: string | Selector[][],
     options?: Options<Node, ElementNode>,
-    context?: Node[] | Node
+    context?: Node[] | Node,
 ): CompiledQuery<Node> {
     const opts = convertOptionFormats(options);
     const next = _compileUnsafe(selector, opts, context);
@@ -68,12 +68,12 @@ export function compile<Node, ElementNode extends Node>(
 export function _compileUnsafe<Node, ElementNode extends Node>(
     selector: string | Selector[][],
     options?: Options<Node, ElementNode>,
-    context?: Node[] | Node
+    context?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
     return _compileToken<Node, ElementNode>(
         typeof selector === "string" ? parse(selector) : selector,
         options,
-        context
+        context,
     );
 }
 /**
@@ -82,12 +82,12 @@ export function _compileUnsafe<Node, ElementNode extends Node>(
 export function _compileToken<Node, ElementNode extends Node>(
     selector: Selector[][],
     options?: Options<Node, ElementNode>,
-    context?: Node[] | Node
+    context?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
     return compileToken<Node, ElementNode>(
         selector,
         convertOptionFormats(options),
-        context
+        context,
     );
 }
 
@@ -95,13 +95,13 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
     searchFunc: (
         query: Predicate<ElementNode>,
         elems: Array<Node>,
-        options: InternalOptions<Node, ElementNode>
-    ) => T
+        options: InternalOptions<Node, ElementNode>,
+    ) => T,
 ) {
     return function select(
         query: Query<ElementNode>,
         elements: Node[] | Node,
-        options?: Options<Node, ElementNode>
+        options?: Options<Node, ElementNode>,
     ): T {
         const opts = convertOptionFormats(options);
 
@@ -112,7 +112,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         const filteredElements = prepareContext(
             elements,
             opts.adapter,
-            query.shouldTestNextSiblings
+            query.shouldTestNextSiblings,
         );
         return searchFunc(query, filteredElements, opts);
     };
@@ -121,7 +121,7 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
 export function prepareContext<Node, ElementNode extends Node>(
     elems: Node | Node[],
     adapter: Adapter<Node, ElementNode>,
-    shouldTestNextSiblings = false
+    shouldTestNextSiblings = false,
 ): Node[] {
     /*
      * Add siblings if the query requires them.
@@ -138,7 +138,7 @@ export function prepareContext<Node, ElementNode extends Node>(
 
 function appendNextSiblings<Node, ElementNode extends Node>(
     elem: Node | Node[],
-    adapter: Adapter<Node, ElementNode>
+    adapter: Adapter<Node, ElementNode>,
 ): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
     const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
@@ -165,11 +165,11 @@ export const selectAll = getSelectorFunc(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
-        options: InternalOptions<Node, ElementNode>
+        options: InternalOptions<Node, ElementNode>,
     ): ElementNode[] =>
         query === boolbase.falseFunc || !elems || elems.length === 0
             ? []
-            : findAll(query, elems, options)
+            : findAll(query, elems, options),
 );
 
 /**
@@ -185,11 +185,11 @@ export const selectOne = getSelectorFunc(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
-        options: InternalOptions<Node, ElementNode>
+        options: InternalOptions<Node, ElementNode>,
     ): ElementNode | null =>
         query === boolbase.falseFunc || !elems || elems.length === 0
             ? null
-            : findOne(query, elems, options)
+            : findOne(query, elems, options),
 );
 
 /**
@@ -206,10 +206,10 @@ export const selectOne = getSelectorFunc(
 export function is<Node, ElementNode extends Node>(
     elem: ElementNode,
     query: Query<ElementNode>,
-    options?: Options<Node, ElementNode>
+    options?: Options<Node, ElementNode>,
 ): boolean {
     return (typeof query === "function" ? query : compile(query, options))(
-        elem
+        elem,
     );
 }
 

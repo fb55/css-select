@@ -26,7 +26,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     selector: PseudoSelector,
     options: InternalOptions<Node, ElementNode>,
     context: Node[] | undefined,
-    compileToken: CompileToken<Node, ElementNode>
+    compileToken: CompileToken<Node, ElementNode>,
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
 

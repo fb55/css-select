@@ -27,7 +27,7 @@ export function q(...ids: string[]): Element[] {
 export function t(
     selector: string,
     expectedIds: string[],
-    context: Node[] | Node | null = document
+    context: Node[] | Node | null = document,
 ): void {
     const actual = CSSselect(selector, context) as Element[];
     const actualIds = actual.map((e) => e.attribs["id"]);

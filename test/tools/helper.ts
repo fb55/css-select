@@ -6,7 +6,7 @@ import { Text, Element, Document } from "domhandler";
 
 export function getDocumentFromPath(
     file: string,
-    options?: ParserOptions
+    options?: ParserOptions,
 ): Document {
     const filePath = join(__dirname, "..", "fixtures", file);
     return parseDocument(readFileSync(filePath, "utf8"), options);

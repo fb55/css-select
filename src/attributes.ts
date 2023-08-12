@@ -70,7 +70,7 @@ const caseInsensitiveAttributes = new Set([
 
 function shouldIgnoreCase<Node, ElementNode extends Node>(
     selector: AttributeSelector,
-    options: InternalOptions<Node, ElementNode>
+    options: InternalOptions<Node, ElementNode>,
 ): boolean {
     return typeof selector.ignoreCase === "boolean"
         ? selector.ignoreCase
@@ -87,7 +87,7 @@ export const attributeRules: Record<
     <Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
         data: AttributeSelector,
-        options: InternalOptions<Node, ElementNode>
+        options: InternalOptions<Node, ElementNode>,
     ) => CompiledQuery<ElementNode>
 > = {
     equals(next, data, options) {
@@ -151,7 +151,7 @@ export const attributeRules: Record<
 
         const regex = new RegExp(
             `(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`,
-            shouldIgnoreCase(data, options) ? "i" : ""
+            shouldIgnoreCase(data, options) ? "i" : "",
         );
 
         return function element(elem) {

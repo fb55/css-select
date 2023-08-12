@@ -8,7 +8,7 @@ type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     text: string,
     options: InternalOptions<Node, ElementNode>,
-    context?: Node[]
+    context?: Node[],
 ) => CompiledQuery<ElementNode>;
 
 export const filters: Record<string, Filter> = {
@@ -16,7 +16,7 @@ export const filters: Record<string, Filter> = {
         const { getText } = options.adapter;
 
         return cacheParentResults(next, options, (elem) =>
-            getText(elem).includes(text)
+            getText(elem).includes(text),
         );
     },
     icontains(next, text, options) {
@@ -24,7 +24,7 @@ export const filters: Record<string, Filter> = {
         const { getText } = options.adapter;
 
         return cacheParentResults(next, options, (elem) =>
-            getText(elem).toLowerCase().includes(itext)
+            getText(elem).toLowerCase().includes(itext),
         );
     },
 
@@ -139,7 +139,7 @@ export const filters: Record<string, Filter> = {
         next: CompiledQuery<ElementNode>,
         rule: string,
         options: InternalOptions<Node, ElementNode>,
-        context?: Node[]
+        context?: Node[],
     ): CompiledQuery<ElementNode> {
         const { equals } = options;
 
@@ -168,7 +168,7 @@ export const filters: Record<string, Filter> = {
  * @returns Pseudo for the `filters` object.
  */
 function dynamicStatePseudo(
-    name: "isHovered" | "isVisited" | "isActive"
+    name: "isHovered" | "isVisited" | "isActive",
 ): Filter {
     return function dynamicPseudo(next, _rule, { adapter }) {
         const func = adapter[name];

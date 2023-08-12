@@ -13,7 +13,7 @@ type Subselect = <Node, ElementNode extends Node>(
     subselect: Selector[][],
     options: InternalOptions<Node, ElementNode>,
     context: Node[] | undefined,
-    compileToken: CompileToken<Node, ElementNode>
+    compileToken: CompileToken<Node, ElementNode>,
 ) => CompiledQuery<ElementNode>;
 
 /**
@@ -30,12 +30,12 @@ function hasDependsOnCurrentElement(selector: Selector[][]) {
     return selector.some(
         (sel) =>
             sel.length > 0 &&
-            (isTraversal(sel[0]) || sel.some(includesScopePseudo))
+            (isTraversal(sel[0]) || sel.some(includesScopePseudo)),
     );
 }
 
 function copyOptions<Node, ElementNode extends Node>(
-    options: InternalOptions<Node, ElementNode>
+    options: InternalOptions<Node, ElementNode>,
 ): InternalOptions<Node, ElementNode> {
     // Not copied: context, rootFunc
     return {
@@ -86,7 +86,7 @@ export const subselects: Record<string, Subselect> = {
         subselect: Selector[][],
         options: InternalOptions<Node, ElementNode>,
         _context: Node[] | undefined,
-        compileToken: CompileToken<Node, ElementNode>
+        compileToken: CompileToken<Node, ElementNode>,
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;
 
@@ -121,7 +121,7 @@ export const subselects: Record<string, Subselect> = {
                                         ...getNextSiblings(elem, adapter),
                                     ]
                                   : childs,
-                              options
+                              options,
                           ) !== null
                       );
                   }
@@ -132,7 +132,7 @@ export const subselects: Record<string, Subselect> = {
                           findOne(
                               compiled,
                               adapter.getChildren(elem),
-                              options
+                              options,
                           ) !== null
                       );
                   });
