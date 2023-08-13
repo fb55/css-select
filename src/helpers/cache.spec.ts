@@ -4,6 +4,11 @@ import * as DomUtils from "domutils";
 import type { Element, Node } from "domhandler";
 import * as CSSselect from "../index.js";
 import { cacheParentResults } from "./cache.js";
+import type { InternalOptions } from "../types.js";
+
+const cacheParentResultsOptions = {
+    adapter: DomUtils,
+} as unknown as InternalOptions<Node, Element>;
 
 describe("cacheParentResults", () => {
     it("should rely on parent for matches", () => {
@@ -14,7 +19,7 @@ describe("cacheParentResults", () => {
         const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
-            { adapter: DomUtils } as any,
+            cacheParentResultsOptions,
             fn,
         );
 
@@ -43,7 +48,7 @@ describe("cacheParentResults", () => {
         const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
-            { adapter: DomUtils } as any,
+            cacheParentResultsOptions,
             fn,
         );
 
@@ -72,7 +77,7 @@ describe("cacheParentResults", () => {
         const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
-            { adapter: DomUtils } as any,
+            cacheParentResultsOptions,
             fn,
         );
 

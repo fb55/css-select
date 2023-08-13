@@ -1,7 +1,7 @@
 import type { InternalSelector } from "../types.js";
 import {
     AttributeAction,
-    AttributeSelector,
+    type AttributeSelector,
     SelectorType,
     isTraversal as isTraversalBase,
     type Traversal,
