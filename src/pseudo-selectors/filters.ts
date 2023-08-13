@@ -145,7 +145,7 @@ export const filters: Record<string, Filter> = {
 
         if (!context || context.length === 0) {
             // Equivalent to :root
-            return filters.root(next, rule, options);
+            return filters["root"](next, rule, options);
         }
 
         if (context.length === 1) {

@@ -50,7 +50,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
         // The alias has to be parsed here, to make sure options are respected.
         const alias = parse(stringPseudo);
-        return subselects.is(next, alias, options, context, compileToken);
+        return subselects["is"](next, alias, options, context, compileToken);
     }
 
     if (typeof userPseudo === "function") {
