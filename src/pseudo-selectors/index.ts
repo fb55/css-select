@@ -13,7 +13,7 @@
  * Pseudos should be used to implement simple checks.
  */
 import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
-import { parse, PseudoSelector } from "css-what";
+import { parse, type PseudoSelector } from "css-what";
 import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArgs } from "./pseudos.js";
 import { aliases } from "./aliases.js";

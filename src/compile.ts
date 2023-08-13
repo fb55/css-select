@@ -1,4 +1,5 @@
-import { Selector, SelectorType } from "css-what";
+import type { Selector } from "css-what";
+import { SelectorType } from "css-what";
 import * as boolbase from "boolbase";
 import {
     sortRules,
