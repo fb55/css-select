@@ -75,8 +75,8 @@ function shouldIgnoreCase<Node, ElementNode extends Node>(
     return typeof selector.ignoreCase === "boolean"
         ? selector.ignoreCase
         : selector.ignoreCase === "quirks"
-        ? !!options.quirksMode
-        : !options.xmlMode && caseInsensitiveAttributes.has(selector.name);
+          ? !!options.quirksMode
+          : !options.xmlMode && caseInsensitiveAttributes.has(selector.name);
 }
 
 /**

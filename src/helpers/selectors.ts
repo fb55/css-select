@@ -91,22 +91,22 @@ export function getQuality(token: InternalSelector): number {
             return !token.data
                 ? 3
                 : token.name === "has" ||
-                  token.name === "contains" ||
-                  token.name === "icontains"
-                ? // Expensive in any case — run as late as possible.
-                  0
-                : Array.isArray(token.data)
-                ? // Eg. `:is`, `:not`
-                  Math.max(
-                      // If we have traversals, try to avoid executing this selector
-                      0,
-                      Math.min(
-                          ...token.data.map((d) =>
-                              Math.min(...d.map(getQuality)),
+                    token.name === "contains" ||
+                    token.name === "icontains"
+                  ? // Expensive in any case — run as late as possible.
+                    0
+                  : Array.isArray(token.data)
+                    ? // Eg. `:is`, `:not`
+                      Math.max(
+                          // If we have traversals, try to avoid executing this selector
+                          0,
+                          Math.min(
+                              ...token.data.map((d) =>
+                                  Math.min(...d.map(getQuality)),
+                              ),
                           ),
-                      ),
-                  )
-                : 2;
+                      )
+                    : 2;
         }
         default: {
             return -1;

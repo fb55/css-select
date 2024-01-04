@@ -56,8 +56,8 @@ const is: Subselect = (next, token, options, context, compileToken) => {
     return func === boolbase.trueFunc
         ? next
         : func === boolbase.falseFunc
-        ? boolbase.falseFunc
-        : (elem) => func(elem) && next(elem);
+          ? boolbase.falseFunc
+          : (elem) => func(elem) && next(elem);
 };
 
 /*
@@ -78,8 +78,8 @@ export const subselects: Record<string, Subselect> = {
         return func === boolbase.falseFunc
             ? next
             : func === boolbase.trueFunc
-            ? boolbase.falseFunc
-            : (elem) => !func(elem) && next(elem);
+              ? boolbase.falseFunc
+              : (elem) => !func(elem) && next(elem);
     },
     has<Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
