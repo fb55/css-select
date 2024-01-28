@@ -24,13 +24,13 @@
         "noUnusedParameters": true,
 
         /* Module Resolution Options */
-        "moduleResolution": "node"
+        "moduleResolution": "node",
     },
     "include": ["src"],
     "exclude": [
         "**/*.spec.ts",
         "**/__fixtures__/*",
         "**/__tests__/*",
-        "**/__snapshots__/*"
-    ]
+        "**/__snapshots__/*",
+    ],
 }
