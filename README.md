@@ -2,6 +2,14 @@
 
 A CSS selector compiler and engine
 
+## What's different in this fork?
+- ESM is a default build now.
+- CommonJS build is available in `lib/cjs` folder. 
+- Switched to pnpm
+- All dependencies are up-to-date.
+
+The reasoning behind these changes is that [@cloudflare](https://www.npmjs.com/package/@cloudflare/vitest-pool-workers) and [vitest](https://vitest.dev/) does not like cjs modules.
+
 ## What?
 
 As a **compiler**, css-select turns CSS selectors into functions that tests if

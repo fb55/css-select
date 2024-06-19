@@ -1,8 +1,8 @@
 {
     "compilerOptions": {
         /* Basic Options */
-        "target": "es5",
-        "module": "commonjs",
+        "target": "ES2019",
+        "module": "esnext",
         "lib": ["ES2015.Core"],
         "declaration": true,
         "declarationMap": true,

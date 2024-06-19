@@ -1,8 +1,15 @@
 {
-    "name": "css-select",
+    "name": "@kxalex/css-select",
     "version": "5.1.0",
     "description": "a CSS selector compiler/engine",
     "author": "Felix Boehm <me@feedic.com>",
+    "contributors": [
+        {
+            "name": "Oleksii S",
+            "email": "kxalex@gmail.com",
+            "url": "https://github.com/kxalex"
+        }
+    ],
     "funding": {
         "url": "https://github.com/sponsors/fb55"
     },
@@ -13,14 +20,14 @@
     ],
     "repository": {
         "type": "git",
-        "url": "git://github.com/fb55/css-select.git"
+        "url": "git://github.com/kxalex/css-select.git"
     },
-    "main": "lib/index.js",
+    "main": "lib/cjs/index.js",
     "types": "lib/index.d.ts",
-    "module": "lib/esm/index.js",
+    "module": "lib/index.js",
     "exports": {
-        "require": "./lib/index.js",
-        "import": "./lib/esm/index.js"
+        "import": "./lib/cjs/index.js",
+        "require": "./lib/index.js"
     },
     "files": [
         "lib"
@@ -57,10 +64,12 @@
         "format:es": "npm run lint:es -- --fix",
         "format:prettier": "npm run prettier -- --write",
         "prettier": "prettier '**/*.{ts,md,json,yml}'",
-        "build": "npm run build:cjs && npm run build:esm",
-        "build:cjs": "tsc --sourceRoot https://raw.githubusercontent.com/fb55/css-select/$(git rev-parse HEAD)/src/",
-        "build:esm": "npm run build:cjs -- --module esnext --target es2019 --outDir lib/esm && echo '{\"type\":\"module\"}' > lib/esm/package.json",
-        "prepare": "npm run build"
+        "build": "npm run clean && npm run build:cjs && npm run build:esm",
+        "build:cjs": "tsc -p tsconfig.cjs.json && echo '{\"type\":\"commonjs\"}' > lib/cjs/package.json",
+        "build:esm": "tsc -p tsconfig.json",
+        "prepare": "npm run build",
+        "clean": "npx rimraf lib",
+        "clean:all": "npx rimraf lib node_modules"
     },
     "license": "BSD-2-Clause",
     "prettier": {
@@ -81,5 +90,6 @@
             "<rootDir>/test/*.ts",
             "<rootDir>/**/*.spec.ts"
         ]
-    }
+    },
+    "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a"
 }
