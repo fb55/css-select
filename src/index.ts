@@ -161,7 +161,7 @@ function appendNextSiblings<Node, ElementNode extends Node>(
  * @returns All matching elements.
  *
  */
-export const selectAll = getSelectorFunc(
+export const selectAll: <Node, ElementNode extends Node>(query: Query<ElementNode>, elements: Node | Node[], options?: Options<Node, ElementNode> | undefined) => ElementNode[] = getSelectorFunc(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
@@ -181,7 +181,7 @@ export const selectAll = getSelectorFunc(
  * @see compile for supported selector queries.
  * @returns the first match, or null if there was no match.
  */
-export const selectOne = getSelectorFunc(
+export const selectOne: <Node, ElementNode extends Node>(query: Query<ElementNode>, elements: Node | Node[], options?: Options<Node, ElementNode> | undefined) => ElementNode | null = getSelectorFunc(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
         elems: Node[] | null,
