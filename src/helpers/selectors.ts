@@ -73,6 +73,7 @@ function getAttributeQuality(token: AttributeSelector): number {
  * @returns The token's quality.
  */
 export function getQuality(token: InternalSelector): number {
+    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (token.type) {
         case SelectorType.Universal: {
             return 50;
