@@ -36,7 +36,7 @@
         "@types/boolbase": "^1.0.3",
         "@types/jest": "^29.5.14",
         "@types/node": "^22.15.12",
-        "@typescript-eslint/eslint-plugin": "^8.31.1",
+        "@typescript-eslint/eslint-plugin": "^8.32.0",
         "@typescript-eslint/parser": "^8.32.0",
         "cheerio-soupselect": "^0.1.1",
         "eslint": "^8.57.1",
