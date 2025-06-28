@@ -213,15 +213,13 @@ describe(":read-only and :read-write", () => {
                 <textarea></textarea>
             </div>
         `);
-        const readonly = CSSselect.compile(":read-only");
-        const readwrite = CSSselect.compile(":read-write");
 
         expect(
-            CSSselect.selectAll<AnyNode, Element>(readonly, dom),
+            CSSselect.selectAll<AnyNode, Element>(":read-only", dom),
         ).toHaveLength(2);
 
         expect(
-            CSSselect.selectAll<AnyNode, Element>(readwrite, dom),
+            CSSselect.selectAll<AnyNode, Element>(":read-write", dom),
         ).toHaveLength(2);
     });
 });
