@@ -23,8 +23,7 @@
         "import": "./lib/esm/index.js"
     },
     "files": [
-        "dist",
-        "src"
+        "lib"
     ],
     "dependencies": {
         "boolbase": "^1.0.0",
@@ -59,7 +58,7 @@
         "format:prettier": "npm run prettier -- --write",
         "prettier": "prettier '**/*.{ts,md,json,yml}'",
         "build": "npm run build:cjs && npm run build:esm",
-        "build:cjs": "tsc --sourceRoot https://raw.githubusercontent.com/fb55/css-select/$(git rev-parse HEAD)/src/",
+        "build:cjs": "tsc --sourceRoot \"https://raw.githubusercontent.com/fb55/css-select/$(git rev-parse HEAD)/src/\"",
         "build:esm": "npm run build:cjs -- --module esnext --target es2019 --outDir lib/esm && echo '{\"type\":\"module\"}' > lib/esm/package.json",
         "prepare": "npm run build"
     },
