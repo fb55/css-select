@@ -23,7 +23,8 @@
         "import": "./lib/esm/index.js"
     },
     "files": [
-        "lib"
+        "dist",
+        "src"
     ],
     "dependencies": {
         "boolbase": "^1.0.0",
