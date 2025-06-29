@@ -1,4 +1,5 @@
 import { parse, stringify } from "css-what";
+import { describe, expect, it } from "vitest";
 import { sortRules } from "./selectors.js";
 
 /**

@@ -1,8 +1,10 @@
+import type { AnyNode, ChildNode, Element, ParentNode } from "domhandler";
 import * as DomUtils from "domutils";
-import * as CSSselect from "../src";
-import type { Element, AnyNode, ParentNode, ChildNode } from "domhandler";
-import { q, t, createWithFriesXML, loadDoc } from "./tools/sizzle-testinit";
-import { parseDocument, parseDOM } from "htmlparser2";
+import { parseDOM, parseDocument } from "htmlparser2";
+import { beforeEach, describe, expect, it } from "vitest";
+import * as CSSselect from "../src/index.js";
+import { createWithFriesXML, loadDoc, q, t } from "./tools/sizzle-testinit.js";
+
 let document = loadDoc();
 
 describe("Sizzle", () => {
@@ -123,7 +125,9 @@ describe("Sizzle", () => {
 
         const iframe = document.getElementById("iframe");
         iframe.children = parseDOM("<body><p id='foo'>bar</p></body>");
-        for (const e of iframe.children) e.parent = iframe;
+        for (const e of iframe.children) {
+            e.parent = iframe;
+        }
         // Other document as context
         expect(CSSselect.selectAll("p:contains(bar)", iframe)).toStrictEqual([
             DomUtils.getElementById("foo", iframe.children),
@@ -417,7 +421,9 @@ describe("Sizzle", () => {
         div.children = parseDOM(
             "<div class='test e'></div><div class='test'></div>",
         );
-        for (const e of div.children) e.parent = div;
+        for (const e of div.children) {
+            e.parent = div;
+        }
 
         // Finding a second class.
         expect(CSSselect.selectAll(".e", div)).toStrictEqual([div.children[0]]);
@@ -922,7 +928,9 @@ describe("Sizzle", () => {
          */
         t("input[data-attr='\\01D306A']", ["attrbad_unicode"]);
 
-        for (const attr of attrbad) DomUtils.removeElement(attr);
+        for (const attr of attrbad) {
+            DomUtils.removeElement(attr);
+        }
 
         // `input[type=text]`
         t("#form input[type=text]", ["text1", "text2", "hidden2", "name"]);
@@ -1037,7 +1045,9 @@ describe("Sizzle", () => {
         // No longer second child
         t("p:nth-child(2)", []);
 
-        for (const node of newNodes) DomUtils.removeElement(node);
+        for (const node of newNodes) {
+            DomUtils.removeElement(node);
+        }
 
         // Restored second child
         t("p:nth-child(2)", ["ap", "en"]);
@@ -1720,7 +1730,9 @@ describe("Sizzle", () => {
         // Hidden inputs should be treated as enabled. See QSA test.
         t("#hidden1:enabled", ["hidden1"]);
 
-        for (const text of extraTexts) DomUtils.removeElement(text);
+        for (const text of extraTexts) {
+            DomUtils.removeElement(text);
+        }
     });
 
     it("pseudo - :root", () => {

@@ -1,13 +1,13 @@
+import { SelectorType } from "css-what";
 import { attributeRules } from "./attributes.js";
 import { getElementParent } from "./helpers/querying.js";
 import { compilePseudoSelector } from "./pseudo-selectors/index.js";
 import type {
     CompiledQuery,
+    CompileToken,
     InternalOptions,
     InternalSelector,
-    CompileToken,
 } from "./types.js";
-import { SelectorType } from "css-what";
 
 /*
  * All available rules
@@ -82,6 +82,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 
+                    // biome-ignore lint/suspicious/noAssignInExpressions: TODO
                     while ((current = getElementParent(current, adapter))) {
                         if (next(current)) {
                             return true;
@@ -101,6 +102,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 let current: ElementNode | null = elem;
                 let result;
 
+                // biome-ignore lint/suspicious/noAssignInExpressions: TODO
                 while ((current = getElementParent(current, adapter))) {
                     const cached = resultCache.get(current);
 
@@ -128,8 +130,11 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 let current: ElementNode | null = elem;
 
                 do {
-                    if (next(current)) return true;
-                } while ((current = getElementParent(current, adapter)));
+                    if (next(current)) {
+                        return true;
+                    }
+                    current = getElementParent(current, adapter);
+                } while (current);
 
                 return false;
             };
@@ -153,7 +158,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 for (let i = 0; i < siblings.length; i++) {
                     const currentSibling = siblings[i];
-                    if (equals(elem, currentSibling)) break;
+                    if (equals(elem, currentSibling)) {
+                        break;
+                    }
                     if (adapter.isTag(currentSibling) && next(currentSibling)) {
                         return true;
                     }
@@ -176,7 +183,9 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
                 for (let i = 0; i < siblings.length; i++) {
                     const currentSibling = siblings[i];
-                    if (equals(elem, currentSibling)) break;
+                    if (equals(elem, currentSibling)) {
+                        break;
+                    }
                     if (adapter.isTag(currentSibling)) {
                         lastElement = currentSibling;
                     }

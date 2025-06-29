@@ -1,9 +1,9 @@
-import type { Selector } from "css-what";
 import * as boolbase from "boolbase";
+import type { Selector } from "css-what";
 import { cacheParentResults } from "../helpers/cache.js";
-import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
-import { isTraversal, includesScopePseudo } from "../helpers/selectors.js";
 import { findOne, getNextSiblings } from "../helpers/querying.js";
+import { includesScopePseudo, isTraversal } from "../helpers/selectors.js";
+import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};
@@ -101,13 +101,17 @@ export const subselects: Record<string, Subselect> = {
 
         const compiled = compileToken(subselect, opts, context);
 
-        if (compiled === boolbase.falseFunc) return boolbase.falseFunc;
+        if (compiled === boolbase.falseFunc) {
+            return boolbase.falseFunc;
+        }
 
         // If `compiled` is `trueFunc`, we can skip this.
         if (context && compiled !== boolbase.trueFunc) {
             return skipCache
                 ? (elem) => {
-                      if (!next(elem)) return false;
+                      if (!next(elem)) {
+                          return false;
+                      }
 
                       context[0] = elem;
                       const childs = adapter.getChildren(elem);

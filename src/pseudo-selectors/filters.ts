@@ -1,8 +1,8 @@
-import getNCheck from "nth-check";
 import * as boolbase from "boolbase";
+import getNCheck from "nth-check";
 import { cacheParentResults } from "../helpers/cache.js";
-import type { CompiledQuery, InternalOptions } from "../types.js";
 import { getElementParent } from "../helpers/querying.js";
+import type { CompiledQuery, InternalOptions } from "../types.js";
 
 type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -32,7 +32,9 @@ export const filters: Record<string, Filter> = {
     "nth-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.falseFunc) {
+            return boolbase.falseFunc;
+        }
         if (func === boolbase.trueFunc) {
             return (elem) =>
                 getElementParent(elem, adapter) !== null && next(elem);
@@ -43,7 +45,9 @@ export const filters: Record<string, Filter> = {
             let pos = 0;
 
             for (let i = 0; i < siblings.length; i++) {
-                if (equals(elem, siblings[i])) break;
+                if (equals(elem, siblings[i])) {
+                    break;
+                }
                 if (adapter.isTag(siblings[i])) {
                     pos++;
                 }
@@ -55,7 +59,9 @@ export const filters: Record<string, Filter> = {
     "nth-last-child"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.falseFunc) {
+            return boolbase.falseFunc;
+        }
         if (func === boolbase.trueFunc) {
             return (elem) =>
                 getElementParent(elem, adapter) !== null && next(elem);
@@ -66,7 +72,9 @@ export const filters: Record<string, Filter> = {
             let pos = 0;
 
             for (let i = siblings.length - 1; i >= 0; i--) {
-                if (equals(elem, siblings[i])) break;
+                if (equals(elem, siblings[i])) {
+                    break;
+                }
                 if (adapter.isTag(siblings[i])) {
                     pos++;
                 }
@@ -78,7 +86,9 @@ export const filters: Record<string, Filter> = {
     "nth-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.falseFunc) {
+            return boolbase.falseFunc;
+        }
         if (func === boolbase.trueFunc) {
             return (elem) =>
                 getElementParent(elem, adapter) !== null && next(elem);
@@ -90,7 +100,9 @@ export const filters: Record<string, Filter> = {
 
             for (let i = 0; i < siblings.length; i++) {
                 const currentSibling = siblings[i];
-                if (equals(elem, currentSibling)) break;
+                if (equals(elem, currentSibling)) {
+                    break;
+                }
                 if (
                     adapter.isTag(currentSibling) &&
                     adapter.getName(currentSibling) === adapter.getName(elem)
@@ -105,7 +117,9 @@ export const filters: Record<string, Filter> = {
     "nth-last-of-type"(next, rule, { adapter, equals }) {
         const func = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) return boolbase.falseFunc;
+        if (func === boolbase.falseFunc) {
+            return boolbase.falseFunc;
+        }
         if (func === boolbase.trueFunc) {
             return (elem) =>
                 getElementParent(elem, adapter) !== null && next(elem);
@@ -117,7 +131,9 @@ export const filters: Record<string, Filter> = {
 
             for (let i = siblings.length - 1; i >= 0; i--) {
                 const currentSibling = siblings[i];
-                if (equals(elem, currentSibling)) break;
+                if (equals(elem, currentSibling)) {
+                    break;
+                }
                 if (
                     adapter.isTag(currentSibling) &&
                     adapter.getName(currentSibling) === adapter.getName(elem)

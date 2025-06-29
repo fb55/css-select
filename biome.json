@@ -1,0 +1,119 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+    "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
+    "files": { "ignoreUnknown": false },
+    "formatter": {
+        "enabled": true,
+        "indentStyle": "space",
+        "indentWidth": 4
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": false,
+            "complexity": {
+                "noAdjacentSpacesInRegex": "error",
+                "noExtraBooleanCast": "error",
+                "noUselessCatch": "error",
+                "noUselessEscapeInRegex": "error",
+                "useArrowFunction": "error"
+            },
+            "correctness": {
+                "noConstAssign": "error",
+                "noConstantCondition": "error",
+                "noEmptyCharacterClassInRegex": "error",
+                "noEmptyPattern": "error",
+                "noGlobalObjectCalls": "error",
+                "noInnerDeclarations": "error",
+                "noInvalidConstructorSuper": "error",
+                "noInvalidUseBeforeDeclaration": "error",
+                "noNonoctalDecimalEscape": "error",
+                "noPrecisionLoss": "error",
+                "noSelfAssign": "error",
+                "noSetterReturn": "error",
+                "noSwitchDeclarations": "error",
+                "noUndeclaredVariables": "error",
+                "noUnreachable": "error",
+                "noUnreachableSuper": "error",
+                "noUnsafeFinally": "error",
+                "noUnsafeOptionalChaining": "error",
+                "noUnusedLabels": "error",
+                "noUnusedVariables": "error",
+                "useIsNan": "error",
+                "useValidForDirection": "error",
+                "useValidTypeof": "error",
+                "useYield": "error"
+            },
+            "nursery": {
+                "noUselessBackrefInRegex": "error",
+                "useConsistentObjectDefinition": "error",
+                "useExhaustiveSwitchCases": "error",
+                "useReadonlyClassProperties": "error"
+            },
+            "style": {
+                "noUselessElse": "error",
+                "noYodaExpression": "error",
+                "useBlockStatements": "error",
+                "useConst": "error",
+                "useImportType": {
+                    "level": "error",
+                    "options": { "style": "inlineType" }
+                },
+                "useShorthandFunctionType": "error",
+                "useSingleVarDeclarator": "error",
+                "useTemplate": "error"
+            },
+            "suspicious": {
+                "noAssignInExpressions": "error",
+                "noAsyncPromiseExecutor": "error",
+                "noCatchAssign": "error",
+                "noClassAssign": "error",
+                "noCompareNegZero": "error",
+                "noControlCharactersInRegex": "error",
+                "noDebugger": "error",
+                "noDoubleEquals": "error",
+                "noDuplicateCase": "error",
+                "noDuplicateClassMembers": "error",
+                "noDuplicateElseIf": "error",
+                "noDuplicateObjectKeys": "error",
+                "noDuplicateParameters": "error",
+                "noEmptyBlockStatements": "error",
+                "noFallthroughSwitchClause": "error",
+                "noFunctionAssign": "error",
+                "noGlobalAssign": "error",
+                "noImportAssign": "error",
+                "noIrregularWhitespace": "error",
+                "noMisleadingCharacterClass": "error",
+                "noPrototypeBuiltins": "error",
+                "noRedeclare": "error",
+                "noShadowRestrictedNames": "error",
+                "noSparseArray": "error",
+                "noUnsafeNegation": "error",
+                "noVar": "error",
+                "noWith": "error",
+                "useGetterReturn": "error"
+            }
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.test.ts", "**/*.spec.ts", "test/**/*.ts"],
+            "javascript": {
+                "globals": [
+                    "jest",
+                    "describe",
+                    "it",
+                    "beforeEach",
+                    "afterEach",
+                    "expect"
+                ]
+            }
+        }
+    ],
+
+    "html": { "formatter": { "selfCloseVoidElements": "always" } },
+    "assist": {
+        "enabled": true,
+        "actions": { "source": { "organizeImports": "on" } }
+    }
+}

@@ -38,9 +38,9 @@ jobs:
             fail-fast: false
             matrix:
                 node:
-                    - 16
                     - 18
                     - 20
+                    - 22
                     - lts/*
 
         steps:
@@ -54,11 +54,11 @@ jobs:
             - run: npm run build --if-present
 
             - name: Run Jest
-              run: npm run test:jest
+              run: npm run test:vi
               if: matrix.node != env.NODE_COV
 
             - name: Run Jest with coverage
-              run: npm run test:jest -- --coverage
+              run: npm run test:vi -- --coverage
               if: matrix.node == env.NODE_COV
 
             - name: Run Coveralls

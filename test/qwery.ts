@@ -1,9 +1,12 @@
-import * as helper from "./tools/helper";
+import * as helper from "./tools/helper.js";
+
 const document = helper.getDocument("qwery.html");
-import * as CSSselect from "../src";
-import * as DomUtils from "domutils";
+
 import type { AnyNode, Element } from "domhandler";
+import * as DomUtils from "domutils";
 import { parseDOM } from "htmlparser2";
+import { describe, expect, it } from "vitest";
+import * as CSSselect from "../src/index.js";
 
 const location = { hash: "" };
 const options = {

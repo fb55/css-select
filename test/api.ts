@@ -1,9 +1,10 @@
-import * as CSSselect from "../src";
-import { parseDOM, parseDocument } from "htmlparser2";
 import * as boolbase from "boolbase";
-import * as DomUtils from "domutils";
+import { AttributeAction, SelectorType } from "css-what";
 import type { AnyNode, Element } from "domhandler";
-import { SelectorType, AttributeAction } from "css-what";
+import * as DomUtils from "domutils";
+import { parseDOM, parseDocument } from "htmlparser2";
+import { describe, expect, it, vi } from "vitest";
+import * as CSSselect from "../src/index.js";
 import type { Adapter } from "../src/types.js";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
@@ -246,7 +247,7 @@ describe("API", () => {
             expect(CSSselect._compileUnsafe("*, foo")).toBe(boolbase.trueFunc));
 
         it("should promote `rootFunc`", () => {
-            const rootFunc = jest.fn(); // Used as a function reference.
+            const rootFunc = vi.fn(); // Used as a function reference.
             expect(CSSselect._compileUnsafe(":is(*), foo", { rootFunc })).toBe(
                 rootFunc,
             );
