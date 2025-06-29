@@ -12,11 +12,12 @@
  * of `next()` and your code.
  * Pseudos should be used to implement simple checks.
  */
-import type { CompiledQuery, InternalOptions, CompileToken } from "../types.js";
-import { parse, type PseudoSelector } from "css-what";
+
+import { type PseudoSelector, parse } from "css-what";
+import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
+import { aliases } from "./aliases.js";
 import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArgs } from "./pseudos.js";
-import { aliases } from "./aliases.js";
 import { subselects } from "./subselects.js";
 
 export { filters, pseudos, aliases };

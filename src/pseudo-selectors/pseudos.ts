@@ -45,8 +45,12 @@ export const pseudos: Record<string, Pseudo> = {
         const siblings = adapter.getSiblings(elem);
 
         for (let i = siblings.length - 1; i >= 0; i--) {
-            if (equals(elem, siblings[i])) return true;
-            if (adapter.isTag(siblings[i])) break;
+            if (equals(elem, siblings[i])) {
+                return true;
+            }
+            if (adapter.isTag(siblings[i])) {
+                break;
+            }
         }
 
         return false;
@@ -57,7 +61,9 @@ export const pseudos: Record<string, Pseudo> = {
 
         for (let i = 0; i < siblings.length; i++) {
             const currentSibling = siblings[i];
-            if (equals(elem, currentSibling)) return true;
+            if (equals(elem, currentSibling)) {
+                return true;
+            }
             if (
                 adapter.isTag(currentSibling) &&
                 adapter.getName(currentSibling) === elemName
@@ -74,7 +80,9 @@ export const pseudos: Record<string, Pseudo> = {
 
         for (let i = siblings.length - 1; i >= 0; i--) {
             const currentSibling = siblings[i];
-            if (equals(elem, currentSibling)) return true;
+            if (equals(elem, currentSibling)) {
+                return true;
+            }
             if (
                 adapter.isTag(currentSibling) &&
                 adapter.getName(currentSibling) === elemName

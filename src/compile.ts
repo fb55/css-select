@@ -1,13 +1,14 @@
+import * as boolbase from "boolbase";
 import type { Selector } from "css-what";
 import { SelectorType } from "css-what";
-import * as boolbase from "boolbase";
-import {
-    sortRules,
-    isTraversal,
-    includesScopePseudo,
-    getQuality,
-} from "./helpers/selectors.js";
 import { compileGeneralSelector } from "./general.js";
+import { getElementParent } from "./helpers/querying.js";
+import {
+    getQuality,
+    includesScopePseudo,
+    isTraversal,
+    sortRules,
+} from "./helpers/selectors.js";
 import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
 import type {
     CompiledQuery,
@@ -15,7 +16,6 @@ import type {
     InternalSelector,
     Predicate,
 } from "./types.js";
-import { getElementParent } from "./helpers/querying.js";
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };
 const FLEXIBLE_DESCENDANT_TOKEN: InternalSelector = {
@@ -125,11 +125,15 @@ export function compileToken<Node, ElementNode extends Node>(
             }
 
             // If the sub-selector won't match any elements, skip it.
-            if (next === boolbase.falseFunc) continue combineLoop;
+            if (next === boolbase.falseFunc) {
+                continue combineLoop;
+            }
         }
 
         // If we have a function that always returns true, we can stop here.
-        if (next === rootFunc) return rootFunc;
+        if (next === rootFunc) {
+            return rootFunc;
+        }
 
         query = query === boolbase.falseFunc ? next : or(query, next);
     }

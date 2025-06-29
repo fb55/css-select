@@ -1,20 +1,20 @@
-import * as DomUtils from "domutils";
 import * as boolbase from "boolbase";
 import { parse, type Selector } from "css-what";
 import type {
-    AnyNode as DomHandlerNode,
     Element as DomHandlerElement,
+    AnyNode as DomHandlerNode,
 } from "domhandler";
+import * as DomUtils from "domutils";
 import { compileToken } from "./compile.js";
-import type {
-    CompiledQuery,
-    Options,
-    InternalOptions,
-    Query,
-    Adapter,
-    Predicate,
-} from "./types.js";
 import { findAll, findOne, getNextSiblings } from "./helpers/querying.js";
+import type {
+    Adapter,
+    CompiledQuery,
+    InternalOptions,
+    Options,
+    Predicate,
+    Query,
+} from "./types.js";
 
 export type { Options };
 
@@ -229,4 +229,4 @@ export default selectAll;
 
 // Export filters, pseudos and aliases to allow users to supply their own.
 /** @deprecated Use the `pseudos` option instead. */
-export { filters, pseudos, aliases } from "./pseudo-selectors/index.js";
+export { aliases, filters, pseudos } from "./pseudo-selectors/index.js";

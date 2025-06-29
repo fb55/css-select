@@ -32,7 +32,9 @@ export function cacheParentResults<Node, ElementNode extends Node>(
     }
 
     return function cachedMatcher(elem) {
-        if (!next(elem)) return false;
+        if (!next(elem)) {
+            return false;
+        }
         if (resultCache.has(elem)) {
             return resultCache.get(elem)!;
         }

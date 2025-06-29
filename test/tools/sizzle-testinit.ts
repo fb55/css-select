@@ -1,10 +1,13 @@
+import type { Document, Element, Node } from "domhandler";
+import { expect } from "vitest";
+import { selectAll as CSSselect } from "../../src/index.js";
 import * as helper from "./helper.js";
-import CSSselect from "../../src";
-import type { Element, Node, Document } from "domhandler";
-let document = loadDoc();
+
+let document = helper.getDocument("sizzle.html");
 
 export function loadDoc(): helper.SimpleDocument {
-    return (document = helper.getDocument("sizzle.html"));
+    document = helper.getDocument("sizzle.html");
+    return document;
 }
 
 /**

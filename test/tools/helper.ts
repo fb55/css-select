@@ -1,8 +1,8 @@
-import { readFileSync } from "fs";
-import { join } from "path";
-import { parseDocument, ParserOptions } from "htmlparser2";
+import { type Document, Element, Text } from "domhandler";
 import * as DomUtils from "domutils";
-import { Text, Element, Document } from "domhandler";
+import { readFileSync } from "fs";
+import { type ParserOptions, parseDocument } from "htmlparser2";
+import { join } from "path";
 
 export function getDocumentFromPath(
     file: string,
@@ -25,7 +25,9 @@ export function getDocument(file: string): SimpleDocument {
 
     document.getElementById = (id: string) => {
         const el = DomUtils.getElementById(id, document.children);
-        if (!el) throw new Error(`Did not find element with ID ${id}`);
+        if (!el) {
+            throw new Error(`Did not find element with ID ${id}`);
+        }
         return el;
     };
     document.createTextNode = (content: string) => new Text(content);

@@ -1,10 +1,11 @@
-import { parseDocument } from "htmlparser2";
 import * as boolbase from "boolbase";
-import * as DomUtils from "domutils";
 import type { Element, Node } from "domhandler";
+import * as DomUtils from "domutils";
+import { parseDocument } from "htmlparser2";
+import { describe, expect, it, vi } from "vitest";
 import * as CSSselect from "../index.js";
-import { cacheParentResults } from "./cache.js";
 import type { InternalOptions } from "../types.js";
+import { cacheParentResults } from "./cache.js";
 
 const cacheParentResultsOptions = {
     adapter: DomUtils,
@@ -16,7 +17,7 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>bar</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,
@@ -45,7 +46,7 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>foo</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,
@@ -74,7 +75,7 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>foo</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = jest.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,

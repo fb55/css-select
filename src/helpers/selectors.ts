@@ -1,11 +1,11 @@
-import type { InternalSelector } from "../types.js";
 import {
     AttributeAction,
     type AttributeSelector,
-    SelectorType,
     isTraversal as isTraversalBase,
+    SelectorType,
     type Traversal,
 } from "css-what";
+import type { InternalSelector } from "../types.js";
 
 export function isTraversal(token: InternalSelector): token is Traversal {
     return token.type === "_flexibleDescendant" || isTraversalBase(token);
@@ -22,7 +22,9 @@ export function sortRules(arr: InternalSelector[]): void {
     for (let i = 1; i < arr.length; i++) {
         const procNew = ratings[i];
 
-        if (procNew < 0) continue;
+        if (procNew < 0) {
+            continue;
+        }
 
         // Use insertion sort to move the token to the correct position.
         for (let j = i; j > 0 && procNew < ratings[j - 1]; j--) {
@@ -73,7 +75,6 @@ function getAttributeQuality(token: AttributeSelector): number {
  * @returns The token's quality.
  */
 export function getQuality(token: InternalSelector): number {
-    // eslint-disable-next-line @typescript-eslint/switch-exhaustiveness-check
     switch (token.type) {
         case SelectorType.Universal: {
             return 50;

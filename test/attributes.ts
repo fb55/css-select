@@ -1,7 +1,8 @@
-import * as CSSselect from "../src";
-import { parseDocument } from "htmlparser2";
 import * as boolbase from "boolbase";
 import type { Element } from "domhandler";
+import { parseDocument } from "htmlparser2";
+import { describe, expect, it } from "vitest";
+import * as CSSselect from "../src/index.js";
 
 const dom = parseDocument(
     '<div data-foo="In the end, it doesn\'t really matter."></div><div data-foo="Indeed-that\'s a delicate matter.">',

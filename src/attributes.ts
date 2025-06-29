@@ -1,6 +1,6 @@
 import * as boolbase from "boolbase";
+import type { AttributeAction, AttributeSelector } from "css-what";
 import type { CompiledQuery, InternalOptions } from "./types.js";
-import type { AttributeSelector, AttributeAction } from "css-what";
 
 /**
  * All reserved characters in a regex, used for escaping.
@@ -253,7 +253,8 @@ export const attributeRules: Record<
         if (value === "") {
             return (elem) =>
                 !!adapter.getAttributeValue(elem, name) && next(elem);
-        } else if (shouldIgnoreCase(data, options)) {
+        }
+        if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
             return (elem) => {

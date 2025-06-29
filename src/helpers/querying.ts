@@ -1,4 +1,4 @@
-import type { InternalOptions, Predicate, Adapter } from "../types.js";
+import type { Adapter, InternalOptions, Predicate } from "../types.js";
 
 /**
  * Find all elements matching the query. If not in XML mode, the query will ignore
@@ -38,8 +38,12 @@ export function findAll<Node, ElementNode extends Node>(
 
         const elem = nodeStack[0][indexStack[0]++];
 
-        if (!adapter.isTag(elem)) continue;
-        if (query(elem)) result.push(elem);
+        if (!adapter.isTag(elem)) {
+            continue;
+        }
+        if (query(elem)) {
+            result.push(elem);
+        }
 
         if (xmlMode || adapter.getName(elem) !== "template") {
             /*
@@ -93,8 +97,12 @@ export function findOne<Node, ElementNode extends Node>(
 
         const elem = nodeStack[0][indexStack[0]++];
 
-        if (!adapter.isTag(elem)) continue;
-        if (query(elem)) return elem;
+        if (!adapter.isTag(elem)) {
+            continue;
+        }
+        if (query(elem)) {
+            return elem;
+        }
 
         if (xmlMode || adapter.getName(elem) !== "template") {
             /*
@@ -116,9 +124,13 @@ export function getNextSiblings<Node, ElementNode extends Node>(
     adapter: Adapter<Node, ElementNode>,
 ): ElementNode[] {
     const siblings = adapter.getSiblings(elem);
-    if (siblings.length <= 1) return [];
+    if (siblings.length <= 1) {
+        return [];
+    }
     const elemIndex = siblings.indexOf(elem);
-    if (elemIndex < 0 || elemIndex === siblings.length - 1) return [];
+    if (elemIndex < 0 || elemIndex === siblings.length - 1) {
+        return [];
+    }
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);
 }
 

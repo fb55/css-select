@@ -6,10 +6,11 @@
  * See the LICENSE file for additional information.
  */
 
+import type { Element, Node } from "domhandler";
 import * as DomUtils from "domutils";
-import * as helper from "./tools/helper";
-import * as CSSselect from "../src";
-import type { Node, Element } from "domhandler";
+import { describe, expect, it } from "vitest";
+import * as CSSselect from "../src/index.js";
+import * as helper from "./tools/helper.js";
 
 const document = helper.getDocument("nwmatcher.html");
 

@@ -1,6 +1,7 @@
-import * as CSSselect from "../src";
-import { DomUtils, parseDocument, parseDOM } from "htmlparser2";
 import type { AnyNode, Element } from "domhandler";
+import { DomUtils, parseDOM, parseDocument } from "htmlparser2";
+import { describe, expect, it } from "vitest";
+import * as CSSselect from "../src/index.js";
 import type { Adapter } from "../src/types.js";
 
 const dom = parseDOM(
