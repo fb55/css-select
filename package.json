@@ -54,7 +54,7 @@
         "@vitest/coverage-v8": "^3.2.4"
     },
     "scripts": {
-        "test": "vitest run && npm run biome:check",
+        "test": "vitest run && npm run lint",
         "test:vi": "vitest run",
         "lint": "npm run lint:biome && npm run lint:tsc",
         "lint:biome": "biome check .",
