@@ -45,7 +45,7 @@
     "devDependencies": {
         "@biomejs/biome": "^2.1.4",
         "@types/boolbase": "^1.0.3",
-        "@types/node": "^24.6.2",
+        "@types/node": "^24.7.0",
         "cheerio-soupselect": "^0.1.1",
         "htmlparser2": "^10.0.0",
         "tshy": "^3.0.3",
