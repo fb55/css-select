@@ -1,6 +1,5 @@
 import * as boolbase from "boolbase";
-import type { Selector } from "css-what";
-import { SelectorType } from "css-what";
+import { type Selector, SelectorType } from "css-what";
 import { compileGeneralSelector } from "./general.js";
 import { getElementParent } from "./helpers/querying.js";
 import {
@@ -10,11 +9,11 @@ import {
     sortRules,
 } from "./helpers/selectors.js";
 import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
-import type {
-    CompiledQuery,
-    InternalOptions,
-    InternalSelector,
-    Predicate,
+import {
+    type CompiledQuery,
+    type InternalOptions,
+    type InternalSelector,
+    type Predicate,
 } from "./types.js";
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };

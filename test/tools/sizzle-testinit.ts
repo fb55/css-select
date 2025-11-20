@@ -1,4 +1,4 @@
-import type { Document, Element, Node } from "domhandler";
+import { type Document, type Element, type Node } from "domhandler";
 import { expect } from "vitest";
 import { selectAll as CSSselect } from "../../src/index.js";
 import * as helper from "./helper.js";

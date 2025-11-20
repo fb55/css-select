@@ -2,7 +2,7 @@ import * as boolbase from "boolbase";
 import getNCheck from "nth-check";
 import { cacheParentResults } from "../helpers/cache.js";
 import { getElementParent } from "../helpers/querying.js";
-import type { CompiledQuery, InternalOptions } from "../types.js";
+import { type CompiledQuery, type InternalOptions } from "../types.js";
 
 type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,

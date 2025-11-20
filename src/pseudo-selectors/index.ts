@@ -14,7 +14,11 @@
  */
 
 import { type PseudoSelector, parse } from "css-what";
-import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
+import {
+    type CompiledQuery,
+    type CompileToken,
+    type InternalOptions,
+} from "../types.js";
 import { aliases } from "./aliases.js";
 import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArgs } from "./pseudos.js";

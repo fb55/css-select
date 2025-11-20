@@ -1,6 +1,6 @@
 import * as boolbase from "boolbase";
-import type { AttributeAction, AttributeSelector } from "css-what";
-import type { CompiledQuery, InternalOptions } from "./types.js";
+import { type AttributeAction, type AttributeSelector } from "css-what";
+import { type CompiledQuery, type InternalOptions } from "./types.js";
 
 /**
  * All reserved characters in a regex, used for escaping.

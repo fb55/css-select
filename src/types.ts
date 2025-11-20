@@ -1,4 +1,4 @@
-import type { Selector } from "css-what";
+import { type Selector } from "css-what";
 
 export type InternalSelector = Selector | { type: "_flexibleDescendant" };
 

@@ -1,4 +1,4 @@
-import type { CompiledQuery, InternalOptions } from "../types.js";
+import { type CompiledQuery, type InternalOptions } from "../types.js";
 import { getElementParent } from "./querying.js";
 
 /**

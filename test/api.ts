@@ -1,11 +1,11 @@
 import * as boolbase from "boolbase";
 import { AttributeAction, SelectorType } from "css-what";
-import type { AnyNode, Element } from "domhandler";
+import { type AnyNode, type Element } from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { describe, expect, it, vi } from "vitest";
 import * as CSSselect from "../src/index.js";
-import type { Adapter } from "../src/types.js";
+import { type Adapter } from "../src/types.js";
 
 const [dom] = parseDOM("<div id=foo><p>foo</p></div>") as Element[];
 const [xmlDom] = parseDOM("<DiV id=foo><P>foo</P></DiV>", {

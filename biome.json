@@ -1,5 +1,5 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.0.6/schema.json",
+    "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
     "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
     "files": { "ignoreUnknown": false },
     "formatter": {
@@ -45,10 +45,7 @@
                 "useYield": "error"
             },
             "nursery": {
-                "noUselessBackrefInRegex": "error",
-                "useConsistentObjectDefinition": "error",
-                "useExhaustiveSwitchCases": "error",
-                "useReadonlyClassProperties": "error"
+                "useExhaustiveSwitchCases": "error"
             },
             "style": {
                 "noUselessElse": "error",
@@ -59,6 +56,8 @@
                     "level": "error",
                     "options": { "style": "inlineType" }
                 },
+                "useConsistentObjectDefinitions": "error",
+                "useReadonlyClassProperties": "error",
                 "useShorthandFunctionType": "error",
                 "useSingleVarDeclarator": "error",
                 "useTemplate": "error"
@@ -89,6 +88,7 @@
                 "noShadowRestrictedNames": "error",
                 "noSparseArray": "error",
                 "noUnsafeNegation": "error",
+                "noUselessRegexBackrefs": "error",
                 "noVar": "error",
                 "noWith": "error",
                 "useGetterReturn": "error"
