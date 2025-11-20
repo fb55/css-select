@@ -1,8 +1,8 @@
-import type { AnyNode, Element } from "domhandler";
+import { type AnyNode, type Element } from "domhandler";
 import { DomUtils, parseDOM, parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
-import type { Adapter } from "../src/types.js";
+import { type Adapter } from "../src/types.js";
 
 const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>",

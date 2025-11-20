@@ -1,5 +1,5 @@
 import * as boolbase from "boolbase";
-import type { Element } from "domhandler";
+import { type Element } from "domhandler";
 import { parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";

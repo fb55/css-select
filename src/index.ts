@@ -1,19 +1,19 @@
 import * as boolbase from "boolbase";
 import { parse, type Selector } from "css-what";
-import type {
-    Element as DomHandlerElement,
-    AnyNode as DomHandlerNode,
+import {
+    type Element as DomHandlerElement,
+    type AnyNode as DomHandlerNode,
 } from "domhandler";
 import * as DomUtils from "domutils";
 import { compileToken } from "./compile.js";
 import { findAll, findOne, getNextSiblings } from "./helpers/querying.js";
-import type {
-    Adapter,
-    CompiledQuery,
-    InternalOptions,
-    Options,
-    Predicate,
-    Query,
+import {
+    type Adapter,
+    type CompiledQuery,
+    type InternalOptions,
+    type Options,
+    type Predicate,
+    type Query,
 } from "./types.js";
 
 export type { Options };

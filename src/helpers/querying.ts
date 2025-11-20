@@ -1,4 +1,8 @@
-import type { Adapter, InternalOptions, Predicate } from "../types.js";
+import {
+    type Adapter,
+    type InternalOptions,
+    type Predicate,
+} from "../types.js";
 
 /**
  * Find all elements matching the query. If not in XML mode, the query will ignore

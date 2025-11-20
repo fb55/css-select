@@ -1,9 +1,13 @@
 import * as boolbase from "boolbase";
-import type { Selector } from "css-what";
+import { type Selector } from "css-what";
 import { cacheParentResults } from "../helpers/cache.js";
 import { findOne, getNextSiblings } from "../helpers/querying.js";
 import { includesScopePseudo, isTraversal } from "../helpers/selectors.js";
-import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
+import {
+    type CompiledQuery,
+    type CompileToken,
+    type InternalOptions,
+} from "../types.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
 export const PLACEHOLDER_ELEMENT = {};

@@ -5,7 +5,7 @@ import {
     SelectorType,
     type Traversal,
 } from "css-what";
-import type { InternalSelector } from "../types.js";
+import { type InternalSelector } from "../types.js";
 
 export function isTraversal(token: InternalSelector): token is Traversal {
     return token.type === "_flexibleDescendant" || isTraversalBase(token);

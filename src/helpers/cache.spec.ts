@@ -1,10 +1,10 @@
 import * as boolbase from "boolbase";
-import type { Element, Node } from "domhandler";
+import { type Element, type Node } from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDocument } from "htmlparser2";
 import { describe, expect, it, vi } from "vitest";
 import * as CSSselect from "../index.js";
-import type { InternalOptions } from "../types.js";
+import { type InternalOptions } from "../types.js";
 import { cacheParentResults } from "./cache.js";
 
 const cacheParentResultsOptions = {

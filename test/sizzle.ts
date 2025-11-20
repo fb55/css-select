@@ -1,4 +1,9 @@
-import type { AnyNode, ChildNode, Element, ParentNode } from "domhandler";
+import {
+    type AnyNode,
+    type ChildNode,
+    type Element,
+    type ParentNode,
+} from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { beforeEach, describe, expect, it } from "vitest";

@@ -2,7 +2,7 @@ import * as helper from "./tools/helper.js";
 
 const document = helper.getDocument("qwery.html");
 
-import type { AnyNode, Element } from "domhandler";
+import { type AnyNode, type Element } from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDOM } from "htmlparser2";
 import { describe, expect, it } from "vitest";

@@ -6,7 +6,7 @@
  * See the LICENSE file for additional information.
  */
 
-import type { Element, Node } from "domhandler";
+import { type Element, type Node } from "domhandler";
 import * as DomUtils from "domutils";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";

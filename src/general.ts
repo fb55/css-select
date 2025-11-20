@@ -2,11 +2,11 @@ import { SelectorType } from "css-what";
 import { attributeRules } from "./attributes.js";
 import { getElementParent } from "./helpers/querying.js";
 import { compilePseudoSelector } from "./pseudo-selectors/index.js";
-import type {
-    CompiledQuery,
-    CompileToken,
-    InternalOptions,
-    InternalSelector,
+import {
+    type CompiledQuery,
+    type CompileToken,
+    type InternalOptions,
+    type InternalSelector,
 } from "./types.js";
 
 /*
