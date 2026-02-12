@@ -51,7 +51,7 @@
         "tshy": "^3.2.0",
         "typescript": "^5.9.3",
         "vitest": "^3.2.4",
-        "@vitest/coverage-v8": "^3.2.4"
+        "@vitest/coverage-v8": "^4.0.18"
     },
     "scripts": {
         "test": "vitest run && npm run lint",
