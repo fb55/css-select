@@ -15,11 +15,11 @@
         "type": "git",
         "url": "git://github.com/fb55/css-select.git"
     },
+    "sideEffects": false,
     "main": "./dist/commonjs/index.js",
     "types": "./dist/commonjs/index.d.ts",
     "module": "./dist/esm/index.js",
     "exports": {
-        "./package.json": "./package.json",
         ".": {
             "import": {
                 "types": "./dist/esm/index.d.ts",
@@ -29,7 +29,8 @@
                 "types": "./dist/commonjs/index.d.ts",
                 "default": "./dist/commonjs/index.js"
             }
-        }
+        },
+        "./package.json": "./package.json"
     },
     "files": [
         "dist",
@@ -43,25 +44,34 @@
         "nth-check": "^2.1.1"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.3",
+        "@biomejs/biome": "^2.4.4",
+        "@eslint/compat": "^2.0.2",
+        "@feedic/eslint-config": "^0.1.0",
         "@types/boolbase": "^1.0.3",
         "@types/node": "^25.3.0",
+        "@vitest/coverage-v8": "^3.2.4",
         "cheerio-soupselect": "^0.1.1",
+        "eslint": "^10.0.1",
+        "eslint-config-prettier": "^10.1.8",
+        "globals": "^17.3.0",
         "htmlparser2": "^10.1.0",
         "tshy": "^3.3.2",
         "typescript": "^5.9.3",
-        "vitest": "^3.2.4",
-        "@vitest/coverage-v8": "^3.2.4"
+        "typescript-eslint": "^8.56.0",
+        "vitest": "^3.2.4"
     },
     "scripts": {
-        "test": "vitest run && npm run lint",
-        "test:vi": "vitest run",
-        "lint": "npm run lint:biome && npm run lint:tsc",
-        "lint:biome": "biome check .",
-        "lint:tsc": "tsc --noEmit",
-        "format": "biome check --fix .",
         "build": "tshy",
-        "prepare": "npm run build"
+        "format": "npm run format:es && npm run format:biome",
+        "format:biome": "biome check --write .",
+        "format:es": "npm run lint:es -- --fix",
+        "lint": "npm run lint:es && npm run lint:biome && npm run lint:tsc",
+        "lint:biome": "biome check .",
+        "lint:es": "eslint .",
+        "lint:tsc": "tsc --noEmit",
+        "prepare": "npm run build",
+        "test": "vitest run && npm run lint",
+        "test:vi": "vitest run"
     },
     "license": "BSD-2-Clause",
     "tshy": {

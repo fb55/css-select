@@ -1,7 +1,19 @@
 {
-    "$schema": "https://biomejs.dev/schemas/2.3.6/schema.json",
-    "vcs": { "enabled": true, "clientKind": "git", "useIgnoreFile": true },
-    "files": { "ignoreUnknown": false },
+    "$schema": "https://biomejs.dev/schemas/2.4.4/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": true,
+        "includes": [
+            "**/*.{c,m,}ts",
+            "**/*.tsx",
+            "**/*.{md,json,yml}",
+            "!**/.*"
+        ]
+    },
     "formatter": {
         "enabled": true,
         "indentStyle": "space",
@@ -10,7 +22,7 @@
     "linter": {
         "enabled": true,
         "rules": {
-            "recommended": false,
+            "recommended": true,
             "complexity": {
                 "noAdjacentSpacesInRegex": "error",
                 "noExtraBooleanCast": "error",
@@ -50,11 +62,14 @@
             "style": {
                 "noUselessElse": "error",
                 "noYodaExpression": "error",
+                "noNonNullAssertion": "error",
                 "useBlockStatements": "error",
                 "useConst": "error",
                 "useImportType": {
                     "level": "error",
-                    "options": { "style": "inlineType" }
+                    "options": {
+                        "style": "inlineType"
+                    }
                 },
                 "useConsistentObjectDefinitions": "error",
                 "useReadonlyClassProperties": "error",
@@ -63,7 +78,7 @@
                 "useTemplate": "error"
             },
             "suspicious": {
-                "noAssignInExpressions": "error",
+                "noAssignInExpressions": "off",
                 "noAsyncPromiseExecutor": "error",
                 "noCatchAssign": "error",
                 "noClassAssign": "error",
@@ -105,15 +120,36 @@
                     "it",
                     "beforeEach",
                     "afterEach",
-                    "expect"
+                    "expect",
+                    "vi"
                 ]
+            }
+        },
+        {
+            "includes": ["**/*.ts", "**/*.cts", "**/*.mts", "**/*.tsx"],
+            "linter": {
+                "rules": {
+                    "complexity": {
+                        "useLiteralKeys": "off"
+                    }
+                }
             }
         }
     ],
-
-    "html": { "formatter": { "selfCloseVoidElements": "always" } },
+    "html": {
+        "formatter": {
+            "selfCloseVoidElements": "always"
+        }
+    },
     "assist": {
         "enabled": true,
-        "actions": { "source": { "organizeImports": "on" } }
+        "actions": {
+            "source": {
+                "organizeImports": "on"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {}
     }
 }
