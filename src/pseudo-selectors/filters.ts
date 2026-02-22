@@ -11,6 +11,9 @@ type Filter = <Node, ElementNode extends Node>(
     context?: Node[],
 ) => CompiledQuery<ElementNode>;
 
+/**
+ * Pre-compiled pseudo filters.
+ */
 export const filters: Record<string, Filter> = {
     contains(next, text, options) {
         const { getText } = options.adapter;

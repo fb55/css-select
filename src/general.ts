@@ -13,6 +13,9 @@ import {
  * All available rules
  */
 
+/**
+ * Compile a single selector token.
+ */
 export function compileGeneralSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     selector: InternalSelector,

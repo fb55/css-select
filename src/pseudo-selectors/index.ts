@@ -26,6 +26,9 @@ import { subselects } from "./subselects.js";
 
 export { filters, pseudos, aliases };
 
+/**
+ * Compile a pseudo selector into an executable query function.
+ */
 export function compilePseudoSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     selector: PseudoSelector,

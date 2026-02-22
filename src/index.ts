@@ -118,6 +118,9 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
     };
 }
 
+/**
+ * Normalize a query context and optionally include next siblings.
+ */
 export function prepareContext<Node, ElementNode extends Node>(
     elems: Node | Node[],
     adapter: Adapter<Node, ElementNode>,

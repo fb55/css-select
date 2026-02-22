@@ -17,6 +17,7 @@ type Pseudo = <Node, ElementNode extends Node>(
 const isDocumentWhiteSpace = /^[ \t\r\n]*$/;
 
 // While filters are precompiled, pseudos get called when they are needed
+/** Runtime pseudo selector implementations. */
 export const pseudos: Record<string, Pseudo> = {
     empty(elem, { adapter }) {
         const children = adapter.getChildren(elem);
@@ -114,6 +115,9 @@ export const pseudos: Record<string, Pseudo> = {
     },
 };
 
+/**
+ * Validate pseudo selector argument arity.
+ */
 export function verifyPseudoArgs<T extends Array<unknown>>(
     func: (...args: T) => boolean,
     name: string,

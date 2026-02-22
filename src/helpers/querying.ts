@@ -123,6 +123,9 @@ export function findOne<Node, ElementNode extends Node>(
     }
 }
 
+/**
+ * Get all element siblings after the provided node.
+ */
 export function getNextSiblings<Node, ElementNode extends Node>(
     elem: Node,
     adapter: Adapter<Node, ElementNode>,
@@ -138,6 +141,9 @@ export function getNextSiblings<Node, ElementNode extends Node>(
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);
 }
 
+/**
+ * Get the parent element of a node.
+ */
 export function getElementParent<Node, ElementNode extends Node>(
     node: ElementNode,
     adapter: Adapter<Node, ElementNode>,

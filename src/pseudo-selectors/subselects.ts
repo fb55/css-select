@@ -69,6 +69,7 @@ const is: Subselect = (next, token, options, context, compileToken) => {
  * doing this in src/pseudos.ts would lead to circular dependencies,
  * so we add them here
  */
+/** Pseudo selectors that compile nested selectors. */
 export const subselects: Record<string, Subselect> = {
     is,
     /**

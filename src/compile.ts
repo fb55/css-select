@@ -59,6 +59,9 @@ function absolutize<Node, ElementNode extends Node>(
     }
 }
 
+/**
+ * Compile a parsed selector token into an executable query function.
+ */
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,

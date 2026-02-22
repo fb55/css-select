@@ -7,6 +7,9 @@ import {
 } from "css-what";
 import { type InternalSelector } from "../types.js";
 
+/**
+ * Check whether a selector token performs traversal.
+ */
 export function isTraversal(token: InternalSelector): token is Traversal {
     return token.type === "_flexibleDescendant" || isTraversalBase(token);
 }
@@ -116,6 +119,9 @@ export function getQuality(token: InternalSelector): number {
     }
 }
 
+/**
+ * Check whether a token or nested token includes `:scope`.
+ */
 export function includesScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === SelectorType.Pseudo &&

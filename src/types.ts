@@ -1,8 +1,18 @@
 import { type Selector } from "css-what";
 
+/**
+ * Selector token used internally by css-select.
+ */
 export type InternalSelector = Selector | { type: "_flexibleDescendant" };
 
+/**
+ * Predicate function for element matching.
+ */
 export type Predicate<Value> = (v: Value) => boolean;
+
+/**
+ * Adapter interface used to traverse and inspect DOM nodes.
+ */
 export interface Adapter<Node, ElementNode extends Node> {
     /**
      *  Is the node a tag?
@@ -80,6 +90,9 @@ export interface Adapter<Node, ElementNode extends Node> {
     isActive?: (elem: ElementNode) => boolean;
 }
 
+/**
+ * Public query options for css-select.
+ */
 export interface Options<Node, ElementNode extends Node> {
     /**
      * When enabled, tag names will be case-sensitive.
@@ -161,20 +174,34 @@ export interface Options<Node, ElementNode extends Node> {
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects
+/**
+ * Normalized internal options with required adapter helpers.
+ */
 export interface InternalOptions<Node, ElementNode extends Node>
     extends Options<Node, ElementNode> {
     adapter: Adapter<Node, ElementNode>;
     equals: (a: Node, b: Node) => boolean;
 }
 
+/**
+ * Executable selector query.
+ */
 export interface CompiledQuery<ElementNode> {
     (node: ElementNode): boolean;
     shouldTestNextSiblings?: boolean;
 }
+
+/**
+ * Query input accepted by the public API.
+ */
 export type Query<ElementNode> =
     | string
     | CompiledQuery<ElementNode>
     | Selector[][];
+
+/**
+ * Function used to compile parsed selector tokens.
+ */
 export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
