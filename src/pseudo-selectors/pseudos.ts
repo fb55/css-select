@@ -59,8 +59,7 @@ export const pseudos: Record<string, Pseudo> = {
         const siblings = adapter.getSiblings(elem);
         const elemName = adapter.getName(elem);
 
-        for (let i = 0; i < siblings.length; i++) {
-            const currentSibling = siblings[i];
+        for (const currentSibling of siblings) {
             if (equals(elem, currentSibling)) {
                 return true;
             }

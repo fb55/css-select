@@ -47,11 +47,11 @@ export const filters: Record<string, Filter> = {
             const siblings = adapter.getSiblings(elem);
             let pos = 0;
 
-            for (let i = 0; i < siblings.length; i++) {
-                if (equals(elem, siblings[i])) {
+            for (const sibling of siblings) {
+                if (equals(elem, sibling)) {
                     break;
                 }
-                if (adapter.isTag(siblings[i])) {
+                if (adapter.isTag(sibling)) {
                     pos++;
                 }
             }
@@ -101,8 +101,7 @@ export const filters: Record<string, Filter> = {
             const siblings = adapter.getSiblings(elem);
             let pos = 0;
 
-            for (let i = 0; i < siblings.length; i++) {
-                const currentSibling = siblings[i];
+            for (const currentSibling of siblings) {
                 if (equals(elem, currentSibling)) {
                     break;
                 }

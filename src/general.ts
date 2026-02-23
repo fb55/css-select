@@ -163,8 +163,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             return function sibling(elem: ElementNode): boolean {
                 const siblings = adapter.getSiblings(elem);
 
-                for (let i = 0; i < siblings.length; i++) {
-                    const currentSibling = siblings[i];
+                for (const currentSibling of siblings) {
                     if (equals(elem, currentSibling)) {
                         break;
                     }
@@ -189,8 +188,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 const siblings = adapter.getSiblings(elem);
                 let lastElement: ElementNode | undefined;
 
-                for (let i = 0; i < siblings.length; i++) {
-                    const currentSibling = siblings[i];
+                for (const currentSibling of siblings) {
                     if (equals(elem, currentSibling)) {
                         break;
                     }

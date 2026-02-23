@@ -135,7 +135,7 @@ export function getNextSiblings<Node, ElementNode extends Node>(
         return [];
     }
     const elemIndex = siblings.indexOf(elem);
-    if (elemIndex < 0 || elemIndex === siblings.length - 1) {
+    if (elemIndex === -1 || elemIndex === siblings.length - 1) {
         return [];
     }
     return siblings.slice(elemIndex + 1).filter(adapter.isTag);

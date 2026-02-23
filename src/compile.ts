@@ -70,7 +70,9 @@ export function compileToken<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,
     ctx?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
-    token.forEach(sortRules);
+    for (const rules of token) {
+        sortRules(rules);
+    }
 
     const { context = ctx, rootFunc = boolbase.trueFunc } = options;
 

@@ -126,7 +126,7 @@ describe("Sizzle", () => {
         // Element-rooted QSA does not select based on document context
         t("div em, div em, div em:not(div em)", [], siblingTest);
         // Escaped commas do not get treated with an id in element-rooted QSA
-        t("div em, em\\,", [], siblingTest);
+        t(String.raw`div em, em\,`, [], siblingTest);
 
         const iframe = document.getElementById("iframe");
         iframe.children = parseDOM("<body><p id='foo'>bar</p></body>");
@@ -196,7 +196,7 @@ describe("Sizzle", () => {
         expect(
             CSSselect.is(
                 xml.children.filter((t) => t.type === "tag").pop(),
-                "soap\\:Envelope",
+                String.raw`soap\:Envelope`,
                 {
                     xmlMode: true,
                 },
@@ -290,29 +290,29 @@ describe("Sizzle", () => {
         t("form > #台北", ["台北"]);
 
         // Escaped ID
-        t("#foo\\:bar", ["foo:bar"]);
+        t(String.raw`#foo\:bar`, ["foo:bar"]);
         // Escaped ID with descendent
-        t("#foo\\:bar span:not(:input)", ["foo_descendent"]);
+        t(String.raw`#foo\:bar span:not(:input)`, ["foo_descendent"]);
         // Escaped ID
-        t("#test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`#test\.foo\[5\]bar`, ["test.foo[5]bar"]);
         // Descendant escaped ID
-        t("div #foo\\:bar", ["foo:bar"]);
+        t(String.raw`div #foo\:bar`, ["foo:bar"]);
         // Descendant escaped ID
-        t("div #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`div #test\.foo\[5\]bar`, ["test.foo[5]bar"]);
         // Child escaped ID
-        t("form > #foo\\:bar", ["foo:bar"]);
+        t(String.raw`form > #foo\:bar`, ["foo:bar"]);
         // Child escaped ID
-        t("form > #test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`form > #test\.foo\[5\]bar`, ["test.foo[5]bar"]);
 
         const [fiddle] = parseDOM(
-            "<div id='fiddle\\Foo'><span id='fiddleSpan'></span></div>",
+            String.raw`<div id='fiddle\Foo'><span id='fiddleSpan'></span></div>`,
         );
         DomUtils.appendChild(document.getElementById("qunit-fixture"), fiddle);
         // Escaped ID as context
         t(
             "> span",
             ["fiddleSpan"],
-            CSSselect.selectOne("#fiddle\\\\Foo", document),
+            CSSselect.selectOne(String.raw`#fiddle\\Foo`, document),
         );
 
         DomUtils.removeElement(fiddle);
@@ -357,12 +357,12 @@ describe("Sizzle", () => {
                 .attribs["id"],
         );
 
-        for (const node of parseDOM("<a id='backslash\\foo'></a>")) {
+        for (const node of parseDOM(String.raw`<a id='backslash\foo'></a>`)) {
             DomUtils.appendChild(document.getElementById("form"), node);
         }
 
         // ID Selector contains backslash
-        t("#backslash\\\\foo", ["backslash\\foo"]);
+        t(String.raw`#backslash\\foo`, [String.raw`backslash\foo`]);
 
         // ID Selector on Form with an input that has a name of 'id'
         t("#lengthtest", ["lengthtest"]);
@@ -379,7 +379,7 @@ describe("Sizzle", () => {
         t("#qunit-fixture", ["qunit-fixture"]);
 
         // ID with weird characters in it
-        t("#name\\+value", ["name+value"]);
+        t(String.raw`#name\+value`, ["name+value"]);
     });
 
     it("class", () => {
@@ -410,17 +410,17 @@ describe("Sizzle", () => {
         t("form > .台北Táiběi", ["utf8class1"]);
 
         // Escaped Class
-        t(".foo\\:bar", ["foo:bar"]);
+        t(String.raw`.foo\:bar`, ["foo:bar"]);
         // Escaped Class
-        t(".test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`.test\.foo\[5\]bar`, ["test.foo[5]bar"]);
         // Descendant escaped Class
-        t("div .foo\\:bar", ["foo:bar"]);
+        t(String.raw`div .foo\:bar`, ["foo:bar"]);
         // Descendant escaped Class
-        t("div .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`div .test\.foo\[5\]bar`, ["test.foo[5]bar"]);
         // Child escaped Class
-        t("form > .foo\\:bar", ["foo:bar"]);
+        t(String.raw`form > .foo\:bar`, ["foo:bar"]);
         // Child escaped Class
-        t("form > .test\\.foo\\[5\\]bar", ["test.foo[5]bar"]);
+        t(String.raw`form > .test\.foo\[5\]bar`, ["test.foo[5]bar"]);
 
         const div = document.createElement("div");
         div.children = parseDOM(
@@ -864,7 +864,9 @@ describe("Sizzle", () => {
         // See jQuery #12303
         input.attribs["data-pos"] = ":first";
         // POS within attribute value is treated as an attribute value
-        expect(CSSselect.is(input, "input[data-pos=\\:first]")).toBe(true);
+        expect(CSSselect.is(input, String.raw`input[data-pos=\:first]`)).toBe(
+            true,
+        );
         // POS within attribute value is treated as an attribute value
         expect(CSSselect.is(input, "input[data-pos=':first']")).toBe(true);
         // POS within attribute value after pseudo is treated as an attribute value
@@ -900,32 +902,36 @@ describe("Sizzle", () => {
         t("input[id=types_all]", ["types_all"]);
 
         // Escaped space
-        t("input[name=foo\\ bar]", ["attrbad_space"]);
+        t(String.raw`input[name=foo\ bar]`, ["attrbad_space"]);
         // Escaped dot
-        t("input[name=foo\\.baz]", ["attrbad_dot"]);
+        t(String.raw`input[name=foo\.baz]`, ["attrbad_dot"]);
         // Escaped brackets
-        t("input[name=foo\\[baz\\]]", ["attrbad_brackets"]);
+        t(String.raw`input[name=foo\[baz\]]`, ["attrbad_brackets"]);
 
         // Escaped quote + right bracket
-        t("input[data-attr='foo_baz\\']']", ["attrbad_injection"]);
+        t(String.raw`input[data-attr='foo_baz\']']`, ["attrbad_injection"]);
 
         // Quoted quote
-        t("input[data-attr='\\'']", ["attrbad_quote"]);
+        t(String.raw`input[data-attr='\'']`, ["attrbad_quote"]);
         // Quoted backslash
-        t("input[data-attr='\\\\']", ["attrbad_backslash"]);
+        t(String.raw`input[data-attr='\\']`, ["attrbad_backslash"]);
         // Quoted backslash quote
-        t("input[data-attr='\\\\\\'']", ["attrbad_backslash_quote"]);
+        t(String.raw`input[data-attr='\\\'']`, ["attrbad_backslash_quote"]);
         // Quoted backslash backslash
-        t("input[data-attr='\\\\\\\\']", ["attrbad_backslash_backslash"]);
+        t(String.raw`input[data-attr='\\\\']`, ["attrbad_backslash_backslash"]);
 
         // Quoted backslash backslash (numeric escape)
-        t("input[data-attr='\\5C\\\\']", ["attrbad_backslash_backslash"]);
+        t(String.raw`input[data-attr='\5C\\']`, [
+            "attrbad_backslash_backslash",
+        ]);
         // Quoted backslash backslash (numeric escape with trailing space)
-        t("input[data-attr='\\5C \\\\']", ["attrbad_backslash_backslash"]);
+        t(String.raw`input[data-attr='\5C \\']`, [
+            "attrbad_backslash_backslash",
+        ]);
         // Quoted backslash backslash (numeric escape with trailing tab)
         t("input[data-attr='\\5C\t\\\\']", ["attrbad_backslash_backslash"]);
         // Long numeric escape (BMP)
-        t("input[data-attr='\\04e00']", ["attrbad_unicode"]);
+        t(String.raw`input[data-attr='\04e00']`, ["attrbad_unicode"]);
 
         document.getElementById("attrbad_unicode").attribs["data-attr"] =
             "\uD834\uDF06A";
@@ -933,7 +939,7 @@ describe("Sizzle", () => {
          * It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
          * Long numeric escape (non-BMP)
          */
-        t("input[data-attr='\\01D306A']", ["attrbad_unicode"]);
+        t(String.raw`input[data-attr='\01D306A']`, ["attrbad_unicode"]);
 
         for (const attr of attrbad) {
             DomUtils.removeElement(attr);
@@ -951,9 +957,9 @@ describe("Sizzle", () => {
         div.children = parseDOM("<div id='foo' xml:test='something'></div>");
 
         // Finding by attribute with escaped characters.
-        expect(CSSselect.selectAll("[xml\\:test]", div)).toStrictEqual([
-            div.children[0],
-        ]);
+        expect(CSSselect.selectAll(String.raw`[xml\:test]`, div)).toStrictEqual(
+            [div.children[0]],
+        );
 
         const foo = document.getElementById("foo");
         // Object.prototype property "constructor" (negative)',
@@ -1454,7 +1460,7 @@ describe("Sizzle", () => {
         t("p:has(>a.GROUPS[src!=')'])", ["ap"]);
         t("p:has(>a.GROUPS[src!=')'])", ["ap"]);
         // Pseudo followed by token containing ')'
-        t('p:contains(id="foo")[id!=\\)]', ["sndp"]);
+        t(String.raw`p:contains(id="foo")[id!=\)]`, ["sndp"]);
         t("p:contains(id=\"foo\")[id!=')']", ["sndp"]);
 
         // Multi-pseudo
