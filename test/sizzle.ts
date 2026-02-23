@@ -200,7 +200,8 @@ describe("Sizzle", () => {
         // Check for namespaced element
         expect(
             CSSselect.is(
-                xml.children.filter((t) => t.type === "tag").pop(),
+                // @ts-expect-error lib version is too old
+                xml.children.findLast((t) => t.type === "tag"),
                 String.raw`soap\:Envelope`,
                 {
                     xmlMode: true,
@@ -460,7 +461,7 @@ describe("Sizzle", () => {
         expect(CSSselect.is(document, ".foo")).toBe(false);
         lastChild.attribs["class"] += " hasOwnProperty toString";
         // Testing class on global object doesn't error
-        expect(CSSselect.is(global, ".foo")).toBe(false);
+        expect(CSSselect.is(globalThis, ".foo")).toBe(false);
         // Classes match Object.prototype properties
         expect(
             CSSselect.selectAll(".e.hasOwnProperty.toString", div),

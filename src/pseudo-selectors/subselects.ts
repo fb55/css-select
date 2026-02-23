@@ -77,7 +77,11 @@ export const subselects: Record<string, Subselect> = {
     matches: is,
     where: is,
     not(next, token, options, context, compileToken) {
-        const compiledToken = compileToken(token, copyOptions(options), context);
+        const compiledToken = compileToken(
+            token,
+            copyOptions(options),
+            context,
+        );
 
         return compiledToken === boolbase.falseFunc
             ? next

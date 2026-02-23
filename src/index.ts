@@ -57,7 +57,8 @@ export function compile<Node, ElementNode extends Node>(
 
     return next === boolbase.falseFunc
         ? boolbase.falseFunc
-        : (element: Node) => convertedOptions.adapter.isTag(element) && next(element);
+        : (element: Node) =>
+              convertedOptions.adapter.isTag(element) && next(element);
 }
 /**
  * Like `compile`, but does not add a check if elements are tags.

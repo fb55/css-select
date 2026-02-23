@@ -44,8 +44,6 @@ export default defineConfig([
         },
         rules: {
             "n/no-unpublished-import": 0,
-            "unicorn/prefer-array-find": 0,
-            "unicorn/prefer-global-this": 0,
             "unicorn/prefer-query-selector": 0,
         },
     },

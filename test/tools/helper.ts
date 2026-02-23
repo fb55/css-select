@@ -1,3 +1,4 @@
+import assert from "node:assert";
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { type Document, Element, Text } from "domhandler";
@@ -34,7 +35,10 @@ export function getDocument(file: string): SimpleDocument {
     document.createElement = (name: string) =>
         new Element(name.toLowerCase(), {});
     [document.body] = DomUtils.getElementsByTagName("body", document, true, 1);
-    [document.documentElement] = document.children.filter(DomUtils.isTag);
+    const documentElement = document.children.find(DomUtils.isTag);
+
+    assert.ok(documentElement, "Did not find document element");
+    document.documentElement = documentElement;
 
     return document;
 }

@@ -610,7 +610,9 @@ describe("qwery", () => {
         it("complex selectors", () => {
             expect(selectAll(".d ~ .sib", testDocument)).toHaveLength(2); // Found one ~ sibling
             expect(selectAll(".a .d + .sib", testDocument)).toHaveLength(1); // Found 2 + siblings
-            expect(selectAll("#hsoob > div > .h", testDocument)).toHaveLength(1); // Found span using child selectors
+            expect(selectAll("#hsoob > div > .h", testDocument)).toHaveLength(
+                1,
+            ); // Found span using child selectors
             expect(
                 selectAll('.a .d ~ .sib[test="f g"]', testDocument),
             ).toHaveLength(1); // Found 1 ~ sibling with test attribute
@@ -619,9 +621,9 @@ describe("qwery", () => {
         it("byId sub-queries", () => {
             expect(selectAll("#hsoob #spanny", testDocument)).toHaveLength(1); // Found "#id #id" in frame
             expect(selectAll(".a #spanny", testDocument)).toHaveLength(1); // Found ".class #id" in frame
-            expect(selectAll(".a #booshTest #spanny", testDocument)).toHaveLength(
-                1,
-            ); // Found ".class #id #id" in frame
+            expect(
+                selectAll(".a #booshTest #spanny", testDocument),
+            ).toHaveLength(1); // Found ".class #id #id" in frame
             expect(selectAll("> #hsoob", testDocument)).toHaveLength(1); // Found "> #id" in frame
         });
 
@@ -645,7 +647,10 @@ describe("qwery", () => {
                 selectAll("#booshTest", selectAll("#spanny", testDocument)),
             ).toHaveLength(0); // Shouldn't find #booshTest (ancestor) within #spanny (descendent)
             expect(
-                selectAll("#booshTest", selectAll("#lonelyHsoob", testDocument)),
+                selectAll(
+                    "#booshTest",
+                    selectAll("#lonelyHsoob", testDocument),
+                ),
             ).toHaveLength(0); // Shouldn't find #booshTest within #lonelyHsoob (unrelated)
         });
     });
