@@ -32,7 +32,6 @@ export default defineConfig([
         },
         rules: {
             ...commonTypeScriptRules,
-            "capitalized-comments": 0,
             "unicorn/no-array-callback-reference": 0,
             "unicorn/prefer-string-raw": 0,
         },
