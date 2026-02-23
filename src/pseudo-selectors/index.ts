@@ -24,8 +24,6 @@ import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArgs } from "./pseudos.js";
 import { subselects } from "./subselects.js";
 
-export { filters, pseudos, aliases };
-
 /**
  * Compile a pseudo selector into an executable query function.
  * @param next Matcher to run after this matcher succeeds.
@@ -85,3 +83,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
     throw new Error(`Unknown pseudo-class :${name}`);
 }
+
+export { aliases } from "./aliases.js";
+export { filters } from "./filters.js";
+export { pseudos } from "./pseudos.js";

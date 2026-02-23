@@ -875,8 +875,9 @@ describe("Sizzle", () => {
          * Make sure attribute value quoting works correctly. See jQuery #6093; #6428; #13894
          * Use seeded results to bypass querySelectorAll optimizations
          */
-        const attrbad = parseDOM(
-            `<input type='hidden' id='attrbad_space' name='foo bar'/>
+        const attrbad = [
+            ...parseDOM(
+                `<input type='hidden' id='attrbad_space' name='foo bar'/>
                 <input type='hidden' id='attrbad_dot' value='2' name='foo.baz'/>
                 <input type='hidden' id='attrbad_brackets' value='2' name='foo[baz]'/>
                 <input type='hidden' id='attrbad_injection' data-attr='foo_baz&#39;]'/>
@@ -885,7 +886,8 @@ describe("Sizzle", () => {
                 <input type='hidden' id='attrbad_backslash_quote' data-attr='&#92;&#39;'/>
                 <input type='hidden' id='attrbad_backslash_backslash' data-attr='&#92;&#92;'/>
                 <input type='hidden' id='attrbad_unicode' data-attr='&#x4e00;'/>`,
-        ).slice(0) as Element[];
+            ),
+        ] as Element[];
 
         for (const attr of attrbad) {
             DomUtils.appendChild(
@@ -1400,12 +1402,14 @@ describe("Sizzle", () => {
         DomUtils.appendChild(document.body, tmp);
 
         for (const type of ["button", "submit", "reset"]) {
-            const els = parseDOM(
-                "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
-                    /%/g,
-                    type,
+            const els = [
+                ...parseDOM(
+                    "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
+                        /%/g,
+                        type,
+                    ),
                 ),
-            ).slice(0); // Create a copy of the array, so that `appendChild` doesn't remove the elements.
+            ]; // Create a copy of the array, so that `appendChild` doesn't remove the elements.
 
             for (const el of els) {
                 DomUtils.appendChild(tmp, el);

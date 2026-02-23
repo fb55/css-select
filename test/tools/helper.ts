@@ -1,14 +1,14 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { type Document, Element, Text } from "domhandler";
 import * as DomUtils from "domutils";
-import { readFileSync } from "fs";
 import { type ParserOptions, parseDocument } from "htmlparser2";
-import { join } from "path";
 
 export function getDocumentFromPath(
     file: string,
     options?: ParserOptions,
 ): Document {
-    const filePath = join(__dirname, "..", "fixtures", file);
+    const filePath = path.join(__dirname, "..", "fixtures", file);
     return parseDocument(readFileSync(filePath, "utf8"), options);
 }
 

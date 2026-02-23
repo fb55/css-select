@@ -16,8 +16,6 @@ import {
     type Query,
 } from "./types.js";
 
-export type { Options };
-
 const defaultEquals = <Node>(a: Node, b: Node) => a === b;
 const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
     adapter: DomUtils,
@@ -152,7 +150,7 @@ function appendNextSiblings<Node, ElementNode extends Node>(
     adapter: Adapter<Node, ElementNode>,
 ): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
-    const elems = Array.isArray(elem) ? elem.slice(0) : [elem];
+    const elems = Array.isArray(elem) ? [...elem] : [elem];
     const elemsLength = elems.length;
 
     for (let i = 0; i < elemsLength; i++) {
@@ -239,3 +237,5 @@ export default selectAll;
 // Export filters, pseudos and aliases to allow users to supply their own.
 /** @deprecated Use the `pseudos` option instead. */
 export { aliases, filters, pseudos } from "./pseudo-selectors/index.js";
+
+export type { Options } from "./types.js";

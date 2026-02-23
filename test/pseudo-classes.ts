@@ -189,7 +189,10 @@ describe(":has", () => {
             CSSselect.selectAll<AnyNode, Element>(compiled, dom),
         ).toHaveLength(2);
 
-        (dom.childNodes[1] as any).childNodes[1].attribs.class = "";
+        (
+            ((dom.childNodes[1] as Element).childNodes[1] as Element)
+                .attribs as { class: string }
+        ).class = "";
 
         // Should not find the element anymore
         expect(CSSselect.selectAll<AnyNode, Element>(".a", dom)).toHaveLength(

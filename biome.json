@@ -7,12 +7,7 @@
     },
     "files": {
         "ignoreUnknown": true,
-        "includes": [
-            "**/*.{c,m,}ts",
-            "**/*.tsx",
-            "**/*.{md,json,yml}",
-            "!**/.*"
-        ]
+        "includes": ["**/*.ts", "**/*.{md,json,yml,js}", "!**/.*"]
     },
     "formatter": {
         "enabled": true,

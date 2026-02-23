@@ -41,7 +41,7 @@ export function cacheParentResults<Node, ElementNode extends Node>(
             return false;
         }
         if (resultCache.has(elem)) {
-            return resultCache.get(elem)!;
+            return resultCache.get(elem) ?? false;
         }
 
         // Check all of the element's parents.
@@ -57,6 +57,6 @@ export function cacheParentResults<Node, ElementNode extends Node>(
             node = parent;
         } while (!resultCache.has(node));
 
-        return resultCache.get(node)! && addResultToCache(elem);
+        return resultCache.get(node) ? addResultToCache(elem) : false;
     };
 }

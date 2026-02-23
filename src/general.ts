@@ -91,7 +91,6 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 return function descendant(elem: ElementNode): boolean {
                     let current: ElementNode | null = elem;
 
-                    // biome-ignore lint/suspicious/noAssignInExpressions: TODO
                     while ((current = getElementParent(current, adapter))) {
                         if (next(current)) {
                             return true;
@@ -109,9 +108,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             >();
             return function cachedDescendant(elem: ElementNode): boolean {
                 let current: ElementNode | null = elem;
-                let result;
+                let result: { matches: boolean } | undefined;
 
-                // biome-ignore lint/suspicious/noAssignInExpressions: TODO
                 while ((current = getElementParent(current, adapter))) {
                     const cached = resultCache.get(current);
 
@@ -181,6 +179,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         case SelectorType.Adjacent: {
             if (adapter.prevElementSibling) {
                 return function adjacent(elem: ElementNode): boolean {
+                    // biome-ignore lint/style/noNonNullAssertion: checked by if statement
                     const previous = adapter.prevElementSibling!(elem);
                     return previous != null && next(previous);
                 };
@@ -188,7 +187,7 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
 
             return function adjacent(elem: ElementNode): boolean {
                 const siblings = adapter.getSiblings(elem);
-                let lastElement;
+                let lastElement: ElementNode | undefined;
 
                 for (let i = 0; i < siblings.length; i++) {
                     const currentSibling = siblings[i];
