@@ -2,7 +2,6 @@
  * Only text controls can be made read-only, since for other controls (such
  * as checkboxes and buttons) there is no useful distinction between being
  * read-only and being disabled.
- *
  * @see {@link https://html.spec.whatwg.org/multipage/input.html#attr-input-readonly}
  */
 const textControl =
@@ -41,7 +40,6 @@ export const aliases: Record<string, string> = {
      * or are the first option element in a select element that does not have
      * the `multiple` attribute and does not have any option elements with the
      * `selected` attribute.
-     *
      * @see https://html.spec.whatwg.org/multipage/form-elements.html#concept-option-selectedness
      */
     selected:

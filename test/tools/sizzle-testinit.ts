@@ -12,8 +12,9 @@ export function loadDoc(): helper.SimpleDocument {
 
 /**
  * Returns an array of elements with the given IDs
+ * @param ids Element IDs to resolve in the test fixture.
  * @example q("main", "foo", "bar")
- * @result [<div id="main">, <span id="foo">, <input id="bar">]
+ * @returns Elements with IDs matching the provided order.
  */
 export function q(...ids: string[]): Element[] {
     return ids.map((id) => document.getElementById(id));

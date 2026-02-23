@@ -61,6 +61,9 @@ function absolutize<Node, ElementNode extends Node>(
 
 /**
  * Compile a parsed selector token into an executable query function.
+ * @param token Selector token(s) to compile.
+ * @param options Options that control this operation.
+ * @param ctx Compilation context for relative selector handling.
  */
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],

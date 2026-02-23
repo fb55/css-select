@@ -45,7 +45,6 @@ function convertOptionFormats<Node, ElementNode extends Node>(
  *
  * The returned function checks if each passed node is an element. Use
  * `_compileUnsafe` to skip this check.
- *
  * @param selector Selector to compile.
  * @param options Compilation options.
  * @param context Optional context for the selector.
@@ -64,6 +63,9 @@ export function compile<Node, ElementNode extends Node>(
 }
 /**
  * Like `compile`, but does not add a check if elements are tags.
+ * @param selector Selector used to match elements.
+ * @param options Options that control this operation.
+ * @param context Context nodes used to scope selector matching.
  */
 export function _compileUnsafe<Node, ElementNode extends Node>(
     selector: string | Selector[][],
@@ -77,6 +79,9 @@ export function _compileUnsafe<Node, ElementNode extends Node>(
     );
 }
 /**
+ * @param selector Selector used to match elements.
+ * @param options Options that control this operation.
+ * @param context Context nodes used to scope selector matching.
  * @deprecated Use `_compileUnsafe` instead.
  */
 export function _compileToken<Node, ElementNode extends Node>(
@@ -120,6 +125,9 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
 
 /**
  * Normalize a query context and optionally include next siblings.
+ * @param elems Elements to test against sibling-dependent selectors.
+ * @param adapter Adapter implementation used for DOM operations.
+ * @param shouldTestNextSiblings Whether sibling combinators should include following siblings.
  */
 export function prepareContext<Node, ElementNode extends Node>(
     elems: Node | Node[],
@@ -162,7 +170,6 @@ function appendNextSiblings<Node, ElementNode extends Node>(
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
  * @returns All matching elements.
- *
  */
 export const selectAll: <Node, ElementNode extends Node>(
     query: Query<ElementNode>,
@@ -205,14 +212,13 @@ export const selectOne: <Node, ElementNode extends Node>(
 
 /**
  * Tests whether or not an element is matched by query.
- *
  * @template Node The generic Node type for the DOM adapter being used.
  * @template ElementNode The Node type for elements for the DOM adapter being used.
  * @param elem The element to test if it matches the query.
  * @param query can be either a CSS selector string or a compiled query function.
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
- * @returns
+ * @returns Whether the element matches the query.
  */
 export function is<Node, ElementNode extends Node>(
     elem: ElementNode,

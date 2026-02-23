@@ -11,7 +11,6 @@ type Pseudo = <Node, ElementNode extends Node>(
  * CSS limits the characters considered as whitespace to space, tab & line
  * feed. We add carriage returns as htmlparser2 doesn't normalize them to
  * line feeds.
- *
  * @see {@link https://www.w3.org/TR/css-text-3/#white-space}
  */
 const isDocumentWhiteSpace = /^[ \t\r\n]*$/;
@@ -117,6 +116,10 @@ export const pseudos: Record<string, Pseudo> = {
 
 /**
  * Validate pseudo selector argument arity.
+ * @param func Pseudo-function implementation to wrap.
+ * @param name Name of the pseudo selector.
+ * @param subselect Subselector passed to the pseudo-function.
+ * @param argIndex Index of the argument parser to apply.
  */
 export function verifyPseudoArgs<T extends Array<unknown>>(
     func: (...args: T) => boolean,

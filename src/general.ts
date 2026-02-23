@@ -15,6 +15,12 @@ import {
 
 /**
  * Compile a single selector token.
+ * @param next Matcher to run after this matcher succeeds.
+ * @param selector Selector used to match elements.
+ * @param options Options that control this operation.
+ * @param context Context nodes used to scope selector matching.
+ * @param compileToken Function used to compile nested selector tokens.
+ * @param hasExpensiveSubselector Whether the selector contains expensive subselectors.
  */
 export function compileGeneralSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,

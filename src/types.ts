@@ -96,19 +96,16 @@ export interface Adapter<Node, ElementNode extends Node> {
 export interface Options<Node, ElementNode extends Node> {
     /**
      * When enabled, tag names will be case-sensitive.
-     *
      * @default false
      */
     xmlMode?: boolean;
     /**
      * Lower-case attribute names.
-     *
      * @default !xmlMode
      */
     lowerCaseAttributeNames?: boolean;
     /**
      * Lower-case tag names.
-     *
      * @default !xmlMode
      */
     lowerCaseTags?: boolean;
@@ -116,7 +113,6 @@ export interface Options<Node, ElementNode extends Node> {
      * Is the document in quirks mode?
      *
      * This will lead to .className and #id being case-insensitive.
-     *
      * @default false
      */
     quirksMode?: boolean;
@@ -158,7 +154,6 @@ export interface Options<Node, ElementNode extends Node> {
      *
      * If relative selectors are disabled, selectors starting with a traversal
      * will lead to an error.
-     *
      * @default true
      * @see {@link https://www.w3.org/TR/selectors-4/#relative}
      */
@@ -167,7 +162,6 @@ export interface Options<Node, ElementNode extends Node> {
      * Allow css-select to cache results for some selectors, sometimes greatly
      * improving querying performance. Disable this if your document can
      * change in between queries with the same compiled selector.
-     *
      * @default true
      */
     cacheResults?: boolean;

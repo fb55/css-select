@@ -7,7 +7,6 @@ import {
 /**
  * Find all elements matching the query. If not in XML mode, the query will ignore
  * the contents of `<template>` elements.
- *
  * @param query - Function that returns true if the element matches the query.
  * @param elems - Nodes to query. If a node is an element, its children will be queried.
  * @param options - Options for querying the document.
@@ -67,7 +66,6 @@ export function findAll<Node, ElementNode extends Node>(
 /**
  * Find the first element matching the query. If not in XML mode, the query will ignore
  * the contents of `<template>` elements.
- *
  * @param query - Function that returns true if the element matches the query.
  * @param elems - Nodes to query. If a node is an element, its children will be queried.
  * @param options - Options for querying the document.
@@ -125,6 +123,8 @@ export function findOne<Node, ElementNode extends Node>(
 
 /**
  * Get all element siblings after the provided node.
+ * @param elem Element candidate being tested.
+ * @param adapter Adapter implementation used for DOM operations.
  */
 export function getNextSiblings<Node, ElementNode extends Node>(
     elem: Node,
@@ -143,6 +143,8 @@ export function getNextSiblings<Node, ElementNode extends Node>(
 
 /**
  * Get the parent element of a node.
+ * @param node Node to inspect.
+ * @param adapter Adapter implementation used for DOM operations.
  */
 export function getElementParent<Node, ElementNode extends Node>(
     node: ElementNode,

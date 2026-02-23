@@ -28,6 +28,11 @@ export { filters, pseudos, aliases };
 
 /**
  * Compile a pseudo selector into an executable query function.
+ * @param next Matcher to run after this matcher succeeds.
+ * @param selector Selector used to match elements.
+ * @param options Options that control this operation.
+ * @param context Context nodes used to scope selector matching.
+ * @param compileToken Function used to compile nested selector tokens.
  */
 export function compilePseudoSelector<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,

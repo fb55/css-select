@@ -9,6 +9,11 @@ import { getElementParent } from "./querying.js";
  * This function wraps the given `matches` function in a function that caches
  * the results of the parent elements, so that the `matches` function only
  * needs to be called once for each subtree.
+ * @param next Matcher to run after this matcher succeeds.
+ * @param options Configuration object for cache behavior.
+ * @param options.adapter Adapter implementation used for DOM access.
+ * @param options.cacheResults Whether results should be memoized by input root.
+ * @param matches Compiled matcher function to wrap with caching.
  */
 export function cacheParentResults<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,

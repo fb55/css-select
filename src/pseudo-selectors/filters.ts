@@ -182,7 +182,6 @@ export const filters: Record<string, Filter> = {
 
 /**
  * Dynamic state pseudos. These depend on optional Adapter methods.
- *
  * @param name The name of the adapter method to call.
  * @returns Pseudo for the `filters` object.
  */

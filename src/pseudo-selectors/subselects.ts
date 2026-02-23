@@ -26,7 +26,6 @@ type Subselect = <Node, ElementNode extends Node>(
  *
  * We can't cache selectors that start with a traversal (e.g. `>`, `+`, `~`),
  * or include a `:scope`.
- *
  * @param selector - The selector to check.
  * @returns Whether the selector has any properties that rely on the current element.
  */

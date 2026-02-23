@@ -15,8 +15,6 @@ function escapeRegex(value: string): string {
 
 /**
  * Attributes that are case-insensitive in HTML.
- *
- * @private
  * @see https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
  */
 const caseInsensitiveAttributes = new Set([

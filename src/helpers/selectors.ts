@@ -9,6 +9,7 @@ import { type InternalSelector } from "../types.js";
 
 /**
  * Check whether a selector token performs traversal.
+ * @param token Selector token(s) to compile.
  */
 export function isTraversal(token: InternalSelector): token is Traversal {
     return token.type === "_flexibleDescendant" || isTraversalBase(token);
@@ -17,7 +18,6 @@ export function isTraversal(token: InternalSelector): token is Traversal {
 /**
  * Sort the parts of the passed selector, as there is potential for
  * optimization (some types of selectors are faster than others).
- *
  * @param arr Selector to sort
  */
 export function sortRules(arr: InternalSelector[]): void {
@@ -73,7 +73,6 @@ function getAttributeQuality(token: AttributeSelector): number {
 /**
  * Determine the quality of the passed token. The higher the number, the
  * faster the token is to execute.
- *
  * @param token Token to get the quality of.
  * @returns The token's quality.
  */
@@ -121,6 +120,7 @@ export function getQuality(token: InternalSelector): number {
 
 /**
  * Check whether a token or nested token includes `:scope`.
+ * @param t Selector token under inspection.
  */
 export function includesScopePseudo(t: InternalSelector): boolean {
     return (
