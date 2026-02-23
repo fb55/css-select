@@ -17,11 +17,13 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>bar</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const isElementContainingFoo = vi.fn((element) =>
+            DomUtils.getText(element).includes("foo"),
+        );
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,
-            fn,
+            isElementContainingFoo,
         );
 
         const options = {
@@ -38,7 +40,7 @@ describe("cacheParentResults", () => {
             ),
         ).toHaveLength(0);
 
-        expect(fn).toHaveBeenCalledTimes(1);
+        expect(isElementContainingFoo).toHaveBeenCalledTimes(1);
     });
 
     it("should cache results for subtrees", () => {
@@ -46,11 +48,13 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>foo</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const hasFooInText = vi.fn((element) =>
+            DomUtils.getText(element).includes("foo"),
+        );
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,
-            fn,
+            hasFooInText,
         );
 
         const options = {
@@ -67,7 +71,7 @@ describe("cacheParentResults", () => {
             ),
         ).toHaveLength(5);
 
-        expect(fn).toHaveBeenCalledTimes(6);
+        expect(hasFooInText).toHaveBeenCalledTimes(6);
     });
 
     it("should use cached result for multiple matches", () => {
@@ -75,11 +79,13 @@ describe("cacheParentResults", () => {
             "<a><b><c><d><e>foo</e></d></c><f><g>bar</g></f></b></a>",
         );
 
-        const fn = vi.fn((elem) => DomUtils.getText(elem).includes("foo"));
+        const hasFooInText = vi.fn((element) =>
+            DomUtils.getText(element).includes("foo"),
+        );
         const hasfoo = cacheParentResults<Node, Element>(
             boolbase.trueFunc,
             cacheParentResultsOptions,
-            fn,
+            hasFooInText,
         );
 
         const options = {
@@ -96,6 +102,6 @@ describe("cacheParentResults", () => {
             ),
         ).toHaveLength(4);
 
-        expect(fn).toHaveBeenCalledTimes(6);
+        expect(hasFooInText).toHaveBeenCalledTimes(6);
     });
 });

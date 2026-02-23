@@ -34,7 +34,7 @@ describe("API", () => {
     describe("can be queried with more than a selector", () => {
         it("function in `is`", () => {
             expect(
-                CSSselect.is(dom, (elem) => elem.attribs["id"] === "foo"),
+                CSSselect.is(dom, (element) => element.attribs["id"] === "foo"),
             ).toBe(true);
         });
 
@@ -76,19 +76,21 @@ describe("API", () => {
         });
 
         it("should accept document root nodes", () => {
-            const doc = parseDocument("<div id=foo><p>foo</p></div>");
-            expect(CSSselect.selectAll(":contains(foo)", doc)).toHaveLength(2);
+            const document = parseDocument("<div id=foo><p>foo</p></div>");
+            expect(
+                CSSselect.selectAll(":contains(foo)", document),
+            ).toHaveLength(2);
         });
 
         it("should support scoped selections relative to the root (#709)", () => {
-            const doc = parseDocument(`
+            const document = parseDocument(`
                 <div class="parent">
                     <div class="one"><p class="p1"></p></div>
                     <div class="two"><p class="p2"></p></div>
                     <div class="three"><p class="p3"></p></div>
                 </div>`);
 
-            const two = CSSselect.selectOne(".two", doc);
+            const two = CSSselect.selectOne(".two", document);
             expect(
                 CSSselect.selectOne(".parent .two .p2", two, {
                     relativeSelector: false,
@@ -104,20 +106,28 @@ describe("API", () => {
         });
 
         it("cannot query element within template context, but still query template itself", () => {
-            const doc = parseDocument(
+            const document = parseDocument(
                 `<template><div><p id="insert"></p></div></template>`,
             );
 
-            expect(CSSselect.selectAll("#insert", doc)).toHaveLength(0);
-            expect(CSSselect.selectOne("#insert", doc)).toBeNull();
-            expect(CSSselect.selectAll("template", doc)).toHaveLength(1);
-            expect(CSSselect.selectOne("template", doc)).toBeTruthy();
+            expect(CSSselect.selectAll("#insert", document)).toHaveLength(0);
+            expect(CSSselect.selectOne("#insert", document)).toBeNull();
+            expect(CSSselect.selectAll("template", document)).toHaveLength(1);
+            expect(CSSselect.selectOne("template", document)).toBeTruthy();
 
-            const opts = { xmlMode: true };
-            expect(CSSselect.selectAll("#insert", doc, opts)).toHaveLength(1);
-            expect(CSSselect.selectOne("#insert", doc, opts)).toBeTruthy();
-            expect(CSSselect.selectAll("template", doc, opts)).toHaveLength(1);
-            expect(CSSselect.selectOne("template", doc, opts)).toBeTruthy();
+            const options = { xmlMode: true };
+            expect(
+                CSSselect.selectAll("#insert", document, options),
+            ).toHaveLength(1);
+            expect(
+                CSSselect.selectOne("#insert", document, options),
+            ).toBeTruthy();
+            expect(
+                CSSselect.selectAll("template", document, options),
+            ).toHaveLength(1);
+            expect(
+                CSSselect.selectOne("template", document, options),
+            ).toBeTruthy();
         });
     });
 
@@ -166,8 +176,8 @@ describe("API", () => {
         });
 
         it("should throw if no parameter is supplied for pseudo", () => {
-            CSSselect.pseudos["foovalue"] = (elem, { adapter }, subselect) =>
-                adapter.getAttributeValue(elem, "foo") === subselect;
+            CSSselect.pseudos["foovalue"] = (element, { adapter }, subselect) =>
+                adapter.getAttributeValue(element, "foo") === subselect;
 
             expect(() => CSSselect.compile(":foovalue")).toThrow(
                 "requires an argument",
@@ -187,7 +197,7 @@ describe("API", () => {
             expect(() =>
                 CSSselect.compile(":foovalue", {
                     pseudos: {
-                        foovalue(_el, data) {
+                        foovalue(_element, data) {
                             return data != null;
                         },
                     },
@@ -247,10 +257,12 @@ describe("API", () => {
             expect(CSSselect._compileUnsafe("*, foo")).toBe(boolbase.trueFunc));
 
         it("should promote `rootFunc`", () => {
-            const rootFunc = vi.fn(); // Used as a function reference.
-            expect(CSSselect._compileUnsafe(":is(*), foo", { rootFunc })).toBe(
-                rootFunc,
-            );
+            const rootFunction = vi.fn(); // Used as a function reference.
+            expect(
+                CSSselect._compileUnsafe(":is(*), foo", {
+                    rootFunc: rootFunction,
+                }),
+            ).toBe(rootFunction);
         });
     });
 
@@ -356,12 +368,12 @@ describe("API", () => {
     });
 
     describe("options", () => {
-        const opts = { xmlMode: true };
+        const options = { xmlMode: true };
         it("should recognize xmlMode in :has and :not", () => {
-            expect(CSSselect.is(xmlDom, "DiV:has(P)", opts)).toBe(true);
-            expect(CSSselect.is(xmlDom, "DiV:not(div)", opts)).toBe(true);
+            expect(CSSselect.is(xmlDom, "DiV:has(P)", options)).toBe(true);
+            expect(CSSselect.is(xmlDom, "DiV:not(div)", options)).toBe(true);
             expect(
-                CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", opts),
+                CSSselect.is(xmlDom.children[0], "DiV:has(P) :not(p)", options),
             ).toBe(true);
         });
 
@@ -444,7 +456,8 @@ describe("API", () => {
 
             const adapter = {
                 ...DomUtils,
-                isHovered: (el: Element) => el === dom[dom.length - 1],
+                isHovered: (element: Element) =>
+                    element === dom[dom.length - 1],
             };
 
             const selection = CSSselect.selectAll("p:hover", dom, { adapter });

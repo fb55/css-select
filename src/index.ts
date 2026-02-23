@@ -29,13 +29,13 @@ function convertOptionFormats<Node, ElementNode extends Node>(
      * We force one format of options to the other one.
      */
     // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
-    const opts: Options<Node, ElementNode> = options ?? defaultOptions;
+    const finalOptions: Options<Node, ElementNode> = options ?? defaultOptions;
     // @ts-expect-error Same as above.
-    opts.adapter ??= DomUtils;
+    finalOptions.adapter ??= DomUtils;
     // @ts-expect-error `equals` does not exist on `Options`
-    opts.equals ??= opts.adapter?.equals ?? defaultEquals;
+    finalOptions.equals ??= finalOptions.adapter?.equals ?? defaultEquals;
 
-    return opts as InternalOptions<Node, ElementNode>;
+    return finalOptions as InternalOptions<Node, ElementNode>;
 }
 
 /**
@@ -52,12 +52,12 @@ export function compile<Node, ElementNode extends Node>(
     options?: Options<Node, ElementNode>,
     context?: Node[] | Node,
 ): CompiledQuery<Node> {
-    const opts = convertOptionFormats(options);
-    const next = _compileUnsafe(selector, opts, context);
+    const convertedOptions = convertOptionFormats(options);
+    const next = _compileUnsafe(selector, convertedOptions, context);
 
     return next === boolbase.falseFunc
         ? boolbase.falseFunc
-        : (elem: Node) => opts.adapter.isTag(elem) && next(elem);
+        : (element: Node) => convertedOptions.adapter.isTag(element) && next(element);
 }
 /**
  * Like `compile`, but does not add a check if elements are tags.
@@ -94,10 +94,10 @@ export function _compileToken<Node, ElementNode extends Node>(
     );
 }
 
-function getSelectorFunc<Node, ElementNode extends Node, T>(
-    searchFunc: (
+function getSelectorFunction<Node, ElementNode extends Node, T>(
+    searchFunction: (
         query: Predicate<ElementNode>,
-        elems: Array<Node>,
+        elements: Array<Node>,
         options: InternalOptions<Node, ElementNode>,
     ) => T,
 ) {
@@ -106,29 +106,33 @@ function getSelectorFunc<Node, ElementNode extends Node, T>(
         elements: Node[] | Node,
         options?: Options<Node, ElementNode>,
     ): T {
-        const opts = convertOptionFormats(options);
+        const convertedOptions = convertOptionFormats(options);
 
         if (typeof query !== "function") {
-            query = _compileUnsafe<Node, ElementNode>(query, opts, elements);
+            query = _compileUnsafe<Node, ElementNode>(
+                query,
+                convertedOptions,
+                elements,
+            );
         }
 
         const filteredElements = prepareContext(
             elements,
-            opts.adapter,
+            convertedOptions.adapter,
             query.shouldTestNextSiblings,
         );
-        return searchFunc(query, filteredElements, opts);
+        return searchFunction(query, filteredElements, convertedOptions);
     };
 }
 
 /**
  * Normalize a query context and optionally include next siblings.
- * @param elems Elements to test against sibling-dependent selectors.
+ * @param elements Elements to test against sibling-dependent selectors.
  * @param adapter Adapter implementation used for DOM operations.
  * @param shouldTestNextSiblings Whether sibling combinators should include following siblings.
  */
 export function prepareContext<Node, ElementNode extends Node>(
-    elems: Node | Node[],
+    elements: Node | Node[],
     adapter: Adapter<Node, ElementNode>,
     shouldTestNextSiblings = false,
 ): Node[] {
@@ -137,27 +141,27 @@ export function prepareContext<Node, ElementNode extends Node>(
      * See https://github.com/fb55/css-select/pull/43#issuecomment-225414692
      */
     if (shouldTestNextSiblings) {
-        elems = appendNextSiblings(elems, adapter);
+        elements = appendNextSiblings(elements, adapter);
     }
 
-    return Array.isArray(elems)
-        ? adapter.removeSubsets(elems)
-        : adapter.getChildren(elems);
+    return Array.isArray(elements)
+        ? adapter.removeSubsets(elements)
+        : adapter.getChildren(elements);
 }
 
 function appendNextSiblings<Node, ElementNode extends Node>(
-    elem: Node | Node[],
+    element: Node | Node[],
     adapter: Adapter<Node, ElementNode>,
 ): Node[] {
     // Order matters because jQuery seems to check the children before the siblings
-    const elems = Array.isArray(elem) ? [...elem] : [elem];
-    const elemsLength = elems.length;
+    const elements = Array.isArray(element) ? [...element] : [element];
+    const elementsLength = elements.length;
 
-    for (let i = 0; i < elemsLength; i++) {
-        const nextSiblings = getNextSiblings(elems[i], adapter);
-        elems.push(...nextSiblings);
+    for (let index = 0; index < elementsLength; index++) {
+        const nextSiblings = getNextSiblings(elements[index], adapter);
+        elements.push(...nextSiblings);
     }
-    return elems;
+    return elements;
 }
 
 /**
@@ -173,15 +177,15 @@ export const selectAll: <Node, ElementNode extends Node>(
     query: Query<ElementNode>,
     elements: Node | Node[],
     options?: Options<Node, ElementNode> | undefined,
-) => ElementNode[] = getSelectorFunc(
+) => ElementNode[] = getSelectorFunction(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
-        elems: Node[] | null,
+        elements: Node[] | null,
         options: InternalOptions<Node, ElementNode>,
     ): ElementNode[] =>
-        query === boolbase.falseFunc || !elems || elems.length === 0
+        query === boolbase.falseFunc || !elements || elements.length === 0
             ? []
-            : findAll(query, elems, options),
+            : findAll(query, elements, options),
 );
 
 /**
@@ -197,34 +201,34 @@ export const selectOne: <Node, ElementNode extends Node>(
     query: Query<ElementNode>,
     elements: Node | Node[],
     options?: Options<Node, ElementNode> | undefined,
-) => ElementNode | null = getSelectorFunc(
+) => ElementNode | null = getSelectorFunction(
     <Node, ElementNode extends Node>(
         query: Predicate<ElementNode>,
-        elems: Node[] | null,
+        elements: Node[] | null,
         options: InternalOptions<Node, ElementNode>,
     ): ElementNode | null =>
-        query === boolbase.falseFunc || !elems || elems.length === 0
+        query === boolbase.falseFunc || !elements || elements.length === 0
             ? null
-            : findOne(query, elems, options),
+            : findOne(query, elements, options),
 );
 
 /**
  * Tests whether or not an element is matched by query.
  * @template Node The generic Node type for the DOM adapter being used.
  * @template ElementNode The Node type for elements for the DOM adapter being used.
- * @param elem The element to test if it matches the query.
+ * @param element The element to test if it matches the query.
  * @param query can be either a CSS selector string or a compiled query function.
  * @param [options] options for querying the document.
  * @see compile for supported selector queries.
  * @returns Whether the element matches the query.
  */
 export function is<Node, ElementNode extends Node>(
-    elem: ElementNode,
+    element: ElementNode,
     query: Query<ElementNode>,
     options?: Options<Node, ElementNode>,
 ): boolean {
     return (typeof query === "function" ? query : compile(query, options))(
-        elem,
+        element,
     );
 }
 

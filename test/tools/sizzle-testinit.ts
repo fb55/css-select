@@ -5,7 +5,7 @@ import * as helper from "./helper.js";
 
 let document = helper.getDocument("sizzle.html");
 
-export function loadDoc(): helper.SimpleDocument {
+export function loadDocument(): helper.SimpleDocument {
     document = helper.getDocument("sizzle.html");
     return document;
 }
@@ -34,16 +34,16 @@ export function t(
     context: Node[] | Node | null = document,
 ): void {
     const actual = CSSselect(selector, context) as Element[];
-    const actualIds = actual.map((e) => e.attribs["id"]);
+    const actualIds = actual.map((element) => element.attribs["id"]);
 
     // Should not contain falsy values
     expect(actualIds).toStrictEqual(expectedIds);
 }
 
-const xmlDoc = helper.getDocumentFromPath("fries.xml", {
+const xmlDocument = helper.getDocumentFromPath("fries.xml", {
     xmlMode: true,
 });
 
 export function createWithFriesXML(): Document {
-    return xmlDoc;
+    return xmlDocument;
 }

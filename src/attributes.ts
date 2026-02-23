@@ -96,47 +96,49 @@ export const attributeRules: Record<
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
-            return (elem) => {
-                const attr = adapter.getAttributeValue(elem, name);
+            return (element) => {
+                const attribute = adapter.getAttributeValue(element, name);
                 return (
-                    attr != null &&
-                    attr.length === value.length &&
-                    attr.toLowerCase() === value &&
-                    next(elem)
+                    attribute != null &&
+                    attribute.length === value.length &&
+                    attribute.toLowerCase() === value &&
+                    next(element)
                 );
             };
         }
 
-        return (elem) =>
-            adapter.getAttributeValue(elem, name) === value && next(elem);
+        return (element) =>
+            adapter.getAttributeValue(element, name) === value && next(element);
     },
     hyphen(next, data, options) {
         const { adapter } = options;
         const { name } = data;
         let { value } = data;
-        const len = value.length;
+        const { length } = value;
 
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
-            return function hyphenIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
+            return function hyphenIC(element) {
+                const attribute = adapter.getAttributeValue(element, name);
                 return (
-                    attr != null &&
-                    (attr.length === len || attr.charAt(len) === "-") &&
-                    attr.substr(0, len).toLowerCase() === value &&
-                    next(elem)
+                    attribute != null &&
+                    (attribute.length === length ||
+                        attribute.charAt(length) === "-") &&
+                    attribute.substr(0, length).toLowerCase() === value &&
+                    next(element)
                 );
             };
         }
 
-        return function hyphen(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
+        return function hyphen(element) {
+            const attribute = adapter.getAttributeValue(element, name);
             return (
-                attr != null &&
-                (attr.length === len || attr.charAt(len) === "-") &&
-                attr.substr(0, len) === value &&
-                next(elem)
+                attribute != null &&
+                (attribute.length === length ||
+                    attribute.charAt(length) === "-") &&
+                attribute.substr(0, length) === value &&
+                next(element)
             );
         };
     },
@@ -152,70 +154,70 @@ export const attributeRules: Record<
             shouldIgnoreCase(data, options) ? "i" : "",
         );
 
-        return function element(elem) {
-            const attr = adapter.getAttributeValue(elem, name);
+        return function element(node) {
+            const attribute = adapter.getAttributeValue(node, name);
             return (
-                attr != null &&
-                attr.length >= value.length &&
-                regex.test(attr) &&
-                next(elem)
+                attribute != null &&
+                attribute.length >= value.length &&
+                regex.test(attribute) &&
+                next(node)
             );
         };
     },
     exists(next, { name }, { adapter }) {
-        return (elem) => adapter.hasAttrib(elem, name) && next(elem);
+        return (element) => adapter.hasAttrib(element, name) && next(element);
     },
     start(next, data, options) {
         const { adapter } = options;
         const { name } = data;
         let { value } = data;
-        const len = value.length;
+        const { length } = value;
 
-        if (len === 0) {
+        if (length === 0) {
             return boolbase.falseFunc;
         }
 
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
-            return (elem) => {
-                const attr = adapter.getAttributeValue(elem, name);
+            return (element) => {
+                const attribute = adapter.getAttributeValue(element, name);
                 return (
-                    attr != null &&
-                    attr.length >= len &&
-                    attr.substr(0, len).toLowerCase() === value &&
-                    next(elem)
+                    attribute != null &&
+                    attribute.length >= length &&
+                    attribute.substr(0, length).toLowerCase() === value &&
+                    next(element)
                 );
             };
         }
 
-        return (elem) =>
-            !!adapter.getAttributeValue(elem, name)?.startsWith(value) &&
-            next(elem);
+        return (element) =>
+            !!adapter.getAttributeValue(element, name)?.startsWith(value) &&
+            next(element);
     },
     end(next, data, options) {
         const { adapter } = options;
         const { name } = data;
         let { value } = data;
-        const len = -value.length;
+        const length = -value.length;
 
-        if (len === 0) {
+        if (length === 0) {
             return boolbase.falseFunc;
         }
 
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
-            return (elem) =>
+            return (element) =>
                 adapter
-                    .getAttributeValue(elem, name)
-                    ?.substr(len)
-                    .toLowerCase() === value && next(elem);
+                    .getAttributeValue(element, name)
+                    ?.substr(length)
+                    .toLowerCase() === value && next(element);
         }
 
-        return (elem) =>
-            !!adapter.getAttributeValue(elem, name)?.endsWith(value) &&
-            next(elem);
+        return (element) =>
+            !!adapter.getAttributeValue(element, name)?.endsWith(value) &&
+            next(element);
     },
     any(next, data, options) {
         const { adapter } = options;
@@ -228,20 +230,20 @@ export const attributeRules: Record<
         if (shouldIgnoreCase(data, options)) {
             const regex = new RegExp(escapeRegex(value), "i");
 
-            return function anyIC(elem) {
-                const attr = adapter.getAttributeValue(elem, name);
+            return function anyIC(element) {
+                const attribute = adapter.getAttributeValue(element, name);
                 return (
-                    attr != null &&
-                    attr.length >= value.length &&
-                    regex.test(attr) &&
-                    next(elem)
+                    attribute != null &&
+                    attribute.length >= value.length &&
+                    regex.test(attribute) &&
+                    next(element)
                 );
             };
         }
 
-        return (elem) =>
-            !!adapter.getAttributeValue(elem, name)?.includes(value) &&
-            next(elem);
+        return (element) =>
+            !!adapter.getAttributeValue(element, name)?.includes(value) &&
+            next(element);
     },
     not(next, data, options) {
         const { adapter } = options;
@@ -249,24 +251,24 @@ export const attributeRules: Record<
         let { value } = data;
 
         if (value === "") {
-            return (elem) =>
-                !!adapter.getAttributeValue(elem, name) && next(elem);
+            return (element) =>
+                !!adapter.getAttributeValue(element, name) && next(element);
         }
         if (shouldIgnoreCase(data, options)) {
             value = value.toLowerCase();
 
-            return (elem) => {
-                const attr = adapter.getAttributeValue(elem, name);
+            return (element) => {
+                const attribute = adapter.getAttributeValue(element, name);
                 return (
-                    (attr == null ||
-                        attr.length !== value.length ||
-                        attr.toLowerCase() !== value) &&
-                    next(elem)
+                    (attribute == null ||
+                        attribute.length !== value.length ||
+                        attribute.toLowerCase() !== value) &&
+                    next(element)
                 );
             };
         }
 
-        return (elem) =>
-            adapter.getAttributeValue(elem, name) !== value && next(elem);
+        return (element) =>
+            adapter.getAttributeValue(element, name) !== value && next(element);
     },
 };

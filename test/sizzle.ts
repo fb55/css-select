@@ -8,13 +8,18 @@ import * as DomUtils from "domutils";
 import { parseDOM, parseDocument } from "htmlparser2";
 import { beforeEach, describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
-import { createWithFriesXML, loadDoc, q, t } from "./tools/sizzle-testinit.js";
+import {
+    createWithFriesXML,
+    loadDocument,
+    q,
+    t,
+} from "./tools/sizzle-testinit.js";
 
-let document = loadDoc();
+let document = loadDocument();
 
 describe("Sizzle", () => {
     beforeEach(() => {
-        document = loadDoc();
+        document = loadDocument();
     });
 
     it("element", () => {
@@ -37,7 +42,7 @@ describe("Sizzle", () => {
         // Select all
         expect(CSSselect.selectAll("*", document).length >= 30).toBe(true);
         const all = CSSselect.selectAll("*", document);
-        const good = all.every((el: AnyNode) => el.nodeType !== 8);
+        const good = all.every((element: AnyNode) => element.nodeType !== 8);
         // Select all elements, no comment nodes
         expect(good).toBe(true);
         // Element Selector
@@ -72,9 +77,9 @@ describe("Sizzle", () => {
         t("dl ol", ["empty", "listWithTabIndex"]);
         // Parent Element (non-space descendant combinator)
         t("dl\tol", ["empty", "listWithTabIndex"]);
-        const obj1 = document.getElementById("object1");
+        const object1 = document.getElementById("object1");
         // Object/param as context
-        expect(CSSselect.selectAll("param", obj1)).toHaveLength(2);
+        expect(CSSselect.selectAll("param", object1)).toHaveLength(2);
 
         // Finding selects with a context.
         t(
@@ -130,8 +135,8 @@ describe("Sizzle", () => {
 
         const iframe = document.getElementById("iframe");
         iframe.children = parseDOM("<body><p id='foo'>bar</p></body>");
-        for (const e of iframe.children) {
-            e.parent = iframe;
+        for (const element of iframe.children) {
+            element.parent = iframe;
         }
         // Other document as context
         expect(CSSselect.selectAll("p:contains(bar)", iframe)).toStrictEqual([
@@ -140,7 +145,7 @@ describe("Sizzle", () => {
         iframe.children = [];
 
         let markup = "";
-        for (let i = 0; i < 100; i++) {
+        for (let index = 0; index < 100; index++) {
             markup = `<div>${markup}</div>`;
         }
         const [html] = parseDOM(markup);
@@ -156,12 +161,12 @@ describe("Sizzle", () => {
         DomUtils.removeElement(html);
 
         // Real use case would be using .watch in browsers with window.watch (see Issue #157)
-        const elem = document.createElement("toString");
-        elem.attribs["id"] = "toString";
-        DomUtils.appendChild(q("qunit-fixture")[0], elem);
+        const element = document.createElement("toString");
+        element.attribs["id"] = "toString";
+        DomUtils.appendChild(q("qunit-fixture")[0], element);
         // Element name matches Object.prototype property
         t("tostring#toString", ["toString"]);
-        DomUtils.removeElement(elem);
+        DomUtils.removeElement(element);
     });
 
     it("XML Document Selectors", () => {
@@ -426,8 +431,8 @@ describe("Sizzle", () => {
         div.children = parseDOM(
             "<div class='test e'></div><div class='test'></div>",
         );
-        for (const e of div.children) {
-            e.parent = div;
+        for (const element of div.children) {
+            element.parent = div;
         }
 
         // Finding a second class.
@@ -891,10 +896,10 @@ describe("Sizzle", () => {
             ),
         ] as Element[];
 
-        for (const attr of attrbad) {
+        for (const attribute of attrbad) {
             DomUtils.appendChild(
                 document.getElementById("qunit-fixture"),
-                attr,
+                attribute,
             );
         }
 
@@ -941,8 +946,8 @@ describe("Sizzle", () => {
          */
         t(String.raw`input[data-attr='\01D306A']`, ["attrbad_unicode"]);
 
-        for (const attr of attrbad) {
-            DomUtils.removeElement(attr);
+        for (const attribute of attrbad) {
+            DomUtils.removeElement(attribute);
         }
 
         // `input[type=text]`
@@ -1403,9 +1408,9 @@ describe("Sizzle", () => {
         // Text Contains
         t("a:contains((Link))", ["groups"]);
 
-        const tmp = document.createElement("div");
-        tmp.attribs["id"] = "tmp_input";
-        DomUtils.appendChild(document.body, tmp);
+        const temporary = document.createElement("div");
+        temporary.attribs["id"] = "tmp_input";
+        DomUtils.appendChild(document.body, temporary);
 
         for (const type of ["button", "submit", "reset"]) {
             const els = [
@@ -1417,8 +1422,8 @@ describe("Sizzle", () => {
                 ),
             ]; // Create a copy of the array, so that `appendChild` doesn't remove the elements.
 
-            for (const el of els) {
-                DomUtils.appendChild(tmp, el);
+            for (const element of els) {
+                DomUtils.appendChild(temporary, element);
             }
 
             // Input Buttons :${type}
@@ -1430,7 +1435,7 @@ describe("Sizzle", () => {
             expect(CSSselect.is(els[1], `:${type}`)).toBe(true);
         }
 
-        DomUtils.removeElement(tmp);
+        DomUtils.removeElement(temporary);
 
         // Caching system tolerates recursive selection
         t(

@@ -18,24 +18,28 @@ export function isTraversal(token: InternalSelector): token is Traversal {
 /**
  * Sort the parts of the passed selector, as there is potential for
  * optimization (some types of selectors are faster than others).
- * @param arr Selector to sort
+ * @param array Selector to sort
  */
-export function sortRules(arr: InternalSelector[]): void {
-    const ratings = arr.map(getQuality);
-    for (let i = 1; i < arr.length; i++) {
-        const procNew = ratings[i];
+export function sortRules(array: InternalSelector[]): void {
+    const ratings = array.map(getQuality);
+    for (let index = 1; index < array.length; index++) {
+        const procNew = ratings[index];
 
         if (procNew < 0) {
             continue;
         }
 
         // Use insertion sort to move the token to the correct position.
-        for (let j = i; j > 0 && procNew < ratings[j - 1]; j--) {
-            const token = arr[j];
-            arr[j] = arr[j - 1];
-            arr[j - 1] = token;
-            ratings[j] = ratings[j - 1];
-            ratings[j - 1] = procNew;
+        for (
+            let currentIndex = index;
+            currentIndex > 0 && procNew < ratings[currentIndex - 1];
+            currentIndex--
+        ) {
+            const token = array[currentIndex];
+            array[currentIndex] = array[currentIndex - 1];
+            array[currentIndex - 1] = token;
+            ratings[currentIndex] = ratings[currentIndex - 1];
+            ratings[currentIndex - 1] = procNew;
         }
     }
 }

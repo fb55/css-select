@@ -22,7 +22,10 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the attribute value.
      */
-    getAttributeValue: (elem: ElementNode, name: string) => string | undefined;
+    getAttributeValue: (
+        element: ElementNode,
+        name: string,
+    ) => string | undefined;
 
     /**
      * Get the node's children
@@ -32,7 +35,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the name of the tag
      */
-    getName: (elem: ElementNode) => string;
+    getName: (element: ElementNode) => string;
 
     /**
      * Get the parent of the node
@@ -58,7 +61,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Does the element have the named attribute?
      */
-    hasAttrib: (elem: ElementNode, name: string) => boolean;
+    hasAttrib: (element: ElementNode, name: string) => boolean;
 
     /**
      * Takes an array of nodes, and removes any duplicates, as well as any
@@ -77,17 +80,17 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Is the element in hovered state?
      */
-    isHovered?: (elem: ElementNode) => boolean;
+    isHovered?: (element: ElementNode) => boolean;
 
     /**
      * Is the element in visited state?
      */
-    isVisited?: (elem: ElementNode) => boolean;
+    isVisited?: (element: ElementNode) => boolean;
 
     /**
      * Is the element in active state?
      */
-    isActive?: (elem: ElementNode) => boolean;
+    isActive?: (element: ElementNode) => boolean;
 }
 
 /**
@@ -127,7 +130,8 @@ export interface Options<Node, ElementNode extends Node> {
     pseudos?:
         | Record<
               string,
-              string | ((elem: ElementNode, value?: string | null) => boolean)
+              | string
+              | ((element: ElementNode, value?: string | null) => boolean)
           >
         | undefined;
     /**

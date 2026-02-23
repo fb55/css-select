@@ -24,11 +24,11 @@ export function getDocument(file: string): SimpleDocument {
     const document = getDocumentFromPath(file) as SimpleDocument;
 
     document.getElementById = (id: string) => {
-        const el = DomUtils.getElementById(id, document.children);
-        if (!el) {
+        const element = DomUtils.getElementById(id, document.children);
+        if (!element) {
             throw new Error(`Did not find element with ID ${id}`);
         }
-        return el;
+        return element;
     };
     document.createTextNode = (content: string) => new Text(content);
     document.createElement = (name: string) =>

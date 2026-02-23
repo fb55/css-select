@@ -76,8 +76,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 name = name.toLowerCase();
             }
 
-            return function tag(elem: ElementNode): boolean {
-                return adapter.getName(elem) === name && next(elem);
+            return function tag(element: ElementNode): boolean {
+                return adapter.getName(element) === name && next(element);
             };
         }
 
@@ -88,8 +88,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 cacheResults === false ||
                 typeof WeakMap === "undefined"
             ) {
-                return function descendant(elem: ElementNode): boolean {
-                    let current: ElementNode | null = elem;
+                return function descendant(element: ElementNode): boolean {
+                    let current: ElementNode | null = element;
 
                     while ((current = getElementParent(current, adapter))) {
                         if (next(current)) {
@@ -106,8 +106,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 ElementNode,
                 { matches: boolean }
             >();
-            return function cachedDescendant(elem: ElementNode): boolean {
-                let current: ElementNode | null = elem;
+            return function cachedDescendant(element: ElementNode): boolean {
+                let current: ElementNode | null = element;
                 let result: { matches: boolean } | undefined;
 
                 while ((current = getElementParent(current, adapter))) {
@@ -133,8 +133,8 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         }
         case "_flexibleDescendant": {
             // Include element itself, only used while querying an array
-            return function flexibleDescendant(elem: ElementNode): boolean {
-                let current: ElementNode | null = elem;
+            return function flexibleDescendant(element: ElementNode): boolean {
+                let current: ElementNode | null = element;
 
                 do {
                     if (next(current)) {
@@ -147,24 +147,24 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
             };
         }
         case SelectorType.Parent: {
-            return function parent(elem: ElementNode): boolean {
+            return function parent(element: ElementNode): boolean {
                 return adapter
-                    .getChildren(elem)
-                    .some((elem) => adapter.isTag(elem) && next(elem));
+                    .getChildren(element)
+                    .some((element) => adapter.isTag(element) && next(element));
             };
         }
         case SelectorType.Child: {
-            return function child(elem: ElementNode): boolean {
-                const parent = getElementParent(elem, adapter);
+            return function child(element: ElementNode): boolean {
+                const parent = getElementParent(element, adapter);
                 return parent !== null && next(parent);
             };
         }
         case SelectorType.Sibling: {
-            return function sibling(elem: ElementNode): boolean {
-                const siblings = adapter.getSiblings(elem);
+            return function sibling(element: ElementNode): boolean {
+                const siblings = adapter.getSiblings(element);
 
                 for (const currentSibling of siblings) {
-                    if (equals(elem, currentSibling)) {
+                    if (equals(element, currentSibling)) {
                         break;
                     }
                     if (adapter.isTag(currentSibling) && next(currentSibling)) {
@@ -177,19 +177,19 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
         }
         case SelectorType.Adjacent: {
             if (adapter.prevElementSibling) {
-                return function adjacent(elem: ElementNode): boolean {
+                return function adjacent(element: ElementNode): boolean {
                     // biome-ignore lint/style/noNonNullAssertion: checked by if statement
-                    const previous = adapter.prevElementSibling!(elem);
+                    const previous = adapter.prevElementSibling!(element);
                     return previous != null && next(previous);
                 };
             }
 
-            return function adjacent(elem: ElementNode): boolean {
-                const siblings = adapter.getSiblings(elem);
+            return function adjacent(element: ElementNode): boolean {
+                const siblings = adapter.getSiblings(element);
                 let lastElement: ElementNode | undefined;
 
                 for (const currentSibling of siblings) {
-                    if (equals(elem, currentSibling)) {
+                    if (equals(element, currentSibling)) {
                         break;
                     }
                     if (adapter.isTag(currentSibling)) {

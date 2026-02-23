@@ -37,9 +37,10 @@ function absolutize<Node, ElementNode extends Node>(
 ) {
     // TODO Use better check if the context is a document
     const hasContext = !!context?.every(
-        (e) =>
-            e === PLACEHOLDER_ELEMENT ||
-            (adapter.isTag(e) && getElementParent(e, adapter) !== null),
+        (element) =>
+            element === PLACEHOLDER_ELEMENT ||
+            (adapter.isTag(element) &&
+                getElementParent(element, adapter) !== null),
     );
 
     for (const t of token) {
@@ -63,18 +64,21 @@ function absolutize<Node, ElementNode extends Node>(
  * Compile a parsed selector token into an executable query function.
  * @param token Selector token(s) to compile.
  * @param options Options that control this operation.
- * @param ctx Compilation context for relative selector handling.
+ * @param compilationContext Compilation context for relative selector handling.
  */
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
-    ctx?: Node[] | Node,
+    compilationContext?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
     for (const rules of token) {
         sortRules(rules);
     }
 
-    const { context = ctx, rootFunc = boolbase.trueFunc } = options;
+    const {
+        context = compilationContext,
+        rootFunc: rootFunction = boolbase.trueFunc,
+    } = options;
 
     const isArrayContext = Array.isArray(context);
 
@@ -112,7 +116,7 @@ export function compileToken<Node, ElementNode extends Node>(
             }
         }
 
-        let next = rootFunc;
+        let next = rootFunction;
         let hasExpensiveSubselector = false;
 
         for (const rule of rules) {
@@ -138,8 +142,8 @@ export function compileToken<Node, ElementNode extends Node>(
         }
 
         // If we have a function that always returns true, we can stop here.
-        if (next === rootFunc) {
-            return rootFunc;
+        if (next === rootFunction) {
+            return rootFunction;
         }
 
         query = query === boolbase.falseFunc ? next : or(query, next);
@@ -151,5 +155,5 @@ export function compileToken<Node, ElementNode extends Node>(
 }
 
 function or<T>(a: Predicate<T>, b: Predicate<T>): Predicate<T> {
-    return (elem) => a(elem) || b(elem);
+    return (element) => a(element) || b(element);
 }

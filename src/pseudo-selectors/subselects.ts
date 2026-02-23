@@ -54,13 +54,13 @@ function copyOptions<Node, ElementNode extends Node>(
 }
 
 const is: Subselect = (next, token, options, context, compileToken) => {
-    const func = compileToken(token, copyOptions(options), context);
+    const compiledToken = compileToken(token, copyOptions(options), context);
 
-    return func === boolbase.trueFunc
+    return compiledToken === boolbase.trueFunc
         ? next
-        : func === boolbase.falseFunc
+        : compiledToken === boolbase.falseFunc
           ? boolbase.falseFunc
-          : (elem) => func(elem) && next(elem);
+          : (element) => compiledToken(element) && next(element);
 };
 
 /*
@@ -77,13 +77,13 @@ export const subselects: Record<string, Subselect> = {
     matches: is,
     where: is,
     not(next, token, options, context, compileToken) {
-        const func = compileToken(token, copyOptions(options), context);
+        const compiledToken = compileToken(token, copyOptions(options), context);
 
-        return func === boolbase.falseFunc
+        return compiledToken === boolbase.falseFunc
             ? next
-            : func === boolbase.trueFunc
+            : compiledToken === boolbase.trueFunc
               ? boolbase.falseFunc
-              : (elem) => !func(elem) && next(elem);
+              : (element) => !compiledToken(element) && next(element);
     },
     has<Node, ElementNode extends Node>(
         next: CompiledQuery<ElementNode>,
@@ -94,8 +94,8 @@ export const subselects: Record<string, Subselect> = {
     ): CompiledQuery<ElementNode> {
         const { adapter } = options;
 
-        const opts = copyOptions(options);
-        opts.relativeSelector = true;
+        const copiedOptions = copyOptions(options);
+        copiedOptions.relativeSelector = true;
 
         const context = subselect.some((s) => s.some(isTraversal))
             ? // Used as a placeholder. Will be replaced with the actual element.
@@ -103,7 +103,7 @@ export const subselects: Record<string, Subselect> = {
             : undefined;
         const skipCache = hasDependsOnCurrentElement(subselect);
 
-        const compiled = compileToken(subselect, opts, context);
+        const compiled = compileToken(subselect, copiedOptions, context);
 
         if (compiled === boolbase.falseFunc) {
             return boolbase.falseFunc;
@@ -112,13 +112,13 @@ export const subselects: Record<string, Subselect> = {
         // If `compiled` is `trueFunc`, we can skip this.
         if (context && compiled !== boolbase.trueFunc) {
             return skipCache
-                ? (elem) => {
-                      if (!next(elem)) {
+                ? (element) => {
+                      if (!next(element)) {
                           return false;
                       }
 
-                      context[0] = elem;
-                      const childs = adapter.getChildren(elem);
+                      context[0] = element;
+                      const childs = adapter.getChildren(element);
 
                       return (
                           findOne(
@@ -126,31 +126,31 @@ export const subselects: Record<string, Subselect> = {
                               compiled.shouldTestNextSiblings
                                   ? [
                                         ...childs,
-                                        ...getNextSiblings(elem, adapter),
+                                        ...getNextSiblings(element, adapter),
                                     ]
                                   : childs,
                               options,
                           ) !== null
                       );
                   }
-                : cacheParentResults(next, options, (elem) => {
-                      context[0] = elem;
+                : cacheParentResults(next, options, (element) => {
+                      context[0] = element;
 
                       return (
                           findOne(
                               compiled,
-                              adapter.getChildren(elem),
+                              adapter.getChildren(element),
                               options,
                           ) !== null
                       );
                   });
         }
 
-        const hasOne = (elem: ElementNode) =>
-            findOne(compiled, adapter.getChildren(elem), options) !== null;
+        const hasOne = (element: ElementNode) =>
+            findOne(compiled, adapter.getChildren(element), options) !== null;
 
         return skipCache
-            ? (elem) => next(elem) && hasOne(elem)
+            ? (element) => next(element) && hasOne(element)
             : cacheParentResults(next, options, hasOne);
     },
 };

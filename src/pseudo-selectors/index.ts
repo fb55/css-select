@@ -21,7 +21,7 @@ import {
 } from "../types.js";
 import { aliases } from "./aliases.js";
 import { filters } from "./filters.js";
-import { pseudos, verifyPseudoArgs } from "./pseudos.js";
+import { pseudos, verifyPseudoArguments } from "./pseudos.js";
 import { subselects } from "./subselects.js";
 
 /**
@@ -65,9 +65,9 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     }
 
     if (typeof userPseudo === "function") {
-        verifyPseudoArgs(userPseudo, name, data, 1);
+        verifyPseudoArguments(userPseudo, name, data, 1);
 
-        return (elem) => userPseudo(elem, data) && next(elem);
+        return (element) => userPseudo(element, data) && next(element);
     }
 
     if (name in filters) {
@@ -76,9 +76,9 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
     if (name in pseudos) {
         const pseudo = pseudos[name];
-        verifyPseudoArgs(pseudo, name, data, 2);
+        verifyPseudoArguments(pseudo, name, data, 2);
 
-        return (elem) => pseudo(elem, options, data) && next(elem);
+        return (element) => pseudo(element, options, data) && next(element);
     }
 
     throw new Error(`Unknown pseudo-class :${name}`);

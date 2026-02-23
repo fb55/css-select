@@ -18,10 +18,10 @@ import { getElementParent } from "./querying.js";
 export function cacheParentResults<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     { adapter, cacheResults }: InternalOptions<Node, ElementNode>,
-    matches: (elem: ElementNode) => boolean,
+    matches: (element: ElementNode) => boolean,
 ): CompiledQuery<ElementNode> {
     if (cacheResults === false || typeof WeakMap === "undefined") {
-        return (elem) => next(elem) && matches(elem);
+        return (element) => next(element) && matches(element);
     }
 
     // Use a cache to avoid re-checking children of an element.
@@ -29,34 +29,34 @@ export function cacheParentResults<Node, ElementNode extends Node>(
     // @ts-expect-error `Node` is not extending object
     const resultCache = new WeakMap<Node, boolean>();
 
-    function addResultToCache(elem: ElementNode) {
-        const result = matches(elem);
+    function addResultToCache(element: ElementNode) {
+        const result = matches(element);
 
-        resultCache.set(elem, result);
+        resultCache.set(element, result);
         return result;
     }
 
-    return function cachedMatcher(elem) {
-        if (!next(elem)) {
+    return function cachedMatcher(element) {
+        if (!next(element)) {
             return false;
         }
-        if (resultCache.has(elem)) {
-            return resultCache.get(elem) ?? false;
+        if (resultCache.has(element)) {
+            return resultCache.get(element) ?? false;
         }
 
         // Check all of the element's parents.
-        let node = elem;
+        let node = element;
 
         do {
             const parent = getElementParent(node, adapter);
 
             if (parent === null) {
-                return addResultToCache(elem);
+                return addResultToCache(element);
             }
 
             node = parent;
         } while (!resultCache.has(node));
 
-        return resultCache.get(node) ? addResultToCache(elem) : false;
+        return resultCache.get(node) ? addResultToCache(element) : false;
     };
 }

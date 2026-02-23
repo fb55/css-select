@@ -15,8 +15,8 @@ import * as helper from "./tools/helper.js";
 const document = helper.getDocument("nwmatcher.html");
 
 // Prototype's `$` function
-function getByIds(...args: string[]): Element[] {
-    return args.map((id) => getById(id));
+function getByIds(...ids: string[]): Element[] {
+    return ids.map((id) => getById(id));
 }
 
 function getById(id: string): Element {
@@ -24,8 +24,8 @@ function getById(id: string): Element {
 }
 
 // NWMatcher methods
-const select = (query: string, doc: Node[] | Node = document): Node[] =>
-    CSSselect.selectAll(query, doc);
+const select = (query: string, contextNode: Node[] | Node = document): Node[] =>
+    CSSselect.selectAll(query, contextNode);
 
 describe("NWMatcher", () => {
     // Test whether our helper above throws
