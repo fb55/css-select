@@ -2,7 +2,7 @@ import * as boolbase from "boolbase";
 import getNCheck from "nth-check";
 import { cacheParentResults } from "../helpers/cache.js";
 import { getElementParent } from "../helpers/querying.js";
-import { type CompiledQuery, type InternalOptions } from "../types.js";
+import type { CompiledQuery, InternalOptions } from "../types.js";
 
 type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
@@ -11,144 +11,147 @@ type Filter = <Node, ElementNode extends Node>(
     context?: Node[],
 ) => CompiledQuery<ElementNode>;
 
+/**
+ * Pre-compiled pseudo filters.
+ */
 export const filters: Record<string, Filter> = {
     contains(next, text, options) {
         const { getText } = options.adapter;
 
-        return cacheParentResults(next, options, (elem) =>
-            getText(elem).includes(text),
+        return cacheParentResults(next, options, (element) =>
+            getText(element).includes(text),
         );
     },
     icontains(next, text, options) {
         const itext = text.toLowerCase();
         const { getText } = options.adapter;
 
-        return cacheParentResults(next, options, (elem) =>
-            getText(elem).toLowerCase().includes(itext),
+        return cacheParentResults(next, options, (element) =>
+            getText(element).toLowerCase().includes(itext),
         );
     },
 
     // Location specific methods
     "nth-child"(next, rule, { adapter, equals }) {
-        const func = getNCheck(rule);
+        const nthCheck = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) {
+        if (nthCheck === boolbase.falseFunc) {
             return boolbase.falseFunc;
         }
-        if (func === boolbase.trueFunc) {
-            return (elem) =>
-                getElementParent(elem, adapter) !== null && next(elem);
+        if (nthCheck === boolbase.trueFunc) {
+            return (element) =>
+                getElementParent(element, adapter) !== null && next(element);
         }
 
-        return function nthChild(elem) {
-            const siblings = adapter.getSiblings(elem);
+        return function nthChild(element) {
+            const siblings = adapter.getSiblings(element);
             let pos = 0;
 
-            for (let i = 0; i < siblings.length; i++) {
-                if (equals(elem, siblings[i])) {
+            for (const sibling of siblings) {
+                if (equals(element, sibling)) {
                     break;
                 }
-                if (adapter.isTag(siblings[i])) {
+                if (adapter.isTag(sibling)) {
                     pos++;
                 }
             }
 
-            return func(pos) && next(elem);
+            return nthCheck(pos) && next(element);
         };
     },
     "nth-last-child"(next, rule, { adapter, equals }) {
-        const func = getNCheck(rule);
+        const nthCheck = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) {
+        if (nthCheck === boolbase.falseFunc) {
             return boolbase.falseFunc;
         }
-        if (func === boolbase.trueFunc) {
-            return (elem) =>
-                getElementParent(elem, adapter) !== null && next(elem);
+        if (nthCheck === boolbase.trueFunc) {
+            return (element) =>
+                getElementParent(element, adapter) !== null && next(element);
         }
 
-        return function nthLastChild(elem) {
-            const siblings = adapter.getSiblings(elem);
+        return function nthLastChild(element) {
+            const siblings = adapter.getSiblings(element);
             let pos = 0;
 
-            for (let i = siblings.length - 1; i >= 0; i--) {
-                if (equals(elem, siblings[i])) {
+            for (let index = siblings.length - 1; index >= 0; index--) {
+                if (equals(element, siblings[index])) {
                     break;
                 }
-                if (adapter.isTag(siblings[i])) {
+                if (adapter.isTag(siblings[index])) {
                     pos++;
                 }
             }
 
-            return func(pos) && next(elem);
+            return nthCheck(pos) && next(element);
         };
     },
     "nth-of-type"(next, rule, { adapter, equals }) {
-        const func = getNCheck(rule);
+        const nthCheck = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) {
+        if (nthCheck === boolbase.falseFunc) {
             return boolbase.falseFunc;
         }
-        if (func === boolbase.trueFunc) {
-            return (elem) =>
-                getElementParent(elem, adapter) !== null && next(elem);
+        if (nthCheck === boolbase.trueFunc) {
+            return (element) =>
+                getElementParent(element, adapter) !== null && next(element);
         }
 
-        return function nthOfType(elem) {
-            const siblings = adapter.getSiblings(elem);
+        return function nthOfType(element) {
+            const siblings = adapter.getSiblings(element);
             let pos = 0;
 
-            for (let i = 0; i < siblings.length; i++) {
-                const currentSibling = siblings[i];
-                if (equals(elem, currentSibling)) {
+            for (const currentSibling of siblings) {
+                if (equals(element, currentSibling)) {
                     break;
                 }
                 if (
                     adapter.isTag(currentSibling) &&
-                    adapter.getName(currentSibling) === adapter.getName(elem)
+                    adapter.getName(currentSibling) === adapter.getName(element)
                 ) {
                     pos++;
                 }
             }
 
-            return func(pos) && next(elem);
+            return nthCheck(pos) && next(element);
         };
     },
     "nth-last-of-type"(next, rule, { adapter, equals }) {
-        const func = getNCheck(rule);
+        const nthCheck = getNCheck(rule);
 
-        if (func === boolbase.falseFunc) {
+        if (nthCheck === boolbase.falseFunc) {
             return boolbase.falseFunc;
         }
-        if (func === boolbase.trueFunc) {
-            return (elem) =>
-                getElementParent(elem, adapter) !== null && next(elem);
+        if (nthCheck === boolbase.trueFunc) {
+            return (element) =>
+                getElementParent(element, adapter) !== null && next(element);
         }
 
-        return function nthLastOfType(elem) {
-            const siblings = adapter.getSiblings(elem);
+        return function nthLastOfType(element) {
+            const siblings = adapter.getSiblings(element);
             let pos = 0;
 
-            for (let i = siblings.length - 1; i >= 0; i--) {
-                const currentSibling = siblings[i];
-                if (equals(elem, currentSibling)) {
+            for (let index = siblings.length - 1; index >= 0; index--) {
+                const currentSibling = siblings[index];
+                if (equals(element, currentSibling)) {
                     break;
                 }
                 if (
                     adapter.isTag(currentSibling) &&
-                    adapter.getName(currentSibling) === adapter.getName(elem)
+                    adapter.getName(currentSibling) === adapter.getName(element)
                 ) {
                     pos++;
                 }
             }
 
-            return func(pos) && next(elem);
+            return nthCheck(pos) && next(element);
         };
     },
 
     // TODO determine the actual root element
     root(next, _rule, { adapter }) {
-        return (elem) => getElementParent(elem, adapter) === null && next(elem);
+        return (element) =>
+            getElementParent(element, adapter) === null && next(element);
     },
 
     scope<Node, ElementNode extends Node>(
@@ -166,10 +169,10 @@ export const filters: Record<string, Filter> = {
 
         if (context.length === 1) {
             // NOTE: can't be unpacked, as :has uses this for side-effects
-            return (elem) => equals(context[0], elem) && next(elem);
+            return (element) => equals(context[0], element) && next(element);
         }
 
-        return (elem) => context.includes(elem) && next(elem);
+        return (element) => context.includes(element) && next(element);
     },
 
     hover: dynamicStatePseudo("isHovered"),
@@ -179,7 +182,6 @@ export const filters: Record<string, Filter> = {
 
 /**
  * Dynamic state pseudos. These depend on optional Adapter methods.
- *
  * @param name The name of the adapter method to call.
  * @returns Pseudo for the `filters` object.
  */
@@ -187,14 +189,14 @@ function dynamicStatePseudo(
     name: "isHovered" | "isVisited" | "isActive",
 ): Filter {
     return function dynamicPseudo(next, _rule, { adapter }) {
-        const func = adapter[name];
+        const filterFunction = adapter[name];
 
-        if (typeof func !== "function") {
+        if (typeof filterFunction !== "function") {
             return boolbase.falseFunc;
         }
 
-        return function active(elem) {
-            return func(elem) && next(elem);
+        return function active(element) {
+            return filterFunction(element) && next(element);
         };
     };
 }

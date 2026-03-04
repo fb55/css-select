@@ -5,8 +5,12 @@ import {
     SelectorType,
     type Traversal,
 } from "css-what";
-import { type InternalSelector } from "../types.js";
+import type { InternalSelector } from "../types.js";
 
+/**
+ * Check whether a selector token performs traversal.
+ * @param token Selector token(s) to compile.
+ */
 export function isTraversal(token: InternalSelector): token is Traversal {
     return token.type === "_flexibleDescendant" || isTraversalBase(token);
 }
@@ -14,25 +18,28 @@ export function isTraversal(token: InternalSelector): token is Traversal {
 /**
  * Sort the parts of the passed selector, as there is potential for
  * optimization (some types of selectors are faster than others).
- *
- * @param arr Selector to sort
+ * @param array Selector to sort
  */
-export function sortRules(arr: InternalSelector[]): void {
-    const ratings = arr.map(getQuality);
-    for (let i = 1; i < arr.length; i++) {
-        const procNew = ratings[i];
+export function sortRules(array: InternalSelector[]): void {
+    const ratings = array.map(getQuality);
+    for (let index = 1; index < array.length; index++) {
+        const procNew = ratings[index];
 
         if (procNew < 0) {
             continue;
         }
 
         // Use insertion sort to move the token to the correct position.
-        for (let j = i; j > 0 && procNew < ratings[j - 1]; j--) {
-            const token = arr[j];
-            arr[j] = arr[j - 1];
-            arr[j - 1] = token;
-            ratings[j] = ratings[j - 1];
-            ratings[j - 1] = procNew;
+        for (
+            let currentIndex = index;
+            currentIndex > 0 && procNew < ratings[currentIndex - 1];
+            currentIndex--
+        ) {
+            const token = array[currentIndex];
+            array[currentIndex] = array[currentIndex - 1];
+            array[currentIndex - 1] = token;
+            ratings[currentIndex] = ratings[currentIndex - 1];
+            ratings[currentIndex - 1] = procNew;
         }
     }
 }
@@ -70,7 +77,6 @@ function getAttributeQuality(token: AttributeSelector): number {
 /**
  * Determine the quality of the passed token. The higher the number, the
  * faster the token is to execute.
- *
  * @param token Token to get the quality of.
  * @returns The token's quality.
  */
@@ -90,25 +96,25 @@ export function getQuality(token: InternalSelector): number {
             );
         }
         case SelectorType.Pseudo: {
-            return !token.data
-                ? 3
-                : token.name === "has" ||
-                    token.name === "contains" ||
-                    token.name === "icontains"
-                  ? // Expensive in any case — run as late as possible.
-                    0
-                  : Array.isArray(token.data)
-                    ? // Eg. `:is`, `:not`
-                      Math.max(
-                          // If we have traversals, try to avoid executing this selector
-                          0,
-                          Math.min(
-                              ...token.data.map((d) =>
-                                  Math.min(...d.map(getQuality)),
-                              ),
-                          ),
-                      )
-                    : 2;
+            return token.data
+                ? token.name === "has" ||
+                  token.name === "contains" ||
+                  token.name === "icontains"
+                    ? // Expensive in any case — run as late as possible.
+                      0
+                    : Array.isArray(token.data)
+                      ? // Eg. `:is`, `:not`
+                        Math.max(
+                            // If we have traversals, try to avoid executing this selector
+                            0,
+                            Math.min(
+                                ...token.data.map((d) =>
+                                    Math.min(...d.map(getQuality)),
+                                ),
+                            ),
+                        )
+                      : 2
+                : 3;
         }
         default: {
             return -1;
@@ -116,6 +122,10 @@ export function getQuality(token: InternalSelector): number {
     }
 }
 
+/**
+ * Check whether a token or nested token includes `:scope`.
+ * @param t Selector token under inspection.
+ */
 export function includesScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === SelectorType.Pseudo &&

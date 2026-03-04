@@ -1,19 +1,20 @@
-import { type Document, type Element, type Node } from "domhandler";
+import type { Document, Element, Node } from "domhandler";
 import { expect } from "vitest";
 import { selectAll as CSSselect } from "../../src/index.js";
 import * as helper from "./helper.js";
 
 let document = helper.getDocument("sizzle.html");
 
-export function loadDoc(): helper.SimpleDocument {
+export function loadDocument(): helper.SimpleDocument {
     document = helper.getDocument("sizzle.html");
     return document;
 }
 
 /**
  * Returns an array of elements with the given IDs
+ * @param ids Element IDs to resolve in the test fixture.
  * @example q("main", "foo", "bar")
- * @result [<div id="main">, <span id="foo">, <input id="bar">]
+ * @returns Elements with IDs matching the provided order.
  */
 export function q(...ids: string[]): Element[] {
     return ids.map((id) => document.getElementById(id));
@@ -33,16 +34,16 @@ export function t(
     context: Node[] | Node | null = document,
 ): void {
     const actual = CSSselect(selector, context) as Element[];
-    const actualIds = actual.map((e) => e.attribs["id"]);
+    const actualIds = actual.map((element) => element.attribs["id"]);
 
     // Should not contain falsy values
     expect(actualIds).toStrictEqual(expectedIds);
 }
 
-const xmlDoc = helper.getDocumentFromPath("fries.xml", {
+const xmlDocument = helper.getDocumentFromPath("fries.xml", {
     xmlMode: true,
 });
 
 export function createWithFriesXML(): Document {
-    return xmlDoc;
+    return xmlDocument;
 }

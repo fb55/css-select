@@ -1,8 +1,18 @@
-import { type Selector } from "css-what";
+import type { Selector } from "css-what";
 
+/**
+ * Selector token used internally by css-select.
+ */
 export type InternalSelector = Selector | { type: "_flexibleDescendant" };
 
+/**
+ * Predicate function for element matching.
+ */
 export type Predicate<Value> = (v: Value) => boolean;
+
+/**
+ * Adapter interface used to traverse and inspect DOM nodes.
+ */
 export interface Adapter<Node, ElementNode extends Node> {
     /**
      *  Is the node a tag?
@@ -12,7 +22,10 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the attribute value.
      */
-    getAttributeValue: (elem: ElementNode, name: string) => string | undefined;
+    getAttributeValue: (
+        element: ElementNode,
+        name: string,
+    ) => string | undefined;
 
     /**
      * Get the node's children
@@ -22,7 +35,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Get the name of the tag
      */
-    getName: (elem: ElementNode) => string;
+    getName: (element: ElementNode) => string;
 
     /**
      * Get the parent of the node
@@ -48,7 +61,7 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Does the element have the named attribute?
      */
-    hasAttrib: (elem: ElementNode, name: string) => boolean;
+    hasAttrib: (element: ElementNode, name: string) => boolean;
 
     /**
      * Takes an array of nodes, and removes any duplicates, as well as any
@@ -67,35 +80,35 @@ export interface Adapter<Node, ElementNode extends Node> {
     /**
      * Is the element in hovered state?
      */
-    isHovered?: (elem: ElementNode) => boolean;
+    isHovered?: (element: ElementNode) => boolean;
 
     /**
      * Is the element in visited state?
      */
-    isVisited?: (elem: ElementNode) => boolean;
+    isVisited?: (element: ElementNode) => boolean;
 
     /**
      * Is the element in active state?
      */
-    isActive?: (elem: ElementNode) => boolean;
+    isActive?: (element: ElementNode) => boolean;
 }
 
+/**
+ * Public query options for css-select.
+ */
 export interface Options<Node, ElementNode extends Node> {
     /**
      * When enabled, tag names will be case-sensitive.
-     *
      * @default false
      */
     xmlMode?: boolean;
     /**
      * Lower-case attribute names.
-     *
      * @default !xmlMode
      */
     lowerCaseAttributeNames?: boolean;
     /**
      * Lower-case tag names.
-     *
      * @default !xmlMode
      */
     lowerCaseTags?: boolean;
@@ -103,7 +116,6 @@ export interface Options<Node, ElementNode extends Node> {
      * Is the document in quirks mode?
      *
      * This will lead to .className and #id being case-insensitive.
-     *
      * @default false
      */
     quirksMode?: boolean;
@@ -118,7 +130,8 @@ export interface Options<Node, ElementNode extends Node> {
     pseudos?:
         | Record<
               string,
-              string | ((elem: ElementNode, value?: string | null) => boolean)
+              | string
+              | ((element: ElementNode, value?: string | null) => boolean)
           >
         | undefined;
     /**
@@ -145,7 +158,6 @@ export interface Options<Node, ElementNode extends Node> {
      *
      * If relative selectors are disabled, selectors starting with a traversal
      * will lead to an error.
-     *
      * @default true
      * @see {@link https://www.w3.org/TR/selectors-4/#relative}
      */
@@ -154,27 +166,40 @@ export interface Options<Node, ElementNode extends Node> {
      * Allow css-select to cache results for some selectors, sometimes greatly
      * improving querying performance. Disable this if your document can
      * change in between queries with the same compiled selector.
-     *
      * @default true
      */
     cacheResults?: boolean;
 }
 
 // Internally, we want to ensure that no propterties are accessed on the passed objects
+/**
+ * Normalized internal options with required adapter helpers.
+ */
 export interface InternalOptions<Node, ElementNode extends Node>
     extends Options<Node, ElementNode> {
     adapter: Adapter<Node, ElementNode>;
     equals: (a: Node, b: Node) => boolean;
 }
 
+/**
+ * Executable selector query.
+ */
 export interface CompiledQuery<ElementNode> {
     (node: ElementNode): boolean;
     shouldTestNextSiblings?: boolean;
 }
+
+/**
+ * Query input accepted by the public API.
+ */
 export type Query<ElementNode> =
     | string
     | CompiledQuery<ElementNode>
     | Selector[][];
+
+/**
+ * Function used to compile parsed selector tokens.
+ */
 export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,

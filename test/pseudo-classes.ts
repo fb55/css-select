@@ -1,8 +1,8 @@
-import { type AnyNode, type Element } from "domhandler";
+import type { AnyNode, Element } from "domhandler";
 import { DomUtils, parseDOM, parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
-import { type Adapter } from "../src/types.js";
+import type { Adapter } from "../src/types.js";
 
 const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>",
@@ -189,7 +189,10 @@ describe(":has", () => {
             CSSselect.selectAll<AnyNode, Element>(compiled, dom),
         ).toHaveLength(2);
 
-        (dom.childNodes[1] as any).childNodes[1].attribs.class = "";
+        (
+            ((dom.childNodes[1] as Element).childNodes[1] as Element)
+                .attribs as { class: string }
+        ).class = "";
 
         // Should not find the element anymore
         expect(CSSselect.selectAll<AnyNode, Element>(".a", dom)).toHaveLength(

@@ -7,7 +7,6 @@ import { sortRules } from "./selectors.js";
  *
  * Note that the order of the rules might not be legal, and the resulting
  * string might not be parseable again.
- *
  * @param selector Selector to sort
  * @returns Sorted selector, which might not be a valid selector anymore.
  */

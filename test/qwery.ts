@@ -2,7 +2,7 @@ import * as helper from "./tools/helper.js";
 
 const document = helper.getDocument("qwery.html");
 
-import { type AnyNode, type Element } from "domhandler";
+import type { AnyNode, Element } from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDOM } from "htmlparser2";
 import { describe, expect, it } from "vitest";
@@ -11,8 +11,9 @@ import * as CSSselect from "../src/index.js";
 const location = { hash: "" };
 const options = {
     pseudos: {
-        target: (elem: Element) =>
-            DomUtils.getAttributeValue(elem, "id") === location.hash.substr(1),
+        target: (element: Element) =>
+            DomUtils.getAttributeValue(element, "id") ===
+            location.hash.substr(1),
         humanoid: ":matches(li,ol):contains(human)",
     },
 };
@@ -36,7 +37,7 @@ const frag = parseDOM(
         "</p></root>",
 );
 
-const doc = parseDOM(
+const testDocument = parseDOM(
     '<root><div id="hsoob">' +
         '<div class="a b">' +
         '<div class="d e sib" test="fg" id="booshTest"><p><span id="spanny"></span></p></div>' +
@@ -48,7 +49,7 @@ const doc = parseDOM(
         '<div id="lonelyHsoob"></div></root>',
 );
 
-const el = document.getElementById("attr-child-boosh");
+const element = document.getElementById("attr-child-boosh");
 
 const pseudos = document
     .getElementById("pseudos")
@@ -173,10 +174,10 @@ describe("qwery", () => {
         });
 
         it("crazy town", () => {
-            const el = document.getElementById("attr-test3");
+            const attributeTestElement = document.getElementById("attr-test3");
             expect(
                 selectAll('div#attr-test3.found.you[title="whatup duders"]')[0],
-            ).toBe(el); // Found the right element
+            ).toBe(attributeTestElement); // Found the right element
         });
     });
 
@@ -368,9 +369,7 @@ describe("qwery", () => {
          */
 
         it("the order of elements return matters", () => {
-            function tag(el: Element) {
-                return el.name.toLowerCase();
-            }
+            const tag = (element: Element) => element.name.toLowerCase();
             const els = selectAll("#order-matters .order-matters") as Element[];
             expect(tag(els[0])).toBe("p"); // First element matched is a {p} tag
             expect(tag(els[1])).toBe("a"); // First element matched is a {a} tag
@@ -520,38 +519,44 @@ describe("qwery", () => {
 
     describe("is()", () => {
         it("simple selectors", () => {
-            expect(CSSselect.is(el, "li")).toBeTruthy(); // Tag
-            expect(CSSselect.is(el, "*")).toBeTruthy(); // Wildcard
-            expect(CSSselect.is(el, "#attr-child-boosh")).toBeTruthy(); // #id
-            expect(CSSselect.is(el, "[attr]")).toBeTruthy(); // [attr]
-            expect(CSSselect.is(el, "[attr=boosh]")).toBeTruthy(); // [attr=val]
-            expect(CSSselect.is(el, "div")).toBeFalsy(); // Wrong tag
-            expect(CSSselect.is(el, "#foo")).toBeFalsy(); // Wrong #id
-            expect(CSSselect.is(el, "[foo]")).toBeFalsy(); // Wrong [attr]
-            expect(CSSselect.is(el, "[attr=foo]")).toBeFalsy(); // Wrong [attr=val]
+            expect(CSSselect.is(element, "li")).toBeTruthy(); // Tag
+            expect(CSSselect.is(element, "*")).toBeTruthy(); // Wildcard
+            expect(CSSselect.is(element, "#attr-child-boosh")).toBeTruthy(); // #id
+            expect(CSSselect.is(element, "[attr]")).toBeTruthy(); // [attr]
+            expect(CSSselect.is(element, "[attr=boosh]")).toBeTruthy(); // [attr=val]
+            expect(CSSselect.is(element, "div")).toBeFalsy(); // Wrong tag
+            expect(CSSselect.is(element, "#foo")).toBeFalsy(); // Wrong #id
+            expect(CSSselect.is(element, "[foo]")).toBeFalsy(); // Wrong [attr]
+            expect(CSSselect.is(element, "[attr=foo]")).toBeFalsy(); // Wrong [attr=val]
         });
 
         it("selector sequences", () => {
             expect(
-                CSSselect.is(el, "li#attr-child-boosh[attr=boosh]"),
+                CSSselect.is(element, "li#attr-child-boosh[attr=boosh]"),
             ).toBeTruthy(); // Tag#id[attr=val]
             expect(
-                CSSselect.is(el, "div#attr-child-boosh[attr=boosh]"),
+                CSSselect.is(element, "div#attr-child-boosh[attr=boosh]"),
             ).toBeFalsy(); // Wrong tag#id[attr=val]
         });
 
         it("selector sequences combinators", () => {
-            expect(CSSselect.is(el, "ol li")).toBeTruthy(); // Tag tag
-            expect(CSSselect.is(el, "ol>li")).toBeTruthy(); // Tag>tag
-            expect(CSSselect.is(el, "ol>li+li")).toBeTruthy(); // Tab>tag+tag
+            expect(CSSselect.is(element, "ol li")).toBeTruthy(); // Tag tag
+            expect(CSSselect.is(element, "ol>li")).toBeTruthy(); // Tag>tag
+            expect(CSSselect.is(element, "ol>li+li")).toBeTruthy(); // Tab>tag+tag
             expect(
-                CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]"),
+                CSSselect.is(
+                    element,
+                    "ol#list li#attr-child-boosh[attr=boosh]",
+                ),
             ).toBeTruthy(); // Tag#id tag#id[attr=val]
             expect(
-                CSSselect.is(el, "ol#list>li#attr-child-boosh[attr=boosh]"),
+                CSSselect.is(
+                    element,
+                    "ol#list>li#attr-child-boosh[attr=boosh]",
+                ),
             ).toBeFalsy(); // Wrong tag#id>tag#id[attr=val]
             expect(
-                CSSselect.is(el, "ol ol li#attr-child-boosh[attr=boosh]"),
+                CSSselect.is(element, "ol ol li#attr-child-boosh[attr=boosh]"),
             ).toBeTruthy(); // Tag tag tag#id[attr=val]
             expect(
                 CSSselect.is(selectAll("#token-four")[0], "div#fixtures>div a"),
@@ -559,8 +564,8 @@ describe("qwery", () => {
         });
 
         it("pseudos", () => {
-            expect(CSSselect.is(el, "li:contains(hello)")).toBe(true); // Matching :contains(text)
-            expect(CSSselect.is(el, "li:contains(human)")).toBe(false); // Non-matching :contains(text)
+            expect(CSSselect.is(element, "li:contains(hello)")).toBe(true); // Matching :contains(text)
+            expect(CSSselect.is(element, "li:contains(human)")).toBe(false); // Non-matching :contains(text)
             expect(
                 CSSselect.is(selectAll("#list>li")[2], ":humanoid", options),
             ).toBe(true); // Matching custom pseudo
@@ -571,65 +576,81 @@ describe("qwery", () => {
 
         it("context", () => {
             expect(
-                CSSselect.is(el, "li#attr-child-boosh[attr=boosh]", {
+                CSSselect.is(element, "li#attr-child-boosh[attr=boosh]", {
                     context: selectAll("#list")[0],
                 }),
             ).toBeTruthy(); // Context
             expect(
-                CSSselect.is(el, "ol#list li#attr-child-boosh[attr=boosh]", {
-                    context: selectAll("#boosh")[0],
-                }),
+                CSSselect.is(
+                    element,
+                    "ol#list li#attr-child-boosh[attr=boosh]",
+                    {
+                        context: selectAll("#boosh")[0],
+                    },
+                ),
             ).toBeFalsy(); // Wrong context
         });
     });
 
     describe("selecting elements in other documents", () => {
         it("get element by id", () => {
-            const result = selectAll("#hsoob", doc);
+            const result = selectAll("#hsoob", testDocument);
             expect(result[0]).toBeTruthy(); // Found element with id=hsoob
         });
 
         it("get elements by class", () => {
-            expect(selectAll("#hsoob .a", doc)).toHaveLength(2); // Found two elements
-            expect(selectAll("#hsoob div.a", doc)[0]).toBeTruthy(); // Found one element
-            expect(selectAll("#hsoob div", doc)).toHaveLength(2); // Found two {div} elements
-            expect(selectAll("#hsoob span", doc)[0]).toBeTruthy(); // Found one {span} element
-            expect(selectAll("#hsoob div div", doc)[0]).toBeTruthy(); // Found a single div
-            expect(selectAll("p.odd", doc)).toHaveLength(1); // Found single br
+            expect(selectAll("#hsoob .a", testDocument)).toHaveLength(2); // Found two elements
+            expect(selectAll("#hsoob div.a", testDocument)[0]).toBeTruthy(); // Found one element
+            expect(selectAll("#hsoob div", testDocument)).toHaveLength(2); // Found two {div} elements
+            expect(selectAll("#hsoob span", testDocument)[0]).toBeTruthy(); // Found one {span} element
+            expect(selectAll("#hsoob div div", testDocument)[0]).toBeTruthy(); // Found a single div
+            expect(selectAll("p.odd", testDocument)).toHaveLength(1); // Found single br
         });
 
         it("complex selectors", () => {
-            expect(selectAll(".d ~ .sib", doc)).toHaveLength(2); // Found one ~ sibling
-            expect(selectAll(".a .d + .sib", doc)).toHaveLength(1); // Found 2 + siblings
-            expect(selectAll("#hsoob > div > .h", doc)).toHaveLength(1); // Found span using child selectors
-            expect(selectAll('.a .d ~ .sib[test="f g"]', doc)).toHaveLength(1); // Found 1 ~ sibling with test attribute
+            expect(selectAll(".d ~ .sib", testDocument)).toHaveLength(2); // Found one ~ sibling
+            expect(selectAll(".a .d + .sib", testDocument)).toHaveLength(1); // Found 2 + siblings
+            expect(selectAll("#hsoob > div > .h", testDocument)).toHaveLength(
+                1,
+            ); // Found span using child selectors
+            expect(
+                selectAll('.a .d ~ .sib[test="f g"]', testDocument),
+            ).toHaveLength(1); // Found 1 ~ sibling with test attribute
         });
 
         it("byId sub-queries", () => {
-            expect(selectAll("#hsoob #spanny", doc)).toHaveLength(1); // Found "#id #id" in frame
-            expect(selectAll(".a #spanny", doc)).toHaveLength(1); // Found ".class #id" in frame
-            expect(selectAll(".a #booshTest #spanny", doc)).toHaveLength(1); // Found ".class #id #id" in frame
-            expect(selectAll("> #hsoob", doc)).toHaveLength(1); // Found "> #id" in frame
+            expect(selectAll("#hsoob #spanny", testDocument)).toHaveLength(1); // Found "#id #id" in frame
+            expect(selectAll(".a #spanny", testDocument)).toHaveLength(1); // Found ".class #id" in frame
+            expect(
+                selectAll(".a #booshTest #spanny", testDocument),
+            ).toHaveLength(1); // Found ".class #id #id" in frame
+            expect(selectAll("> #hsoob", testDocument)).toHaveLength(1); // Found "> #id" in frame
         });
 
         it("byId sub-queries within sub-context", () => {
-            expect(selectAll("#spanny", selectAll("#hsoob", doc))).toHaveLength(
-                1,
-            ); // Found "#id -> #id" in frame
             expect(
-                selectAll(".a #spanny", selectAll("#hsoob", doc)),
+                selectAll("#spanny", selectAll("#hsoob", testDocument)),
+            ).toHaveLength(1); // Found "#id -> #id" in frame
+            expect(
+                selectAll(".a #spanny", selectAll("#hsoob", testDocument)),
             ).toHaveLength(1); // Found ".class #id" in frame
             expect(
-                selectAll(".a #booshTest #spanny", selectAll("#hsoob", doc)),
+                selectAll(
+                    ".a #booshTest #spanny",
+                    selectAll("#hsoob", testDocument),
+                ),
             ).toHaveLength(1); // Found ".class #id #id" in frame
             expect(
-                selectAll(".a > #booshTest", selectAll("#hsoob", doc)),
+                selectAll(".a > #booshTest", selectAll("#hsoob", testDocument)),
             ).toHaveLength(1); // Found "> .class #id" in frame
             expect(
-                selectAll("#booshTest", selectAll("#spanny", doc)),
+                selectAll("#booshTest", selectAll("#spanny", testDocument)),
             ).toHaveLength(0); // Shouldn't find #booshTest (ancestor) within #spanny (descendent)
             expect(
-                selectAll("#booshTest", selectAll("#lonelyHsoob", doc)),
+                selectAll(
+                    "#booshTest",
+                    selectAll("#lonelyHsoob", testDocument),
+                ),
             ).toHaveLength(0); // Shouldn't find #booshTest within #lonelyHsoob (unrelated)
         });
     });

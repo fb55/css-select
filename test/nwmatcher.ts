@@ -6,7 +6,7 @@
  * See the LICENSE file for additional information.
  */
 
-import { type Element, type Node } from "domhandler";
+import type { Element, Node } from "domhandler";
 import * as DomUtils from "domutils";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
@@ -15,8 +15,8 @@ import * as helper from "./tools/helper.js";
 const document = helper.getDocument("nwmatcher.html");
 
 // Prototype's `$` function
-function getByIds(...args: string[]): Element[] {
-    return args.map((id) => getById(id));
+function getByIds(...ids: string[]): Element[] {
+    return ids.map((id) => getById(id));
 }
 
 function getById(id: string): Element {
@@ -24,8 +24,8 @@ function getById(id: string): Element {
 }
 
 // NWMatcher methods
-const select = (query: string, doc: Node[] | Node = document): Node[] =>
-    CSSselect.selectAll(query, doc);
+const select = (query: string, contextNode: Node[] | Node = document): Node[] =>
+    CSSselect.selectAll(query, contextNode);
 
 describe("NWMatcher", () => {
     // Test whether our helper above throws
@@ -145,11 +145,11 @@ describe("NWMatcher", () => {
         });
 
         it("E[foo] with namespaced attributes", () => {
-            expect(select("[xml\\:lang]")).toStrictEqual([
+            expect(select(String.raw`[xml\:lang]`)).toStrictEqual([
                 document.documentElement,
                 getById("item_3"),
             ]);
-            expect(select("*[xml\\:lang]")).toStrictEqual([
+            expect(select(String.raw`*[xml\:lang]`)).toStrictEqual([
                 document.documentElement,
                 getById("item_3"),
             ]);
@@ -582,7 +582,9 @@ describe("NWMatcher", () => {
         it("Multiple Selectors with lang", () => {
             // The next two assertions should return document-ordered lists of matching elements --Diego Perini
             expect(
-                select('#list, .first,*[xml\\:lang="es-us"] , #troubleForm'),
+                select(
+                    String.raw`#list, .first,*[xml\:lang="es-us"] , #troubleForm`,
+                ),
             ).toStrictEqual(
                 getByIds(
                     "p",
@@ -594,7 +596,9 @@ describe("NWMatcher", () => {
                 ),
             );
             expect(
-                select('#list, .first, *[xml\\:lang="es-us"], #troubleForm'),
+                select(
+                    String.raw`#list, .first, *[xml\:lang="es-us"], #troubleForm`,
+                ),
             ).toStrictEqual(
                 getByIds(
                     "p",

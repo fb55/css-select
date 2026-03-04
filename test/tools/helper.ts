@@ -1,14 +1,15 @@
+import assert from "node:assert";
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { type Document, Element, Text } from "domhandler";
 import * as DomUtils from "domutils";
-import { readFileSync } from "fs";
 import { type ParserOptions, parseDocument } from "htmlparser2";
-import { join } from "path";
 
 export function getDocumentFromPath(
     file: string,
     options?: ParserOptions,
 ): Document {
-    const filePath = join(__dirname, "..", "fixtures", file);
+    const filePath = path.join(__dirname, "..", "fixtures", file);
     return parseDocument(readFileSync(filePath, "utf8"), options);
 }
 
@@ -24,17 +25,20 @@ export function getDocument(file: string): SimpleDocument {
     const document = getDocumentFromPath(file) as SimpleDocument;
 
     document.getElementById = (id: string) => {
-        const el = DomUtils.getElementById(id, document.children);
-        if (!el) {
+        const element = DomUtils.getElementById(id, document.children);
+        if (!element) {
             throw new Error(`Did not find element with ID ${id}`);
         }
-        return el;
+        return element;
     };
     document.createTextNode = (content: string) => new Text(content);
     document.createElement = (name: string) =>
         new Element(name.toLowerCase(), {});
     [document.body] = DomUtils.getElementsByTagName("body", document, true, 1);
-    [document.documentElement] = document.children.filter(DomUtils.isTag);
+    const documentElement = document.children.find(DomUtils.isTag);
+
+    assert.ok(documentElement, "Did not find document element");
+    document.documentElement = documentElement;
 
     return document;
 }
