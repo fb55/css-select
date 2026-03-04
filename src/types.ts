@@ -1,4 +1,4 @@
-import { type Selector } from "css-what";
+import type { Selector } from "css-what";
 
 /**
  * Selector token used internally by css-select.

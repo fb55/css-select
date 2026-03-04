@@ -9,11 +9,11 @@ import {
     sortRules,
 } from "./helpers/selectors.js";
 import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
-import {
-    type CompiledQuery,
-    type InternalOptions,
-    type InternalSelector,
-    type Predicate,
+import type {
+    CompiledQuery,
+    InternalOptions,
+    InternalSelector,
+    Predicate,
 } from "./types.js";
 
 const DESCENDANT_TOKEN: Selector = { type: SelectorType.Descendant };

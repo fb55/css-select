@@ -1,5 +1,5 @@
-import { type PseudoSelector } from "css-what";
-import { type InternalOptions } from "../types.js";
+import type { PseudoSelector } from "css-what";
+import type { InternalOptions } from "../types.js";
 
 type Pseudo = <Node, ElementNode extends Node>(
     element: ElementNode,
@@ -121,7 +121,7 @@ export const pseudos: Record<string, Pseudo> = {
  * @param subselect Subselector passed to the pseudo-function.
  * @param argumentIndex Index of the argument parser to apply.
  */
-export function verifyPseudoArguments<T extends Array<unknown>>(
+export function verifyPseudoArguments<T extends unknown[]>(
     pseudoClassCondition: (...parameters: T) => boolean,
     name: string,
     subselect: PseudoSelector["data"],

@@ -1,6 +1,6 @@
 import * as boolbase from "boolbase";
-import { type AttributeAction, type AttributeSelector } from "css-what";
-import { type CompiledQuery, type InternalOptions } from "./types.js";
+import type { AttributeAction, AttributeSelector } from "css-what";
+import type { CompiledQuery, InternalOptions } from "./types.js";
 
 /**
  * All reserved characters in a regex, used for escaping.
@@ -9,6 +9,7 @@ import { type CompiledQuery, type InternalOptions } from "./types.js";
  * https://github.com/slevithan/xregexp/blob/95eeebeb8fac8754d54eafe2b4743661ac1cf028/src/xregexp.js#L794
  */
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
+const whitespaceRe = /\s/;
 function escapeRegex(value: string): string {
     return value.replace(reChars, "\\$&");
 }
@@ -145,7 +146,7 @@ export const attributeRules: Record<
     element(next, data, options) {
         const { adapter } = options;
         const { name, value } = data;
-        if (/\s/.test(value)) {
+        if (whitespaceRe.test(value)) {
             return boolbase.falseFunc;
         }
 

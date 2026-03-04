@@ -1,19 +1,19 @@
 import * as boolbase from "boolbase";
 import { parse, type Selector } from "css-what";
-import {
-    type Element as DomHandlerElement,
-    type AnyNode as DomHandlerNode,
+import type {
+    Element as DomHandlerElement,
+    AnyNode as DomHandlerNode,
 } from "domhandler";
 import * as DomUtils from "domutils";
 import { compileToken } from "./compile.js";
 import { findAll, findOne, getNextSiblings } from "./helpers/querying.js";
-import {
-    type Adapter,
-    type CompiledQuery,
-    type InternalOptions,
-    type Options,
-    type Predicate,
-    type Query,
+import type {
+    Adapter,
+    CompiledQuery,
+    InternalOptions,
+    Options,
+    Predicate,
+    Query,
 } from "./types.js";
 
 const defaultEquals = <Node>(a: Node, b: Node) => a === b;
@@ -98,7 +98,7 @@ export function _compileToken<Node, ElementNode extends Node>(
 function getSelectorFunction<Node, ElementNode extends Node, T>(
     searchFunction: (
         query: Predicate<ElementNode>,
-        elements: Array<Node>,
+        elements: Node[],
         options: InternalOptions<Node, ElementNode>,
     ) => T,
 ) {

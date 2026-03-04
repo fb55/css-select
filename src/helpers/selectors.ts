@@ -5,7 +5,7 @@ import {
     SelectorType,
     type Traversal,
 } from "css-what";
-import { type InternalSelector } from "../types.js";
+import type { InternalSelector } from "../types.js";
 
 /**
  * Check whether a selector token performs traversal.
