@@ -20,7 +20,6 @@
     "types": "./dist/commonjs/index.d.ts",
     "module": "./dist/esm/index.js",
     "exports": {
-        "./package.json": "./package.json",
         ".": {
             "import": {
                 "types": "./dist/esm/index.d.ts",
@@ -30,7 +29,8 @@
                 "types": "./dist/commonjs/index.d.ts",
                 "default": "./dist/commonjs/index.js"
             }
-        }
+        },
+        "./package.json": "./package.json"
     },
     "files": [
         "dist",
