@@ -69,7 +69,7 @@
         "lint:biome": "biome check .",
         "lint:es": "eslint .",
         "lint:tsc": "tsc --noEmit",
-        "prepare": "npm run build",
+        "prepublishOnly": "npm run build",
         "test": "vitest run && npm run lint",
         "test:vi": "vitest run"
     },
