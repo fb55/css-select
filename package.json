@@ -48,7 +48,7 @@
         "@eslint/compat": "^2.0.2",
         "@feedic/eslint-config": "^0.2.3",
         "@types/boolbase": "^1.0.3",
-        "@types/node": "^25.3.3",
+        "@types/node": "^25.3.5",
         "@vitest/coverage-v8": "^4.0.18",
         "cheerio-soupselect": "^0.1.1",
         "eslint": "^10.0.1",
