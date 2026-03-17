@@ -37,7 +37,7 @@
         "src"
     ],
     "dependencies": {
-        "boolbase": "^1.0.0",
+        "boolbase": "^2.0.0",
         "css-what": "^7.0.0",
         "domhandler": "^5.0.3",
         "domutils": "^3.2.2",
