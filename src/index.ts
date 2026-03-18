@@ -4,6 +4,7 @@ import type {
     Element as DomHandlerElement,
     AnyNode as DomHandlerNode,
 } from "domhandler";
+import { isTag } from "domhandler";
 import * as DomUtils from "domutils";
 import { compileToken } from "./compile.js";
 import { findAll, findOne, getNextSiblings } from "./helpers/querying.js";
@@ -18,7 +19,7 @@ import type {
 
 const defaultEquals = <Node>(a: Node, b: Node) => a === b;
 const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
-    adapter: DomUtils,
+    adapter: { ...DomUtils, isTag },
     equals: defaultEquals,
 };
 
@@ -31,7 +32,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
     const finalOptions: Options<Node, ElementNode> = options ?? defaultOptions;
     // @ts-expect-error Same as above.
-    finalOptions.adapter ??= DomUtils;
+    finalOptions.adapter ??= defaultOptions.adapter as typeof DomUtils;
     // @ts-expect-error `equals` does not exist on `Options`
     finalOptions.equals ??= finalOptions.adapter?.equals ?? defaultEquals;
 
@@ -71,25 +72,8 @@ export function _compileUnsafe<Node, ElementNode extends Node>(
     options?: Options<Node, ElementNode>,
     context?: Node[] | Node,
 ): CompiledQuery<ElementNode> {
-    return _compileToken<Node, ElementNode>(
-        typeof selector === "string" ? parse(selector) : selector,
-        options,
-        context,
-    );
-}
-/**
- * @param selector Selector used to match elements.
- * @param options Options that control this operation.
- * @param context Context nodes used to scope selector matching.
- * @deprecated Use `_compileUnsafe` instead.
- */
-export function _compileToken<Node, ElementNode extends Node>(
-    selector: Selector[][],
-    options?: Options<Node, ElementNode>,
-    context?: Node[] | Node,
-): CompiledQuery<ElementNode> {
     return compileToken<Node, ElementNode>(
-        selector,
+        typeof selector === "string" ? parse(selector) : selector,
         convertOptionFormats(options),
         context,
     );
@@ -238,9 +222,5 @@ export function is<Node, ElementNode extends Node>(
  * @see [compile] for supported selector queries.
  */
 export default selectAll;
-
-// Export filters, pseudos and aliases to allow users to supply their own.
-/** @deprecated Use the `pseudos` option instead. */
-export { aliases, filters, pseudos } from "./pseudo-selectors/index.js";
 
 export type { Options } from "./types.js";

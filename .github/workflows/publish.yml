@@ -1,0 +1,50 @@
+name: Publish
+on:
+    push:
+        tags:
+            - "v*"
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - uses: actions/checkout@v6
+
+            - uses: actions/setup-node@v6
+              with:
+                  node-version: lts/*
+                  registry-url: https://registry.npmjs.org
+
+            - name: Install dependencies
+              run: npm ci
+
+            - name: Create jsr.json based on package.json
+              run: |
+                  node --input-type=module -e '
+                    import { readFileSync, writeFileSync } from "fs";
+                    const p = JSON.parse(readFileSync("./package.json", "utf8"));
+                    const jsrJson = {
+                        name: `@cheerio/${p.name}`,
+                        version: p.version,
+                        exports: { ".": "./src/index.ts" },
+                        imports: {
+                            "boolbase": `jsr:@cheerio/boolbase@${p.dependencies.boolbase}`,
+                            "css-what": `jsr:@cheerio/css-what@${p.dependencies["css-what"]}`,
+                            "domhandler": `jsr:@cheerio/domhandler@${p.dependencies.domhandler}`,
+                            "domutils": `jsr:@cheerio/domutils@${p.dependencies.domutils}`,
+                            "nth-check": `jsr:@cheerio/nth-check@${p.dependencies["nth-check"]}`,
+                        },
+                    };
+                    writeFileSync("./jsr.json", JSON.stringify(jsrJson, null, 2));
+                  '
+
+            - name: Publish package to JSR
+              run: npx jsr publish
+
+            - name: Publish package to npm
+              run: npm publish --provenance --access public

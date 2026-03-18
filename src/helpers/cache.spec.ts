@@ -1,5 +1,5 @@
 import * as boolbase from "boolbase";
-import type { Element, Node } from "domhandler";
+import { type Element, isTag, type Node } from "domhandler";
 import * as DomUtils from "domutils";
 import { parseDocument } from "htmlparser2";
 import { describe, expect, it, vi } from "vitest";
@@ -8,7 +8,7 @@ import type { InternalOptions } from "../types.js";
 import { cacheParentResults } from "./cache.js";
 
 const cacheParentResultsOptions = {
-    adapter: DomUtils,
+    adapter: { ...DomUtils, isTag },
 } as unknown as InternalOptions<Node, Element>;
 
 describe("cacheParentResults", () => {
