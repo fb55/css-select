@@ -32,7 +32,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     // @ts-expect-error Default options may have incompatible `Node` / `ElementNode`.
     const finalOptions: Options<Node, ElementNode> = options ?? defaultOptions;
     // @ts-expect-error Same as above.
-    finalOptions.adapter ??= defaultOptions.adapter as typeof DomUtils;
+    finalOptions.adapter ??= defaultOptions.adapter;
     // @ts-expect-error `equals` does not exist on `Options`
     finalOptions.equals ??= finalOptions.adapter?.equals ?? defaultEquals;
 
