@@ -35,7 +35,7 @@
         "boolbase": "^2.0.0",
         "css-what": "^8.0.0",
         "domhandler": "^6.0.0",
-        "domutils": "^4.0.0",
+        "domutils": "^4.0.2",
         "nth-check": "^3.0.0"
     },
     "devDependencies": {
