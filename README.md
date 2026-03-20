@@ -99,7 +99,7 @@ _//TODO: More in-depth description. Implementation details. Build a spaceship._
 ## API
 
 ```js
-const CSSselect = require("css-select");
+import * as CSSselect from "css-select";
 ```
 
 **Note:** css-select throws errors when invalid selectors are passed to it. This
@@ -112,10 +112,11 @@ Queries `elems`, returns an array containing all matches.
 
 - `query` can be either a CSS selector or a function.
 - `elems` can be either an array of elements, or a single element. If it is an
-  element, its children will be queried.
+  element, its children will be queried. **Note:** when passing an array, it may
+  be mutated (elements that are subsets of other elements will be removed).
 - `options` is described below.
 
-Aliases: `default` export, `CSSselect.iterate(query, elems)`.
+Alias: `default` export.
 
 #### `CSSselect.compile(query, options)`
 
@@ -156,8 +157,11 @@ All options are optional.
 
 #### Custom Adapters
 
-A custom adapter must match the interface described
-[here](https://github.com/fb55/css-select/blob/1aa44bdd64aaf2ebdfd7f338e2e76bed36521957/src/types.ts#L6-L96).
+A custom adapter must match the
+[`Adapter` interface](https://github.com/fb55/css-select/blob/master/src/types.ts).
+Tree traversal (`findAll`/`findOne`) is handled internally by css-select using
+the adapter's primitive methods, so adapters only need to implement basic
+operations like `isTag`, `getChildren`, `getParent`, etc.
 
 You may want to have a look at [`domutils`](https://github.com/fb55/domutils) to
 see the default implementation, or at
