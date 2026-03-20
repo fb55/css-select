@@ -1,9 +1,14 @@
 import assert from "node:assert";
 import { readFileSync } from "node:fs";
 import path from "node:path";
+import type { ChildNode } from "domhandler";
 import { type Document, Element, isTag, Text } from "domhandler";
 import * as DomUtils from "domutils";
 import { type ParserOptions, parseDocument } from "htmlparser2";
+
+export function parseDOM(data: string): ChildNode[] {
+    return parseDocument(data).children;
+}
 
 export function getDocumentFromPath(
     file: string,

@@ -1,8 +1,9 @@
-import type { AnyNode, Element } from "domhandler";
-import { DomUtils, parseDOM, parseDocument } from "htmlparser2";
+import { type AnyNode, type Element, isTag } from "domhandler";
+import { DomUtils, parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
 import type { Adapter } from "../src/types.js";
+import { parseDOM } from "./tools/helper.js";
 
 const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>",
@@ -136,7 +137,7 @@ describe(":first-child", () => {
     });
 
     it("should work without `prevElementSibling`", () => {
-        const adapter: Adapter<AnyNode, Element> = { ...DomUtils };
+        const adapter: Adapter<AnyNode, Element> = { ...DomUtils, isTag };
         delete adapter.prevElementSibling;
 
         const matches = CSSselect.selectAll(":first-child", dom, { adapter });

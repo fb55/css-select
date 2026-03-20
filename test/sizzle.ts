@@ -1,8 +1,9 @@
 import type { AnyNode, ChildNode, Element, ParentNode } from "domhandler";
 import * as DomUtils from "domutils";
-import { parseDOM, parseDocument } from "htmlparser2";
+import { parseDocument } from "htmlparser2";
 import { beforeEach, describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
+import { parseDOM } from "./tools/helper.js";
 import {
     createWithFriesXML,
     loadDocument,
