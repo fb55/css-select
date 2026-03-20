@@ -1,19 +1,16 @@
 {
     "compilerOptions": {
-        /* Basic Options */
-        "target": "es2020",
+        "target": "es2022",
         "module": "nodenext",
-        "lib": ["ES2020", "DOM"],
+        "moduleResolution": "nodenext",
         "declaration": true,
         "declarationMap": true,
         "sourceMap": true,
-        "outDir": "lib",
+        "outDir": "dist",
 
-        /* Strict Type-Checking Options */
         "strict": true,
         "skipLibCheck": true,
 
-        /* Additional Checks */
         "exactOptionalPropertyTypes": true,
         "forceConsistentCasingInFileNames": true,
         "isolatedModules": true,
@@ -23,8 +20,13 @@
         "noImplicitReturns": true,
         "noPropertyAccessFromIndexSignature": true,
         "noUnusedLocals": true,
-        "noUnusedParameters": true,
-
-        "types": ["vitest/globals"]
-    }
+        "noUnusedParameters": true
+    },
+    "include": ["src"],
+    "exclude": [
+        "**/*.spec.ts",
+        "**/__fixtures__/*",
+        "**/__tests__/*",
+        "**/__snapshots__/*"
+    ]
 }

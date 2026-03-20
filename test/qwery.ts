@@ -2,9 +2,9 @@ import * as helper from "./tools/helper.js";
 
 const document = helper.getDocument("qwery.html");
 
-import type { AnyNode, Element } from "domhandler";
+import { type AnyNode, type Element, isTag } from "domhandler";
 import * as DomUtils from "domutils";
-import { parseDOM } from "htmlparser2";
+import { parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
 
@@ -28,16 +28,16 @@ function selectAll(selector: string, context: AnyNode | AnyNode[] = document) {
  * Adapted from https://github.com/ded/qwery/blob/master/tests/tests.js
  */
 
-const frag = parseDOM(
+const frag = parseDocument(
     '<root><div class="d i v">' +
         '<p id="oooo"><em></em><em id="emem"></em></p>' +
         "</div>" +
         '<p id="sep">' +
         '<div class="a"><span></span></div>' +
         "</p></root>",
-);
+).children;
 
-const testDocument = parseDOM(
+const testDocument = parseDocument(
     '<root><div id="hsoob">' +
         '<div class="a b">' +
         '<div class="d e sib" test="fg" id="booshTest"><p><span id="spanny"></span></p></div>' +
@@ -47,13 +47,11 @@ const testDocument = parseDOM(
         '<p class="odd"></p>' +
         "</div>" +
         '<div id="lonelyHsoob"></div></root>',
-);
+).children;
 
 const element = document.getElementById("attr-child-boosh");
 
-const pseudos = document
-    .getElementById("pseudos")
-    .children.filter(DomUtils.isTag);
+const pseudos = document.getElementById("pseudos").children.filter(isTag);
 
 describe("qwery", () => {
     describe("Contexts", () => {
