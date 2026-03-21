@@ -67,7 +67,13 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     }
 
     if (name in filters) {
-        return filters[name](next, data as string, options, context);
+        return filters[name](
+            next,
+            data as string,
+            options,
+            context,
+            compileToken,
+        );
     }
 
     if (name in pseudos) {

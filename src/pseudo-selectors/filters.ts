@@ -1,15 +1,80 @@
 import * as boolbase from "boolbase";
+import { parse } from "css-what";
 import getNCheck from "nth-check";
 import { cacheParentResults } from "../helpers/cache.js";
 import { getElementParent } from "../helpers/querying.js";
-import type { CompiledQuery, InternalOptions } from "../types.js";
+import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
 
-type Filter = <Node, ElementNode extends Node>(
+/** @see {@link https://www.w3.org/TR/selectors-4/#the-nth-child-pseudo} */
+const nthOfRegex = /^(.+?)\s+of\s+(.+)$/is;
+
+/** A pre-compiled pseudo filter. */
+export type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     text: string,
     options: InternalOptions<Node, ElementNode>,
     context?: Node[],
+    compileToken?: CompileToken<Node, ElementNode>,
 ) => CompiledQuery<ElementNode>;
+
+function compileNth(reverse: boolean, ofType: boolean): Filter {
+    return function nth(next, rule, options, _context, compileToken) {
+        const { adapter, equals } = options;
+        const ofMatch = ofType ? null : rule.match(nthOfRegex);
+        const nthCheck = getNCheck(ofMatch ? ofMatch[1].trim() : rule);
+
+        if (nthCheck === boolbase.falseFunc) return boolbase.falseFunc;
+
+        const ofSelector =
+            ofMatch && compileToken
+                ? compileToken(parse(ofMatch[2].trim()), options)
+                : undefined;
+
+        if (ofSelector === boolbase.falseFunc) return boolbase.falseFunc;
+
+        if (nthCheck === boolbase.trueFunc && !ofSelector) {
+            return (element) =>
+                getElementParent(element, adapter) !== null && next(element);
+        }
+
+        type ElementNode = Parameters<typeof next>[0];
+
+        const shouldCount = ofSelector
+            ? (_element: ElementNode, sibling: ElementNode) =>
+                  ofSelector(sibling)
+            : ofType
+              ? (element: ElementNode, sibling: ElementNode) =>
+                    adapter.getName(sibling) === adapter.getName(element)
+              : boolbase.trueFunc;
+
+        if (reverse) {
+            return function nthLast(element) {
+                if (ofSelector && !ofSelector(element)) return false;
+                const siblings = adapter.getSiblings(element);
+                let pos = 0;
+                for (let index = siblings.length - 1; index >= 0; index--) {
+                    const sibling = siblings[index];
+                    if (equals(element, sibling)) break;
+                    if (adapter.isTag(sibling) && shouldCount(element, sibling))
+                        pos++;
+                }
+                return nthCheck(pos) && next(element);
+            };
+        }
+
+        return function nth(element) {
+            if (ofSelector && !ofSelector(element)) return false;
+            const siblings = adapter.getSiblings(element);
+            let pos = 0;
+            for (const sibling of siblings) {
+                if (equals(element, sibling)) break;
+                if (adapter.isTag(sibling) && shouldCount(element, sibling))
+                    pos++;
+            }
+            return nthCheck(pos) && next(element);
+        };
+    };
+}
 
 /**
  * Pre-compiled pseudo filters.
@@ -32,121 +97,10 @@ export const filters: Record<string, Filter> = {
     },
 
     // Location specific methods
-    "nth-child"(next, rule, { adapter, equals }) {
-        const nthCheck = getNCheck(rule);
-
-        if (nthCheck === boolbase.falseFunc) {
-            return boolbase.falseFunc;
-        }
-        if (nthCheck === boolbase.trueFunc) {
-            return (element) =>
-                getElementParent(element, adapter) !== null && next(element);
-        }
-
-        return function nthChild(element) {
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-
-            for (const sibling of siblings) {
-                if (equals(element, sibling)) {
-                    break;
-                }
-                if (adapter.isTag(sibling)) {
-                    pos++;
-                }
-            }
-
-            return nthCheck(pos) && next(element);
-        };
-    },
-    "nth-last-child"(next, rule, { adapter, equals }) {
-        const nthCheck = getNCheck(rule);
-
-        if (nthCheck === boolbase.falseFunc) {
-            return boolbase.falseFunc;
-        }
-        if (nthCheck === boolbase.trueFunc) {
-            return (element) =>
-                getElementParent(element, adapter) !== null && next(element);
-        }
-
-        return function nthLastChild(element) {
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-
-            for (let index = siblings.length - 1; index >= 0; index--) {
-                if (equals(element, siblings[index])) {
-                    break;
-                }
-                if (adapter.isTag(siblings[index])) {
-                    pos++;
-                }
-            }
-
-            return nthCheck(pos) && next(element);
-        };
-    },
-    "nth-of-type"(next, rule, { adapter, equals }) {
-        const nthCheck = getNCheck(rule);
-
-        if (nthCheck === boolbase.falseFunc) {
-            return boolbase.falseFunc;
-        }
-        if (nthCheck === boolbase.trueFunc) {
-            return (element) =>
-                getElementParent(element, adapter) !== null && next(element);
-        }
-
-        return function nthOfType(element) {
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-
-            for (const currentSibling of siblings) {
-                if (equals(element, currentSibling)) {
-                    break;
-                }
-                if (
-                    adapter.isTag(currentSibling) &&
-                    adapter.getName(currentSibling) === adapter.getName(element)
-                ) {
-                    pos++;
-                }
-            }
-
-            return nthCheck(pos) && next(element);
-        };
-    },
-    "nth-last-of-type"(next, rule, { adapter, equals }) {
-        const nthCheck = getNCheck(rule);
-
-        if (nthCheck === boolbase.falseFunc) {
-            return boolbase.falseFunc;
-        }
-        if (nthCheck === boolbase.trueFunc) {
-            return (element) =>
-                getElementParent(element, adapter) !== null && next(element);
-        }
-
-        return function nthLastOfType(element) {
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-
-            for (let index = siblings.length - 1; index >= 0; index--) {
-                const currentSibling = siblings[index];
-                if (equals(element, currentSibling)) {
-                    break;
-                }
-                if (
-                    adapter.isTag(currentSibling) &&
-                    adapter.getName(currentSibling) === adapter.getName(element)
-                ) {
-                    pos++;
-                }
-            }
-
-            return nthCheck(pos) && next(element);
-        };
-    },
+    "nth-child": compileNth(false, false),
+    "nth-last-child": compileNth(true, false),
+    "nth-of-type": compileNth(false, true),
+    "nth-last-of-type": compileNth(true, true),
 
     // TODO determine the actual root element
     root(next, _rule, { adapter }) {
