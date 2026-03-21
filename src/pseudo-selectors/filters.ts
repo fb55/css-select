@@ -4,6 +4,31 @@ import { cacheParentResults } from "../helpers/cache.js";
 import { getElementParent } from "../helpers/querying.js";
 import type { CompiledQuery, InternalOptions } from "../types.js";
 
+/**
+ * RFC 4647 extended filtering with pre-split subtags.
+ * @param tag - Lowercased subtags of the element's language value.
+ * @param range - Lowercased subtags of the language range to match against.
+ */
+function extendedFilter(tag: string[], range: string[]): boolean {
+    if (range[0] !== "*" && range[0] !== tag[0]) return false;
+
+    let tagIndex = 1;
+
+    for (let rangeIndex = 1; rangeIndex < range.length; rangeIndex++) {
+        if (range[rangeIndex] === "*") continue;
+
+        // Skip non-singleton tag subtags until we find a match.
+        while (tagIndex < tag.length && tag[tagIndex] !== range[rangeIndex]) {
+            if (tag[tagIndex++].length <= 1) return false;
+        }
+
+        if (tagIndex >= tag.length) return false;
+        tagIndex++;
+    }
+
+    return true;
+}
+
 type Filter = <Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     text: string,
@@ -173,6 +198,49 @@ export const filters: Record<string, Filter> = {
         }
 
         return (element) => context.includes(element) && next(element);
+    },
+
+    lang(next, code, { adapter }) {
+        const ranges = code
+            .split(",")
+            .map((r) => r.trim())
+            .filter((r) => r.length > 0)
+            .map((r) =>
+                r
+                    .replace(/^['"]|['"]$/g, "")
+                    .toLowerCase()
+                    .split("-"),
+            );
+
+        return function lang(element) {
+            let node: typeof element | null = element;
+
+            while (node != null) {
+                const value =
+                    adapter.getAttributeValue(node, "xml:lang") ??
+                    adapter.getAttributeValue(node, "lang");
+
+                if (value != null) {
+                    if (!value) {
+                        return ranges.some((r) => r[0] === "") && next(element);
+                    }
+
+                    const tag = value.toLowerCase().split("-");
+                    return (
+                        ranges.some((r) => extendedFilter(tag, r)) &&
+                        next(element)
+                    );
+                }
+
+                const parent = adapter.getParent(node);
+                node =
+                    parent != null && adapter.isTag(parent)
+                        ? (parent as typeof element)
+                        : null;
+            }
+
+            return ranges.some((r) => r[0] === "") && next(element);
+        };
     },
 
     hover: dynamicStatePseudo("isHovered"),

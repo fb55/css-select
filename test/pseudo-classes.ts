@@ -206,6 +206,64 @@ describe(":has", () => {
     });
 });
 
+describe(":lang", () => {
+    // Single fixture covering inheritance, override, and untagged elements.
+    const langFixture = parseDocument(
+        '<div lang="en"><p id="a">A</p><div lang="fr-BE"><p id="b">B</p></div></div><p id="c">C</p>',
+    );
+
+    it.each([
+        // [selector, expected ids]
+        [":lang(en)", ["a"]],
+        [":lang(EN)", ["a"]],
+        [":lang(fr)", ["b"]],
+        [":lang(fr-BE)", ["b"]],
+        [":lang(en, fr)", ["a", "b"]],
+        [":lang(de)", []],
+    ])("%s matches %j", (selector, expectedIds) => {
+        const matches = CSSselect.selectAll<AnyNode, Element>(
+            `p${selector}`,
+            langFixture,
+        );
+        expect(matches.map((element) => element.attribs["id"])).toStrictEqual(
+            expectedIds,
+        );
+    });
+
+    it("should not match untagged elements", () => {
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("p:lang(en)", langFixture),
+        ).toHaveLength(1);
+    });
+
+    it("should use extended filtering", () => {
+        const dom = parseDocument(
+            '<p lang="de-DE">a</p><p lang="de-Latn-DE">b</p><p lang="de-Latn-DE-1996">c</p>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(de-DE)", dom),
+        ).toHaveLength(3);
+    });
+
+    it("should support wildcard primary subtag", () => {
+        const dom = parseDocument(
+            '<p lang="de-CH">a</p><p lang="fr-CH">b</p><p lang="fr-FR">c</p>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(\\*-CH)", dom),
+        ).toHaveLength(2);
+    });
+
+    it("should support xml:lang", () => {
+        const dom = parseDocument('<div xml:lang="ja"><p>x</p></div>', {
+            xmlMode: true,
+        });
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(ja)", dom),
+        ).toHaveLength(2);
+    });
+});
+
 describe(":read-only and :read-write", () => {
     it("should match", () => {
         const dom = parseDocument(`
