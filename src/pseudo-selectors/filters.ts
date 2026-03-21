@@ -201,13 +201,16 @@ export const filters: Record<string, Filter> = {
     },
 
     lang(next, code, { adapter }) {
-        const ranges = code.split(",").map((r) =>
-            r
-                .trim()
-                .replace(/^['"]|['"]$/g, "")
-                .toLowerCase()
-                .split("-"),
-        );
+        const ranges = code
+            .split(",")
+            .map((r) => r.trim())
+            .filter((r) => r.length > 0)
+            .map((r) =>
+                r
+                    .replace(/^['"]|['"]$/g, "")
+                    .toLowerCase()
+                    .split("-"),
+            );
 
         return function lang(element) {
             let node: typeof element | null = element;

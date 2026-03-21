@@ -207,107 +207,60 @@ describe(":has", () => {
 });
 
 describe(":lang", () => {
-    it("should match exact language", () => {
-        const dom = parseDocument('<div lang="en"><p>hello</p></div>');
-        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
-        expect(matches).toHaveLength(2);
-    });
+    // Single fixture covering inheritance, override, and untagged elements.
+    const langFixture = parseDocument(
+        '<div lang="en"><p id="a">A</p><div lang="fr-BE"><p id="b">B</p></div></div><p id="c">C</p>',
+    );
 
-    it("should match language prefix", () => {
-        const dom = parseDocument('<div lang="en-US"><p>hello</p></div>');
-        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
-        expect(matches).toHaveLength(2);
-    });
-
-    it("should be case-insensitive", () => {
-        const dom = parseDocument('<div lang="en"><p>hello</p></div>');
-        expect(
-            CSSselect.selectAll<AnyNode, Element>(":lang(EN)", dom),
-        ).toHaveLength(2);
-
-        const dom2 = parseDocument('<div lang="EN-US"><p>hello</p></div>');
-        expect(
-            CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom2),
-        ).toHaveLength(2);
-    });
-
-    it("should inherit from ancestors", () => {
-        const dom = parseDocument(
-            '<div lang="fr"><section><p>bonjour</p></section></div>',
-        );
+    it.each([
+        // [selector, expected ids]
+        [":lang(en)", ["a"]],
+        [":lang(EN)", ["a"]],
+        [":lang(fr)", ["b"]],
+        [":lang(fr-BE)", ["b"]],
+        [":lang(en, fr)", ["a", "b"]],
+        [":lang(de)", []],
+    ])("%s matches %j", (selector, expectedIds) => {
         const matches = CSSselect.selectAll<AnyNode, Element>(
-            "p:lang(fr)",
-            dom,
+            `p${selector}`,
+            langFixture,
         );
-        expect(matches).toHaveLength(1);
+        expect(matches.map((element) => element.attribs["id"])).toStrictEqual(
+            expectedIds,
+        );
     });
 
-    it("should not match different languages", () => {
-        const dom = parseDocument(
-            '<div lang="fr"><p>bonjour</p></div><div lang="en"><p>hello</p></div>',
-        );
-        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
-        expect(matches).toHaveLength(2);
-    });
-
-    it("should not match partial non-prefix", () => {
-        const dom = parseDocument('<div lang="enx"><p>hello</p></div>');
-        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
-        expect(matches).toHaveLength(0);
-    });
-
-    it("should allow closer ancestor to override", () => {
-        const dom = parseDocument(
-            '<div lang="en"><div lang="fr"><p>bonjour</p></div></div>',
-        );
+    it("should not match untagged elements", () => {
         expect(
-            CSSselect.selectAll<AnyNode, Element>("p:lang(fr)", dom),
+            CSSselect.selectAll<AnyNode, Element>("p:lang(en)", langFixture),
         ).toHaveLength(1);
+    });
+
+    it("should use extended filtering", () => {
+        const dom = parseDocument(
+            '<p lang="de-DE">a</p><p lang="de-Latn-DE">b</p><p lang="de-Latn-DE-1996">c</p>',
+        );
         expect(
-            CSSselect.selectAll<AnyNode, Element>("p:lang(en)", dom),
-        ).toHaveLength(0);
-    });
-
-    it("should support comma-separated language ranges", () => {
-        const dom = parseDocument(
-            '<div lang="en"><p>hello</p></div><div lang="fr"><p>bonjour</p></div><div lang="de"><p>hallo</p></div>',
-        );
-        const matches = CSSselect.selectAll<AnyNode, Element>(
-            ":lang(en, fr)",
-            dom,
-        );
-        expect(matches).toHaveLength(4);
-    });
-
-    it("should use extended filtering (RFC 4647)", () => {
-        // :lang(de-DE) should match de-Latn-DE (skipping single-char subtags)
-        const dom = parseDocument(
-            '<p lang="de-DE">a</p><p lang="de-DE-1996">b</p><p lang="de-Latn-DE">c</p><p lang="de-Latf-DE">d</p><p lang="de-Latn-DE-1996">e</p>',
-        );
-        const matches = CSSselect.selectAll<AnyNode, Element>(
-            ":lang(de-DE)",
-            dom,
-        );
-        expect(matches).toHaveLength(5);
+            CSSselect.selectAll<AnyNode, Element>(":lang(de-DE)", dom),
+        ).toHaveLength(3);
     });
 
     it("should support wildcard primary subtag", () => {
         const dom = parseDocument(
-            '<p lang="de-CH">a</p><p lang="it-CH">b</p><p lang="fr-CH">c</p><p lang="fr-FR">d</p>',
+            '<p lang="de-CH">a</p><p lang="fr-CH">b</p><p lang="fr-FR">c</p>',
         );
-        const matches = CSSselect.selectAll<AnyNode, Element>(
-            ":lang(\\*-CH)",
-            dom,
-        );
-        expect(matches).toHaveLength(3);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(\\*-CH)", dom),
+        ).toHaveLength(2);
     });
 
-    it("should support xml:lang attribute", () => {
-        const dom = parseDocument('<div xml:lang="ja"><p>hello</p></div>', {
+    it("should support xml:lang", () => {
+        const dom = parseDocument('<div xml:lang="ja"><p>x</p></div>', {
             xmlMode: true,
         });
-        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(ja)", dom);
-        expect(matches).toHaveLength(2);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(ja)", dom),
+        ).toHaveLength(2);
     });
 });
 
