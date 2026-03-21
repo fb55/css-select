@@ -206,6 +206,111 @@ describe(":has", () => {
     });
 });
 
+describe(":lang", () => {
+    it("should match exact language", () => {
+        const dom = parseDocument('<div lang="en"><p>hello</p></div>');
+        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
+        expect(matches).toHaveLength(2);
+    });
+
+    it("should match language prefix", () => {
+        const dom = parseDocument('<div lang="en-US"><p>hello</p></div>');
+        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
+        expect(matches).toHaveLength(2);
+    });
+
+    it("should be case-insensitive", () => {
+        const dom = parseDocument('<div lang="en"><p>hello</p></div>');
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(EN)", dom),
+        ).toHaveLength(2);
+
+        const dom2 = parseDocument('<div lang="EN-US"><p>hello</p></div>');
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom2),
+        ).toHaveLength(2);
+    });
+
+    it("should inherit from ancestors", () => {
+        const dom = parseDocument(
+            '<div lang="fr"><section><p>bonjour</p></section></div>',
+        );
+        const matches = CSSselect.selectAll<AnyNode, Element>(
+            "p:lang(fr)",
+            dom,
+        );
+        expect(matches).toHaveLength(1);
+    });
+
+    it("should not match different languages", () => {
+        const dom = parseDocument(
+            '<div lang="fr"><p>bonjour</p></div><div lang="en"><p>hello</p></div>',
+        );
+        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
+        expect(matches).toHaveLength(2);
+    });
+
+    it("should not match partial non-prefix", () => {
+        const dom = parseDocument('<div lang="enx"><p>hello</p></div>');
+        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(en)", dom);
+        expect(matches).toHaveLength(0);
+    });
+
+    it("should allow closer ancestor to override", () => {
+        const dom = parseDocument(
+            '<div lang="en"><div lang="fr"><p>bonjour</p></div></div>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("p:lang(fr)", dom),
+        ).toHaveLength(1);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("p:lang(en)", dom),
+        ).toHaveLength(0);
+    });
+
+    it("should support comma-separated language ranges", () => {
+        const dom = parseDocument(
+            '<div lang="en"><p>hello</p></div><div lang="fr"><p>bonjour</p></div><div lang="de"><p>hallo</p></div>',
+        );
+        const matches = CSSselect.selectAll<AnyNode, Element>(
+            ":lang(en, fr)",
+            dom,
+        );
+        expect(matches).toHaveLength(4);
+    });
+
+    it("should use extended filtering (RFC 4647)", () => {
+        // :lang(de-DE) should match de-Latn-DE (skipping single-char subtags)
+        const dom = parseDocument(
+            '<p lang="de-DE">a</p><p lang="de-DE-1996">b</p><p lang="de-Latn-DE">c</p><p lang="de-Latf-DE">d</p><p lang="de-Latn-DE-1996">e</p>',
+        );
+        const matches = CSSselect.selectAll<AnyNode, Element>(
+            ":lang(de-DE)",
+            dom,
+        );
+        expect(matches).toHaveLength(5);
+    });
+
+    it("should support wildcard primary subtag", () => {
+        const dom = parseDocument(
+            '<p lang="de-CH">a</p><p lang="it-CH">b</p><p lang="fr-CH">c</p><p lang="fr-FR">d</p>',
+        );
+        const matches = CSSselect.selectAll<AnyNode, Element>(
+            ":lang(\\*-CH)",
+            dom,
+        );
+        expect(matches).toHaveLength(3);
+    });
+
+    it("should support xml:lang attribute", () => {
+        const dom = parseDocument('<div xml:lang="ja"><p>hello</p></div>', {
+            xmlMode: true,
+        });
+        const matches = CSSselect.selectAll<AnyNode, Element>(":lang(ja)", dom);
+        expect(matches).toHaveLength(2);
+    });
+});
+
 describe(":read-only and :read-write", () => {
     it("should match", () => {
         const dom = parseDocument(`
