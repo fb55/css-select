@@ -2,6 +2,7 @@ import * as boolbase from "boolbase";
 import { parse } from "css-what";
 import getNCheck from "nth-check";
 import { cacheParentResults } from "../helpers/cache.js";
+import { copyOptions } from "../helpers/options.js";
 import { getElementParent } from "../helpers/querying.js";
 import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
 
@@ -50,15 +51,13 @@ function compileNth(reverse: boolean, ofType: boolean): Filter {
 
         if (nthCheck === boolbase.falseFunc) return boolbase.falseFunc;
 
-        // Strip context/rootFunc so the nested selector compiles cleanly.
-        const {
-            context: _context,
-            rootFunc: _rootFunction,
-            ...ofOptions
-        } = options;
         const ofSelector =
             ofMatch && compileToken
-                ? compileToken(parse(ofMatch[2].trim()), ofOptions, context)
+                ? compileToken(
+                      parse(ofMatch[2].trim()),
+                      copyOptions(options),
+                      context,
+                  )
                 : undefined;
 
         if (ofSelector === boolbase.falseFunc) return boolbase.falseFunc;
