@@ -24,7 +24,8 @@ export const aliases: Record<string, string> = {
         optgroup[disabled] > option,
         fieldset[disabled]:not(fieldset[disabled] legend:first-of-type *)
     )`,
-    enabled: ":not(:disabled)",
+    enabled:
+        ":is(button, input, select, textarea, optgroup, option, fieldset):not(:disabled)",
     checked:
         ":is(:is(input[type=radio], input[type=checkbox])[checked], :selected)",
     required: ":is(input, select, textarea)[required]",

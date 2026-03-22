@@ -206,6 +206,98 @@ describe(":has", () => {
     });
 });
 
+describe(":enabled", () => {
+    it("should match form-associated elements", () => {
+        const dom = parseDocument(`
+            <div>
+                <input type="text">
+                <button>Click</button>
+                <select><option>A</option></select>
+                <textarea></textarea>
+                <fieldset></fieldset>
+            </div>
+        `);
+        const matches = CSSselect.selectAll(":enabled", dom);
+        // Input, button, select, option, textarea, fieldset
+        expect(matches).toHaveLength(6);
+    });
+
+    it("should not match disabled elements", () => {
+        const dom = parseDocument(
+            "<input disabled><button disabled>X</button>",
+        );
+        expect(CSSselect.selectAll(":enabled", dom)).toHaveLength(0);
+    });
+
+    it("should not match non-form elements", () => {
+        const dom = parseDocument("<div></div><span></span><p></p>");
+        expect(CSSselect.selectAll(":enabled", dom)).toHaveLength(0);
+    });
+});
+
+describe(":nth-child(An+B of S)", () => {
+    it("should select odd elements matching selector", () => {
+        const dom = parseDocument(`
+            <div>
+                <span class="a">1</span>
+                <span>2</span>
+                <span class="a">3</span>
+                <span>4</span>
+                <span class="a">5</span>
+            </div>
+        `);
+        // Among .a elements (1st, 3rd, 5th spans), select odd (1st and 3rd .a)
+        const matches = CSSselect.selectAll(":nth-child(odd of .a)", dom);
+        expect(matches).toHaveLength(2);
+    });
+
+    it("should select the 2nd element matching selector", () => {
+        const dom = parseDocument(`
+            <ul>
+                <li class="important">A</li>
+                <li>B</li>
+                <li class="important">C</li>
+                <li>D</li>
+                <li class="important">E</li>
+            </ul>
+        `);
+        const matches = CSSselect.selectAll(":nth-child(2 of .important)", dom);
+        expect(matches).toHaveLength(1);
+    });
+
+    it("should count position only among matching elements", () => {
+        const dom = parseDocument(`
+            <div>
+                <span class="a">1</span>
+                <span class="b">2</span>
+            </div>
+        `);
+        // .b is the 2nd span overall, but 1st among .b elements
+        const matches = CSSselect.selectAll(":nth-child(1 of .b)", dom);
+        expect(matches).toHaveLength(1);
+    });
+
+    it("should work with :nth-last-child(An+B of S)", () => {
+        const dom = parseDocument(`
+            <div>
+                <span class="a">1</span>
+                <span>2</span>
+                <span class="a">3</span>
+                <span>4</span>
+                <span class="a">5</span>
+            </div>
+        `);
+        const matches = CSSselect.selectAll(":nth-last-child(1 of .a)", dom);
+        expect(matches).toHaveLength(1);
+    });
+
+    it("should fall back to normal nth-child without 'of' clause", () => {
+        const dom = parseDocument("<div><p>a</p><p>b</p><p>c</p></div>");
+        const matches = CSSselect.selectAll(":nth-child(2)", dom);
+        expect(matches).toHaveLength(1);
+    });
+});
+
 describe(":lang", () => {
     // Single fixture covering inheritance, override, and untagged elements.
     const langFixture = parseDocument(

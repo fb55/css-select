@@ -1,6 +1,7 @@
 import * as boolbase from "boolbase";
 import type { Selector } from "css-what";
 import { cacheParentResults } from "../helpers/cache.js";
+import { copyOptions } from "../helpers/options.js";
 import { findOne, getNextSiblings } from "../helpers/querying.js";
 import { includesScopePseudo, isTraversal } from "../helpers/selectors.js";
 import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
@@ -31,22 +32,6 @@ function hasDependsOnCurrentElement(selector: Selector[][]) {
             sel.length > 0 &&
             (isTraversal(sel[0]) || sel.some(includesScopePseudo)),
     );
-}
-
-function copyOptions<Node, ElementNode extends Node>(
-    options: InternalOptions<Node, ElementNode>,
-): InternalOptions<Node, ElementNode> {
-    // Not copied: context, rootFunc
-    return {
-        xmlMode: !!options.xmlMode,
-        lowerCaseAttributeNames: !!options.lowerCaseAttributeNames,
-        lowerCaseTags: !!options.lowerCaseTags,
-        quirksMode: !!options.quirksMode,
-        cacheResults: !!options.cacheResults,
-        pseudos: options.pseudos,
-        adapter: options.adapter,
-        equals: options.equals,
-    };
 }
 
 const is: Subselect = (next, token, options, context, compileToken) => {
