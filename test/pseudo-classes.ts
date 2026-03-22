@@ -265,16 +265,16 @@ describe(":nth-child(An+B of S)", () => {
         expect(matches).toHaveLength(1);
     });
 
-    it("should not match elements that don't match the selector", () => {
+    it("should count position only among matching elements", () => {
         const dom = parseDocument(`
             <div>
                 <span class="a">1</span>
                 <span class="b">2</span>
             </div>
         `);
+        // .b is the 2nd span overall, but 1st among .b elements
         const matches = CSSselect.selectAll(":nth-child(1 of .b)", dom);
         expect(matches).toHaveLength(1);
-        // .b is the 2nd span, but 1st among .b elements
     });
 
     it("should work with :nth-last-child(An+B of S)", () => {

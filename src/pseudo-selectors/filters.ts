@@ -43,16 +43,22 @@ export type Filter = <Node, ElementNode extends Node>(
 ) => CompiledQuery<ElementNode>;
 
 function compileNth(reverse: boolean, ofType: boolean): Filter {
-    return function nth(next, rule, options, _context, compileToken) {
+    return function nth(next, rule, options, context, compileToken) {
         const { adapter, equals } = options;
         const ofMatch = ofType ? null : rule.match(nthOfRegex);
         const nthCheck = getNCheck(ofMatch ? ofMatch[1].trim() : rule);
 
         if (nthCheck === boolbase.falseFunc) return boolbase.falseFunc;
 
+        // Strip context/rootFunc so the nested selector compiles cleanly.
+        const {
+            context: _context,
+            rootFunc: _rootFunction,
+            ...ofOptions
+        } = options;
         const ofSelector =
             ofMatch && compileToken
-                ? compileToken(parse(ofMatch[2].trim()), options)
+                ? compileToken(parse(ofMatch[2].trim()), ofOptions, context)
                 : undefined;
 
         if (ofSelector === boolbase.falseFunc) return boolbase.falseFunc;
