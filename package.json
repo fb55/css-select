@@ -39,7 +39,7 @@
         "nth-check": "^3.0.1"
     },
     "devDependencies": {
-        "@biomejs/biome": "^2.4.8",
+        "@biomejs/biome": "^2.4.10",
         "@eslint/compat": "^2.0.3",
         "@feedic/eslint-config": "^0.3.1",
         "@types/node": "^25.5.0",
