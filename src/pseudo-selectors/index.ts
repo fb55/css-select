@@ -59,12 +59,12 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
 
-    if (data === null && name in subselects) {
+    if (data === null && Object.hasOwn(subselects, name)) {
         throw new Error(`Pseudo-class :${name} requires an argument`);
     }
 
     if (Array.isArray(data)) {
-        if (!(name in subselects)) {
+        if (!Object.hasOwn(subselects, name)) {
             throw new Error(`Unknown pseudo-class :${name}(${data})`);
         }
 
@@ -92,7 +92,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return (element) => userPseudo(element, data) && next(element);
     }
 
-    if (name in filters) {
+    if (Object.hasOwn(filters, name)) {
         if (data === null && filtersWithArguments.has(name)) {
             throw new Error(`Pseudo-class :${name} requires an argument`);
         }
@@ -110,7 +110,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         );
     }
 
-    if (name in pseudos) {
+    if (Object.hasOwn(pseudos, name)) {
         const pseudo = pseudos[name];
         verifyPseudoArguments(pseudo, name, data, 2);
 
