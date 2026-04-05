@@ -20,6 +20,8 @@ import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArguments } from "./pseudos.js";
 import { subselects } from "./subselects.js";
 
+const allFilterNames = new Set(Object.keys(filters));
+
 const filtersWithArguments = new Set([
     "contains",
     "icontains",
@@ -30,13 +32,19 @@ const filtersWithArguments = new Set([
     "lang",
 ]);
 
-const filtersWithoutArguments = new Set([
-    "root",
-    "scope",
-    "hover",
-    "visited",
-    "active",
-]);
+for (const filterName of filtersWithArguments) {
+    if (!allFilterNames.has(filterName)) {
+        throw new Error(`Unknown filter in filtersWithArguments: ${filterName}`);
+    }
+}
+
+const filtersWithoutArguments = new Set(
+    [...allFilterNames].filter((filterName) => !filtersWithArguments.has(filterName)),
+);
+
+if (filtersWithArguments.size + filtersWithoutArguments.size !== allFilterNames.size) {
+    throw new Error("Filter argument validation sets are out of sync with filters");
+}
 
 /**
  * Compile a pseudo selector into an executable query function.

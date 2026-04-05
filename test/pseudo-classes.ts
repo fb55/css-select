@@ -129,6 +129,14 @@ describe("unmatched", () => {
     });
 
     it("should throw when pseudo-classes are missing required arguments", () => {
+        expect(() => CSSselect.selectAll(":contains", dom)).toThrow(
+            "Pseudo-class :contains requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":icontains", dom)).toThrow(
+            "Pseudo-class :icontains requires an argument",
+        );
+
         expect(() => CSSselect.selectAll(":lang", dom)).toThrow(
             "Pseudo-class :lang requires an argument",
         );
@@ -137,8 +145,32 @@ describe("unmatched", () => {
             "Pseudo-class :nth-child requires an argument",
         );
 
+        expect(() => CSSselect.selectAll(":nth-last-child", dom)).toThrow(
+            "Pseudo-class :nth-last-child requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-of-type", dom)).toThrow(
+            "Pseudo-class :nth-of-type requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-last-of-type", dom)).toThrow(
+            "Pseudo-class :nth-last-of-type requires an argument",
+        );
+
         expect(() => CSSselect.selectAll(":has", dom)).toThrow(
             "Pseudo-class :has requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":is", dom)).toThrow(
+            "Pseudo-class :is requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":matches", dom)).toThrow(
+            "Pseudo-class :matches requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":where", dom)).toThrow(
+            "Pseudo-class :where requires an argument",
         );
 
         expect(() => CSSselect.selectAll(":not", dom)).toThrow(
