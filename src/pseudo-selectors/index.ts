@@ -20,6 +20,24 @@ import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArguments } from "./pseudos.js";
 import { subselects } from "./subselects.js";
 
+const filtersWithArguments = new Set([
+    "contains",
+    "icontains",
+    "nth-child",
+    "nth-last-child",
+    "nth-of-type",
+    "nth-last-of-type",
+    "lang",
+]);
+
+const filtersWithoutArguments = new Set([
+    "root",
+    "scope",
+    "hover",
+    "visited",
+    "active",
+]);
+
 /**
  * Compile a pseudo selector into an executable query function.
  * @param next Matcher to run after this matcher succeeds.
@@ -36,6 +54,10 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     compileToken: CompileToken<Node, ElementNode>,
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
+
+    if (data === null && name in subselects) {
+        throw new Error(`Pseudo-class :${name} requires an argument`);
+    }
 
     if (Array.isArray(data)) {
         if (!(name in subselects)) {
@@ -67,6 +89,14 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     }
 
     if (name in filters) {
+        if (data === null && filtersWithArguments.has(name)) {
+            throw new Error(`Pseudo-class :${name} requires an argument`);
+        }
+
+        if (data !== null && filtersWithoutArguments.has(name)) {
+            throw new Error(`Pseudo-class :${name} doesn't have any arguments`);
+        }
+
         return filters[name](
             next,
             data as string,

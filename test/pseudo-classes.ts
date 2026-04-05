@@ -127,6 +127,34 @@ describe("unmatched", () => {
             "Unknown pseudo-class :host-context",
         );
     });
+
+    it("should throw when pseudo-classes are missing required arguments", () => {
+        expect(() => CSSselect.selectAll(":lang", dom)).toThrow(
+            "Pseudo-class :lang requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-child", dom)).toThrow(
+            "Pseudo-class :nth-child requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":has", dom)).toThrow(
+            "Pseudo-class :has requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":not", dom)).toThrow(
+            "Pseudo-class :not requires an argument",
+        );
+    });
+
+    it("should throw when argument-less pseudo-classes receive arguments", () => {
+        expect(() => CSSselect.selectAll(":scope(foo)", dom)).toThrow(
+            "Pseudo-class :scope doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":active(foo)", dom)).toThrow(
+            "Pseudo-class :active doesn't have any arguments",
+        );
+    });
 });
 
 describe(":first-child", () => {
