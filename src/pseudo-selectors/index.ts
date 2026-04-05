@@ -42,10 +42,6 @@ const filtersWithoutArguments = new Set(
     [...allFilterNames].filter((filterName) => !filtersWithArguments.has(filterName)),
 );
 
-if (filtersWithArguments.size + filtersWithoutArguments.size !== allFilterNames.size) {
-    throw new Error("Filter argument validation sets are out of sync with filters");
-}
-
 /**
  * Compile a pseudo selector into an executable query function.
  * @param next Matcher to run after this matcher succeeds.
