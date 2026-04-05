@@ -209,6 +209,10 @@ export const filters: Record<string, Filter> = {
     active: dynamicStatePseudo("isActive"),
 };
 
+/**
+ * `:focus-within` matches an element that is focused or has a focused descendant.
+ * Depends on the optional `Adapter.isFocused` method.
+ */
 function focusWithinPseudo<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     _rule: string,
