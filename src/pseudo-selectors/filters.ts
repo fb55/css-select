@@ -203,9 +203,50 @@ export const filters: Record<string, Filter> = {
     },
 
     hover: dynamicStatePseudo("isHovered"),
+    "focus-visible": dynamicStatePseudo("isFocusVisible"),
+    "focus-within": focusWithinPseudo,
     visited: dynamicStatePseudo("isVisited"),
     active: dynamicStatePseudo("isActive"),
 };
+
+/**
+ * `:focus-within` matches an element that is focused or has a focused descendant.
+ * Depends on the optional `Adapter.isFocused` method.
+ */
+function focusWithinPseudo<Node, ElementNode extends Node>(
+    next: CompiledQuery<ElementNode>,
+    _rule: string,
+    options: InternalOptions<Node, ElementNode>,
+): CompiledQuery<ElementNode> {
+    const { adapter } = options;
+    const isFocused = adapter.isFocused;
+
+    if (typeof isFocused !== "function") {
+        return boolbase.falseFunc;
+    }
+
+    return cacheParentResults(next, options, (element) => {
+        if (isFocused(element)) {
+            return true;
+        }
+
+        const queue = [...adapter.getChildren(element)];
+
+        for (const node of queue) {
+            if (!adapter.isTag(node)) {
+                continue;
+            }
+
+            if (isFocused(node)) {
+                return true;
+            }
+
+            queue.push(...adapter.getChildren(node));
+        }
+
+        return false;
+    });
+}
 
 /**
  * Dynamic state pseudos. These depend on optional Adapter methods.
@@ -213,7 +254,7 @@ export const filters: Record<string, Filter> = {
  * @returns Pseudo for the `filters` object.
  */
 function dynamicStatePseudo(
-    name: "isHovered" | "isVisited" | "isActive",
+    name: "isHovered" | "isFocusVisible" | "isVisited" | "isActive",
 ): Filter {
     return function dynamicPseudo(next, _rule, { adapter }) {
         const filterFunction = adapter[name];
