@@ -20,6 +20,28 @@ import { filters } from "./filters.js";
 import { pseudos, verifyPseudoArguments } from "./pseudos.js";
 import { subselects } from "./subselects.js";
 
+const allFilterNames = new Set(Object.keys(filters));
+
+const filtersWithArguments = new Set([
+    "contains",
+    "icontains",
+    "nth-child",
+    "nth-last-child",
+    "nth-of-type",
+    "nth-last-of-type",
+    "lang",
+]);
+
+for (const filterName of filtersWithArguments) {
+    if (!allFilterNames.has(filterName)) {
+        throw new Error(`Unknown filter in filtersWithArguments: ${filterName}`);
+    }
+}
+
+const filtersWithoutArguments = new Set(
+    [...allFilterNames].filter((filterName) => !filtersWithArguments.has(filterName)),
+);
+
 /**
  * Compile a pseudo selector into an executable query function.
  * @param next Matcher to run after this matcher succeeds.
@@ -37,8 +59,12 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 ): CompiledQuery<ElementNode> {
     const { name, data } = selector;
 
+    if (data === null && Object.hasOwn(subselects, name)) {
+        throw new Error(`Pseudo-class :${name} requires an argument`);
+    }
+
     if (Array.isArray(data)) {
-        if (!(name in subselects)) {
+        if (!Object.hasOwn(subselects, name)) {
             throw new Error(`Unknown pseudo-class :${name}(${data})`);
         }
 
@@ -66,7 +92,15 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return (element) => userPseudo(element, data) && next(element);
     }
 
-    if (name in filters) {
+    if (Object.hasOwn(filters, name)) {
+        if (data === null && filtersWithArguments.has(name)) {
+            throw new Error(`Pseudo-class :${name} requires an argument`);
+        }
+
+        if (data !== null && filtersWithoutArguments.has(name)) {
+            throw new Error(`Pseudo-class :${name} doesn't have any arguments`);
+        }
+
         return filters[name](
             next,
             data as string,
@@ -76,7 +110,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         );
     }
 
-    if (name in pseudos) {
+    if (Object.hasOwn(pseudos, name)) {
         const pseudo = pseudos[name];
         verifyPseudoArguments(pseudo, name, data, 2);
 
