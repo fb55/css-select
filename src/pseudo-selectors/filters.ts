@@ -232,7 +232,8 @@ function focusWithinPseudo<Node, ElementNode extends Node>(
 
         const queue = [...adapter.getChildren(element)];
 
-        for (const node of queue) {
+        for (let index = 0; index < queue.length; index++) {
+            const node = queue[index];
             if (!adapter.isTag(node)) {
                 continue;
             }
