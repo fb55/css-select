@@ -198,6 +198,10 @@ describe("unmatched", () => {
         expect(() => CSSselect.selectAll(":visited(foo)", dom)).toThrow(
             "Pseudo-class :visited doesn't have any arguments",
         );
+
+        expect(() => CSSselect.selectAll(":enabled(foo)", dom)).toThrow(
+            "Pseudo-class :enabled doesn't have any arguments",
+        );
     });
 });
 

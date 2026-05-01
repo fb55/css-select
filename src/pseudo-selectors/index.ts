@@ -78,7 +78,9 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
     if (typeof stringPseudo === "string") {
         if (data != null) {
-            throw new Error(`Pseudo ${name} doesn't have any arguments`);
+            throw new Error(
+                `Pseudo-class :${name} doesn't have any arguments`,
+            );
         }
 
         // The alias has to be parsed here, to make sure options are respected.
