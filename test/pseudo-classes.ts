@@ -202,6 +202,18 @@ describe("unmatched", () => {
         expect(() => CSSselect.selectAll(":enabled(foo)", dom)).toThrow(
             "Pseudo-class :enabled doesn't have any arguments",
         );
+
+        expect(() => CSSselect.selectAll(":root(foo)", dom)).toThrow(
+            "Pseudo-class :root doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":hover(foo)", dom)).toThrow(
+            "Pseudo-class :hover doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":visited(foo)", dom)).toThrow(
+            "Pseudo-class :visited doesn't have any arguments",
+        );
     });
 });
 
