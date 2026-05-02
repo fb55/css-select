@@ -127,6 +127,82 @@ describe("unmatched", () => {
             "Unknown pseudo-class :host-context",
         );
     });
+
+    it("should throw when pseudo-classes are missing required arguments", () => {
+        expect(() => CSSselect.selectAll(":contains", dom)).toThrow(
+            "Pseudo-class :contains requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":icontains", dom)).toThrow(
+            "Pseudo-class :icontains requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":lang", dom)).toThrow(
+            "Pseudo-class :lang requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-child", dom)).toThrow(
+            "Pseudo-class :nth-child requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-last-child", dom)).toThrow(
+            "Pseudo-class :nth-last-child requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-of-type", dom)).toThrow(
+            "Pseudo-class :nth-of-type requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":nth-last-of-type", dom)).toThrow(
+            "Pseudo-class :nth-last-of-type requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":has", dom)).toThrow(
+            "Pseudo-class :has requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":is", dom)).toThrow(
+            "Pseudo-class :is requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":matches", dom)).toThrow(
+            "Pseudo-class :matches requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":where", dom)).toThrow(
+            "Pseudo-class :where requires an argument",
+        );
+
+        expect(() => CSSselect.selectAll(":not", dom)).toThrow(
+            "Pseudo-class :not requires an argument",
+        );
+    });
+
+    it("should throw when argument-less pseudo-classes receive arguments", () => {
+        expect(() => CSSselect.selectAll(":scope(foo)", dom)).toThrow(
+            "Pseudo-class :scope doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":active(foo)", dom)).toThrow(
+            "Pseudo-class :active doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":root(foo)", dom)).toThrow(
+            "Pseudo-class :root doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":hover(foo)", dom)).toThrow(
+            "Pseudo-class :hover doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":visited(foo)", dom)).toThrow(
+            "Pseudo-class :visited doesn't have any arguments",
+        );
+
+        expect(() => CSSselect.selectAll(":enabled(foo)", dom)).toThrow(
+            "Pseudo-class :enabled doesn't have any arguments",
+        );
+    });
 });
 
 describe(":first-child", () => {
