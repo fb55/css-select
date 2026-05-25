@@ -381,6 +381,30 @@ describe("API", () => {
             ).toStrictEqual(p);
         });
 
+        it("should use adapter equals for multiple context elements", () => {
+            const [a, b] = parseDocument('<div id="a"></div><div id="b"></div>')
+                .children as Element[];
+            const [contextA, contextB] = parseDocument(
+                '<div id="a"></div><div id="b"></div>',
+            ).children as Element[];
+
+            const adapter: Adapter<AnyNode, Element> = {
+                ...DomUtils,
+                isTag,
+                equals: (left, right) =>
+                    isTag(left) &&
+                    isTag(right) &&
+                    left.attribs["id"] === right.attribs["id"],
+            };
+
+            expect(
+                CSSselect.selectAll(":scope", [a, b], {
+                    adapter,
+                    context: [contextA, contextB],
+                }),
+            ).toStrictEqual([a, b]);
+        });
+
         it("should not crash when siblings repeat", () => {
             const dom = parseDocument("<div></div>".repeat(51))
                 .children as Element[];
