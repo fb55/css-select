@@ -146,7 +146,12 @@ export const attributeRules: Record<
     element(next, data, options) {
         const { adapter } = options;
         const { name, value } = data;
-        if (whitespaceRe.test(value)) {
+        /*
+         * An empty value (or one containing whitespace, which can never be a
+         * single token) matches nothing — same as `^=`/`$=`/`*=` with an empty
+         * value. See https://www.w3.org/TR/selectors-4/#attribute-representation
+         */
+        if (value === "" || whitespaceRe.test(value)) {
             return boolbase.falseFunc;
         }
 
