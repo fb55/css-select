@@ -460,5 +460,56 @@ describe("API", () => {
             const dom = parseDocument(`${"<p>foo".repeat(10)}`);
             expect(CSSselect.selectAll("p:hover", dom)).toHaveLength(0);
         });
+
+        it("should support isFocusVisible", () => {
+            const dom = parseDocument(`${"<button>foo</button>".repeat(3)}`)
+                .children as Element[];
+
+            const adapter = {
+                ...DomUtils,
+                isTag,
+                isFocusVisible: (element: Element) =>
+                    element === dom[dom.length - 1],
+            };
+
+            const selection = CSSselect.selectAll("button:focus-visible", dom, {
+                adapter,
+            });
+            expect(selection).toHaveLength(1);
+            expect(selection[0]).toBe(dom[dom.length - 1]);
+        });
+
+        it("should not match any elements if `isFocusVisible` is not defined", () => {
+            const dom = parseDocument(`${"<button>foo</button>".repeat(3)}`);
+            expect(CSSselect.selectAll("button:focus-visible", dom)).toHaveLength(
+                0,
+            );
+        });
+
+        it("should support isFocused for :focus-within", () => {
+            const [dom] = parseDocument(
+                "<div><p><span>foo</span></p><p>bar</p></div>",
+            ).children as Element[];
+            const focused = ((dom.children[0] as Element).children[0] as Element);
+
+            const adapter = {
+                ...DomUtils,
+                isTag,
+                isFocused: (element: Element) => element === focused,
+            };
+
+            const selection = CSSselect.selectAll(":focus-within", [dom], {
+                adapter,
+            });
+            expect(selection).toHaveLength(3);
+            expect(selection).toContain(dom);
+            expect(selection).toContain(dom.children[0]);
+            expect(selection).toContain(focused);
+        });
+
+        it("should not match any elements if `isFocused` is not defined", () => {
+            const dom = parseDocument("<div><span>foo</span></div>");
+            expect(CSSselect.selectAll(":focus-within", dom)).toHaveLength(0);
+        });
     });
 });
