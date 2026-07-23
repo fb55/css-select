@@ -156,7 +156,7 @@ export const filters: Record<string, Filter> = {
             return (element) => equals(context[0], element) && next(element);
         }
 
-        return (element) => context.includes(element) && next(element);
+        return (element) => context.some((node) => equals(node, element)) && next(element);
     },
 
     lang(next, code, { adapter }) {
