@@ -48,7 +48,7 @@
         "globals": "^17.9.0",
         "htmlparser2": "^12.0.0",
         "typescript": "^6.0.3",
-        "typescript-eslint": "^8.65.0",
+        "typescript-eslint": "^8.66.0",
         "vitest": "^4.1.10"
     },
     "scripts": {
