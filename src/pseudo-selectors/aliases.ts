@@ -11,6 +11,8 @@ const textControl =
  * Aliases are pseudos that are expressed as selectors.
  */
 export const aliases: Record<string, string> = {
+    host: ":scope",
+
     // Links
 
     "any-link": ":is(a, area, link)[href]",
