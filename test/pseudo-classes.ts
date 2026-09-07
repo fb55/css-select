@@ -129,6 +129,26 @@ describe("unmatched", () => {
     });
 });
 
+describe(":host", () => {
+    it("should match the root element", () => {
+        const matches = CSSselect.selectAll(":host", dom);
+
+        expect(matches).toHaveLength(1);
+        expect(matches).toStrictEqual([dom[0]]);
+    });
+
+    it("should match context elements", () => {
+        const p = CSSselect.selectOne("p", dom);
+
+        expect(p).not.toBeNull();
+        expect(
+            CSSselect.selectAll(":host", dom, {
+                context: [p as Element],
+            }),
+        ).toStrictEqual([p]);
+    });
+});
+
 describe(":first-child", () => {
     it("should match", () => {
         const matches = CSSselect.selectAll(":first-child", dom);
