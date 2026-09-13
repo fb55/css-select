@@ -91,6 +91,12 @@ describe("Attributes", () => {
             );
         });
 
+        it("should for ~= with an empty value", () => {
+            expect(CSSselect._compileUnsafe("[foo~='']")).toBe(
+                boolbase.falseFunc,
+            );
+        });
+
         it("should for $=", () => {
             expect(CSSselect._compileUnsafe("[foo$='']")).toBe(
                 boolbase.falseFunc,
