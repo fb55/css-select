@@ -32,7 +32,7 @@ function extendedFilter(tag: string[], range: string[]): boolean {
 }
 
 /** @see {@link https://www.w3.org/TR/selectors-4/#the-nth-child-pseudo} */
-const nthOfRegex = /^(.+?)\s+of\s+(.+)$/is;
+const nthOfRegex = /^(.+?\s)of\s+(.+)$/is;
 
 /** A pre-compiled pseudo filter. */
 export type Filter = <Node, ElementNode extends Node>(

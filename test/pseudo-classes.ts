@@ -9,6 +9,13 @@ const dom = parseDOM(
     "<div><p>In the end, it doesn't really Matter.</p><div>Indeed-that's a delicate matter.</div>",
 ) as Element[];
 
+// The previous pattern backtracked on long whitespace, taking minutes here.
+it("should reject a long whitespace nth argument without backtracking", () => {
+    expect(() =>
+        CSSselect.compile(`:nth-child(${" ".repeat(350_000)})`),
+    ).toThrow("n-th rule couldn't be parsed");
+}, 2000);
+
 describe(":icontains", () => {
     describe("ignore case", () => {
         it("should match full string", () => {
