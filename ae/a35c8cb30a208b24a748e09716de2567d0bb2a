@@ -1,0 +1,30 @@
+src/pseudo-selectors/filters.ts
+  s_ce626ece8b2d14::t_f0d6ca86b9ecf4 72-107
+  s_98abc3499f7493::t_795cf1861809e4 108-121,134-138,153-157
+test/pseudo-classes.ts
+  s_98abc3499f7493::t_96affffb7bfee5 381-411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "aea35c8cb30a208b24a748e09716de2567d0bb2a",
+  "prompts": {},
+  "sessions": {
+    "s_98abc3499f7493": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a103bb-669a-74b3-b59e-3acc3bc180fe",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_ce626ece8b2d14": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a103bb-2fb0-7c91-b7a2-03957b2f8d84",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
