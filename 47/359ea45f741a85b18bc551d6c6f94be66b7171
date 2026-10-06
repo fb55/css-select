@@ -1,0 +1,21 @@
+src/helpers/querying.ts
+  s_6bbbbbc7cea8e7::t_fc3abfa50cea28 22-23,27,29,33-35,41,58-60,84-85,89,91,95-97,103,120-122
+test/api.ts
+  s_6bbbbbc7cea8e7::t_9bd11ae0a7ad56 3,133-143
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "47359ea45f741a85b18bc551d6c6f94be66b7171",
+  "prompts": {},
+  "sessions": {
+    "s_6bbbbbc7cea8e7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "477ae3a9-56cd-4535-bf0f-8d24ed1686d9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
