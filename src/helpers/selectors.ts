@@ -97,9 +97,7 @@ export function getQuality(token: InternalSelector): number {
         }
         case SelectorType.Pseudo: {
             return token.data
-                ? token.name === "has" ||
-                  token.name === "contains" ||
-                  token.name === "icontains"
+                ? ["has", "contains", "icontains"].includes(token.name)
                     ? // Expensive in any case — run as late as possible.
                       0
                     : Array.isArray(token.data)

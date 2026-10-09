@@ -28,7 +28,7 @@ const SCOPE_TOKEN: Selector = {
 
 /*
  * CSS 4 Spec (Draft): 3.4.1. Absolutizing a Relative Selector
- * http://www.w3.org/TR/selectors4/#absolutizing
+ * https://www.w3.org/TR/selectors4/#absolutizing
  */
 function absolutize<Node, ElementNode extends Node>(
     token: InternalSelector[][],

@@ -441,7 +441,7 @@ describe("API", () => {
         });
 
         it("should support isHovered", () => {
-            const dom = parseDocument(`${"<p>foo".repeat(10)}`)
+            const dom = parseDocument("<p>foo".repeat(10))
                 .children as Element[];
 
             const adapter = {
@@ -457,7 +457,7 @@ describe("API", () => {
         });
 
         it("should not match any elements if `isHovered` is not defined", () => {
-            const dom = parseDocument(`${"<p>foo".repeat(10)}`);
+            const dom = parseDocument("<p>foo".repeat(10));
             expect(CSSselect.selectAll("p:hover", dom)).toHaveLength(0);
         });
     });
