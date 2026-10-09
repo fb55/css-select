@@ -1,0 +1,35 @@
+.github/workflows/dependabot-automerge.yml
+  s_cdf7d3feeacb5b::t_0f5d1c7b63494c 21-25
+eslint.config.mjs
+  s_cdf7d3feeacb5b::t_c36398b28a56a0 50-103
+src/compile.ts
+  s_cdf7d3feeacb5b::t_b79a08eb633f9b 31
+src/helpers/options.ts
+  s_cdf7d3feeacb5b::t_d7d9d2d086decc 8
+src/helpers/selectors.ts
+  s_cdf7d3feeacb5b::t_56fd80e92ab59f 100
+src/pseudo-selectors/pseudos.ts
+  s_cdf7d3feeacb5b::t_f47e0d758eabf1 16,29
+test/api.ts
+  s_cdf7d3feeacb5b::t_35832278fcbb8a 444,460
+test/sizzle.ts
+  s_cdf7d3feeacb5b::t_7993aa4a6e69bf 41,43,362-363,940,1418
+test/tools/helper.ts
+  s_cdf7d3feeacb5b::t_2347ee14418dd8 42-43
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0c6f3c67f41b3aa8f9305a90c5ad7958e4f0294b",
+  "prompts": {},
+  "sessions": {
+    "s_cdf7d3feeacb5b": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a12099-9640-7912-a885-2718c69285cc",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
