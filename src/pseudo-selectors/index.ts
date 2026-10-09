@@ -45,7 +45,10 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return subselects[name](next, data, options, context, compileToken);
     }
 
-    const userPseudo = options.pseudos?.[name];
+    const userPseudo =
+        options.pseudos && Object.hasOwn(options.pseudos, name)
+            ? options.pseudos[name]
+            : undefined;
 
     const stringPseudo =
         typeof userPseudo === "string" ? userPseudo : aliases[name];

@@ -141,6 +141,17 @@ describe("API", () => {
             expect(() => CSSselect.compile(selector)).toThrow(
                 "Unknown pseudo-class",
             );
+            expect(() => CSSselect.compile(selector, { pseudos: {} })).toThrow(
+                "Unknown pseudo-class",
+            );
+        });
+
+        it("should allow an own custom pseudo named constructor", () => {
+            expect(
+                CSSselect.is(dom, ":constructor", {
+                    pseudos: { constructor: () => true },
+                }),
+            ).toBe(true);
         });
 
         it("should throw with a pseudo-element", () => {
