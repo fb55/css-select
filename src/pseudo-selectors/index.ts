@@ -38,7 +38,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     const { name, data } = selector;
 
     if (Array.isArray(data)) {
-        if (!Reflect.has(subselects, name)) {
+        if (!Object.hasOwn(subselects, name)) {
             throw new Error(`Unknown pseudo-class :${name}(${data})`);
         }
 
@@ -66,7 +66,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return (element) => userPseudo(element, data) && next(element);
     }
 
-    if (Reflect.has(filters, name)) {
+    if (Object.hasOwn(filters, name)) {
         return filters[name](
             next,
             data as string,
@@ -76,7 +76,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         );
     }
 
-    if (Reflect.has(pseudos, name)) {
+    if (Object.hasOwn(pseudos, name)) {
         const pseudo = pseudos[name];
         verifyPseudoArguments(pseudo, name, data, 2);
 

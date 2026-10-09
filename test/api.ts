@@ -133,6 +133,16 @@ describe("API", () => {
     });
 
     describe("errors", () => {
+        it.each([
+            ":constructor",
+            ":toString",
+            ":constructor(div)",
+        ])("should reject inherited pseudo name %s", (selector) => {
+            expect(() => CSSselect.compile(selector)).toThrow(
+                "Unknown pseudo-class",
+            );
+        });
+
         it("should throw with a pseudo-element", () => {
             expect(() => CSSselect.compile("::after")).toThrow("not supported");
         });
