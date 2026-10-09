@@ -355,8 +355,11 @@ describe("Sizzle", () => {
                 ) as Element
             ).attribs["id"],
         ).toBe(
-            (CSSselect.selectOne("#tName1-span", document)?.parent as Element)
-                .attribs["id"],
+            (
+                CSSselect.selectOne("#tName1-span", document)?.parent as
+                    | Element
+                    | undefined
+            )?.attribs["id"],
         );
 
         for (const node of parseDOM(String.raw`<a id='backslash\foo'></a>`)) {
