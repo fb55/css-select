@@ -15,6 +15,7 @@ let document = loadDocument();
 
 describe("Sizzle", () => {
     beforeEach(() => {
+        // eslint-disable-next-line unicorn/no-top-level-assignment-in-function -- Reset the shared fixture before each test.
         document = loadDocument();
     });
 
@@ -734,6 +735,7 @@ describe("Sizzle", () => {
         // Attribute Equals
         t("#qunit-fixture a[rel=bookmark]", ["simon1"]);
         // Attribute Equals
+        // eslint-disable-next-line unicorn/prefer-https -- Match the original HTTP fixture exactly.
         t("#qunit-fixture a[href='http://www.google.com/']", ["google"]);
         // Attribute Equals
         t("#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"]);

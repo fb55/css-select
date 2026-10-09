@@ -116,22 +116,22 @@ export const pseudos: Record<string, Pseudo> = {
 
 /**
  * Validate pseudo selector argument arity.
- * @param pseudoClassCondition Pseudo-function implementation to wrap.
+ * @param isPseudoClassCondition Pseudo-function implementation to wrap.
  * @param name Name of the pseudo selector.
  * @param subselect Subselector passed to the pseudo-function.
  * @param argumentIndex Index of the argument parser to apply.
  */
 export function verifyPseudoArguments<T extends unknown[]>(
-    pseudoClassCondition: (...parameters: T) => boolean,
+    isPseudoClassCondition: (...parameters: T) => boolean,
     name: string,
     subselect: PseudoSelector["data"],
     argumentIndex: number,
 ): void {
     if (subselect === null) {
-        if (pseudoClassCondition.length > argumentIndex) {
+        if (isPseudoClassCondition.length > argumentIndex) {
             throw new Error(`Pseudo-class :${name} requires an argument`);
         }
-    } else if (pseudoClassCondition.length === argumentIndex) {
+    } else if (isPseudoClassCondition.length === argumentIndex) {
         throw new Error(`Pseudo-class :${name} doesn't have any arguments`);
     }
 }

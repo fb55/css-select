@@ -11,7 +11,7 @@ import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
  * @param tag - Lowercased subtags of the element's language value.
  * @param range - Lowercased subtags of the language range to match against.
  */
-function extendedFilter(tag: string[], range: string[]): boolean {
+function isExtendedFilter(tag: string[], range: string[]): boolean {
     if (range[0] !== "*" && range[0] !== tag[0]) return false;
 
     let tagIndex = 1;
@@ -43,10 +43,10 @@ export type Filter = <Node, ElementNode extends Node>(
     compileToken?: CompileToken<Node, ElementNode>,
 ) => CompiledQuery<ElementNode>;
 
-function compileNth(reverse: boolean, ofType: boolean): Filter {
+function compileNth(isReverse: boolean, isOfType: boolean): Filter {
     return function nth(next, rule, options, context, compileToken) {
         const { adapter, equals } = options;
-        const ofMatch = ofType ? null : rule.match(nthOfRegex);
+        const ofMatch = isOfType ? null : rule.match(nthOfRegex);
         const nthCheck = getNCheck(ofMatch ? ofMatch[1].trim() : rule);
 
         if (nthCheck === boolbase.falseFunc) return boolbase.falseFunc;
@@ -72,12 +72,12 @@ function compileNth(reverse: boolean, ofType: boolean): Filter {
         const shouldCount = ofSelector
             ? (_element: ElementNode, sibling: ElementNode) =>
                   ofSelector(sibling)
-            : ofType
+            : isOfType
               ? (element: ElementNode, sibling: ElementNode) =>
                     adapter.getName(sibling) === adapter.getName(element)
               : boolbase.trueFunc;
 
-        if (reverse) {
+        if (isReverse) {
             return function nthLast(element) {
                 if (ofSelector && !ofSelector(element)) return false;
                 const siblings = adapter.getSiblings(element);
@@ -186,7 +186,7 @@ export const filters: Record<string, Filter> = {
 
                     const tag = value.toLowerCase().split("-");
                     return (
-                        ranges.some((r) => extendedFilter(tag, r)) &&
+                        ranges.some((r) => isExtendedFilter(tag, r)) &&
                         next(element)
                     );
                 }
@@ -222,7 +222,7 @@ function dynamicStatePseudo(
             return boolbase.falseFunc;
         }
 
-        return function active(element) {
+        return function isActive(element) {
             return filterFunction(element) && next(element);
         };
     };

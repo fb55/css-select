@@ -86,7 +86,7 @@ export const subselects: Record<string, Subselect> = {
             ? // Used as a placeholder. Will be replaced with the actual element.
               [PLACEHOLDER_ELEMENT as unknown as ElementNode]
             : undefined;
-        const skipCache = hasDependsOnCurrentElement(subselect);
+        const isSkipCache = hasDependsOnCurrentElement(subselect);
 
         const compiled = compileToken(subselect, copiedOptions, context);
 
@@ -96,7 +96,7 @@ export const subselects: Record<string, Subselect> = {
 
         // If `compiled` is `trueFunc`, we can skip this.
         if (context && compiled !== boolbase.trueFunc) {
-            return skipCache
+            return isSkipCache
                 ? (element) => {
                       if (!next(element)) {
                           return false;
@@ -134,7 +134,7 @@ export const subselects: Record<string, Subselect> = {
         const hasOne = (element: ElementNode) =>
             findOne(compiled, adapter.getChildren(element), options) !== null;
 
-        return skipCache
+        return isSkipCache
             ? (element) => next(element) && hasOne(element)
             : cacheParentResults(next, options, hasOne);
     },
