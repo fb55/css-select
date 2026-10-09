@@ -1,0 +1,30 @@
+test/pseudo-classes.ts
+  s_ce626ece8b2d14::t_3ab3baa0a399c7 13-18
+  s_6bbbbbc7cea8e7::t_0615a9c60e2312 12
+src/pseudo-selectors/filters.ts
+  s_ce626ece8b2d14::t_3ab3baa0a399c7 35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b11676a0bc3549e5a81c94314d9e15d27efa4612",
+  "prompts": {},
+  "sessions": {
+    "s_6bbbbbc7cea8e7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "477ae3a9-56cd-4535-bf0f-8d24ed1686d9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_ce626ece8b2d14": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a103bb-2fb0-7c91-b7a2-03957b2f8d84",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
