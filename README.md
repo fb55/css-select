@@ -297,6 +297,8 @@ _As defined by CSS 4 and / or jQuery._
     - [`:scope`](https://developer.mozilla.org/en-US/docs/Web/CSS/:scope):
       Selects elements that are part of the scope of the current selector. This
       uses the context from the passed options.
+    - [`:host`](https://developer.mozilla.org/en-US/docs/Web/CSS/:host):
+      Alias of `:scope`, selecting elements in the current context.
 
 ---
 
