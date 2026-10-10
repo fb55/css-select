@@ -88,7 +88,3 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
     throw new Error(`Unknown pseudo-class :${name}`);
 }
-
-export { aliases } from "./aliases.js";
-export { filters } from "./filters.js";
-export { pseudos } from "./pseudos.js";

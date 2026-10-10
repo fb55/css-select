@@ -356,8 +356,11 @@ describe("Sizzle", () => {
                 ) as Element
             ).attribs["id"],
         ).toBe(
-            (CSSselect.selectOne("#tName1-span", document)?.parent as Element)
-                .attribs["id"],
+            (
+                CSSselect.selectOne("#tName1-span", document)?.parent as
+                    | Element
+                    | undefined
+            )?.attribs["id"],
         );
 
         const escapedLink = parseDOM(String.raw`<a id='backslash\foo'></a>`);
