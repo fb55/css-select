@@ -26,7 +26,7 @@ type Subselect = <Node, ElementNode extends Node>(
  * @param selector - The selector to check.
  * @returns Whether the selector has any properties that rely on the current element.
  */
-function hasDependsOnCurrentElement(selector: Selector[][]) {
+function isContextDependent(selector: Selector[][]) {
     return selector.some(
         (sel) =>
             sel.length > 0 && (isTraversal(sel[0]) || sel.some(hasScopePseudo)),
@@ -85,7 +85,7 @@ export const subselects: Record<string, Subselect> = {
             ? // Used as a placeholder. Will be replaced with the actual element.
               [PLACEHOLDER_ELEMENT as unknown as ElementNode]
             : undefined;
-        const isSkipCache = hasDependsOnCurrentElement(subselect);
+        const shouldSkipCache = isContextDependent(subselect);
 
         const compiled = compileToken(subselect, copiedOptions, context);
 
@@ -95,7 +95,7 @@ export const subselects: Record<string, Subselect> = {
 
         // If `compiled` is `trueFunc`, we can skip this.
         if (context && compiled !== boolbase.trueFunc) {
-            return isSkipCache
+            return shouldSkipCache
                 ? (element) => {
                       if (!next(element)) {
                           return false;
@@ -133,7 +133,7 @@ export const subselects: Record<string, Subselect> = {
         const hasOne = (element: ElementNode) =>
             findOne(compiled, adapter.getChildren(element), options) !== null;
 
-        return isSkipCache
+        return shouldSkipCache
             ? (element) => next(element) && hasOne(element)
             : cacheParentResults(next, options, hasOne);
     },
