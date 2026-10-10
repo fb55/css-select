@@ -13,15 +13,15 @@ import { getElementParent } from "./querying.js";
  * @param options Configuration object for cache behavior.
  * @param options.adapter Adapter implementation used for DOM access.
  * @param options.cacheResults Whether results should be memoized by input root.
- * @param matches Compiled matcher function to wrap with caching.
+ * @param isMatch Compiled matcher function to wrap with caching.
  */
 export function cacheParentResults<Node, ElementNode extends Node>(
     next: CompiledQuery<ElementNode>,
     { adapter, cacheResults }: InternalOptions<Node, ElementNode>,
-    matches: (element: ElementNode) => boolean,
+    isMatch: (element: ElementNode) => boolean,
 ): CompiledQuery<ElementNode> {
     if (cacheResults === false || typeof WeakMap === "undefined") {
-        return (element) => next(element) && matches(element);
+        return (element) => next(element) && isMatch(element);
     }
 
     // Use a cache to avoid re-checking children of an element.
@@ -30,10 +30,10 @@ export function cacheParentResults<Node, ElementNode extends Node>(
     const resultCache = new WeakMap<Node, boolean>();
 
     function addResultToCache(element: ElementNode) {
-        const result = matches(element);
+        const isResult = isMatch(element);
 
-        resultCache.set(element, result);
-        return result;
+        resultCache.set(element, isResult);
+        return isResult;
     }
 
     return function cachedMatcher(element) {

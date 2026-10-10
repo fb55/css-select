@@ -38,14 +38,17 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
     const { name, data } = selector;
 
     if (Array.isArray(data)) {
-        if (!(name in subselects)) {
+        if (!Object.hasOwn(subselects, name)) {
             throw new Error(`Unknown pseudo-class :${name}(${data})`);
         }
 
         return subselects[name](next, data, options, context, compileToken);
     }
 
-    const userPseudo = options.pseudos?.[name];
+    const userPseudo =
+        options.pseudos && Object.hasOwn(options.pseudos, name)
+            ? options.pseudos[name]
+            : undefined;
 
     const stringPseudo =
         typeof userPseudo === "string" ? userPseudo : aliases[name];
@@ -66,7 +69,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         return (element) => userPseudo(element, data) && next(element);
     }
 
-    if (name in filters) {
+    if (Object.hasOwn(filters, name)) {
         return filters[name](
             next,
             data as string,
@@ -76,7 +79,7 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
         );
     }
 
-    if (name in pseudos) {
+    if (Object.hasOwn(pseudos, name)) {
         const pseudo = pseudos[name];
         verifyPseudoArguments(pseudo, name, data, 2);
 

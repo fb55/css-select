@@ -133,6 +133,27 @@ describe("API", () => {
     });
 
     describe("errors", () => {
+        it.each([
+            ":constructor",
+            ":toString",
+            ":constructor(div)",
+        ])("should reject inherited pseudo name %s", (selector) => {
+            expect(() => CSSselect.compile(selector)).toThrow(
+                "Unknown pseudo-class",
+            );
+            expect(() => CSSselect.compile(selector, { pseudos: {} })).toThrow(
+                "Unknown pseudo-class",
+            );
+        });
+
+        it("should allow an own custom pseudo named constructor", () => {
+            expect(
+                CSSselect.is(dom, ":constructor", {
+                    pseudos: { constructor: () => true },
+                }),
+            ).toBe(true);
+        });
+
         it("should throw with a pseudo-element", () => {
             expect(() => CSSselect.compile("::after")).toThrow("not supported");
         });
@@ -441,7 +462,7 @@ describe("API", () => {
         });
 
         it("should support isHovered", () => {
-            const dom = parseDocument(`${"<p>foo".repeat(10)}`)
+            const dom = parseDocument("<p>foo".repeat(10))
                 .children as Element[];
 
             const adapter = {
@@ -457,7 +478,7 @@ describe("API", () => {
         });
 
         it("should not match any elements if `isHovered` is not defined", () => {
-            const dom = parseDocument(`${"<p>foo".repeat(10)}`);
+            const dom = parseDocument("<p>foo".repeat(10));
             expect(CSSselect.selectAll("p:hover", dom)).toHaveLength(0);
         });
     });

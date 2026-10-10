@@ -5,6 +5,7 @@ import type { InternalOptions } from "../types.js";
  *
  * This is used when compiling nested selectors (e.g. inside `:is`, `:not`,
  * `:nth-child(… of S)`) so that the parent compilation state doesn't leak.
+ * @param options The parent compilation options.
  */
 export function copyOptions<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,

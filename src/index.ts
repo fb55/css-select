@@ -17,10 +17,10 @@ import type {
     Query,
 } from "./types.js";
 
-const defaultEquals = <Node>(a: Node, b: Node) => a === b;
+const isEqualDefault = <Node>(a: Node, b: Node) => a === b;
 const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
     adapter: { ...DomUtils, isTag },
-    equals: defaultEquals,
+    equals: isEqualDefault,
 };
 
 function convertOptionFormats<Node, ElementNode extends Node>(
@@ -34,7 +34,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     // @ts-expect-error Same as above.
     finalOptions.adapter ??= defaultOptions.adapter;
     // @ts-expect-error `equals` does not exist on `Options`
-    finalOptions.equals ??= finalOptions.adapter?.equals ?? defaultEquals;
+    finalOptions.equals ??= finalOptions.adapter?.equals ?? isEqualDefault;
 
     return finalOptions as InternalOptions<Node, ElementNode>;
 }
@@ -207,6 +207,7 @@ export const selectOne: <Node, ElementNode extends Node>(
  * @see compile for supported selector queries.
  * @returns Whether the element matches the query.
  */
+// eslint-disable-next-line unicorn/consistent-boolean-name -- Preserve the existing exported function name.
 export function is<Node, ElementNode extends Node>(
     element: ElementNode,
     query: Query<ElementNode>,

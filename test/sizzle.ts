@@ -15,6 +15,7 @@ let document = loadDocument();
 
 describe("Sizzle", () => {
     beforeEach(() => {
+        // eslint-disable-next-line unicorn/no-top-level-assignment-in-function -- Reset the shared fixture before each test.
         document = loadDocument();
     });
 
@@ -38,9 +39,9 @@ describe("Sizzle", () => {
         // Select all
         expect(CSSselect.selectAll("*", document).length >= 30).toBe(true);
         const all = CSSselect.selectAll("*", document);
-        const good = all.every((element: AnyNode) => element.nodeType !== 8);
+        const isGood = all.every((element: AnyNode) => element.nodeType !== 8);
         // Select all elements, no comment nodes
-        expect(good).toBe(true);
+        expect(isGood).toBe(true);
         // Element Selector
         t("html", ["html"]);
         // Element Selector
@@ -359,7 +360,8 @@ describe("Sizzle", () => {
                 .attribs["id"],
         );
 
-        for (const node of parseDOM(String.raw`<a id='backslash\foo'></a>`)) {
+        const escapedLink = parseDOM(String.raw`<a id='backslash\foo'></a>`);
+        for (const node of escapedLink) {
             DomUtils.appendChild(document.getElementById("form"), node);
         }
 
@@ -733,6 +735,7 @@ describe("Sizzle", () => {
         // Attribute Equals
         t("#qunit-fixture a[rel=bookmark]", ["simon1"]);
         // Attribute Equals
+        // eslint-disable-next-line unicorn/prefer-https -- Match the original HTTP fixture exactly.
         t("#qunit-fixture a[href='http://www.google.com/']", ["google"]);
         // Attribute Equals
         t("#qunit-fixture a[ rel = 'bookmark' ]", ["simon1"]);
@@ -936,7 +939,7 @@ describe("Sizzle", () => {
         t(String.raw`input[data-attr='\04e00']`, ["attrbad_unicode"]);
 
         document.getElementById("attrbad_unicode").attribs["data-attr"] =
-            "\uD834\uDF06A";
+            "\u{1D306}A";
         /*
          * It was too much code to fix Safari 5.x Supplemental Plane crashes (see ba5f09fa404379a87370ec905ffa47f8ac40aaa3)
          * Long numeric escape (non-BMP)
@@ -1414,7 +1417,7 @@ describe("Sizzle", () => {
                 ...parseDOM(
                     "<input id='input_%' type='%'/><button id='button_%' type='%'>test</button>".replace(
                         /%/g,
-                        type,
+                        () => type,
                     ),
                 ),
             ]; // Create a copy of the array, so that `appendChild` doesn't remove the elements.

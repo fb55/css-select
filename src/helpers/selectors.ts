@@ -97,9 +97,7 @@ export function getQuality(token: InternalSelector): number {
         }
         case SelectorType.Pseudo: {
             return token.data
-                ? token.name === "has" ||
-                  token.name === "contains" ||
-                  token.name === "icontains"
+                ? ["has", "contains", "icontains"].includes(token.name)
                     ? // Expensive in any case — run as late as possible.
                       0
                     : Array.isArray(token.data)
@@ -126,11 +124,11 @@ export function getQuality(token: InternalSelector): number {
  * Check whether a token or nested token includes `:scope`.
  * @param t Selector token under inspection.
  */
-export function includesScopePseudo(t: InternalSelector): boolean {
+export function hasScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === SelectorType.Pseudo &&
         (t.name === "scope" ||
             (Array.isArray(t.data) &&
-                t.data.some((data) => data.some(includesScopePseudo))))
+                t.data.some((data) => data.some(hasScopePseudo))))
     );
 }

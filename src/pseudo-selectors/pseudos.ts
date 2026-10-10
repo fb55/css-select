@@ -13,7 +13,7 @@ type Pseudo = <Node, ElementNode extends Node>(
  * line feeds.
  * @see {@link https://www.w3.org/TR/css-text-3/#white-space}
  */
-const isDocumentWhiteSpace = /^[ \t\r\n]*$/;
+const isDocumentWhitespace = /^[ \t\r\n]*$/;
 
 // While filters are precompiled, pseudos get called when they are needed
 /** Runtime pseudo selector implementations. */
@@ -26,7 +26,7 @@ export const pseudos: Record<string, Pseudo> = {
             // Then, check that the text content is only whitespace.
             children.every((element) =>
                 // FIXME: `getText` call is potentially expensive.
-                isDocumentWhiteSpace.test(adapter.getText(element)),
+                isDocumentWhitespace.test(adapter.getText(element)),
             )
         );
     },
@@ -116,22 +116,22 @@ export const pseudos: Record<string, Pseudo> = {
 
 /**
  * Validate pseudo selector argument arity.
- * @param pseudoClassCondition Pseudo-function implementation to wrap.
+ * @param isPseudoClassCondition Pseudo-function implementation to wrap.
  * @param name Name of the pseudo selector.
  * @param subselect Subselector passed to the pseudo-function.
  * @param argumentIndex Index of the argument parser to apply.
  */
 export function verifyPseudoArguments<T extends unknown[]>(
-    pseudoClassCondition: (...parameters: T) => boolean,
+    isPseudoClassCondition: (...parameters: T) => boolean,
     name: string,
     subselect: PseudoSelector["data"],
     argumentIndex: number,
 ): void {
     if (subselect === null) {
-        if (pseudoClassCondition.length > argumentIndex) {
+        if (isPseudoClassCondition.length > argumentIndex) {
             throw new Error(`Pseudo-class :${name} requires an argument`);
         }
-    } else if (pseudoClassCondition.length === argumentIndex) {
+    } else if (isPseudoClassCondition.length === argumentIndex) {
         throw new Error(`Pseudo-class :${name} doesn't have any arguments`);
     }
 }

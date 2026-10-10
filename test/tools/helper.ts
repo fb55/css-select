@@ -39,7 +39,8 @@ export function getDocument(file: string): SimpleDocument {
     document.createTextNode = (content: string) => new Text(content);
     document.createElement = (name: string) =>
         new Element(name.toLowerCase(), {});
-    [document.body] = DomUtils.getElementsByTagName("body", document, true, 1);
+    const [body] = DomUtils.getElementsByTagName("body", document, true, 1);
+    document.body = body;
     const documentElement = document.children.find(isTag);
 
     assert.ok(documentElement, "Did not find document element");
