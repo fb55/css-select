@@ -17,10 +17,10 @@ import type {
     Query,
 } from "./types.js";
 
-const isDefaultEquals = <Node>(a: Node, b: Node) => a === b;
+const isEqualDefault = <Node>(a: Node, b: Node) => a === b;
 const defaultOptions: InternalOptions<DomHandlerNode, DomHandlerElement> = {
     adapter: { ...DomUtils, isTag },
-    equals: isDefaultEquals,
+    equals: isEqualDefault,
 };
 
 function convertOptionFormats<Node, ElementNode extends Node>(
@@ -34,7 +34,7 @@ function convertOptionFormats<Node, ElementNode extends Node>(
     // @ts-expect-error Same as above.
     finalOptions.adapter ??= defaultOptions.adapter;
     // @ts-expect-error `equals` does not exist on `Options`
-    finalOptions.equals ??= finalOptions.adapter?.equals ?? isDefaultEquals;
+    finalOptions.equals ??= finalOptions.adapter?.equals ?? isEqualDefault;
 
     return finalOptions as InternalOptions<Node, ElementNode>;
 }

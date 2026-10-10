@@ -4,7 +4,7 @@ import { compileGeneralSelector } from "./general.js";
 import { getElementParent } from "./helpers/querying.js";
 import {
     getQuality,
-    includesScopePseudo,
+    hasScopePseudo,
     isTraversal,
     sortRules,
 } from "./helpers/selectors.js";
@@ -50,7 +50,7 @@ function absolutize<Node, ElementNode extends Node>(
             t[0].type !== SelectorType.Descendant
         ) {
             // Don't continue in else branch
-        } else if (hasContext && !t.some(includesScopePseudo)) {
+        } else if (hasContext && !t.some(hasScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
             continue;

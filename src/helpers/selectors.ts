@@ -124,12 +124,11 @@ export function getQuality(token: InternalSelector): number {
  * Check whether a token or nested token includes `:scope`.
  * @param t Selector token under inspection.
  */
-// eslint-disable-next-line unicorn/consistent-boolean-name -- Preserve the existing exported function name.
-export function includesScopePseudo(t: InternalSelector): boolean {
+export function hasScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === SelectorType.Pseudo &&
         (t.name === "scope" ||
             (Array.isArray(t.data) &&
-                t.data.some((data) => data.some(includesScopePseudo))))
+                t.data.some((data) => data.some(hasScopePseudo))))
     );
 }

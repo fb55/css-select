@@ -47,9 +47,8 @@ export default defineConfig([
         },
     },
     eslintConfigBiome,
-    // These fixtures use domhandler nodes; browser querySelector and firstElementChild APIs do not apply.
+    // This module uses parser DOM nodes, which do not implement browser traversal APIs.
     {
-        files: ["test/api.ts", "test/pseudo-classes.ts", "test/sizzle.ts"],
         rules: {
             "unicorn/better-dom-traversing": "off",
         },

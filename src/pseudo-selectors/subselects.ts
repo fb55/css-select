@@ -3,7 +3,7 @@ import type { Selector } from "css-what";
 import { cacheParentResults } from "../helpers/cache.js";
 import { copyOptions } from "../helpers/options.js";
 import { findOne, getNextSiblings } from "../helpers/querying.js";
-import { includesScopePseudo, isTraversal } from "../helpers/selectors.js";
+import { hasScopePseudo, isTraversal } from "../helpers/selectors.js";
 import type { CompiledQuery, CompileToken, InternalOptions } from "../types.js";
 
 /** Used as a placeholder for :has. Will be replaced with the actual element. */
@@ -29,8 +29,7 @@ type Subselect = <Node, ElementNode extends Node>(
 function hasDependsOnCurrentElement(selector: Selector[][]) {
     return selector.some(
         (sel) =>
-            sel.length > 0 &&
-            (isTraversal(sel[0]) || sel.some(includesScopePseudo)),
+            sel.length > 0 && (isTraversal(sel[0]) || sel.some(hasScopePseudo)),
     );
 }
 
