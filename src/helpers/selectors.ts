@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-includes-over-repeated-comparisons -- Keep selector quality comparisons allocation free. */
 import {
     AttributeAction,
     type AttributeSelector,
@@ -97,7 +98,9 @@ export function getQuality(token: InternalSelector): number {
         }
         case SelectorType.Pseudo: {
             return token.data
-                ? ["has", "contains", "icontains"].includes(token.name)
+                ? token.name === "has" ||
+                  token.name === "contains" ||
+                  token.name === "icontains"
                     ? // Expensive in any case — run as late as possible.
                       0
                     : Array.isArray(token.data)
