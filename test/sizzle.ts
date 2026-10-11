@@ -39,9 +39,11 @@ describe("Sizzle", () => {
         // Select all
         expect(CSSselect.selectAll("*", document).length >= 30).toBe(true);
         const all = CSSselect.selectAll("*", document);
-        const isGood = all.every((element: AnyNode) => element.nodeType !== 8);
+        const hasNoComments = all.every(
+            (element: AnyNode) => element.nodeType !== 8,
+        );
         // Select all elements, no comment nodes
-        expect(isGood).toBe(true);
+        expect(hasNoComments).toBe(true);
         // Element Selector
         t("html", ["html"]);
         // Element Selector

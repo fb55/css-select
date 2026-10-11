@@ -43,10 +43,13 @@ export type Filter = <Node, ElementNode extends Node>(
     compileToken?: CompileToken<Node, ElementNode>,
 ) => CompiledQuery<ElementNode>;
 
-function compileNth(isReverse: boolean, isOfType: boolean): Filter {
+function compileNth(
+    shouldCountFromEnd: boolean,
+    shouldCountSameType: boolean,
+): Filter {
     return function nth(next, rule, options, context, compileToken) {
         const { adapter, equals } = options;
-        const ofMatch = isOfType ? null : rule.match(nthOfRegex);
+        const ofMatch = shouldCountSameType ? null : rule.match(nthOfRegex);
         const nthCheck = getNCheck(ofMatch ? ofMatch[1].trim() : rule);
 
         if (nthCheck === boolbase.falseFunc) return boolbase.falseFunc;
@@ -72,12 +75,12 @@ function compileNth(isReverse: boolean, isOfType: boolean): Filter {
         const shouldCount = ofSelector
             ? (_element: ElementNode, sibling: ElementNode) =>
                   ofSelector(sibling)
-            : isOfType
+            : shouldCountSameType
               ? (element: ElementNode, sibling: ElementNode) =>
                     adapter.getName(sibling) === adapter.getName(element)
               : boolbase.trueFunc;
 
-        if (isReverse) {
+        if (shouldCountFromEnd) {
             return function nthLast(element) {
                 if (ofSelector && !ofSelector(element)) return false;
                 const siblings = adapter.getSiblings(element);

@@ -13,7 +13,7 @@ type Pseudo = <Node, ElementNode extends Node>(
  * line feeds.
  * @see {@link https://www.w3.org/TR/css-text-3/#white-space}
  */
-const isDocumentWhitespace = /^[ \t\r\n]*$/;
+const documentWhitespaceRegex = /^[ \t\r\n]*$/;
 
 // While filters are precompiled, pseudos get called when they are needed
 /** Runtime pseudo selector implementations. */
@@ -26,7 +26,7 @@ export const pseudos: Record<string, Pseudo> = {
             // Then, check that the text content is only whitespace.
             children.every((element) =>
                 // FIXME: `getText` call is potentially expensive.
-                isDocumentWhitespace.test(adapter.getText(element)),
+                documentWhitespaceRegex.test(adapter.getText(element)),
             )
         );
     },

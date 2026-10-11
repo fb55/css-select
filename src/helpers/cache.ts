@@ -30,10 +30,10 @@ export function cacheParentResults<Node, ElementNode extends Node>(
     const resultCache = new WeakMap<Node, boolean>();
 
     function addResultToCache(element: ElementNode) {
-        const isResult = isMatch(element);
+        const isMatched = isMatch(element);
 
-        resultCache.set(element, isResult);
-        return isResult;
+        resultCache.set(element, isMatched);
+        return isMatched;
     }
 
     return function cachedMatcher(element) {
