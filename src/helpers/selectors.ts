@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-includes-over-repeated-comparisons -- Keep selector quality comparisons allocation free. */
 import {
     AttributeAction,
     type AttributeSelector,
@@ -126,11 +127,11 @@ export function getQuality(token: InternalSelector): number {
  * Check whether a token or nested token includes `:scope`.
  * @param t Selector token under inspection.
  */
-export function includesScopePseudo(t: InternalSelector): boolean {
+export function hasScopePseudo(t: InternalSelector): boolean {
     return (
         t.type === SelectorType.Pseudo &&
         (t.name === "scope" ||
             (Array.isArray(t.data) &&
-                t.data.some((data) => data.some(includesScopePseudo))))
+                t.data.some((data) => data.some(hasScopePseudo))))
     );
 }

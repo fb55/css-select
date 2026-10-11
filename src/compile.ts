@@ -4,7 +4,7 @@ import { compileGeneralSelector } from "./general.js";
 import { getElementParent } from "./helpers/querying.js";
 import {
     getQuality,
-    includesScopePseudo,
+    hasScopePseudo,
     isTraversal,
     sortRules,
 } from "./helpers/selectors.js";
@@ -28,7 +28,7 @@ const SCOPE_TOKEN: Selector = {
 
 /*
  * CSS 4 Spec (Draft): 3.4.1. Absolutizing a Relative Selector
- * http://www.w3.org/TR/selectors4/#absolutizing
+ * https://www.w3.org/TR/selectors4/#absolutizing
  */
 function absolutize<Node, ElementNode extends Node>(
     token: InternalSelector[][],
@@ -50,7 +50,7 @@ function absolutize<Node, ElementNode extends Node>(
             t[0].type !== SelectorType.Descendant
         ) {
             // Don't continue in else branch
-        } else if (hasContext && !t.some(includesScopePseudo)) {
+        } else if (hasContext && !t.some(hasScopePseudo)) {
             t.unshift(DESCENDANT_TOKEN);
         } else {
             continue;

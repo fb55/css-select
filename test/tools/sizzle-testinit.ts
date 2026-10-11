@@ -6,6 +6,7 @@ import * as helper from "./helper.js";
 let document = helper.getDocument("sizzle.html");
 
 export function loadDocument(): helper.SimpleDocument {
+    // eslint-disable-next-line unicorn/no-top-level-assignment-in-function -- Reset the shared fixture before each test.
     document = helper.getDocument("sizzle.html");
     return document;
 }

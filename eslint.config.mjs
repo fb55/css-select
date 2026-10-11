@@ -47,4 +47,10 @@ export default defineConfig([
         },
     },
     eslintConfigBiome,
+    {
+        rules: {
+            // This module uses parser DOM nodes, which do not implement browser traversal APIs.
+            "unicorn/better-dom-traversing": "off",
+        },
+    },
 ]);

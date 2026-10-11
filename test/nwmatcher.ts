@@ -1,7 +1,7 @@
 /**
  * The NWMatcher Test Suite.
  * Adapted from https://github.com/dperini/nwmatcher/blob/master/test/scotch/test.js
- * (c) 2007-2013 Diego Perini (http://www.iport.it)
+ * (c) 2007-2013 Diego Perini (https://www.iport.it)
  *
  * See the LICENSE file for additional information.
  */
@@ -568,7 +568,7 @@ describe("NWMatcher", () => {
             );
             /*
              * Opera 10 does not accept values > 128 as a parameter to :nth-child
-             * See <http://operawiki.info/ArtificialLimits>
+             * See <https://operawiki.info/ArtificialLimits>
              */
             expect(select("ul > li:nth-child(n-128)")).toStrictEqual(
                 select("ul > li"),
