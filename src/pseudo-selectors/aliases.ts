@@ -7,6 +7,11 @@
 const textControl =
     "input:is([type=text i],[type=search i],[type=url i],[type=tel i],[type=email i],[type=password i],[type=date i],[type=month i],[type=week i],[type=time i],[type=datetime-local i],[type=number i])";
 
+const disabledByFieldset = `:is(
+    fieldset[disabled] > :not(legend:first-of-type),
+    fieldset[disabled] > :not(legend:first-of-type) *
+)`;
+
 /**
  * Aliases are pseudos that are expressed as selectors.
  */
@@ -22,10 +27,8 @@ export const aliases: Record<string, string> = {
     disabled: `:is(
         :is(button, input, select, textarea, optgroup, option, fieldset)[disabled],
         optgroup[disabled] > option,
-        :is(button, input, select, textarea, fieldset):is(
-            fieldset[disabled] > :not(legend:first-of-type),
-            fieldset[disabled] > :not(legend:first-of-type) *
-        )
+        :is(button, input, select, textarea, fieldset)${disabledByFieldset},
+        :is(optgroup, option):is(select[disabled] *, select${disabledByFieldset} *)
     )`,
     enabled:
         ":is(button, input, select, textarea, optgroup, option, fieldset):not(:disabled)",

@@ -214,6 +214,92 @@ describe(":has", () => {
 });
 
 describe(":disabled fieldsets", () => {
+    it("should inherit a disabled select's state for options and optgroups", () => {
+        const dom = parseDocument(
+            '<select disabled><optgroup id="group"><option id="option">X</option></optgroup></select>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(
+                "optgroup:disabled, option:disabled",
+                dom,
+            ).map((element) => element.attribs["id"]),
+        ).toStrictEqual(["group", "option"]);
+        expect(
+            CSSselect.selectAll("optgroup:enabled, option:enabled", dom),
+        ).toHaveLength(0);
+    });
+
+    it("should exempt a select and its options inside the first legend", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><legend><select><optgroup id="group"><option id="option">X</option></optgroup></select></legend></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll("optgroup:disabled, option:disabled", dom),
+        ).toHaveLength(0);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(
+                "optgroup:enabled, option:enabled",
+                dom,
+            ).map((element) => element.attribs["id"]),
+        ).toStrictEqual(["group", "option"]);
+    });
+
+    it("should not inherit fieldset disabled state without an ancestor select", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><optgroup id="group"><option id="option">X</option></optgroup></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll("optgroup:disabled, option:disabled", dom),
+        ).toHaveLength(0);
+    });
+
+    it("should find disabled ancestors above a scoped search root", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><div id="root"><input id="input"></div></fieldset>',
+        );
+        const root = CSSselect.selectAll<AnyNode, Element>("#root", dom)[0];
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":disabled", root).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["input"]);
+        expect(CSSselect.selectAll(":enabled", root)).toHaveLength(0);
+        expect(
+            CSSselect.selectAll(":disabled", [root], { cacheResults: false }),
+        ).toHaveLength(1);
+        expect(
+            CSSselect.selectAll(":disabled", root, { context: root }),
+        ).toHaveLength(1);
+        const input = CSSselect.selectAll<AnyNode, Element>("input", root)[0];
+        expect(CSSselect.is(input, ":disabled", { context: root })).toBe(true);
+        expect(CSSselect.is(input, ":enabled", { context: root })).toBe(false);
+    });
+
+    it("should preserve the query context for a custom disabled alias", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><div id="root"><input></div></fieldset>',
+        );
+        const root = CSSselect.selectAll<AnyNode, Element>("#root", dom)[0];
+        expect(
+            CSSselect.selectAll(":disabled", root, {
+                pseudos: { disabled: "fieldset input" },
+            }),
+        ).toHaveLength(0);
+    });
+
+    it("should keep the legend exemption when it is above the search root", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><legend><div id="root"><input id="input"></div></legend></fieldset>',
+        );
+        const root = CSSselect.selectAll<AnyNode, Element>("#root", dom)[0];
+        expect(CSSselect.selectAll(":disabled", root)).toHaveLength(0);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":enabled", root).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["input"]);
+    });
+
     it("should disable direct and nested controls, but not arbitrary descendants", () => {
         const dom = parseDocument(
             '<fieldset disabled id="fieldset"><input id="input"><div id="div"><button id="button">X</button><select id="select"><option id="option">X</option></select><textarea id="textarea"></textarea></div></fieldset>',
@@ -222,12 +308,19 @@ describe(":disabled fieldsets", () => {
             CSSselect.selectAll<AnyNode, Element>(":disabled", dom).map(
                 (element) => element.attribs["id"],
             ),
-        ).toStrictEqual(["fieldset", "input", "button", "select", "textarea"]);
+        ).toStrictEqual([
+            "fieldset",
+            "input",
+            "button",
+            "select",
+            "option",
+            "textarea",
+        ]);
         expect(
             CSSselect.selectAll<AnyNode, Element>(":enabled", dom).map(
                 (element) => element.attribs["id"],
             ),
-        ).toStrictEqual(["option"]);
+        ).toStrictEqual([]);
     });
 
     it("should exempt only the first direct legend", () => {
