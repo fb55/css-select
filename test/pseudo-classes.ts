@@ -213,6 +213,64 @@ describe(":has", () => {
     });
 });
 
+describe(":disabled fieldsets", () => {
+    it("should disable direct and nested controls, but not arbitrary descendants", () => {
+        const dom = parseDocument(
+            '<fieldset disabled id="fieldset"><input id="input"><div id="div"><button id="button">X</button><select id="select"><option id="option">X</option></select><textarea id="textarea"></textarea></div></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":disabled", dom).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["fieldset", "input", "button", "select", "textarea"]);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":enabled", dom).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["option"]);
+    });
+
+    it("should exempt only the first direct legend", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><div></div><legend><input id="first"></legend><legend><input id="second"></legend></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("input:disabled", dom).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["second"]);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("input:enabled", dom).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toStrictEqual(["first"]);
+    });
+
+    it("should not exempt a nested fieldset legend from an outer disabled fieldset", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><fieldset id="inner"><legend><input id="nested"></legend></fieldset></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(
+                "#inner:disabled, input:disabled",
+                dom,
+            ).map((element) => element.attribs["id"]),
+        ).toStrictEqual(["inner", "nested"]);
+    });
+
+    it("should still match an explicitly disabled fieldset inside an exempt legend", () => {
+        const dom = parseDocument(
+            '<fieldset disabled><legend><fieldset disabled id="inner"><input id="nested"></fieldset></legend></fieldset>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(
+                "#inner:disabled, input:disabled",
+                dom,
+            ).map((element) => element.attribs["id"]),
+        ).toStrictEqual(["inner", "nested"]);
+    });
+});
+
 describe(":enabled", () => {
     it("should match form-associated elements", () => {
         const dom = parseDocument(`

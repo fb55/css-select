@@ -20,9 +20,12 @@ export const aliases: Record<string, string> = {
 
     // https://html.spec.whatwg.org/multipage/scripting.html#disabled-elements
     disabled: `:is(
-        :is(button, input, select, textarea, optgroup, option)[disabled],
+        :is(button, input, select, textarea, optgroup, option, fieldset)[disabled],
         optgroup[disabled] > option,
-        fieldset[disabled]:not(fieldset[disabled] legend:first-of-type *)
+        :is(button, input, select, textarea, fieldset):is(
+            fieldset[disabled] > :not(legend:first-of-type),
+            fieldset[disabled] > :not(legend:first-of-type) *
+        )
     )`,
     enabled:
         ":is(button, input, select, textarea, optgroup, option, fieldset):not(:disabled)",
