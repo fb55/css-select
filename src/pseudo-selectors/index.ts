@@ -60,7 +60,15 @@ export function compilePseudoSelector<Node, ElementNode extends Node>(
 
         // The alias has to be parsed here, to make sure options are respected.
         const alias = parse(stringPseudo);
-        return subselects["is"](next, alias, options, context, compileToken);
+        const isDisabledAlias = name === "disabled" && userPseudo === undefined;
+        // Disabled state can depend on ancestors outside the search context.
+        return subselects["is"](
+            next,
+            alias,
+            isDisabledAlias ? { ...options, relativeSelector: false } : options,
+            isDisabledAlias ? undefined : context,
+            compileToken,
+        );
     }
 
     if (typeof userPseudo === "function") {
