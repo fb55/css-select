@@ -91,6 +91,12 @@ describe("Attributes", () => {
             );
         });
 
+        it("should for ~= with an empty value", () => {
+            expect(CSSselect._compileUnsafe("[foo~='']")).toBe(
+                boolbase.falseFunc,
+            );
+        });
+
         it("should for $=", () => {
             expect(CSSselect._compileUnsafe("[foo$='']")).toBe(
                 boolbase.falseFunc,
@@ -101,6 +107,20 @@ describe("Attributes", () => {
             expect(CSSselect._compileUnsafe("[foo*='']")).toBe(
                 boolbase.falseFunc,
             );
+        });
+    });
+
+    describe("~= with an empty value", () => {
+        const document = parseDocument(
+            '<i a=""></i><i a=" x"></i><i a="x "></i><i a="x  y"></i>',
+        );
+
+        it("should not match any elements", () => {
+            expect(CSSselect.selectAll('[a~=""]', document)).toHaveLength(0);
+        });
+
+        it("should still match whole words", () => {
+            expect(CSSselect.selectAll('[a~="x"]', document)).toHaveLength(3);
         });
     });
 });

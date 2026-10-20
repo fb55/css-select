@@ -146,7 +146,7 @@ export const attributeRules: Record<
     element(next, data, options) {
         const { adapter } = options;
         const { name, value } = data;
-        if (whitespaceRe.test(value)) {
+        if (value === "" || whitespaceRe.test(value)) {
             return boolbase.falseFunc;
         }
 
