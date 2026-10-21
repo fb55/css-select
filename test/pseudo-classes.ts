@@ -385,3 +385,81 @@ describe(":read-only and :read-write", () => {
         ).toHaveLength(2);
     });
 });
+
+describe(":selected with grouped options", () => {
+    it.each([
+        '<optgroup><option id="first">First</option><option>Second</option></optgroup>',
+        '<optgroup><option id="first">First</option></optgroup><option>Last</option>',
+        '<optgroup></optgroup><optgroup><option id="first">First</option></optgroup>',
+        '<option id="first">First</option><optgroup><option>Last</option></optgroup>',
+    ])("should select the first option in tree order: %s", (options) => {
+        const dom = parseDocument(`<select>${options}</select>`);
+        for (const selector of [":selected", ":checked"]) {
+            const matches = CSSselect.selectAll<AnyNode, Element>(
+                selector,
+                dom,
+            );
+            expect(matches.map((element) => element.attribs["id"])).toEqual([
+                "first",
+            ]);
+        }
+    });
+
+    it.each([
+        '<option>First</option><optgroup><option id="chosen" selected>Chosen</option></optgroup>',
+        '<optgroup><option>First</option></optgroup><option id="chosen" selected>Chosen</option>',
+        '<optgroup><option>First</option></optgroup><optgroup><option id="chosen" selected>Chosen</option></optgroup>',
+    ])(
+        "should prefer an explicit selection anywhere in the select: %s",
+        (options) => {
+            const dom = parseDocument(`<select>${options}</select>`);
+            for (const selector of [":selected", ":checked"]) {
+                const matches = CSSselect.selectAll<AnyNode, Element>(
+                    selector,
+                    dom,
+                );
+                expect(matches.map((element) => element.attribs["id"])).toEqual(
+                    ["chosen"],
+                );
+            }
+        },
+    );
+
+    it("should preserve explicit selections in multiple and detached options", () => {
+        const dom = parseDocument(
+            '<select multiple><optgroup><option id="one" selected>One</option><option id="two" selected>Two</option></optgroup></select><option id="detached" selected>Detached</option>',
+        );
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":selected", dom).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toEqual(["one", "two", "detached"]);
+    });
+
+    it("should match the default option when queried inside its optgroup", () => {
+        const dom = parseDocument(
+            '<select><optgroup id="root"><option id="first">First</option></optgroup><option>Last</option></select>',
+        );
+        const root = CSSselect.selectAll<AnyNode, Element>("#root", dom);
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(":selected", root).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toEqual(["first"]);
+    });
+
+    it("should not infer a selection for a multiple select", () => {
+        const dom = parseDocument(
+            "<select multiple><optgroup><option>First</option></optgroup></select>",
+        );
+        expect(CSSselect.selectAll(":selected", dom)).toHaveLength(0);
+    });
+
+    it("should inspect the complete select when the query root is an optgroup", () => {
+        const dom = parseDocument(
+            '<select><optgroup><option>First</option></optgroup><optgroup id="root"><option>Last</option></optgroup></select>',
+        );
+        const root = CSSselect.selectAll<AnyNode, Element>("#root", dom);
+        expect(CSSselect.selectAll(":selected", root)).toHaveLength(0);
+    });
+});
