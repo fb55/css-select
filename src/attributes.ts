@@ -14,6 +14,17 @@ function escapeRegex(value: string): string {
     return value.replace(reChars, "\\$&");
 }
 
+function toLowerCaseASCII(value: string): string {
+    return value.replace(/[A-Z]/g, (letter) => letter.toLowerCase());
+}
+
+function caseInsensitiveRegex(value: string): string {
+    return escapeRegex(value).replace(
+        /[a-zA-Z]/g,
+        (letter) => `[${letter.toLowerCase()}${letter.toUpperCase()}]`,
+    );
+}
+
 /**
  * Attributes that are case-insensitive in HTML.
  * @see https://html.spec.whatwg.org/multipage/semantics-other.html#case-sensitivity-of-selectors
@@ -95,14 +106,14 @@ export const attributeRules: Record<
         let { value } = data;
 
         if (shouldIgnoreCase(data, options)) {
-            value = value.toLowerCase();
+            value = toLowerCaseASCII(value);
 
             return (element) => {
                 const attribute = adapter.getAttributeValue(element, name);
                 return (
                     attribute != null &&
                     attribute.length === value.length &&
-                    attribute.toLowerCase() === value &&
+                    toLowerCaseASCII(attribute) === value &&
                     next(element)
                 );
             };
@@ -118,7 +129,7 @@ export const attributeRules: Record<
         const { length } = value;
 
         if (shouldIgnoreCase(data, options)) {
-            value = value.toLowerCase();
+            value = toLowerCaseASCII(value);
 
             return function hyphenIC(element) {
                 const attribute = adapter.getAttributeValue(element, name);
@@ -126,7 +137,7 @@ export const attributeRules: Record<
                     attribute != null &&
                     (attribute.length === length ||
                         attribute.charAt(length) === "-") &&
-                    attribute.substr(0, length).toLowerCase() === value &&
+                    toLowerCaseASCII(attribute.substr(0, length)) === value &&
                     next(element)
                 );
             };
@@ -150,10 +161,10 @@ export const attributeRules: Record<
             return boolbase.falseFunc;
         }
 
-        const regex = new RegExp(
-            `(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`,
-            shouldIgnoreCase(data, options) ? "i" : "",
-        );
+        const escapeValue = shouldIgnoreCase(data, options)
+            ? caseInsensitiveRegex
+            : escapeRegex;
+        const regex = new RegExp(`(?:^|\\s)${escapeValue(value)}(?:$|\\s)`);
 
         return function element(node) {
             const attribute = adapter.getAttributeValue(node, name);
@@ -179,14 +190,14 @@ export const attributeRules: Record<
         }
 
         if (shouldIgnoreCase(data, options)) {
-            value = value.toLowerCase();
+            value = toLowerCaseASCII(value);
 
             return (element) => {
                 const attribute = adapter.getAttributeValue(element, name);
                 return (
                     attribute != null &&
                     attribute.length >= length &&
-                    attribute.substr(0, length).toLowerCase() === value &&
+                    toLowerCaseASCII(attribute.substr(0, length)) === value &&
                     next(element)
                 );
             };
@@ -207,13 +218,16 @@ export const attributeRules: Record<
         }
 
         if (shouldIgnoreCase(data, options)) {
-            value = value.toLowerCase();
+            value = toLowerCaseASCII(value);
 
-            return (element) =>
-                adapter
-                    .getAttributeValue(element, name)
-                    ?.substr(length)
-                    .toLowerCase() === value && next(element);
+            return (element) => {
+                const attribute = adapter.getAttributeValue(element, name);
+                return (
+                    attribute != null &&
+                    toLowerCaseASCII(attribute.substr(length)) === value &&
+                    next(element)
+                );
+            };
         }
 
         return (element) =>
@@ -229,7 +243,7 @@ export const attributeRules: Record<
         }
 
         if (shouldIgnoreCase(data, options)) {
-            const regex = new RegExp(escapeRegex(value), "i");
+            const regex = new RegExp(caseInsensitiveRegex(value));
 
             return function anyIC(element) {
                 const attribute = adapter.getAttributeValue(element, name);
@@ -256,14 +270,14 @@ export const attributeRules: Record<
                 !!adapter.getAttributeValue(element, name) && next(element);
         }
         if (shouldIgnoreCase(data, options)) {
-            value = value.toLowerCase();
+            value = toLowerCaseASCII(value);
 
             return (element) => {
                 const attribute = adapter.getAttributeValue(element, name);
                 return (
                     (attribute == null ||
                         attribute.length !== value.length ||
-                        attribute.toLowerCase() !== value) &&
+                        toLowerCaseASCII(attribute) !== value) &&
                     next(element)
                 );
             };
