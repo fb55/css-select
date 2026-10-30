@@ -10,6 +10,38 @@ const dom = parseDocument(
 const domChilds = dom.children as Element[];
 
 describe("Attributes", () => {
+    describe("ASCII case-insensitive matching", () => {
+        const document = parseDocument('<i data-foo="Ä" type="Ä"></i>');
+        it.each(["=", "|=", "^=", "$=", "*=", "~="])(
+            "should preserve non-ASCII case with %s",
+            (operator) => {
+                expect(
+                    CSSselect.selectAll(`[data-foo${operator}"ä" i]`, document),
+                ).toHaveLength(0);
+                expect(
+                    CSSselect.selectAll(`[data-foo${operator}"Ä" i]`, document),
+                ).toStrictEqual(document.children);
+            },
+        );
+        it("should preserve non-ASCII case with !=", () => {
+            expect(
+                CSSselect.selectAll('[data-foo!="ä" i]', document),
+            ).toStrictEqual(document.children);
+        });
+        it("should preserve non-ASCII case for implicitly insensitive attributes", () => {
+            expect(CSSselect.selectAll('[type="ä"]', document)).toHaveLength(0);
+        });
+        it("should keep regex characters literal when matching ASCII letters", () => {
+            const document = parseDocument('<i data-foo="[A]+"></i>');
+            expect(
+                CSSselect.selectAll('[data-foo*="[a]+" i]', document),
+            ).toStrictEqual(document.children);
+            expect(
+                CSSselect.selectAll('[data-foo~="[a]+" i]', document),
+            ).toStrictEqual(document.children);
+        });
+    });
+
     describe("ignore case", () => {
         it("should for =", () => {
             let matches = CSSselect.selectAll(
