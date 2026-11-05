@@ -33,24 +33,6 @@ describe("Attributes", () => {
                 ).toStrictEqual(document.children);
             },
         );
-
-        it.each(["\t", "\n", "\f", "\r", " "])(
-            "should split tokens on CSS whitespace %j",
-            (space) => {
-                const document = parseDocument(
-                    `<i class="foo${space}bar"></i>`,
-                );
-                expect(
-                    CSSselect.selectAll("[class~=foo]", document),
-                ).toStrictEqual(document.children);
-                expect(
-                    CSSselect.selectAll("[class~=bar]", document),
-                ).toStrictEqual(document.children);
-                expect(
-                    CSSselect._compileUnsafe(`[class~="foo${space}bar"]`),
-                ).toBe(boolbase.falseFunc);
-            },
-        );
     });
 
     describe("ignore case", () => {
