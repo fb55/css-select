@@ -1,0 +1,52 @@
+src/helpers/cache.spec.ts
+  s_13e4c6c7050b7c::t_ec8f7677d73441 109-115
+  s_13e4c6c7050b7c::t_81a7312ef4f70b 164
+  s_13e4c6c7050b7c::t_45de0c103e90eb 116-118,120,122-125,128-132,135-136,138,152,165-166,168,171-172,179-184,186
+  s_13e4c6c7050b7c::t_30e72b986e1240 121,127,134,141-146,163,167
+  s_9572c878effff6::t_75f62244e96ab1 107-108,154
+  s_13e4c6c7050b7c::t_1e8275529d234d 173-178
+  s_9572c878effff6::t_1b65237f054e81 137,140,147-151,153,155-162,169-170
+  s_13e4c6c7050b7c::t_c3ad1f1fa0105d 185
+  s_13e4c6c7050b7c::t_3fb5edf24f96de 119,126,133,139
+src/helpers/cache.ts
+  s_d47ff53c7b6e7a::t_14f149a6790e95 4-18,92-93,104,110-111,124,145
+  s_9572c878effff6::t_75f62244e96ab1 82
+  s_13e4c6c7050b7c::t_6755edd300c566 97,108,115,129-136
+  s_9572c878effff6::t_6429f3e5ba756f 58-63,80,90,105-106,112-114,116-117,146-160,162-163
+  s_13e4c6c7050b7c::t_30707cbdf054f9 91
+  s_13e4c6c7050b7c::t_98bc2e80247f15 125-128
+  s_13e4c6c7050b7c::t_bdcb22124ef5f7 41,50-53,55-57,69-77,94-96,98-103,107,109,118-123,137,140-144
+  s_9572c878effff6::t_f38175253a23ce 83-88
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1be4222ae23e9bafcb5050ef1e953fe6caba2af3",
+  "prompts": {},
+  "sessions": {
+    "s_13e4c6c7050b7c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5b3cf039-04bd-4eca-83eb-9942d0380530",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_9572c878effff6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b1202982-936f-4f88-b1f8-76d3dfce3afe",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_d47ff53c7b6e7a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1abc7-59c3-7a50-8cd6-ce0b1b2b6f8e",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
