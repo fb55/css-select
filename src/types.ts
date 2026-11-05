@@ -83,6 +83,16 @@ export interface Adapter<Node, ElementNode extends Node> {
     isHovered?: (element: ElementNode) => boolean;
 
     /**
+     * Is the element focused?
+     */
+    isFocused?: (element: ElementNode) => boolean;
+
+    /**
+     * Is the element in focus-visible state?
+     */
+    isFocusVisible?: (element: ElementNode) => boolean;
+
+    /**
      * Is the element in visited state?
      */
     isVisited?: (element: ElementNode) => boolean;

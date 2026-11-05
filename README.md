@@ -252,7 +252,9 @@ _As defined by CSS 4 and / or jQuery._
       elements that are links and have not been visited.
     - [`:visited`](https://developer.mozilla.org/en-US/docs/Web/CSS/:visited),
       [`:hover`](https://developer.mozilla.org/en-US/docs/Web/CSS/:hover),
-      [`:active`](https://developer.mozilla.org/en-US/docs/Web/CSS/:active)
+      [`:active`](https://developer.mozilla.org/en-US/docs/Web/CSS/:active),
+      [`:focus-visible`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-visible),
+      [`:focus-within`](https://developer.mozilla.org/en-US/docs/Web/CSS/:focus-within)
       (these depend on optional `Adapter` methods, so these will only match
       elements if implemented in `Adapter`)
     - [`:checked`](https://developer.mozilla.org/en-US/docs/Web/CSS/:checked):
