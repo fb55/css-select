@@ -1,0 +1,19 @@
+test/pseudo-classes.ts
+  s_dfba887a3ff0c9::t_4cac07dc503859 217-250,266-276
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "02f6072572f32ce8fad4a3e5f9490a496971254b",
+  "prompts": {},
+  "sessions": {
+    "s_dfba887a3ff0c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "35180669-77d2-4f10-bf96-32245dbf15d6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
