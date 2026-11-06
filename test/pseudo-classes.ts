@@ -208,6 +208,41 @@ describe(":has", () => {
         }
     });
 
+    it("should keep explicit scope inclusive in nested functional selectors", () => {
+        const document = parseDocument(
+            '<div class="a"><i class="b"></i></div>',
+        );
+        const anchor = document.children[0] as Element;
+
+        for (const shouldCacheResults of [true, false]) {
+            for (const [selector, expected] of [
+                [".a:has(:scope.a > .b)", true],
+                [".a:has(:scope:is(.a) > .b)", true],
+                [".a:has(:scope:where(.a) > .b)", true],
+                [".a:has(:scope:matches(.a) > .b)", true],
+                [".a:has(:scope:not(.a) > .b)", false],
+                [".a:has(:scope:not(.missing) > .b)", true],
+                [".a:has(:scope:is(:not(.missing)) > .b)", true],
+            ] as const) {
+                expect(
+                    CSSselect.compile(selector, {
+                        cacheResults: shouldCacheResults,
+                    })(anchor),
+                ).toBe(expected);
+                expect(
+                    CSSselect.is(anchor, selector, {
+                        cacheResults: shouldCacheResults,
+                    }),
+                ).toBe(expected);
+                expect(
+                    CSSselect.selectAll(selector, document, {
+                        cacheResults: shouldCacheResults,
+                    }),
+                ).toHaveLength(expected ? 1 : 0);
+            }
+        }
+    });
+
     it("should still match descendants and leading child combinators", () => {
         const document = parseDocument(
             '<div class="a" id="outer"><div class="a" id="inner"><i class="b"></i></div></div>',
