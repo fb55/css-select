@@ -1,0 +1,16 @@
+src/helpers/selectors.spec.ts
+  h_c09f8bd1046292 2-4,6-7,43,64,83,89-91,93,124-164
+src/helpers/selectors.ts
+  h_c09f8bd1046292 126-173,192-199,203,212-214,217-218
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f57fa3f157faecdb21ed8fe7b3899e373ab6dde0",
+  "prompts": {},
+  "humans": {
+    "h_c09f8bd1046292": {
+      "author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
