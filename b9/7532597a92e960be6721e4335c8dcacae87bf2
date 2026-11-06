@@ -1,0 +1,28 @@
+test/pseudo-classes.ts
+  s_e48feae6e60bc5::t_ffe5531a2538c4 203,205-206
+  s_e48feae6e60bc5::t_412375d5eb9dd9 185-193,195-202,204,207-216,218-231
+  s_e48feae6e60bc5::t_c6c9347c01a49a 232-252
+  s_e48feae6e60bc5::t_ba031135693a5a 183-184,194
+src/pseudo-selectors/subselects.ts
+  s_e48feae6e60bc5::t_ce305928adb8b9 5-9,138-139,142-156,158-165
+  s_e48feae6e60bc5::t_412375d5eb9dd9 140-141
+  s_e48feae6e60bc5::t_c6c9347c01a49a 84,157
+src/helpers/cache.ts
+  s_e48feae6e60bc5::t_ce305928adb8b9 16-17,22-26,38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b97532597a92e960be6721e4335c8dcacae87bf2",
+  "prompts": {},
+  "sessions": {
+    "s_e48feae6e60bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b277e197-b11a-4173-ae30-0cfd001bb6d3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
