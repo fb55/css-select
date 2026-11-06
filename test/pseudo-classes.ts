@@ -181,6 +181,73 @@ describe(":empty", () => {
 });
 
 describe(":has", () => {
+    it("should exclude the anchor from implicit descendant matching", () => {
+        const document = parseDocument(
+            '<div class="a" id="anchor"><i class="b"></i></div>',
+        );
+        const anchor = document.children[0] as Element;
+
+        for (const shouldCacheResults of [true, false]) {
+            for (const selector of [".a:has(.a .b)", ".a:has(.a > .b)"]) {
+                expect(
+                    CSSselect.compile(selector, {
+                        cacheResults: shouldCacheResults,
+                    })(anchor),
+                ).toBe(false);
+                expect(
+                    CSSselect.is(anchor, selector, {
+                        cacheResults: shouldCacheResults,
+                    }),
+                ).toBe(false);
+                expect(
+                    CSSselect.selectAll(selector, document, {
+                        cacheResults: shouldCacheResults,
+                    }),
+                ).toHaveLength(0);
+            }
+        }
+    });
+
+    it("should still match descendants and leading child combinators", () => {
+        const document = parseDocument(
+            '<div class="a" id="outer"><div class="a" id="inner"><i class="b"></i></div></div>',
+        );
+        for (const selector of [".a:has(.a .b)", ".a:has(.a > .b)"]) {
+            expect(
+                CSSselect.selectAll<AnyNode, Element>(selector, document).map(
+                    (element) => element.attribs["id"],
+                ),
+            ).toEqual(["outer"]);
+        }
+        expect(
+            CSSselect.selectAll<AnyNode, Element>(".a:has(> .b)", document).map(
+                (element) => element.attribs["id"],
+            ),
+        ).toEqual(["inner"]);
+    });
+
+    it("should preserve array query roots and sibling matching", () => {
+        const document = parseDocument(
+            '<div class="a" id="outer"><div class="a" id="inner"><i class="b"></i><i class="c"></i></div></div>',
+        );
+        const outer = document.children[0] as Element;
+        const inner = outer.children[0] as Element;
+
+        expect(
+            CSSselect.selectAll(".a .b", [outer]).map(
+                (element) => element.attribs["class"],
+            ),
+        ).toEqual(["b"]);
+        expect(CSSselect.is(inner, ".a:has(> .b + .c)")).toBe(true);
+        expect(CSSselect.is(inner.children[0], ".b:has(+ .c)")).toBe(true);
+        expect(CSSselect.is(inner.children[0], ".b:has(~ .c)")).toBe(true);
+        expect(
+            CSSselect.selectAll(".a .b", [inner]).map(
+                (element) => element.attribs["class"],
+            ),
+        ).toEqual(["b"]);
+    });
+
     it("should cache :has if applicable", () => {
         const dom = parseDocument(`
             <div>
@@ -193,9 +260,10 @@ describe(":has", () => {
         `);
         const compiled = CSSselect.compile(":has(.a .b ~ .c)");
 
+        // Only the outer div has a descendant .a containing .b ~ .c.
         expect(
             CSSselect.selectAll<AnyNode, Element>(compiled, dom),
-        ).toHaveLength(2);
+        ).toHaveLength(1);
 
         (
             ((dom.childNodes[1] as Element).childNodes[1] as Element)
@@ -209,7 +277,7 @@ describe(":has", () => {
         // But as we have cached the results in `compiled`, we should succeed here.
         expect(
             CSSselect.selectAll<AnyNode, Element>(compiled, dom),
-        ).toHaveLength(2);
+        ).toHaveLength(1);
     });
 });
 
