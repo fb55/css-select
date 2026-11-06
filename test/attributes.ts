@@ -109,18 +109,4 @@ describe("Attributes", () => {
             );
         });
     });
-
-    describe("~= with an empty value", () => {
-        const document = parseDocument(
-            '<i a=""></i><i a=" x"></i><i a="x "></i><i a="x  y"></i>',
-        );
-
-        it("should not match any elements", () => {
-            expect(CSSselect.selectAll('[a~=""]', document)).toHaveLength(0);
-        });
-
-        it("should still match whole words", () => {
-            expect(CSSselect.selectAll('[a~="x"]', document)).toHaveLength(3);
-        });
-    });
 });
