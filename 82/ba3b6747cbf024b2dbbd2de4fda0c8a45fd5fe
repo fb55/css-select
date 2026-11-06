@@ -1,0 +1,38 @@
+src/helpers/options.ts
+  s_7279833a33800e::t_434c95a2d13a64 2,16-17
+src/compile.ts
+  s_7279833a33800e::t_751ef51839e50a 53
+src/types.ts
+  s_7279833a33800e::t_434c95a2d13a64 182-183
+src/pseudo-selectors/subselects.ts
+  s_7279833a33800e::t_434c95a2d13a64 32
+  s_7279833a33800e::t_b705e78946b575 33
+src/helpers/selectors.ts
+  s_7279833a33800e::t_c98e88ef51f995 41,43
+  s_7279833a33800e::t_b705e78946b575 11-14
+  s_7279833a33800e::t_79301ca533d449 121-132,134-140
+  s_7279833a33800e::t_5d3e501fab3b8b 42
+  s_7279833a33800e::t_d74be402d0c8f4 133
+  s_7279833a33800e::t_434c95a2d13a64 15-26,100,103-105,151,153-155,160-162
+test/api.ts
+  s_7279833a33800e::t_c23dc9723d4596 237-238,240,246
+  s_7279833a33800e::t_b705e78946b575 2,229,231,235-236,239,241-245,247-250
+  s_7279833a33800e::t_b191c598ad12d3 230,232-234
+  s_7279833a33800e::t_751ef51839e50a 18-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "82ba3b6747cbf024b2dbbd2de4fda0c8a45fd5fe",
+  "prompts": {},
+  "sessions": {
+    "s_7279833a33800e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "691e7a76-4afe-4120-aba1-2c31c22e6005",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
