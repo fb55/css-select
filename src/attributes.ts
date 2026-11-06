@@ -9,7 +9,7 @@ import type { CompiledQuery, InternalOptions } from "./types.js";
  * https://github.com/slevithan/xregexp/blob/95eeebeb8fac8754d54eafe2b4743661ac1cf028/src/xregexp.js#L794
  */
 const reChars = /[-[\]{}()*+?.,\\^$|#\s]/g;
-const whitespaceRe = /\s/;
+const whitespaceRe = /[\t\n\f\r ]/;
 function escapeRegex(value: string): string {
     return value.replace(reChars, "\\$&");
 }
@@ -151,7 +151,7 @@ export const attributeRules: Record<
         }
 
         const regex = new RegExp(
-            `(?:^|\\s)${escapeRegex(value)}(?:$|\\s)`,
+            `(?:^|[\\t\\n\\f\\r ])${escapeRegex(value)}(?:$|[\\t\\n\\f\\r ])`,
             shouldIgnoreCase(data, options) ? "i" : "",
         );
 
