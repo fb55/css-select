@@ -1,9 +1,14 @@
 src/pseudo-selectors/subselects.ts
   s_e48feae6e60bc5::t_a2afac632c1252 2,84,95-107,109-117,126-159,164-173
   s_e48feae6e60bc5::t_f9972ad9c527d1 108,160-163
+  s_e48feae6e60bc5::t_8ebf62ecfab735 2,84,95-107,109-117,137,140,143-144,169
+  s_e48feae6e60bc5::t_18b029e111e84c 126-136,138-139,141-142,145-159,164-168,170-172
+  s_e48feae6e60bc5::t_aa7593884818c7 173
 test/pseudo-classes.ts
   s_e48feae6e60bc5::t_a2afac632c1252 232-248,250-251,253-255,262-263
   s_e48feae6e60bc5::t_f9972ad9c527d1 249,252,256-261
+  s_e48feae6e60bc5::t_af97d275e09b34 232-248
+  s_e48feae6e60bc5::t_c16998399c00d0 250-251,253-255,262-263
 ---
 {
   "schema_version": "authorship/3.0.0",
