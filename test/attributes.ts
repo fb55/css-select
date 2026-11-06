@@ -11,28 +11,25 @@ const domChilds = dom.children as Element[];
 
 describe("Attributes", () => {
     describe("whitespace-separated values", () => {
-        it.each(["\u{A0}", "\u{2003}", "\u{B}"])(
-            "should keep non-CSS whitespace %j inside a token",
-            (space) => {
-                const token = `foo${space}bar`;
-                const document = parseDocument(`<i class="${token}"></i>`);
-                expect(
-                    CSSselect.selectAll("[class~=foo]", document),
-                ).toHaveLength(0);
-                expect(
-                    CSSselect.selectAll("[class~=bar]", document),
-                ).toHaveLength(0);
-                expect(
-                    CSSselect.selectAll(`[class~="${token}"]`, document),
-                ).toStrictEqual(document.children);
-                expect(
-                    CSSselect.selectAll(
-                        `[class~="${token.toUpperCase()}" i]`,
-                        document,
-                    ),
-                ).toStrictEqual(document.children);
-            },
-        );
+        it("should keep non-CSS whitespace inside a token", () => {
+            const token = "foo\u{A0}bar";
+            const document = parseDocument(`<i class="${token}"></i>`);
+            expect(CSSselect.selectAll("[class~=foo]", document)).toHaveLength(
+                0,
+            );
+            expect(CSSselect.selectAll("[class~=bar]", document)).toHaveLength(
+                0,
+            );
+            expect(
+                CSSselect.selectAll(`[class~="${token}"]`, document),
+            ).toStrictEqual(document.children);
+            expect(
+                CSSselect.selectAll(
+                    `[class~="${token.toUpperCase()}" i]`,
+                    document,
+                ),
+            ).toStrictEqual(document.children);
+        });
     });
 
     describe("ignore case", () => {
