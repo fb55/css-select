@@ -87,7 +87,7 @@ export const subselects: Record<string, Subselect> = {
             : undefined;
         const shouldSkipCache = isContextDependent(subselect);
 
-        const compiled = compileToken(subselect, copiedOptions, context);
+        const compiled = compileToken(subselect, copiedOptions, context, true);
 
         if (compiled === boolbase.falseFunc) {
             return boolbase.falseFunc;
