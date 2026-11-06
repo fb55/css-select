@@ -1,0 +1,26 @@
+test/pseudo-classes.ts
+  s_6b14a9b67a47ce::t_afa348537a2744 283-303
+  s_6b14a9b67a47ce::t_d5401576e50d27 282,304-305
+src/helpers/cache.ts
+  s_6b14a9b67a47ce::t_aa57e2584646e7 92-96
+src/pseudo-selectors/subselects.ts
+  s_6b14a9b67a47ce::t_aa57e2584646e7 90-94,97-104,171-187,191-205,209-228,230,233-238,241-248,252,256-259,263-269
+  s_6b14a9b67a47ce::t_afa348537a2744 95-96,188-190,206-208,229,231-232,239-240,253-255,260-262
+  s_6b14a9b67a47ce::t_39e1feb1bc0dcb 249-251,270-271
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "317a5c318ad144a68c392dd83852c9e0333bde24",
+  "prompts": {},
+  "sessions": {
+    "s_6b14a9b67a47ce": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1b040-a6a5-7392-8347-2a37e073c9fd",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
