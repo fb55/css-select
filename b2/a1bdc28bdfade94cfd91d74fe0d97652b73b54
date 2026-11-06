@@ -1,0 +1,36 @@
+src/index.ts
+  s_e48feae6e60bc5::t_e0dca8b0075861 118-119
+  s_e48feae6e60bc5::t_3f002cc49fcf30 10,76,81-100,130-136
+src/helpers/generation.ts
+  s_e48feae6e60bc5::t_3f002cc49fcf30 1-20
+src/pseudo-selectors/subselects.ts
+  s_e48feae6e60bc5::t_a7742b5cb99a67 140-141
+  s_e48feae6e60bc5::t_4983729d4baaf3 143
+  s_e48feae6e60bc5::t_3f002cc49fcf30 4,127,129-130,136-139,142
+test/pseudo-classes.ts
+  s_e48feae6e60bc5::t_077d86a1bb9e54 239,242,248,252
+  s_e48feae6e60bc5::t_a8aac73e269e6d 229-232,256-259
+  s_e48feae6e60bc5::t_0cd1cc8609a939 218-221,246-247,249-250,280,284,286-287,289
+  s_e48feae6e60bc5::t_5921db835f6960 281-283,285,288,290
+  s_e48feae6e60bc5::t_8f49cb3b9e86d7 251,291-292
+src/helpers/cache.ts
+  s_e48feae6e60bc5::t_2580081291047e 54
+  s_e48feae6e60bc5::t_a7742b5cb99a67 51-52
+  s_e48feae6e60bc5::t_3f002cc49fcf30 2,16,29,36-37,50,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b2a1bdc28bdfade94cfd91d74fe0d97652b73b54",
+  "prompts": {},
+  "sessions": {
+    "s_e48feae6e60bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b277e197-b11a-4173-ae30-0cfd001bb6d3",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
