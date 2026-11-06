@@ -1,0 +1,32 @@
+src/pseudo-selectors/subselects.ts
+  s_545a9a3ead4918::t_4ef448f1ece7c7 90-105,265-273
+  s_545a9a3ead4918::t_e4584ad8522063 274
+test/pseudo-classes.ts
+  s_07ec3b64611e44::t_41286f489a4ee3 421-425
+  s_545a9a3ead4918::t_46b7d1cf5d0f35 426
+  s_07ec3b64611e44::t_6e6dd688eb45be 263-266,275,278
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "33431aae385a4f189d6d8b366b9eb7705d46c09c",
+  "prompts": {},
+  "sessions": {
+    "s_07ec3b64611e44": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "674604a7-c6f5-42ec-a270-579d5849b816",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_545a9a3ead4918": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f11b019e-e853-4b95-a78e-f5cafee361e6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
