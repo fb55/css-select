@@ -105,6 +105,8 @@ export function compileToken<Node, ElementNode extends Node>(
                 // Ignore
             } else if (
                 isArrayContext &&
+                // :has uses an array only to replace its anchor per element.
+                finalContext?.[0] !== PLACEHOLDER_ELEMENT &&
                 second.type === SelectorType.Descendant
             ) {
                 rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
