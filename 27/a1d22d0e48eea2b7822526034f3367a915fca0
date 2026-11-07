@@ -1,0 +1,29 @@
+src/helpers/selectors.spec.ts
+  s_4228a912301571::t_bb4d3d550bbc7c 1,24-82
+src/helpers/selectors.ts
+  s_f0bea06376f3c7::t_759562f0c27c32 28,32-49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ef575f0f56e2ea66739fd979e2c96c08eacacb8e",
+  "prompts": {},
+  "sessions": {
+    "s_4228a912301571": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a18fbd-4448-7531-b7c6-ed4a0efac9b0",
+        "model": "gpt-6.1-sol"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_f0bea06376f3c7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5608812e-dcaf-4d70-8815-e6731b480204",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}

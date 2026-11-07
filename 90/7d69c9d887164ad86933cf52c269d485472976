@@ -1,0 +1,23 @@
+src/general.ts
+  s_6bbbbbc7cea8e7::t_34dcfa80c43bed 3,105,109,111
+src/helpers/cache.ts
+  s_6bbbbbc7cea8e7::t_21ac78d98f89bd 4-26
+test/pseudo-classes.ts
+  s_6bbbbbc7cea8e7::t_f1d1cc6fc6dd68 207-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "016c67e82004d0d7bd5105d9510930f50029aef7",
+  "prompts": {},
+  "sessions": {
+    "s_6bbbbbc7cea8e7": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "477ae3a9-56cd-4535-bf0f-8d24ed1686d9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}

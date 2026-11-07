@@ -1,0 +1,50 @@
+src/compile.ts
+  s_dc1194a19e3b73::t_22e582fdbc88c4 93
+src/types.ts
+  s_96840ddd2ad332::t_7b68982a8d792c 166-176
+  s_dfba887a3ff0c9::t_01a1b4f7ec41ab 165
+test/pseudo-classes.ts
+  s_dc1194a19e3b73::t_d341f92cdc7f45 202,212-213,223
+  s_dc1194a19e3b73::t_32a1cb8f20c9db 190,196,208
+  s_dc1194a19e3b73::t_22e582fdbc88c4 200-201,203-204
+  s_dc1194a19e3b73::t_60682e22bf5a3b 199
+src/helpers/options.ts
+  s_96840ddd2ad332::t_8501981c64e848 8
+  s_96840ddd2ad332::t_cff2bafc7e3cde 16
+test/api.ts
+  s_dc1194a19e3b73::t_22e582fdbc88c4 306-308
+  s_96840ddd2ad332::t_e9e994e0b30ea2 310-314
+  s_dc1194a19e3b73::t_07e2d7e7124981 309
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c505572a068f60ac5cb9819758457e1e2f84a3b6",
+  "prompts": {},
+  "sessions": {
+    "s_96840ddd2ad332": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "dfcc4d14-c9a9-4d7c-8f91-6262643e7d04",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_dc1194a19e3b73": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0dd732de-64e9-4d66-8def-1d345c321ffd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_dfba887a3ff0c9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "35180669-77d2-4f10-bf96-32245dbf15d6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
