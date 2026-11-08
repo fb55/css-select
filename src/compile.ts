@@ -85,6 +85,12 @@ export function compileToken<Node, ElementNode extends Node>(
     const finalContext =
         context && (Array.isArray(context) ? context : [context]);
 
+    /*
+     * :has replaces its placeholder for each element. Descendant results may
+     * depend on that element, so they cannot be cached by ancestor alone.
+     */
+    const hasMutableContext = finalContext?.[0] === PLACEHOLDER_ELEMENT;
+
     // Check if the selector is relative
     if (options.relativeSelector !== false) {
         absolutize(token, options, finalContext);
@@ -131,7 +137,7 @@ export function compileToken<Node, ElementNode extends Node>(
 
             const quality = getQuality(rule);
 
-            if (quality === 0) {
+            if (quality === 0 && !hasMutableContext) {
                 hasExpensiveSubselector = true;
             }
 
