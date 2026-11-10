@@ -1,0 +1,14 @@
+src/index.ts
+  h_c09f8bd1046292 22-27,66-84,122,160-163,166
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "490915478d7beb16bee01af949e8e96898f0d223",
+  "prompts": {},
+  "humans": {
+    "h_c09f8bd1046292": {
+      "author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
