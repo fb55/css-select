@@ -1,0 +1,26 @@
+test/pseudo-classes.ts
+  h_c09f8bd1046292 348-417,419-420,422-424
+src/compile.ts
+  h_c09f8bd1046292 121-134,140
+src/pseudo-selectors/subselects.ts
+  h_c09f8bd1046292 4,8,15-17,284-288,291,293-301,303,305-322,324,327-344,346-347
+src/helpers/querying.ts
+  h_c09f8bd1046292 66-71,115
+src/helpers/options.ts
+  h_c09f8bd1046292 14-17
+src/helpers/cache.ts
+  h_c09f8bd1046292 17,23,30-31
+src/types.ts
+  h_c09f8bd1046292 182-186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "996979b480fcb3775e84edf5383dbb240a87d91e",
+  "prompts": {},
+  "humans": {
+    "h_c09f8bd1046292": {
+      "author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
