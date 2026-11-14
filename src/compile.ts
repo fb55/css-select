@@ -65,11 +65,13 @@ function absolutize<Node, ElementNode extends Node>(
  * @param token Selector token(s) to compile.
  * @param options Options that control this operation.
  * @param compilationContext Compilation context for relative selector handling.
+ * @param isHasSubselector Whether this is the outer selector of a :has pseudo.
  */
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
     compilationContext?: Node[] | Node,
+    isHasSubselector = false,
 ): CompiledQuery<ElementNode> {
     for (const rules of token) {
         sortRules(rules);
@@ -105,6 +107,8 @@ export function compileToken<Node, ElementNode extends Node>(
                 // Ignore
             } else if (
                 isArrayContext &&
+                // Only the outer :has selector must exclude its anchor.
+                !isHasSubselector &&
                 second.type === SelectorType.Descendant
             ) {
                 rules[1] = FLEXIBLE_DESCENDANT_TOKEN;
