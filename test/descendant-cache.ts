@@ -93,4 +93,34 @@ describe("descendant caching inside :has", () => {
             }
         }
     });
+
+    it.each([
+        ":has(:is(.group):marker :disabled)",
+        ":has(> :is(.group):marker :disabled)",
+    ])("reuses ancestor results within one anchor for %s", (selector) => {
+        const document = parseDocument(
+            '<div id="anchor"><section class="group">' +
+                "<input disabled>".repeat(12) +
+                "</section></div>",
+        );
+        const anchor = CSSselect.selectOne<AnyNode, Element>(
+            "#anchor",
+            document,
+        );
+        const group = CSSselect.selectOne<AnyNode, Element>(".group", document);
+        if (anchor === null || group === null)
+            throw new Error("Missing fixture");
+
+        for (const shouldCache of [true, false]) {
+            const marker = vi.fn((_element: Element) => false);
+            const compiled = CSSselect.compile<AnyNode, Element>(selector, {
+                pseudos: { marker },
+                cacheResults: shouldCache,
+            });
+            expect(compiled(anchor)).toBe(false);
+            expect(
+                marker.mock.calls.filter(([element]) => element === group),
+            ).toHaveLength(shouldCache ? 1 : 12);
+        }
+    });
 });
