@@ -1,4 +1,4 @@
-import { type AnyNode, type Element, isTag } from "domhandler";
+import { type AnyNode, Element, isTag } from "domhandler";
 import { DomUtils, parseDocument } from "htmlparser2";
 import { describe, expect, it } from "vitest";
 import * as CSSselect from "../src/index.js";
@@ -302,6 +302,39 @@ describe(":nth-child(An+B of S)", () => {
         const dom = parseDocument("<div><p>a</p><p>b</p><p>c</p></div>");
         const matches = CSSselect.selectAll(":nth-child(2)", dom);
         expect(matches).toHaveLength(1);
+    });
+});
+
+describe(":nth-* with a formula that matches every index", () => {
+    const pseudos = [
+        "nth-child",
+        "nth-last-child",
+        "nth-of-type",
+        "nth-last-of-type",
+    ];
+
+    it.each(pseudos)(":%s(n) should match a detached element", (pseudo) => {
+        const element = new Element("div", {});
+        expect(CSSselect.is(element, `:${pseudo}(1)`)).toBe(true);
+        expect(CSSselect.is(element, `:${pseudo}(n)`)).toBe(true);
+        expect(CSSselect.is(element, `:${pseudo}(-n+3)`)).toBe(true);
+    });
+
+    it.each(pseudos)(":%s(n) should match the root element", (pseudo) => {
+        const dom = parseDocument("<html><head></head><body></body></html>");
+        const names = (selector: string) =>
+            CSSselect.selectAll<AnyNode, Element>(selector, dom).map(
+                (element) => element.name,
+            );
+
+        expect(names(`:${pseudo}(n)`)).toStrictEqual(names("*"));
+        expect(names(`:${pseudo}(n+0)`)).toStrictEqual(names("*"));
+    });
+
+    it("should match top-level elements of a fragment", () => {
+        const dom = parseDocument("<p></p><span></span><p></p>");
+        expect(CSSselect.selectAll(":nth-child(n)", dom)).toHaveLength(3);
+        expect(CSSselect.selectAll(":nth-of-type(n)", dom)).toHaveLength(3);
     });
 });
 

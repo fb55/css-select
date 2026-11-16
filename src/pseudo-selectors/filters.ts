@@ -65,10 +65,8 @@ function compileNth(
 
         if (ofSelector === boolbase.falseFunc) return boolbase.falseFunc;
 
-        if (nthCheck === boolbase.trueFunc && !ofSelector) {
-            return (element) =>
-                getElementParent(element, adapter) !== null && next(element);
-        }
+        // Every index matches, including for elements without a parent.
+        if (nthCheck === boolbase.trueFunc && !ofSelector) return next;
 
         type ElementNode = Parameters<typeof next>[0];
 
