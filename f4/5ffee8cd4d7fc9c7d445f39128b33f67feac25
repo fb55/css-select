@@ -1,0 +1,32 @@
+test/descendant-cache.ts
+  s_173ca9ea90a33e::t_8203363942eda7 3,12,19-21,23-29
+  s_e4c878330b7c42::t_3264b0a6094cb1 54,56
+src/general.ts
+  s_e4c878330b7c42::t_ecf64d4c564858 107,114,127
+  s_e4c878330b7c42::t_390e151115047f 109,119-120,122-124,133-134,136,141-142
+  s_e4c878330b7c42::t_64ced654e2c259 110,121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f45ffee8cd4d7fc9c7d445f39128b33f67feac25",
+  "prompts": {},
+  "sessions": {
+    "s_173ca9ea90a33e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "707c2ba5-c81c-46be-ad9b-127e1a683e6c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    },
+    "s_e4c878330b7c42": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bda31c08-581e-401f-9ab8-b2b9ba6b9c0f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
