@@ -1,0 +1,19 @@
+src/pseudo-selectors/subselects.ts
+  s_1ce0e773231c12::t_2cd88656f80f41 249-258,260-261
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d449cb42a76d358b74fe12f31bbe7b490ed6d6c6",
+  "prompts": {},
+  "sessions": {
+    "s_1ce0e773231c12": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a1ee23-4208-7212-a43c-018bd32f8cc9",
+        "model": "gpt-6.2-sol"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
