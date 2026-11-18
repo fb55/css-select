@@ -1,0 +1,23 @@
+src/helpers/cache.ts
+  s_e29b625ce85d30::t_198512ec9534da 19-21,31,82-84
+src/pseudo-selectors/subselects.ts
+  s_e29b625ce85d30::t_2b15b960178b53 4,6,81,297-304,308-315,318-333,335-336,338,341-377,381-382
+test/pseudo-classes.ts
+  s_e29b625ce85d30::t_98ee66c7219697 283-304,336-339,343-347
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "054ad7629493a867c7a05d35545453684d4eae33",
+  "prompts": {},
+  "sessions": {
+    "s_e29b625ce85d30": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9a4c9de0-d350-4305-b3fc-8377acc7a18c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Felix Boehm <188768+fb55@users.noreply.github.com>"
+    }
+  }
+}
