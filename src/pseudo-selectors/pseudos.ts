@@ -1,4 +1,5 @@
 import type { PseudoSelector } from "css-what";
+import { getElementParent } from "../helpers/querying.js";
 import type { InternalOptions } from "../types.js";
 
 type Pseudo = <Node, ElementNode extends Node>(
@@ -18,6 +19,47 @@ const documentWhitespaceRegex = /^[ \t\r\n]*$/;
 // While filters are precompiled, pseudos get called when they are needed
 /** Runtime pseudo selector implementations. */
 export const pseudos: Record<string, Pseudo> = {
+    selected(element, { adapter, equals }) {
+        if (adapter.getName(element) !== "option") return false;
+        if (adapter.hasAttrib(element, "selected")) return true;
+
+        let parent = getElementParent(element, adapter);
+        if (parent && adapter.getName(parent) === "optgroup") {
+            parent = getElementParent(parent, adapter);
+        }
+        if (
+            !parent ||
+            adapter.getName(parent) !== "select" ||
+            adapter.hasAttrib(parent, "multiple")
+        ) {
+            return false;
+        }
+
+        /*
+         * The first option may be inside an optgroup. An explicit selection in
+         * any group suppresses the implicit selection throughout the select.
+         */
+        let firstOption: typeof element | undefined;
+        const options = adapter
+            .getChildren(parent)
+            .flatMap((child) =>
+                adapter.isTag(child) && adapter.getName(child) === "optgroup"
+                    ? adapter.getChildren(child)
+                    : [child],
+            );
+        for (const option of options) {
+            if (
+                !adapter.isTag(option) ||
+                adapter.getName(option) !== "option"
+            ) {
+                continue;
+            }
+            if (adapter.hasAttrib(option, "selected")) return false;
+            firstOption ??= option;
+        }
+        return firstOption !== undefined && equals(element, firstOption);
+    },
+
     empty(element, { adapter }) {
         const children = adapter.getChildren(element);
         return (
