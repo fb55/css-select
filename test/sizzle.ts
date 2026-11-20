@@ -283,7 +283,7 @@ describe("Sizzle", () => {
         t("ul#first", []);
         // ID selector with existing ID descendant
         t("#firstp #simon1", ["simon1"]);
-        // ID selector with non-existant descendant
+        // ID selector with non-existent descendant
         t("#firstp #foobar", []);
         // ID selector using UTF8
         t("#台北Táiběi", ["台北Táiběi"]);
@@ -376,7 +376,7 @@ describe("Sizzle", () => {
         // ID Selector on Form with an input that has a name of 'id'
         t("#lengthtest", ["lengthtest"]);
 
-        // ID selector with non-existant ancestor
+        // ID selector with non-existent ancestor
         t("#asdfasdf #foobar", []); // Bug #986
 
         // ID selector within the context of another element
