@@ -1,0 +1,49 @@
+src/pseudo-selectors/subselects.ts
+  s_7279833a33800e::t_434c95a2d13a64 32
+  s_7279833a33800e::t_b705e78946b575 33
+src/compile.ts
+  s_7279833a33800e::t_751ef51839e50a 53
+test/api.ts
+  s_7279833a33800e::t_b191c598ad12d3 230,232-234
+  s_b40083ce123bfc::t_5362c00db20c47 251-260,279
+  s_b40083ce123bfc::t_60d0a9d2b68f6d 261,269-278
+  s_b40083ce123bfc::t_e898c463aaddc8 262-268
+  s_7279833a33800e::t_b705e78946b575 2,229,231,235-236,239,241-245,247-250
+  s_7279833a33800e::t_c23dc9723d4596 237-238,240,246
+  s_7279833a33800e::t_751ef51839e50a 18-30
+src/helpers/selectors.ts
+  s_7279833a33800e::t_434c95a2d13a64 15-26,105,108,161,163
+  s_7279833a33800e::t_d74be402d0c8f4 137
+  s_7279833a33800e::t_b705e78946b575 11-14
+  s_7279833a33800e::t_79301ca533d449 124-133,135-136,148-150
+  s_b40083ce123bfc::t_440c6a63c00ddd 41-48,138-147
+  s_7279833a33800e::t_1ac9f1cdf50233 134,164-170
+src/helpers/options.ts
+  s_7279833a33800e::t_434c95a2d13a64 2,16-17
+src/types.ts
+  s_7279833a33800e::t_434c95a2d13a64 182-183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "45b9e5855e0b92745f12c799407d83574ce054e8",
+  "prompts": {},
+  "sessions": {
+    "s_7279833a33800e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "691e7a76-4afe-4120-aba1-2c31c22e6005",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    },
+    "s_b40083ce123bfc": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "128ca84e-3717-4d14-9cf1-a3d5aee83b7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
