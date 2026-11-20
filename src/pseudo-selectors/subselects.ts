@@ -79,7 +79,6 @@ export const subselects: Record<string, Subselect> = {
         const { adapter } = options;
 
         const copiedOptions = copyOptions(options);
-        copiedOptions.relativeSelector = true;
 
         const context = subselect.some((s) => s.some(isTraversal))
             ? // Used as a placeholder. Will be replaced with the actual element.
@@ -87,7 +86,11 @@ export const subselects: Record<string, Subselect> = {
             : undefined;
         const shouldSkipCache = isContextDependent(subselect);
 
-        const compiled = compileToken(subselect, copiedOptions, context);
+        /*
+         * Only the :has argument is relative. Nested selectors retain the
+         * caller's relativeSelector option.
+         */
+        const compiled = compileToken(subselect, copiedOptions, context, true);
 
         if (compiled === boolbase.falseFunc) {
             return boolbase.falseFunc;

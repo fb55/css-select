@@ -181,6 +181,116 @@ describe(":empty", () => {
 });
 
 describe(":has", () => {
+    const preceding = '<div class="p" id="target"></div>';
+    const nestedSelectors = [
+        {
+            selector: ".p:has(+ .a:not(.b))",
+            html: `${preceding}<div class="a b"></div>`,
+            expected: false,
+            relativeExpected: true,
+        },
+        {
+            selector: ".p:has(+ :is(.a))",
+            html: `${preceding}<div class="a"></div>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(~ :where(.a, .b))",
+            html: `${preceding}<i></i><div class="b"></div>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(+ input:checked)",
+            html: `${preceding}<input type="checkbox" checked>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(+ :nth-child(2 of .a))",
+            html: `<i class="a"></i>${preceding}<i class="a"></i>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(> .a:is(.x .a))",
+            html: '<section class="x"><div class="p" id="target"><b class="a"></b></div></section>',
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(+ :matches(.a))",
+            html: `${preceding}<div class="a"></div>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(+ :is(:where(.a)))",
+            html: `${preceding}<div class="a"></div>`,
+            expected: true,
+            relativeExpected: false,
+        },
+        {
+            selector: ".p:has(> .a:not(.b))",
+            html: '<div class="p" id="target"><b class="a"></b></div>',
+            expected: true,
+            relativeExpected: true,
+        },
+        {
+            selector: ".p:has(> .a:is(.b))",
+            html: '<div class="p" id="target"><b class="a"></b></div>',
+            expected: false,
+            relativeExpected: false,
+        },
+    ];
+
+    it.each(nestedSelectors)(
+        "should honor relativeSelector: false in $selector",
+        ({ selector, html, expected }) => {
+            const document = parseDocument(html);
+            const [target] = CSSselect.selectAll<AnyNode, Element>(
+                "#target",
+                document,
+            );
+
+            for (const isCacheResults of [true, false]) {
+                const options = {
+                    relativeSelector: false,
+                    cacheResults: isCacheResults,
+                };
+                expect(CSSselect.compile(selector, options)(target)).toBe(
+                    expected,
+                );
+                expect(CSSselect.is(target, selector, options)).toBe(expected);
+                expect(
+                    CSSselect.selectAll<AnyNode, Element>(
+                        selector,
+                        document,
+                        options,
+                    ).includes(target),
+                ).toBe(expected);
+            }
+        },
+    );
+
+    it.each(nestedSelectors)(
+        "should retain enabled and default relative behavior in $selector",
+        ({ selector, html, relativeExpected }) => {
+            const document = parseDocument(html);
+            const [target] = CSSselect.selectAll<AnyNode, Element>(
+                "#target",
+                document,
+            );
+
+            for (const options of [undefined, { relativeSelector: true }]) {
+                expect(CSSselect.compile(selector, options)(target)).toBe(
+                    relativeExpected,
+                );
+            }
+        },
+    );
+
     it("should cache :has if applicable", () => {
         const dom = parseDocument(`
             <div>
