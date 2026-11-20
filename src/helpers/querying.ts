@@ -20,7 +20,7 @@ export function findAll<Node, ElementNode extends Node>(
     /** Stack of the indices within the arrays. */
     const indexStack = [0];
 
-    for (;;) {
+    while (true) {
         // First, check if the current array has any more elements to look at.
         if (indexStack[0] >= nodeStack[0].length) {
             // If we have no more arrays to look at, we are done.
@@ -78,7 +78,7 @@ export function findOne<Node, ElementNode extends Node>(
     /** Stack of the indices within the arrays. */
     const indexStack = [0];
 
-    for (;;) {
+    while (true) {
         // First, check if the current array has any more elements to look at.
         if (indexStack[0] >= nodeStack[0].length) {
             // If we have no more arrays to look at, we are done.
