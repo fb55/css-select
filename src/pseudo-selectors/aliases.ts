@@ -36,16 +36,6 @@ export const aliases: Record<string, string> = {
 
     // JQuery extensions
 
-    /**
-     * `:selected` matches option elements that have the `selected` attribute,
-     * or are the first option element in a select element that does not have
-     * the `multiple` attribute and does not have any option elements with the
-     * `selected` attribute.
-     * @see https://html.spec.whatwg.org/multipage/form-elements.html#concept-option-selectedness
-     */
-    selected:
-        "option:is([selected], select:not([multiple]):not(:has(> option[selected])) > :first-of-type)",
-
     checkbox: "[type=checkbox]",
     file: "[type=file]",
     password: "[type=password]",
