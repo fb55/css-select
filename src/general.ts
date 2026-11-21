@@ -2,6 +2,7 @@ import { SelectorType } from "css-what";
 import { attributeRules } from "./attributes.js";
 import { getElementParent } from "./helpers/querying.js";
 import { compilePseudoSelector } from "./pseudo-selectors/index.js";
+import { PLACEHOLDER_ELEMENT } from "./pseudo-selectors/subselects.js";
 import type {
     CompiledQuery,
     CompileToken,
@@ -101,20 +102,30 @@ export function compileGeneralSelector<Node, ElementNode extends Node>(
                 };
             }
 
+            const hasMutableContext = context?.[0] === PLACEHOLDER_ELEMENT;
             const resultCache = new WeakMap<
                 // @ts-expect-error `ElementNode` is not extending object
                 ElementNode,
-                { matches: boolean }
+                { matches: boolean; context: Node | undefined }
             >();
             return function isCachedDescendant(element: ElementNode): boolean {
+                /* An ancestor's answer can depend on the current :has anchor. */
+                const currentContext = hasMutableContext
+                    ? context[0]
+                    : undefined;
                 let current: ElementNode | null = element;
-                let result: { matches: boolean } | undefined;
+                let result:
+                    | { matches: boolean; context: Node | undefined }
+                    | undefined;
 
                 while ((current = getElementParent(current, adapter))) {
                     const cached = resultCache.get(current);
 
-                    if (cached === undefined) {
-                        result ??= { matches: false };
+                    if (
+                        cached === undefined ||
+                        cached.context !== currentContext
+                    ) {
+                        result ??= { matches: false, context: currentContext };
                         result.matches = next(current);
                         resultCache.set(current, result);
                         if (result.matches) {
