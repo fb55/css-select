@@ -15,27 +15,33 @@ export function findAll<Node, ElementNode extends Node>(
 ): ElementNode[] {
     const { adapter, xmlMode = false } = options;
     const result: ElementNode[] = [];
-    /** Stack of the arrays we are looking at. */
-    const nodeStack = [nodes];
-    /** Stack of the indices within the arrays. */
-    const indexStack = [0];
+    /** Stack of the parent arrays we will return to. */
+    const nodeStack: Node[][] = [];
+    /** Stack of the indices to resume at within the parent arrays. */
+    const indexStack: number[] = [];
+    /** The array we are currently looking at. */
+    let currentNodes = nodes;
+    /** The index of the next node within `currentNodes`. */
+    let currentIndex = 0;
 
     while (true) {
         // First, check if the current array has any more elements to look at.
-        if (indexStack[0] >= nodeStack[0].length) {
+        if (currentIndex >= currentNodes.length) {
             // If we have no more arrays to look at, we are done.
-            if (nodeStack.length === 1) {
+            if (nodeStack.length === 0) {
                 return result;
             }
 
-            nodeStack.shift();
-            indexStack.shift();
+            // biome-ignore lint/style/noNonNullAssertion: The stack is not empty.
+            currentNodes = nodeStack.pop()!;
+            // biome-ignore lint/style/noNonNullAssertion: The stack is not empty.
+            currentIndex = indexStack.pop()!;
 
             // Loop back to the start to continue with the next array.
             continue;
         }
 
-        const element = nodeStack[0][indexStack[0]++];
+        const element = currentNodes[currentIndex++];
 
         if (!adapter.isTag(element)) {
             continue;
@@ -52,8 +58,10 @@ export function findAll<Node, ElementNode extends Node>(
             const children = adapter.getChildren(element);
 
             if (children.length > 0) {
-                nodeStack.unshift(children);
-                indexStack.unshift(0);
+                nodeStack.push(currentNodes);
+                indexStack.push(currentIndex);
+                currentNodes = children;
+                currentIndex = 0;
             }
         }
     }
@@ -73,27 +81,33 @@ export function findOne<Node, ElementNode extends Node>(
     options: InternalOptions<Node, ElementNode>,
 ): ElementNode | null {
     const { adapter, xmlMode = false } = options;
-    /** Stack of the arrays we are looking at. */
-    const nodeStack = [nodes];
-    /** Stack of the indices within the arrays. */
-    const indexStack = [0];
+    /** Stack of the parent arrays we will return to. */
+    const nodeStack: Node[][] = [];
+    /** Stack of the indices to resume at within the parent arrays. */
+    const indexStack: number[] = [];
+    /** The array we are currently looking at. */
+    let currentNodes = nodes;
+    /** The index of the next node within `currentNodes`. */
+    let currentIndex = 0;
 
     while (true) {
         // First, check if the current array has any more elements to look at.
-        if (indexStack[0] >= nodeStack[0].length) {
+        if (currentIndex >= currentNodes.length) {
             // If we have no more arrays to look at, we are done.
-            if (nodeStack.length === 1) {
+            if (nodeStack.length === 0) {
                 return null;
             }
 
-            nodeStack.shift();
-            indexStack.shift();
+            // biome-ignore lint/style/noNonNullAssertion: The stack is not empty.
+            currentNodes = nodeStack.pop()!;
+            // biome-ignore lint/style/noNonNullAssertion: The stack is not empty.
+            currentIndex = indexStack.pop()!;
 
             // Loop back to the start to continue with the next array.
             continue;
         }
 
-        const element = nodeStack[0][indexStack[0]++];
+        const element = currentNodes[currentIndex++];
 
         if (!adapter.isTag(element)) {
             continue;
@@ -110,8 +124,10 @@ export function findOne<Node, ElementNode extends Node>(
             const children = adapter.getChildren(element);
 
             if (children.length > 0) {
-                nodeStack.unshift(children);
-                indexStack.unshift(0);
+                nodeStack.push(currentNodes);
+                indexStack.push(currentIndex);
+                currentNodes = children;
+                currentIndex = 0;
             }
         }
     }
