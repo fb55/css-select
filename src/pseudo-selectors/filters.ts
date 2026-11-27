@@ -159,7 +159,10 @@ function compileNth(
                         ? adapter.getName(sibling)
                         : "";
                     const pos = scan.counts.get(key) ?? 0;
-                    positions.set(sibling, pos);
+                    // Primitive siblings still count, but can't be keys.
+                    if (typeof sibling === "object" && sibling !== null) {
+                        positions.set(sibling, pos);
+                    }
                     scan.counts.set(key, pos + 1);
                     if (equals(element, sibling)) break;
                 }
