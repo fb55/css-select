@@ -65,11 +65,13 @@ function absolutize<Node, ElementNode extends Node>(
  * @param token Selector token(s) to compile.
  * @param options Options that control this operation.
  * @param compilationContext Compilation context for relative selector handling.
+ * @param shouldAbsolutize Override relative handling for this call only.
  */
 export function compileToken<Node, ElementNode extends Node>(
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
     compilationContext?: Node[] | Node,
+    shouldAbsolutize: boolean | undefined = options.relativeSelector,
 ): CompiledQuery<ElementNode> {
     for (const rules of token) {
         sortRules(rules);
@@ -86,7 +88,7 @@ export function compileToken<Node, ElementNode extends Node>(
         context && (Array.isArray(context) ? context : [context]);
 
     // Check if the selector is relative
-    if (options.relativeSelector !== false) {
+    if (shouldAbsolutize !== false) {
         absolutize(token, options, finalContext);
     } else if (token.some((t) => t.length > 0 && isTraversal(t[0]))) {
         throw new Error(
