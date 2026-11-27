@@ -204,4 +204,5 @@ export type CompileToken<Node, ElementNode extends Node> = (
     token: InternalSelector[][],
     options: InternalOptions<Node, ElementNode>,
     context?: Node[] | Node,
+    isHasSubselector?: boolean,
 ) => CompiledQuery<ElementNode>;
