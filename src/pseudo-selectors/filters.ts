@@ -80,30 +80,84 @@ function compileNth(
                     adapter.getName(sibling) === adapter.getName(element)
               : boolbase.trueFunc;
 
-        if (shouldCountFromEnd) {
-            return function nthLast(element) {
-                if (ofSelector && !ofSelector(element)) return false;
-                const siblings = adapter.getSiblings(element);
-                let pos = 0;
-                for (let index = siblings.length - 1; index >= 0; index--) {
-                    const sibling = siblings[index];
-                    if (equals(element, sibling)) break;
-                    if (adapter.isTag(sibling) && shouldCount(element, sibling))
-                        pos++;
-                }
-                return nthCheck(pos) && next(element);
-            };
+        const nthUncached: CompiledQuery<ElementNode> = shouldCountFromEnd
+            ? function nthLast(element) {
+                  if (ofSelector && !ofSelector(element)) return false;
+                  const siblings = adapter.getSiblings(element);
+                  let pos = 0;
+                  for (let index = siblings.length - 1; index >= 0; index--) {
+                      const sibling = siblings[index];
+                      if (equals(element, sibling)) break;
+                      if (
+                          adapter.isTag(sibling) &&
+                          shouldCount(element, sibling)
+                      )
+                          pos++;
+                  }
+                  return nthCheck(pos) && next(element);
+              }
+            : function nth(element) {
+                  if (ofSelector && !ofSelector(element)) return false;
+                  const siblings = adapter.getSiblings(element);
+                  let pos = 0;
+                  for (const sibling of siblings) {
+                      if (equals(element, sibling)) break;
+                      if (
+                          adapter.isTag(sibling) &&
+                          shouldCount(element, sibling)
+                      )
+                          pos++;
+                  }
+                  return nthCheck(pos) && next(element);
+              };
+
+        if (options.cacheResults === false || typeof WeakMap === "undefined") {
+            return nthUncached;
         }
 
-        return function nth(element) {
+        /*
+         * Record sibling positions while scanning, and resume from where the
+         * last scan stopped, so a list is indexed once instead of O(n^2).
+         */
+        // @ts-expect-error `ElementNode` is not extending object
+        const positions = new WeakMap<ElementNode, number>();
+        const scans = new WeakMap<
+            unknown[],
+            { offset: number; counts: Map<string, number> }
+        >();
+
+        return function cachedNth(element) {
             if (ofSelector && !ofSelector(element)) return false;
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-            for (const sibling of siblings) {
-                if (equals(element, sibling)) break;
-                if (adapter.isTag(sibling) && shouldCount(element, sibling))
-                    pos++;
+            if (!positions.has(element)) {
+                const siblings = adapter.getSiblings(element);
+                let scan = scans.get(siblings);
+                if (!scan) {
+                    scan = { offset: 0, counts: new Map() };
+                    scans.set(siblings, scan);
+                }
+                while (scan.offset < siblings.length) {
+                    const sibling =
+                        siblings[
+                            shouldCountFromEnd
+                                ? siblings.length - 1 - scan.offset
+                                : scan.offset
+                        ];
+                    scan.offset++;
+                    if (!adapter.isTag(sibling)) continue;
+                    if (!ofSelector || ofSelector(sibling)) {
+                        const key = shouldCountSameType
+                            ? adapter.getName(sibling)
+                            : "";
+                        const pos = scan.counts.get(key) ?? 0;
+                        positions.set(sibling, pos);
+                        scan.counts.set(key, pos + 1);
+                    }
+                    if (equals(element, sibling)) break;
+                }
             }
+            const pos = positions.get(element);
+            // Adapters that return fresh node objects never hit the index.
+            if (pos === undefined) return nthUncached(element);
             return nthCheck(pos) && next(element);
         };
     };

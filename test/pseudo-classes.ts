@@ -305,6 +305,37 @@ describe(":nth-child(An+B of S)", () => {
     });
 });
 
+describe(":nth-* position cache", () => {
+    const dom = parseDocument(
+        `<ul>${Array.from({ length: 30 }, (_, index) =>
+            index % 3 ? `<li class="x">${index}</li>text` : `<p>${index}</p>`,
+        ).join("")}</ul>`,
+    );
+    const items = DomUtils.getElementsByTagName(() => true, dom).filter(
+        (element) => element.name !== "ul",
+    );
+
+    it.each([
+        ":nth-child(3n+1)",
+        ":nth-last-child(odd)",
+        "li:nth-of-type(2n)",
+        "li:nth-last-of-type(-n+4)",
+        ":nth-child(even of .x)",
+        ":nth-last-child(3 of .x)",
+    ])("%s should match the uncached result in any order", (selector) => {
+        const expected = items.map((element) =>
+            CSSselect.is(element, selector, { cacheResults: false }),
+        );
+        const query = CSSselect.compile(selector);
+        const order = Array.from(items, (_, index) => items.length - 1 - index);
+        order.push(...order.splice(10, 10));
+
+        for (const index of order) {
+            expect(query(items[index])).toBe(expected[index]);
+        }
+    });
+});
+
 describe(":lang", () => {
     // Single fixture covering inheritance, override, and untagged elements.
     const langFixture = parseDocument(
