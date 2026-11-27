@@ -136,7 +136,7 @@ function compileNth(
 
         return function cachedNth(element) {
             // Adapters may use primitives as nodes, which can't be WeakMap keys.
-            if (typeof element !== "object" || element === null) {
+            if (!canBeWeakKey(element)) {
                 return nthUncached(element);
             }
             if (!positions.has(element)) {
@@ -160,7 +160,7 @@ function compileNth(
                         : "";
                     const pos = scan.counts.get(key) ?? 0;
                     // Primitive siblings still count, but can't be keys.
-                    if (typeof sibling === "object" && sibling !== null) {
+                    if (canBeWeakKey(sibling)) {
                         positions.set(sibling, pos);
                     }
                     scan.counts.set(key, pos + 1);
@@ -295,4 +295,11 @@ function dynamicStatePseudo(
             return filterFunction(element) && next(element);
         };
     };
+}
+
+function canBeWeakKey(value: unknown): value is object {
+    return (
+        (typeof value === "object" && value !== null) ||
+        typeof value === "function"
+    );
 }
