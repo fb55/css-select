@@ -111,7 +111,15 @@ function compileNth(
                   return nthCheck(pos) && next(element);
               };
 
-        if (options.cacheResults === false || typeof WeakMap === "undefined") {
+        /*
+         * `of S` is left uncached, as `S` can depend on a context that `:has`
+         * changes between calls (e.g. `:scope`).
+         */
+        if (
+            ofSelector ||
+            options.cacheResults === false ||
+            typeof WeakMap === "undefined"
+        ) {
             return nthUncached;
         }
 
@@ -127,7 +135,10 @@ function compileNth(
         >();
 
         return function cachedNth(element) {
-            if (ofSelector && !ofSelector(element)) return false;
+            // Adapters may use primitives as nodes, which can't be WeakMap keys.
+            if (typeof element !== "object" || element === null) {
+                return nthUncached(element);
+            }
             if (!positions.has(element)) {
                 const siblings = adapter.getSiblings(element);
                 let scan = scans.get(siblings);
@@ -144,14 +155,12 @@ function compileNth(
                         ];
                     scan.offset++;
                     if (!adapter.isTag(sibling)) continue;
-                    if (!ofSelector || ofSelector(sibling)) {
-                        const key = shouldCountSameType
-                            ? adapter.getName(sibling)
-                            : "";
-                        const pos = scan.counts.get(key) ?? 0;
-                        positions.set(sibling, pos);
-                        scan.counts.set(key, pos + 1);
-                    }
+                    const key = shouldCountSameType
+                        ? adapter.getName(sibling)
+                        : "";
+                    const pos = scan.counts.get(key) ?? 0;
+                    positions.set(sibling, pos);
+                    scan.counts.set(key, pos + 1);
                     if (equals(element, sibling)) break;
                 }
             }
