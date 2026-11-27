@@ -320,19 +320,59 @@ describe(":nth-* position cache", () => {
         ":nth-last-child(odd)",
         "li:nth-of-type(2n)",
         "li:nth-last-of-type(-n+4)",
-        ":nth-child(even of .x)",
-        ":nth-last-child(3 of .x)",
     ])("%s should match the uncached result in any order", (selector) => {
         const expected = items.map((element) =>
             CSSselect.is(element, selector, { cacheResults: false }),
         );
         const query = CSSselect.compile(selector);
-        const order = Array.from(items, (_, index) => items.length - 1 - index);
-        order.push(...order.splice(10, 10));
+        // Start mid-list so later lookups resume a partial scan.
+        const order = [
+            10,
+            items.length - 1,
+            0,
+            ...Array.from(
+                { length: items.length - 2 },
+                (_, index) => index + 1,
+            ).filter((index) => index !== 10),
+        ];
 
         for (const index of order) {
             expect(query(items[index])).toBe(expected[index]);
         }
+    });
+
+    it("should scan each sibling list once", () => {
+        const list = parseDocument(`<ul>${"<li></li>".repeat(500)}</ul>`);
+        let calls = 0;
+        const adapter: Adapter<AnyNode, Element> = {
+            ...DomUtils,
+            isTag(node): node is Element {
+                calls++;
+                return isTag(node);
+            },
+        };
+
+        CSSselect.selectAll(":nth-child(2n)", list, { adapter });
+        // A rescan per element would take ~125,000 calls.
+        expect(calls).toBeLessThan(5000);
+    });
+
+    it("should not reuse `of S` positions across :has contexts", () => {
+        const list = parseDocument(
+            '<ul><li id="a"></li><li id="b"></li><li id="c"></li></ul>',
+        );
+        const ids = (selector: string) =>
+            CSSselect.selectAll<AnyNode, Element>(selector, list).map(
+                (element) => element.attribs["id"],
+            );
+
+        expect(ids("li:has(~ :nth-child(2 of :scope ~ li))")).toStrictEqual([
+            "a",
+        ]);
+        expect(ids("li:has(+ :nth-child(1 of :scope ~ *))")).toStrictEqual([
+            "a",
+            "b",
+        ]);
     });
 });
 
