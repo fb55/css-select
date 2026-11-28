@@ -129,8 +129,9 @@ function compileNth(
          */
         // @ts-expect-error `ElementNode` is not extending object
         const positions = new WeakMap<ElementNode, number>();
+        // Keyed by parent, as adapters may reuse or recreate sibling arrays.
         const scans = new WeakMap<
-            unknown[],
+            object,
             { offset: number; counts: Map<string, number> }
         >();
 
@@ -140,11 +141,13 @@ function compileNth(
                 return nthUncached(element);
             }
             if (!positions.has(element)) {
+                const parent = adapter.getParent(element);
+                if (!canBeWeakKey(parent)) return nthUncached(element);
                 const siblings = adapter.getSiblings(element);
-                let scan = scans.get(siblings);
+                let scan = scans.get(parent);
                 if (!scan) {
                     scan = { offset: 0, counts: new Map() };
-                    scans.set(siblings, scan);
+                    scans.set(parent, scan);
                 }
                 while (scan.offset < siblings.length) {
                     const sibling =

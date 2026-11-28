@@ -357,6 +357,28 @@ describe(":nth-* position cache", () => {
         expect(calls).toBeLessThan(5000);
     });
 
+    it("should handle adapters that reuse one sibling array", () => {
+        const list = parseDocument(
+            "<div><p id='a'></p></div><div>text<p id='b'></p></div>",
+        );
+        const scratch: AnyNode[] = [];
+        const adapter: Adapter<AnyNode, Element> = {
+            ...DomUtils,
+            isTag,
+            getSiblings(node) {
+                scratch.length = 0;
+                scratch.push(...DomUtils.getSiblings(node));
+                return scratch;
+            },
+        };
+
+        expect(
+            CSSselect.selectAll<AnyNode, Element>("p:nth-child(1)", list, {
+                adapter,
+            }).map((element) => element.attribs["id"]),
+        ).toStrictEqual(["a", "b"]);
+    });
+
     it("should not reuse `of S` positions across :has contexts", () => {
         const list = parseDocument(
             '<ul><li id="a"></li><li id="b"></li><li id="c"></li></ul>',
