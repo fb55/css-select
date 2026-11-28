@@ -80,30 +80,99 @@ function compileNth(
                     adapter.getName(sibling) === adapter.getName(element)
               : boolbase.trueFunc;
 
-        if (shouldCountFromEnd) {
-            return function nthLast(element) {
-                if (ofSelector && !ofSelector(element)) return false;
-                const siblings = adapter.getSiblings(element);
-                let pos = 0;
-                for (let index = siblings.length - 1; index >= 0; index--) {
-                    const sibling = siblings[index];
-                    if (equals(element, sibling)) break;
-                    if (adapter.isTag(sibling) && shouldCount(element, sibling))
-                        pos++;
-                }
-                return nthCheck(pos) && next(element);
-            };
+        const nthUncached: CompiledQuery<ElementNode> = shouldCountFromEnd
+            ? function nthLast(element) {
+                  if (ofSelector && !ofSelector(element)) return false;
+                  const siblings = adapter.getSiblings(element);
+                  let pos = 0;
+                  for (let index = siblings.length - 1; index >= 0; index--) {
+                      const sibling = siblings[index];
+                      if (equals(element, sibling)) break;
+                      if (
+                          adapter.isTag(sibling) &&
+                          shouldCount(element, sibling)
+                      )
+                          pos++;
+                  }
+                  return nthCheck(pos) && next(element);
+              }
+            : function nth(element) {
+                  if (ofSelector && !ofSelector(element)) return false;
+                  const siblings = adapter.getSiblings(element);
+                  let pos = 0;
+                  for (const sibling of siblings) {
+                      if (equals(element, sibling)) break;
+                      if (
+                          adapter.isTag(sibling) &&
+                          shouldCount(element, sibling)
+                      )
+                          pos++;
+                  }
+                  return nthCheck(pos) && next(element);
+              };
+
+        /*
+         * `of S` is left uncached, as `S` can depend on a context that `:has`
+         * changes between calls (e.g. `:scope`).
+         */
+        if (
+            ofSelector ||
+            options.cacheResults === false ||
+            typeof WeakMap === "undefined"
+        ) {
+            return nthUncached;
         }
 
-        return function nth(element) {
-            if (ofSelector && !ofSelector(element)) return false;
-            const siblings = adapter.getSiblings(element);
-            let pos = 0;
-            for (const sibling of siblings) {
-                if (equals(element, sibling)) break;
-                if (adapter.isTag(sibling) && shouldCount(element, sibling))
-                    pos++;
+        /*
+         * Record sibling positions while scanning, and resume from where the
+         * last scan stopped, so a list is indexed once instead of O(n^2).
+         */
+        // @ts-expect-error `ElementNode` is not extending object
+        const positions = new WeakMap<ElementNode, number>();
+        // Keyed by parent, as adapters may reuse or recreate sibling arrays.
+        const scans = new WeakMap<
+            object,
+            { offset: number; counts: Map<string, number> }
+        >();
+
+        return function cachedNth(element) {
+            // Adapters may use primitives as nodes, which can't be WeakMap keys.
+            if (!canBeWeakKey(element)) {
+                return nthUncached(element);
             }
+            if (!positions.has(element)) {
+                const parent = adapter.getParent(element);
+                if (!canBeWeakKey(parent)) return nthUncached(element);
+                const siblings = adapter.getSiblings(element);
+                let scan = scans.get(parent);
+                if (!scan) {
+                    scan = { offset: 0, counts: new Map() };
+                    scans.set(parent, scan);
+                }
+                while (scan.offset < siblings.length) {
+                    const sibling =
+                        siblings[
+                            shouldCountFromEnd
+                                ? siblings.length - 1 - scan.offset
+                                : scan.offset
+                        ];
+                    scan.offset++;
+                    if (!adapter.isTag(sibling)) continue;
+                    const key = shouldCountSameType
+                        ? adapter.getName(sibling)
+                        : "";
+                    const pos = scan.counts.get(key) ?? 0;
+                    // Primitive siblings still count, but can't be keys.
+                    if (canBeWeakKey(sibling)) {
+                        positions.set(sibling, pos);
+                    }
+                    scan.counts.set(key, pos + 1);
+                    if (equals(element, sibling)) break;
+                }
+            }
+            const pos = positions.get(element);
+            // Adapters that return fresh node objects never hit the index.
+            if (pos === undefined) return nthUncached(element);
             return nthCheck(pos) && next(element);
         };
     };
@@ -229,4 +298,11 @@ function dynamicStatePseudo(
             return filterFunction(element) && next(element);
         };
     };
+}
+
+function canBeWeakKey(value: unknown): value is object {
+    return (
+        (typeof value === "object" && value !== null) ||
+        typeof value === "function"
+    );
 }
